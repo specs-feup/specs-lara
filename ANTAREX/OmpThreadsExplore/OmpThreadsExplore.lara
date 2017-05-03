@@ -1,4 +1,4 @@
-aspectdef Main
+aspectdef Launcher
 
 	// Example for montecarlo
 	call OmpThreadsExplore("main", ["elapsed", "result[0]"], 1, 3, 1);

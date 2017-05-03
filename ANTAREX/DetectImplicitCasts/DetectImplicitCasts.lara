@@ -1,4 +1,4 @@
-aspectdef ExampleSimple
+aspectdef LauncherSimple
 	
 	// Detect implicit casts
     select function.body end
@@ -7,7 +7,7 @@ aspectdef ExampleSimple
     end
 end
 
-aspectdef ExampleTwoPasses
+aspectdef LauncherTwoPasses
 
 	select program.function.body end
     apply
