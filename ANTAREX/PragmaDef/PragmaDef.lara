@@ -1,0 +1,9 @@
+aspectdef PragmaDef
+
+	select loop end
+	apply
+		println("1. Is parallel? " + $loop.isParallel);
+		println("2. Iterations: " + $loop.iterations);
+	end
+
+end
