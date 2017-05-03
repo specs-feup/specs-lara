@@ -1,0 +1,100 @@
+<SimpleDataStore>
+  <name>LaraI Options</name>
+  <values>
+    <entry>
+      <string>include</string>
+      <FileList>
+        <fileList/>
+      </FileList>
+    </entry>
+    <entry>
+      <string>workspace</string>
+      <FileList>
+        <fileList>
+          <file>src</file>
+        </fileList>
+      </FileList>
+    </entry>
+    <entry>
+      <string>debug</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>log</string>
+      <OptionalFile>
+        <file></file>
+        <used>false</used>
+      </OptionalFile>
+    </entry>
+    <entry>
+      <string>library includes</string>
+      <FileList>
+        <fileList>
+          <file>C:\Program Files (x86)\IntelSWTools\compilers_and_libraries_2017\windows\mkl\include</file>
+        </fileList>
+      </FileList>
+    </entry>
+    <entry>
+      <string>Clean intermediate files</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>main</string>
+      <string></string>
+    </entry>
+    <entry>
+      <string>argv</string>
+      <string>srcFolder=&quot;C:/Users/JoaoBispo/Desktop/shared/papers/lara-hdf5-paper/src&quot;</string>
+    </entry>
+    <entry>
+      <string>tools</string>
+      <OptionalFile>
+        <file></file>
+        <used>false</used>
+      </OptionalFile>
+    </entry>
+    <entry>
+      <string>javascript</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>verbose</string>
+      <org.lara.interpreter.joptions.config.interpreter.VerboseLevel>warnings</org.lara.interpreter.joptions.config.interpreter.VerboseLevel>
+    </entry>
+    <entry>
+      <string>output</string>
+      <file></file>
+    </entry>
+    <entry>
+      <string>Compiler Flags</string>
+      <string></string>
+    </entry>
+    <entry>
+      <string>Check C/CXX Syntax</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>aspect</string>
+      <file>hdf5.lara</file>
+    </entry>
+    <entry>
+      <string>report</string>
+      <OptionalFile>
+        <file></file>
+        <used>false</used>
+      </OptionalFile>
+    </entry>
+    <entry>
+      <string>metrics</string>
+      <OptionalFile>
+        <file></file>
+        <used>false</used>
+      </OptionalFile>
+    </entry>
+    <entry>
+      <string>C/C++ Standard</string>
+      <pt.up.fe.specs.clava.language.Standard>CXX11</pt.up.fe.specs.clava.language.Standard>
+    </entry>
+  </values>
+  <strict>false</strict>
+</SimpleDataStore>
