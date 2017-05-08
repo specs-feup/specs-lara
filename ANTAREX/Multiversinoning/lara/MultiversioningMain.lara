@@ -1,23 +1,25 @@
-import manet.util.Util;
+/**
+ *	Changes an application in order to generate several clones of a target function.
+ * 	Each clone will have a different optimization level and different OpenMP configurations.
+ * 	Finally, this strategy also replaces the call to the target function with a call to a wrapper
+ * which will select the correct clone based on the current configuration (global variables).
+ *
+**/
 
 aspectdef AutotunerMainProc
 
 	input
-		optLevels = ["O0", "O1", "O2", "O3", "Os"],
-		globalNameThreads = "num_threads",
 		globalNameOpt = "opt_level",
+		optLevels = ["O0", "O2", "O3"],
 		globalNameBind = "proc_bind",
-		targetFunction = "kernel_correlation",
-		targetLoop = 't2',
-		privateVars = ['lbv','ubv','t3','t4','t5','t6','t7','t8'],
+		procBindOptions = ['close', 'spread'],
+		globalNameThreads = "num_threads",
+		targetFunction = 'kernel_2mm',
 		wrapperName,
-		procBindOptions = ['close', 'spread']
+		doCli = true
 	end
 
-	println("Starting autotuner main aspect\n");
-	println("\t Function: " + targetFunction);
-	println("\t Loop: " + targetLoop);
-	println("\t Private: " + privateVars + '\n');
+	println("Starting multiversioning main aspect\n");
 
 	if(wrapperName == undefined) {
 		wrapperName = targetFunction + '_wrapper';
@@ -36,8 +38,8 @@ aspectdef AutotunerMainProc
 	// insert optimization pragmas in each cloned function
 	call InsertOptPragmas(clonedFunctions);
 
-	// insert OpenMP directive in each cloned function
-	call InsertOmpPragmas(clonedFunctions, globalNameThreads, targetLoop, privateVars, procBindOptions);
+	// change OpenMP directives in each cloned function
+	call ChangeOmpPragmas(clonedFunctions, globalNameThreads);
 
 	// insert global variables
 	call PrepareData(globalNameThreads, globalNameOpt, globalNameBind, targetFunction);
@@ -53,14 +55,15 @@ aspectdef AutotunerMainProc
 						globalNameBind,
 						optLevels,
 						procBindOptions);
-	
-	//  inserts all the autotuner code	
-//	call InsertAutotunerCode(wrapperName, globalNameThreads, globalNameOpt, globalNameBind);
 
-	call InsertCliOptions(globalNameBind, globalNameOpt, globalNameThreads);
+	if(doCli) {
+		// inserts CLI code to control the tuning/multiversion variables
+		call InsertCliOptions(globalNameBind, globalNameOpt, globalNameThreads);
+	}
 
-	println("Autotuner main aspect done");
+	println("\nMultiversioning main aspect done");
 end
+
 
 aspectdef InsertCliOptions
 	input
@@ -109,55 +112,6 @@ codedef CliOptions(globalNameBind, globalNameOpt, globalNameThreads) %{
 	   }
 	}
 }%
-end
-
-aspectdef InsertAutotunerCode
-	
-	input
-		wrapperName,
-		globalNameThreads,
-		globalNameOpt,
-		globalNameBind
-	end
-
-	println("\t Inserting autotuner code");
-
-	// add include
-	select file.call{wrapperName} end
-	apply
-		$file.exec AddInclude('<argo.h>');
-	end
-	
-	// init autotuner
-	select function{'main'}.first_stmt end
-	apply
-		insert before %{
-			#pragma argo_init
-			argo_init();
-		}%;
-	end
-	
-	
-	select call{wrapperName} end
-	apply
-		// update
-		insert before %{
-			#pragma update
-			if(argo_elaboration_update(&[[globalNameOpt]], &[[globalNameThreads]], &[[globalNameBind]]) != 0) {
-				argo_elaboration_configuration_applied();
-			}
-		}%;
-		// start monitor
-		insert before %{
-			argo_elaboration_start_monitor();
-		}%;
-		// end monitor and log
-		insert after %{
-			argo_elaboration_stop_monitor();
-			argo_elaboration_log();
-		}%;
-	end
-	
 end
 
 aspectdef GenerateClones
@@ -232,7 +186,6 @@ aspectdef GetOriginalData
 
 	if(!foundCall) {
 
-		// println('\t\t ERROR: Could not find call to function "' + targetFunction + '"');
 		throw 'ERROR: Could not find call to function "' + targetFunction + '"';
 	}
 
@@ -247,43 +200,27 @@ aspectdef GetOriginalData
 	
 	if(!foundFunction) {
 
-		// println('\t\t ERROR: Could not find function "' + targetFunction + '"');
 		throw 'ERROR: Could not find function "' + targetFunction + '"';
 	}
 end
 
-aspectdef InsertOmpPragmas
+aspectdef ChangeOmpPragmas
 
 	input
 		clonedFunctions,
-		globalNameThreads,
-		targetLoop,
-		privateVars,
-		procBindOptions
+		globalNameThreads
 	end
 
-	println("\t Inserting OpenMP pragmas");
+	println("\t Changing OpenMP pragmas");
 
-	select function.loop end
+	select function.omp end
 	apply
 		var clone = clonedFunctions[$function.name];
 		if(clone !== undefined) {
 
-			// build the private clause
-			var privateClause = '';
-			if(privateVars == undefined || privateVars.length != 0) {
-				privateClause = 'private(' + privateVars.join(',') + ') ';
-			}
-
-			// build the proc_bind clause
-			var procBindClause = 'proc_bind(' + clone.bind + ')';
-
-			// insert the actual OpenMP pragma
-			if($loop.control_var == targetLoop) {
-
-				insert before %{
-            			#pragma omp parallel for [[privateClause]]num_threads([[globalNameThreads]]) [[procBindClause]]
-				}%;
+			if($omp.isPar) {
+				def bind = clone.bind;
+				def numThreads = globalNameThreads;
 			}
 		}
 	end
@@ -330,6 +267,8 @@ aspectdef GenerateWrapper
 	println("\t Generating wrapper");
 	println("\t\t return type: " + returnType);
 
+	var isVoid = returnType.indexOf('void') !== -1;
+
 	select call{targetFunction} end
 	apply
 		def name = wrapperName;
@@ -354,13 +293,13 @@ aspectdef GenerateWrapper
 			var cloneName = targetFunction + '_' + bindStr + '_' + optStr;
 			
 			optCode += 'case ' + optId + ': //' + optStr + '\n';
-			if(returnType == 'void') {
+			if(isVoid) {
 				optCode += '\t' + cloneName + '(' + newArgs +');\n\tbreak;\n';
 			} else {
 				optCode += '\treturn ' + cloneName + '(' + newArgs +');\n';
 			}
 		}
-		if(returnType == 'void') {
+		if(isVoid) {
 		
 			optCode += 'default:\n' + targetFunction + '(' + newArgs + ');\n\tbreak;\n}';
 		} else {
@@ -370,7 +309,11 @@ aspectdef GenerateWrapper
 		bindCode += optCode;
 		bindCode += '\nbreak;\n';
 	}
-	bindCode += 'default:\n' + targetFunction + '(' + newArgs + ');\n\tbreak;\n}';
+	if(isVoid) {
+		bindCode += 'default:\n' + targetFunction + '(' + newArgs + ');\n\tbreak;\n}';
+	} else {
+		bindCode += 'default:\nreturn ' + targetFunction + '(' + newArgs + ');\n\tbreak;\n}';
+	}
 
 	
 	// generate wrapper

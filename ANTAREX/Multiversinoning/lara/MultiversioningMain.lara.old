@@ -1,23 +1,25 @@
 import manet.util.Util;
 
-aspectdef AutotunerMainProc
+/**
+ *	Changes an application in order to generate several clones of a target function.
+ * 	Each clone will have a different optimization level and different OpenMP configurations.
+ * 	Finally, this strategy also replaces the call to the target function with a call to a wrapper
+ * which will select the correct clone based on the current configuration (global variables).
+**/
+
+aspectdef MultiversioningMain
 
 	input
-		optLevels = ["O0", "O1", "O2", "O3", "Os"],
-		globalNameThreads = "num_threads",
-		globalNameOpt = "opt_level",
-		globalNameBind = "proc_bind",
-		targetFunction = 'kernel_2mm',
-		targetLoop,
-		privateVars = [],
-		wrapperName,
-		procBindOptions = ['close', 'spread']
+		globalNameOpt = "opt_level",				// name of the global var holding the optimization level
+		optLevels = ["O0", "O1", "O2", "O3", "Os"],	// possible optimization levels
+		globalNameBind = "proc_bind",				// name of the global var holding the proc_bind policy
+		procBindOptions = ['close', 'spread'],		// possible proc_bind policies
+		globalNameThreads = "num_threads",			// name of the global var holding the number of threads
+		targetFunction = 'kernel_2mm',			// name of the target function
+		targetLoop = 't2',						// name of the control variable of the target loop inside the target function
+		privateVars = ['lbv','ubv','t3','t4','t5'],	// name of the vars that need to be private inside the OpenMP loop
+		wrapperName							// name of the target function wrapper
 	end
-
-	println("Starting autotuner main aspect\n");
-	println("\t Function: " + targetFunction);
-	println("\t Loop: " + targetLoop);
-	println("\t Private: " + privateVars + '\n');
 
 	if(wrapperName == undefined) {
 		wrapperName = targetFunction + '_wrapper';
@@ -53,62 +55,8 @@ aspectdef AutotunerMainProc
 						globalNameBind,
 						optLevels,
 						procBindOptions);
-	
-	//  inserts all the autotuner code	
-	call InsertAutotunerCode(wrapperName, globalNameThreads, globalNameOpt, globalNameBind);
-
-	println("Autotuner main aspect done");
 end
 
-
-aspectdef InsertAutotunerCode
-	
-	input
-		wrapperName,
-		globalNameThreads,
-		globalNameOpt,
-		globalNameBind
-	end
-
-	println("\t Inserting autotuner code");
-
-	// add include
-	select file.call{wrapperName} end
-	apply
-		$file.exec AddInclude('<argo.h>');
-	end
-	
-	// init autotuner
-	select function{'main'}.first_stmt end
-	apply
-		insert before %{
-			#pragma argo_init
-			argo_init();
-		}%;
-	end
-	
-	
-	select call{wrapperName} end
-	apply
-		// update
-		insert before %{
-			#pragma update
-			if(argo_elaboration_update(&[[globalNameOpt]], &[[globalNameThreads]], &[[globalNameBind]]) != 0) {
-				argo_elaboration_configuration_applied();
-			}
-		}%;
-		// start monitor
-		insert before %{
-			argo_elaboration_start_monitor();
-		}%;
-		// end monitor and log
-		insert after %{
-			argo_elaboration_stop_monitor();
-			argo_elaboration_log();
-		}%;
-	end
-	
-end
 
 aspectdef GenerateClones
 	input
@@ -216,6 +164,7 @@ aspectdef InsertOmpPragmas
 
 	select function.loop end
 	apply
+		
 		var clone = clonedFunctions[$function.name];
 		if(clone !== undefined) {
 
@@ -234,9 +183,18 @@ aspectdef InsertOmpPragmas
 				insert before %{
             			#pragma omp parallel for [[privateClause]]num_threads([[globalNameThreads]]) [[procBindClause]]
 				}%;
+
+				clonedFunctions[$function.name].foundLoop = true;
 			}
 		}
 	end
+	for (var cloneName in clonedFunctions) {
+
+		var clone = clonedFunctions[cloneName];
+		if (!clone.foundLoop) {
+			throw 'ERROR: Could not find target loop "' + targetLoop + '" inside function "' + cloneName + '"';
+		}
+	}
 end
 
 aspectdef PrepareData

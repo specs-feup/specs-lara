@@ -1,27 +1,30 @@
-import manet.util.Util;
+/**
+ *	Changes an application in order to generate several clones of a target function.
+ * 	Each clone will have a different optimization level and different OpenMP configurations.
+ * 	Finally, this strategy also replaces the call to the target function with a call to a wrapper
+ * which will select the correct clone based on the current configuration (global variables).
+ *
+**/
 
 aspectdef AutotunerMainProc
 
 	input
-		optLevels = ["O0", "O1", "O2", "O3", "Os"],
-		globalNameThreads = "num_threads",
 		globalNameOpt = "opt_level",
+		optLevels = ["O0", "O2", "O3"],
 		globalNameBind = "proc_bind",
+		procBindOptions = ['close', 'spread'],
+		globalNameThreads = "num_threads",
 		targetFunction = 'kernel_2mm',
 		wrapperName,
-		procBindOptions = ['close', 'spread'],
-		doAutotuner = false,
-		doCli = true
+		doCli = true,
+		doTuner = true
 	end
 
-	println("Starting autotuner main aspect\n");
+	println("Starting multiversioning main aspect\n");
 
 	if(wrapperName == undefined) {
 		wrapperName = targetFunction + '_wrapper';
 	}
-
-	println("\t Function: " + targetFunction);
-	println("\t Wrapper: " + wrapperName + "\n");
 
 	// get original args and params of the target function
 	call od: GetOriginalData(targetFunction);
@@ -54,67 +57,17 @@ aspectdef AutotunerMainProc
 						optLevels,
 						procBindOptions);
 
-	if(doAutotuner) {
-		//  inserts all the autotuner code	
-		call InsertAutotunerCode(wrapperName, globalNameThreads, globalNameOpt, globalNameBind);
-	}
-
 	if(doCli) {
 		// inserts CLI code to control the tuning/multiversion variables
 		call InsertCliOptions(globalNameBind, globalNameOpt, globalNameThreads);
 	}
 
-	println("Autotuner main aspect done");
-end
-
-
-aspectdef InsertCliOptions
-	input
-		globalNameBind,
-		globalNameOpt,
-		globalNameThreads
-	end
-
-	println("\t Inserting CLI options code");
-
-	select function{'main'}.first_stmt end
-	apply
-		$function.insert before CliOptions(globalNameBind, globalNameOpt, globalNameThreads);
-		$first_stmt.insert before 'set_init_values(argc, argv);';
-	end
-end
-
-codedef CliOptions(globalNameBind, globalNameOpt, globalNameThreads) %{
-	#include <stdlib.h>
-	#include <errno.h>
-	void set_init_values(int argc, char** argv) {
-	    
-	    const char *errstr;
-	    char* end;
-	    
-	    if(argc == 4) {
-	        
-	        errno = 0;
-	        [[globalNameBind]] = strtol(argv[1], &end, 0);
-	        if(errno != 0) {perror("can't parse [[globalNameBind]] value: "); exit(EXIT_FAILURE);}
-	        if(*end != '\0') {printf("can't parse [[globalNameBind]] value: %s\n", argv[1]); exit(EXIT_FAILURE);}
-	        
-	        errno = 0;
-	        [[globalNameOpt]] = strtol(argv[2], &end, 0);
-	        if(errno != 0) {perror("can't parse [[globalNameOpt]] value: "); exit(EXIT_FAILURE);}
-	        if(*end != '\0') {printf("can't parse [[globalNameOpt]] value: %s\n", argv[2]); exit(EXIT_FAILURE);}
-	        
-	        errno = 0;
-	        [[globalNameThreads]] = strtol(argv[3], &end, 0);
-	        if(errno != 0) {perror("can't parse [[globalNameThreads]] value: "); exit(EXIT_FAILURE);}
-	        if(*end != '\0') {printf("can't parse [[globalNameThreads]] value: %s\n", argv[3]); exit(EXIT_FAILURE);}
-	        
-	        printf("[[globalNameBind]]: %d\n", [[globalNameBind]]);
-	        printf("[[globalNameOpt]]: %d\n", [[globalNameOpt]]);
-	        printf("[[globalNameThreads]]: %d\n", [[globalNameThreads]]);
-	   }
+	if(doTuner) {
+		//  inserts all the autotuner code	
+		call InsertAutotunerCode(wrapperName, globalNameThreads, globalNameOpt, globalNameBind);
 	}
-}%
+
+	println("\nMultiversioning main aspect done");
 end
 
 aspectdef InsertAutotunerCode
@@ -163,7 +116,55 @@ aspectdef InsertAutotunerCode
 			argo_elaboration_log();
 		}%;
 	end
-	
+end
+
+aspectdef InsertCliOptions
+	input
+		globalNameBind,
+		globalNameOpt,
+		globalNameThreads
+	end
+
+	println("\t Inserting CLI options code");
+
+	select function{'main'}.first_stmt end
+	apply
+		$function.insert before CliOptions(globalNameBind, globalNameOpt, globalNameThreads);
+		$first_stmt.insert before 'set_init_values(argc, argv);';
+	end
+end
+
+codedef CliOptions(globalNameBind, globalNameOpt, globalNameThreads) %{
+	#include <stdlib.h>
+	#include <errno.h>
+	void set_init_values(int argc, char** argv) {
+	    
+	    const char *errstr;
+	    char* end;
+	    
+	    if(argc == 4) {
+	        
+	        errno = 0;
+	        [[globalNameBind]] = strtol(argv[1], &end, 0);
+	        if(errno != 0) {perror("can't parse [[globalNameBind]] value: "); exit(EXIT_FAILURE);}
+	        if(*end != '\0') {printf("can't parse [[globalNameBind]] value: %s\n", argv[1]); exit(EXIT_FAILURE);}
+	        
+	        errno = 0;
+	        [[globalNameOpt]] = strtol(argv[2], &end, 0);
+	        if(errno != 0) {perror("can't parse [[globalNameOpt]] value: "); exit(EXIT_FAILURE);}
+	        if(*end != '\0') {printf("can't parse [[globalNameOpt]] value: %s\n", argv[2]); exit(EXIT_FAILURE);}
+	        
+	        errno = 0;
+	        [[globalNameThreads]] = strtol(argv[3], &end, 0);
+	        if(errno != 0) {perror("can't parse [[globalNameThreads]] value: "); exit(EXIT_FAILURE);}
+	        if(*end != '\0') {printf("can't parse [[globalNameThreads]] value: %s\n", argv[3]); exit(EXIT_FAILURE);}
+	        
+	        printf("[[globalNameBind]]: %d\n", [[globalNameBind]]);
+	        printf("[[globalNameOpt]]: %d\n", [[globalNameOpt]]);
+	        printf("[[globalNameThreads]]: %d\n", [[globalNameThreads]]);
+	   }
+	}
+}%
 end
 
 aspectdef GenerateClones
@@ -319,6 +320,8 @@ aspectdef GenerateWrapper
 	println("\t Generating wrapper");
 	println("\t\t return type: " + returnType);
 
+	var isVoid = returnType.indexOf('void') !== -1;
+
 	select call{targetFunction} end
 	apply
 		def name = wrapperName;
@@ -343,13 +346,13 @@ aspectdef GenerateWrapper
 			var cloneName = targetFunction + '_' + bindStr + '_' + optStr;
 			
 			optCode += 'case ' + optId + ': //' + optStr + '\n';
-			if(returnType == 'void') {
+			if(isVoid) {
 				optCode += '\t' + cloneName + '(' + newArgs +');\n\tbreak;\n';
 			} else {
 				optCode += '\treturn ' + cloneName + '(' + newArgs +');\n';
 			}
 		}
-		if(returnType == 'void') {
+		if(isVoid) {
 		
 			optCode += 'default:\n' + targetFunction + '(' + newArgs + ');\n\tbreak;\n}';
 		} else {
@@ -359,7 +362,11 @@ aspectdef GenerateWrapper
 		bindCode += optCode;
 		bindCode += '\nbreak;\n';
 	}
-	bindCode += 'default:\n' + targetFunction + '(' + newArgs + ');\n\tbreak;\n}';
+	if(isVoid) {
+		bindCode += 'default:\n' + targetFunction + '(' + newArgs + ');\n\tbreak;\n}';
+	} else {
+		bindCode += 'default:\nreturn ' + targetFunction + '(' + newArgs + ');\n\tbreak;\n}';
+	}
 
 	
 	// generate wrapper
