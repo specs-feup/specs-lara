@@ -1,0 +1,298 @@
+import manet.util.Util;
+
+aspectdef AutotunerMain
+
+	input
+		optLevels = ["O0", "O1", "O2", "O3", "Os"],
+		globalNameThreads = "num_threads",
+		globalNameOpt = "opt_level",
+		targetFunction,
+		targetLoop,
+		privateVars = [],
+		wrapperName
+	end
+
+	println("Starting autotuner main aspect\n");
+	println("\t Function: " + targetFunction);
+	println("\t Loop: " + targetLoop);
+	println("\t Private: " + privateVars + '\n');
+
+	if(wrapperName == undefined) {
+		wrapperName = targetFunction + '_wrapper';
+	}
+	
+	// get original args and params of the target function
+	call od: GetOriginalData(targetFunction);
+	var originalArgs = od.originalArgs;
+	var originalParams = od.originalParams;
+	var returnType = od.returnType;
+
+	// generate clones according to the optimization levels
+	call gc: GenerateClones(targetFunction, optLevels);
+	var clonedFunctions = gc.clonedFunctions;
+
+	// insert optimization pragmas in each cloned function
+	call InsertOptPragmas(clonedFunctions);
+
+	// insert OpenMP directive in each cloned function
+	call InsertOmpPragmas(clonedFunctions, globalNameThreads, targetLoop, privateVars);
+
+	// insert global variables
+	call PrepareData(globalNameThreads, globalNameOpt, targetFunction);
+
+	// generares and inserts the wrapper function and changes the call to the original function to the wrapper
+	call GenerateWrapper(	targetFunction,
+						returnType,
+						wrapperName,
+						originalArgs,
+						originalParams,
+						globalNameThreads,
+						globalNameOpt,
+						optLevels);
+	
+	//  inserts all the autotuner code	
+	call InsertAutotunerCode(wrapperName, globalNameThreads, globalNameOpt);
+
+	println("Autotuner main aspect done");
+end
+
+
+aspectdef InsertAutotunerCode
+	
+	input
+		wrapperName,
+		globalNameThreads,
+		globalNameOpt
+	end
+
+	println("\t Inserting autotuner code");
+
+	// add include
+	select file.call{wrapperName} end
+	apply
+		$file.exec AddInclude('<argo.h>');
+	end
+	
+	// init autotuner
+	select function{'main'}.first_stmt end
+	apply
+		insert before %{
+			#pragma argo_init
+			argo_init();
+		}%;
+	end
+	
+	
+	select call{wrapperName} end
+	apply
+		// update
+		insert before %{
+			#pragma update
+			if(argo_elaboration_update(&[[globalNameOpt]], &[[globalNameThreads]]) != 0) {
+				argo_elaboration_configuration_applied();
+			}
+		}%;
+		// start monitor
+		insert before %{
+			argo_elaboration_start_monitor();
+		}%;
+		// end monitor and log
+		insert after %{
+			argo_elaboration_stop_monitor();
+			argo_elaboration_log();
+		}%;
+	end
+	
+end
+
+aspectdef GenerateClones
+	input
+		targetFunction,
+		optLevels
+	end
+	output
+		clonedFunctions = {}
+	end
+
+	println("\t Generating clones");
+
+	select function{targetFunction} end
+	apply
+		for(var opt of optLevels) {
+			exec Clone(targetFunction + '_' + opt);
+			clonedFunctions[targetFunction + '_' + opt] = opt;
+		}
+	end
+end
+
+aspectdef InsertOptPragmas
+	input
+		clonedFunctions
+	end
+
+	println("\t Inserting opt pragmas");
+
+	select function end
+	apply
+		var opt = clonedFunctions[$function.name];
+		if(opt !== undefined) {
+		
+			insert before %{
+				#pragma GCC push_options
+				#pragma GCC optimize ("[[opt]]")
+			}%;
+			insert after %{
+				#pragma GCC pop_options
+			}%;
+		}
+	end
+end
+
+aspectdef GetOriginalData
+
+	input
+		targetFunction
+	end
+	output
+		originalArgs,
+		originalParams,
+		returnType
+	end
+
+	println("\t Getting original data");
+
+	var foundCall = false;
+	select call{targetFunction} end
+	apply
+		originalArgs = $call.argList.join(',');
+		// find return type of target
+		returnType = $call.return_type;
+
+		foundCall = true;
+	end
+
+	if(!foundCall) {
+
+		// println('\t\t ERROR: Could not find call to function "' + targetFunction + '"');
+		throw 'ERROR: Could not find call to function "' + targetFunction + '"';
+	}
+
+	var foundFunction = false;
+	select function{targetFunction} end
+	apply
+		originalParams = $function.fullParamList.join(',');
+
+		foundFunction = true;
+	end
+
+	
+	if(!foundFunction) {
+
+		// println('\t\t ERROR: Could not find function "' + targetFunction + '"');
+		throw 'ERROR: Could not find function "' + targetFunction + '"';
+	}
+end
+
+aspectdef InsertOmpPragmas
+
+	input
+		clonedFunctions,
+		globalNameThreads,
+		targetLoop,
+		privateVars
+	end
+
+	println("\t Inserting OpenMP pragmas");
+
+	select function.loop end
+	apply
+		var opt = clonedFunctions[$function.name];
+		if(opt !== undefined) {
+
+			var privateClause = '';
+			if(privateVars == undefined || privateVars.length != 0) {
+				privateClause = 'private(' + privateVars.join(',') + ') ';
+			}
+			
+			if($loop.control_var == targetLoop) {
+
+				insert before %{
+            			#pragma omp parallel for [[privateClause]]num_threads([[globalNameThreads]])
+				}%;
+			}
+		}
+	end
+end
+
+aspectdef PrepareData
+
+	input
+		globalNameThreads,
+		globalNameOpt,
+		targetFunction
+	end
+
+	println("\t Preparing data");
+	
+	var intType = new CTypeBuilder()
+				.base('int')
+				.build();
+
+	// define and declare a global variable to hold the number of OpenMP threads
+	select file end
+	apply						
+		exec AddGlobal([[globalNameThreads]], intType, "4");
+		exec AddGlobal([[globalNameOpt]], intType, "0");
+	end
+end
+
+aspectdef GenerateWrapper
+	input
+		targetFunction,
+		returnType,
+		wrapperName,
+		originalArgs,
+		originalParams,
+		globalNameThreads,
+		globalNameOpt,
+		optLevels
+	end
+
+	println("\t Generating wrapper");
+	println("\t\t return type: " + returnType);
+
+	select call{targetFunction} end
+	apply
+		def name = wrapperName;
+	end
+
+	// generate switch code
+	var newArgs = originalArgs.split('&').join('');
+	var newArgs = originalArgs.split('*').join('');
+	var code = 'switch(' + globalNameOpt + ') {\n';
+	for(var optId in optLevels) {
+		code += 'case ' + optId + ':\n';
+		if(returnType == 'void') {
+			code += '\t' + targetFunction + '_' + optLevels[optId] + '(' + newArgs +');\n\tbreak;\n';
+		} else {
+			code += '\treturn ' + targetFunction + '_' + optLevels[optId] + '(' + newArgs +');\n';
+		}
+	}
+	if(returnType == 'void') {
+	
+		code += 'default:\n' + targetFunction + '(' + newArgs + ');\n\tbreak;\n}';
+	} else {
+		code += 'default:\nreturn ' + targetFunction + '(' + newArgs + ');\n}';
+	}
+
+	
+	// generate wrapper
+	var wrapper = returnType + ' ' + wrapperName + '(' + originalParams + ') {\n';
+	wrapper += code;
+	wrapper += '\n}\n';
+
+	select function{'main'} end
+	apply
+		insert before wrapper;
+	end
+end
