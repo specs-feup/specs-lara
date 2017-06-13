@@ -1,0 +1,91 @@
+aspectdef Launcher
+	
+	// Detect implicit casts
+    select function.body end
+    apply
+        call DetectImplicitCasts($body);
+    end
+end
+
+aspectdef DetectImplicitCasts
+    input $scope end
+ 
+    select $scope.vardecl.init end
+    apply
+        call result : DetectImplicitDoubleToFloatCast($init);
+    end
+ 
+    select $scope.binaryOp{isAssignment===true}.right end
+    //select $scope.binaryOp.right end
+    apply
+        println("AST:"+$binaryOp.ast);
+        call result : DetectImplicitDoubleToFloatCast($right);
+    end
+   
+end
+
+aspectdef RemoveImplicitCasts
+    input $scope end
+ 
+    select $scope.vardecl.init end
+    apply
+        call result : DetectImplicitDoubleToFloatCast($init);
+    end
+ 
+    select $scope.binaryOp{isAssignment===true}.right end
+    apply
+        call result : DetectImplicitDoubleToFloatCast($right);
+    end
+    
+end
+
+aspectdef DetectImplicitDoubleToFloatCast
+    input $expr end
+    output $fromType end
+ 
+    $fromType = undefined;
+
+    // If CallExpr and only one child, use child
+    if($expr.joinpointType === "call" && $expr.astNumChildren == 1) {
+        $expr = $expr.astChild(0);
+    }
+   
+    // Return if it is not a cast
+    if($expr.joinpointType !== "cast") {
+        return;
+    }
+   
+    // ...or if the cast is not implicit
+    if(!$expr.isImplicitCast) {
+        return;
+    }
+       
+    // Check if we are inside a loop
+    var $loop = $expr.astAncestor("loop");
+    if($loop == null) {
+        return;
+    }
+ 
+    // ...and that the expression is not part of the induction variable initialization
+    select $loop.init end
+    apply
+        if($init.contains($expr)) {
+            return;
+        }
+    end
+ 
+    var fromTypeCode = $expr.fromType.code;
+    var toTypeCode = $expr.toType.code;
+ 
+    // Check if are doing a double to float conversion
+    if(fromTypeCode !== "double") {
+        return;
+    }
+   
+    if(toTypeCode !== "float") {
+        return;
+    }
+   
+    println(" - Found implicit cast from " + fromTypeCode + " to " + toTypeCode + " ("+ $expr.location +")");
+    $fromType = $expr.fromType;
+end

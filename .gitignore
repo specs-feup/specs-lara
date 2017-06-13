@@ -1,0 +1,13 @@
+# Ignore build folders
+**/build-*/*
+**/build/*
+
+# Ignore weaved code folders
+**/weaved_code/*
+
+# Ignore clava tester results
+*.csv
+
+# Do not include data inputs in the repository,
+# they should be provided in a separate file
+**/data/*

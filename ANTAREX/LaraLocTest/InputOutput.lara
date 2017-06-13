@@ -1,0 +1,36 @@
+
+
+// Expected 3 LoC for this aspect
+aspectdef InputOutput
+	input
+		a,
+		b,
+		c
+	end
+	output
+		d,
+		e
+	end
+end
+
+// Expected 3 LoC for this aspect
+aspectdef InputOutput2
+	output b, d end input a end 
+	
+end
+
+// Expected 3 LoC for this aspect
+aspectdef InputOutput3
+	input b, d end 
+	output
+	a end 	
+
+end
+
+// Expected 3 LoC for this aspect
+aspectdef InputOutput3
+	input b, 
+	d end 
+	output a end 	
+
+end

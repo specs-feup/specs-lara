@@ -7,7 +7,7 @@ aspectdef Launcher
 	"-funroll-all-loops",
 	"-fomit-frame-pointer"];
 
-	select function{"main"}.call{"matchProbesShape"} end
+	select function{"foo"}.call{"bar"} end
 	apply
 		call LibVersioningCompiler($call, "id", flags);
 	end

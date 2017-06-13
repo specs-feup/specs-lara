@@ -55,8 +55,7 @@ aspectdef Hdf5Types
 
 		// Create code for translating C/C++ type to HDF5 type
 		
-		call result : RecordToHdf5_v2($record, typeName);
-		//code = RecordToHdf5($record, typeName);
+		call result : RecordToHdf5($record, typeName);
 		var cxxFunction = CImplementation(namespace, className, Format.addPrefix(result.code, "    "));
 
 		$compTypeC.exec insertAfter(AstFactory.declLiteral(cxxFunction));
@@ -94,53 +93,12 @@ H5::CompType [[namespace]]::[[className]]::GetCompType() {
 
 }% end
 
-aspectdef RecordToHdf5_v1
-	input $record, typeName end
-	output code end
 
-
-
-	var recordName = $record.type.code;
-	var offsetPrefix = "";
-	
-
-	code = "H5::CompType "+ typeName +"(sizeof("+recordName+"));\n";
-
-	$fields = $record.fields;
-
-	for($field of $fields) {
-		// Ignore constant fields
-		if($field.type.constant) {
-			continue;
-		}
-	
-		// Ignore private fields
-		if(!$field.isPublic) {
-			continue;
-		}
-	
-		fieldName = $field.name;
-		
-		var HDF5Type = toHdf5($field.type);
-		if(HDF5Type === undefined) {
-			println('Could not implemented field "' + fieldName + '" in record "' + $record.name + '"');
-		}
-
-		var memberCode = %{[[typeName]].insertMember("[[fieldName]]",offsetof([[recordName]], [[offsetPrefix]][[fieldName]]), [[HDF5Type]]);}%;
-
-		code += memberCode + "\n";
-	}
-
-end
-
-
-aspectdef RecordToHdf5_v2
+aspectdef RecordToHdf5
 	input $record, typeName end
 	output code end
 
 	var recordName = $record.type.code;
-	println("FROM TYPE: " + $record.type.code);
-	println("FROM NAME: " + $record.name);
 	code = "H5::CompType "+ typeName +"(sizeof("+recordName+"));\n";
 
 	select $record.field end
@@ -157,24 +115,5 @@ aspectdef RecordToHdf5_v2
 
 end
 
-function RecordToHdf5($record, typeName) {
 
-	var recordName = $record.type.code;
-	code = "H5::CompType "+ typeName +"(sizeof("+recordName+"));\n";
-
-
-
-	for($field of $record.fields) {
-		if($field.type.constant) continue; // Ignore constant fields
-		if(!$field.isPublic) continue; // Ignore private fields
-	
-		fieldName = $field.name;
-		var HDF5Type = toHdf5($field.type);
-		if(HDF5Type === undefined) continue; // Warning message omitted for the example
-		var params = %{"[[fieldName]]",offsetof([[recordName]], [[fieldName]]), [[HDF5Type]]}%;
-		code += %{[[typeName]].insertMember([[params]]);}% + "\n";
-	}
-
-	return code;
-}
 

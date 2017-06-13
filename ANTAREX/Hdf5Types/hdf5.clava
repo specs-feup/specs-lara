@@ -36,7 +36,7 @@
     </entry>
     <entry>
       <string>Clean intermediate files</string>
-      <boolean>false</boolean>
+      <boolean>true</boolean>
     </entry>
     <entry>
       <string>main</string>
@@ -75,7 +75,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>hdf5.lara</file>
+      <file>Hdf5Types.lara</file>
     </entry>
     <entry>
       <string>report</string>
