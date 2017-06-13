@@ -5,8 +5,9 @@
 # Ignore weaved code folders
 **/weaved_code/*
 
-# Ignore clava tester results
+# Ignore automatically created results
 *.csv
+*.xlsx
 
 # Do not include data inputs in the repository,
 # they should be provided in a separate file
