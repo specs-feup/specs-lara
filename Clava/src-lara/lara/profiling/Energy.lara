@@ -1,0 +1,33 @@
+/**
+ * Adds calls to RAPL between a section of code
+ */
+aspectdef MeasureEnergy
+	input $jp, message end
+
+	// Build message
+	if(message === undefined) {
+		message = "took ";
+		
+		if($jp.name != undefined) {
+			message = $jp.name + " " + message;
+		}
+	}
+
+	// Add include
+	$file = $jp.ancestor("file");
+	if($file === undefined) {
+		println("Could not find the corresponding file of the given joinpoint: " + $jp);
+		return;
+	}
+	$file.addInclude("rapl.h", false);
+	
+	select $jp end
+	apply
+		$jp.insert before "rapl_monitor_start();";
+		$jp.insert after "rapl_monitor_report();";
+	end
+	
+	// Get stmt from $jp
+	//$jp.toStmt;
+	
+end
