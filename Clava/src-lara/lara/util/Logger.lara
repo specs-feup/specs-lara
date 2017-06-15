@@ -1,0 +1,75 @@
+/*
+aspectdef NewLogger
+	input isGlobal=false, filename end
+	output logger end
+	
+	// Create logger
+	logger = new Logger(isGlobal, filename);
+
+
+end
+*/
+aspectdef LoggerInsert
+	input $jp, code, insertBefore=false end
+	
+	select $jp end
+	apply
+		if(insertBefore) {
+			$jp.insert before code;
+		} else {
+			$jp.insert after code;
+		}
+	end
+	
+end
+
+function Logger(isGlobal, filename) {
+  this.isGlobal = isGlobal === undefined ? false : isGlobal;
+  this.filename = filename;
+  this.isGlobalFn = isGlobalFn;
+  this.add = add;
+  this.addDouble = addDouble;
+  this.log = log;
+  
+  this.currentElements = [];
+}
+
+
+function isGlobalFn() {  
+    println("Is Global Fn:" + this.isGlobal);
+}
+
+function add(message) {
+	this.currentElements.push("\"" + message + "\"");
+	return this;
+}
+
+function addDouble(expr) {
+	this.currentElements.push(expr);
+	return this;
+}
+
+function log($jp, insertBefore) {
+	if(insertBefore === undefined) {
+		insertBefore = false;
+	}
+	
+	if(this.currentElements.length === 0) {
+		println("[Logger] Nothing to log, call add() first");
+		return;
+	}
+	
+	// Create code from elements
+	var code = "logger.msg(" + this.currentElements.join(" ,") + ");";
+	println("Code:" + code);
+	
+	//call LoggerInsert($jp, code, insertBefore);
+	$jp.exec insertAfter(code);
+	
+	
+	
+	// Clear internal state
+	this.currentElements = [];
+}
+
+

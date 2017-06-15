@@ -1,9 +1,17 @@
+import lara.util.Logger;
+
 /**
  * Adds calls to RAPL between a section of code
  */
 aspectdef MeasureEnergy
 	input $jp, message end
 
+	//call loggerOut : NewLogger();
+	//var logger = loggerOut.logger;
+
+	var logger = new Logger();
+
+	
 	// Build message
 	if(message === undefined) {
 		message = "took ";
@@ -24,7 +32,17 @@ aspectdef MeasureEnergy
 	select $jp end
 	apply
 		$jp.insert before "rapl_monitor_start();";
-		$jp.insert after "rapl_monitor_report();";
+		
+		var energyVar = "energy"; // + "_" + nextId(); Needs a way to have a "unique id" (global counter?)
+		$raplResult = AstFactory.exprLiteral("rapl_monitor_report()");
+		$raplResultDecl = AstFactory.varDecl(energyVar, $raplResult);
+		
+		// Build message
+		logger.add("Energy: ").addDouble(energyVar).add("J");
+				
+		$jp.exec insertAfter($raplResultDecl);
+		logger.log($raplResultDecl);
+		
 	end
 	
 	// Get stmt from $jp
