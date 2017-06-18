@@ -14,7 +14,7 @@ aspectdef MeasureEnergy
 	
 	// Build message
 	if(message === undefined) {
-		message = "took ";
+		message = "spent ";
 		
 		if($jp.name != undefined) {
 			message = $jp.name + " " + message;
@@ -38,7 +38,7 @@ aspectdef MeasureEnergy
 		$raplResultDecl = AstFactory.varDecl(energyVar, $raplResult);
 		
 		// Build message
-		logger.add("Energy: ").addDouble(energyVar).add("J");
+		logger.add(message).addDouble(energyVar).add("J");
 				
 		$jp.exec insertAfter($raplResultDecl);
 		logger.log($raplResultDecl);
