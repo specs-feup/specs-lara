@@ -1,0 +1,13 @@
+import lara.util.Logger;
+
+aspectdef LoggerExample
+
+	var logger = new Logger();
+
+    select file.stmt.call end
+    apply
+        logger.append("Print double ").appendDouble(2).append(" after " + $call.name);
+        logger.log($call);
+    end
+
+end
