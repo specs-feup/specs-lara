@@ -19,21 +19,18 @@ import org.lara.interpreter.weaver.utils.LaraResourceProvider;
  * @author Joao Bispo
  *
  */
-public enum ClavaAntarexApiResource implements LaraResourceProvider {
-    TEST("Test.lara");
+public enum JsAntarexApiResource implements LaraResourceProvider {
+    TEST("AntarexTest.js");
 
     private final String resource;
 
-    private static final String WEAVER_PACKAGE = "clava/";
-    // This is the prefix that will appear in the LARA import, WEAVER_PACKAGE will be ignored
-    // E.g., import antarex.Test;
-    private static final String BASE_PACKAGE = "antarex/";
+    private static final String BASE_PACKAGE = "clava/antarex/";
 
     /**
      * @param resource
      */
-    private ClavaAntarexApiResource(String resource) {
-        this.resource = WEAVER_PACKAGE + getSeparatorChar() + BASE_PACKAGE + resource;
+    private JsAntarexApiResource(String resource) {
+        this.resource = BASE_PACKAGE + resource;
     }
 
     /* (non-Javadoc)
