@@ -1,4 +1,4 @@
-aspectdef Launcher
+aspectdef MargotExampleLauncher
 
 	println("mARGOt library testing");
 	
