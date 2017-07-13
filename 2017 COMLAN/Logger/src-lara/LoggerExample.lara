@@ -1,13 +1,29 @@
 import lara.util.Logger;
+//import clava.Clava;
+
 
 aspectdef LoggerExample
 
-	var logger = new Logger();
-
-    select file.stmt.call end
+	// Disable SpecsLogger, in order to be able to compile weaved code without the project
+	//Clava.useSpecsLogger = false;
+	
+	var loggerConsole = new Logger();
+	var loggerFile = new Logger(false, "log.txt");
+	
+	
+    select file.call end
     apply
-        logger.append("Print double ").appendDouble(2).append(" after " + $call.name);
-        logger.log($call);
+        loggerConsole.append("Print double ").appendDouble(2).append(" after " + $call.name).ln();
+        loggerConsole.log($call, true);
+		
+		loggerConsole.append("Printing again").ln();
+		loggerConsole.log($call);
+		
+		loggerFile.append("Logging to a file").ln();
+		loggerFile.log($call, true);
+		
+		loggerFile.append("Logging again to a file").ln();
+		loggerFile.log($call);
     end
 
 end
