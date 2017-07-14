@@ -1,11 +1,7 @@
-import lara.util.Logger;
-//import clava.Clava;
+import lara.code.Logger;
 
 
 aspectdef LoggerExample
-
-	// Disable SpecsLogger, in order to be able to compile weaved code without the project
-	//Clava.useSpecsLogger = false;
 	
 	var loggerConsole = new Logger();
 	var loggerFile = new Logger(false, "log.txt");
