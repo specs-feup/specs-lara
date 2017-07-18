@@ -1,5 +1,5 @@
-import antarex.MargotConfigImports.MargotEnergyMonitor;
-import antarex.MargotConfigImports.MargotTimeMonitor;
+import antarex.margot.MargotConfigImports.MargotEnergyMonitor;
+import antarex.margot.MargotConfigImports.MargotTimeMonitor;
 
 /**
  * This class represents the base monitor that is 'implemented' by all monitors.
