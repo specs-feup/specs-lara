@@ -45,7 +45,8 @@ MargotConfig.prototype.build = function(filepath) {
     code += '</margot>';
 
     if(filepath !== undefined) {
-        println('writing config to ' + filepath);
+        println('Writing configuration to ' + filepath);
+        writeFile(filepath, code);
     }
 
     return code;
