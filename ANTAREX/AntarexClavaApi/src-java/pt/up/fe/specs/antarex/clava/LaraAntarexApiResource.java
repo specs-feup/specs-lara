@@ -21,7 +21,14 @@ import org.lara.interpreter.weaver.utils.LaraResourceProvider;
  */
 public enum LaraAntarexApiResource implements LaraResourceProvider {
     TEST("Test.lara"),
-    MARGOT("Margot.lara");
+    MARGOT("Margot.lara"),
+    // MargotConfig and all the sub files that are imported by MargotConfig
+    MARGOT_CONFIG("MargotConfig.lara"),
+    MARGOT_CONFIG_BLOCK("MargotConfigImports/MargotBlock.lara"),
+    MARGOT_CONFIG_MONITOR("MargotConfigImports/MargotMonitor.lara"),
+    MARGOT_CONFIG_ENERGY_MONITOR("MargotConfigImports/MargotEnergyMonitor.lara"),
+    MARGOT_CONFIG_TIME_MONITOR("MargotConfigImports/MargotTimeMonitor.lara"),
+    MARGOT_CONFIG_STATE("MargotConfigImports/MargotState.lara");
 
     private final String resource;
 
