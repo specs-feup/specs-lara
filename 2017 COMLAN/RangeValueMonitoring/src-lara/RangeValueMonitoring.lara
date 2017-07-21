@@ -12,21 +12,39 @@ aspectdef RangeValuesMonitoring
 	var vars = new LaraObject();
 	select function{funcName}.expr end
 	apply
-	    if($expr.name !== null && $expr.name !== undefined && $expr.use !== "read"){
-	        println($expr.line + " - " + $expr.name + " - " 
-	        + $expr.use + " - " + $expr.code + " - " + $expr.joinPointType);
-	        
-	        var id = undefined;
-	        if($expr.instanceOf("memberAccess")){
-	            id = vars.getId(funcName, $expr.code);
-	            //id = vars.getId(funcName, $expr.chain.join("."));
-	        } else {
-	            id = vars.getId(funcName, $expr.name);
-	        }
-    		
-	        insert before '/* monitoring [[$expr.code]] */';
-			insert after 'range_update([[id]], [[$expr.code]]);';
-	    }
+		// TODO: In the future, LARA Interpreter/Weaver Generator will be modified to only return 'undefined' and not null
+	    if($expr.name === null || $expr.name === undefined) {
+			continue;
+		}
+
+		// Monitor only writes
+		if($expr.use === "read") {
+			continue;
+		}
+		
+
+        println($expr.line + " - " + $expr.name + " - " 
+        + $expr.use + " - " + $expr.code + " - " + $expr.joinPointType);
+        
+        var id = undefined;
+        if($expr.instanceOf("memberAccess")){
+			// Use chain to identify member access
+			var memberAccessChain = $expr.chain;
+			
+			// If no chain, warn that value could not be monitored
+            if(memberAccessChain.lenght === 0) {
+				println("RangeValuesMonitoring: Could not determine member access chain of expression " + $expr.name +" at line " + $expr.line);
+				continue;
+			}
+			
+			id = vars.getId(funcName, memberAccessChain.join("."));
+        } else {
+            id = vars.getId(funcName, $expr.name);
+        }
+   		
+        insert before '/* monitoring [[$expr.code]] */';
+		insert after 'range_update([[id]], [[$expr.code]]);';
+	    
 	end
 	condition
 		!$expr.isInsideLoopHeader
