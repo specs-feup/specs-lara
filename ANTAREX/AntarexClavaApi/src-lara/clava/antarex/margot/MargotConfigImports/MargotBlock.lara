@@ -1,0 +1,193 @@
+/**
+ * This holds information about a mARGOt configuration block.
+ * */
+function MargotBlock(name) {
+    
+    this._name = name;
+    this._knobs = [];
+    this._goals = [];
+    this._monitors = [];
+    this._states = [];
+}
+
+/**
+ * Adds a knob to the block with the given data.
+ * */
+MargotBlock.prototype.addKnob = function(name, varName, varType) {
+    
+    if(name === undefined || varName === undefined || varType === undefined) {
+        
+        throw 'To define a knob you need a name, a variable name and a variable type.';
+    }
+    
+    this._knobs.push({name: name, varName: varName, varType: varType});
+};
+
+/**
+ * Adds a goal to the block with the given data.
+ * */
+MargotBlock.prototype.addGoal = function(name, monitorName, dFun, cFun, value) {
+    
+    for(var arg of arguments) {
+        
+        if(arg === undefined) {
+            throw 'To define a goal you need a name, a monitor name, a dFun, a cFun and a value.';
+        }
+    }
+    
+    this._goals.push({name: name, monitorName: monitorName, dFun: dFun, cFun: cFun, value: value});
+};
+
+/**
+ * Enums for the function definitions of goal in mARGOt.
+ * */
+var MargotDFun = new Enumeration('AVERAGE');
+var MargotCFun = new Enumeration({LESS_THAN: 'LT'});
+
+/**
+ * Adds a monitor to the block.
+ * */
+MargotBlock.prototype.addMonitor = function(monitor) {
+    
+    this._monitors.push(monitor);
+}
+
+/**
+* Builds an energy monitor, adds it to the list of monitors, and returns it.
+* */
+MargotBlock.prototype.newEnergyMonitor = function(name) {
+    var em = new EnergyMonitor(name);
+    this._monitors.push(em);
+    return em;
+}
+
+/**
+* Builds a time monitor, adds it to the list of monitors, and returns it.
+* */
+MargotBlock.prototype.newTimeMonitor = function(name) {
+    var tm = new TimeMonitor(name);
+    this._monitors.push(tm);
+    return tm;
+}
+
+/**
+ * Adds a state to the list of states.
+ * */
+MargotBlock.prototype.addState = function (state) {
+    
+    this._states.push(state);
+}
+
+/**
+* Builds a state, adds it to the list of states, and returns it.
+* */
+MargotBlock.prototype.newState = function(name) {
+    var s = new MargotState(name);
+    this._states.push(s);
+    return s;
+}
+
+/*
+ * CODE GENERATION
+ * ****************************************************************************/
+
+/**
+ * Generates code for the entire block.
+ * */
+MargotBlock.prototype._makeCode = function() {
+    
+    var code = '<block name="' + this._name + '">\n';
+    
+    code += this._makeMonitorsCode();
+    code += this._makeGoalsCode();
+    code += this._makeKnobsCode();
+    code += this._makeStatesCode();
+    
+    code += '</block>\n';
+    
+    return code;
+}
+
+/**
+* Generates the code of the monitors.
+* */
+MargotBlock.prototype._makeMonitorsCode = function() {
+    
+    var code = '<!-- MONITOR SECTION -->\n';
+    
+    for (var monitor of this._monitors) {
+    
+        code += monitor._makeCode();
+    }
+    
+    return code;
+}
+
+/**
+* Generates the code of the goals.
+* */
+MargotBlock.prototype._makeGoalsCode = function() {
+    
+    var code = '<!-- GOAL SECTION -->\n';
+    
+    for (var goal of this._goals) {
+    
+        code += _GoalTemplate(goal.name,
+                                goal.monitorName,
+                                goal.dFun,
+                                goal.cFun,
+                                goal.value);
+    }
+    
+    return code;
+}
+
+/**
+* Generates the code of the software knobs.
+* */
+MargotBlock.prototype._makeKnobsCode = function() {
+    
+    var code = '<!-- SW-KNOB SECTION -->\n';
+    
+    for (var knob of this._knobs) {
+    
+        code += _KnobTemplate(knob.name, knob.varName, knob.varType);
+    }
+    
+    return code;
+}
+
+/**
+* Generates the code of the states.
+* */
+MargotBlock.prototype._makeStatesCode = function() {
+    
+    var code = '<!-- OPTIMIZATION SECTION -->\n';
+    
+    for (var state of this._states) {
+    
+        code += state._makeCode();
+    }
+    
+    return code;
+}
+
+/*
+ * TEMPLATES
+ * ****************************************************************************/
+
+/**
+ * Template used for the generation of the XML code for knobs.
+ * */
+codedef _KnobTemplate(param1, param2, param3) %{
+<knob name="[[param1]]" var_name="[[param2]]" var_type="[[param3]]"/> 
+}%
+end
+
+/**
+ * Template used for the generation of the XML code for goals.
+ * */
+codedef _GoalTemplate(param1, param2, param3, param4, param5) %{
+<goal name="[[param1]]" monitor="[[param2]]" dFun="[[param3]]" cFun="[[param4]]" value="[[param5]]"/> 
+}%
+end

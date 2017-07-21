@@ -1,0 +1,81 @@
+import antarex.margot.MargotConfigImports.MargotEnergyMonitor;
+import antarex.margot.MargotConfigImports.MargotTimeMonitor;
+
+/**
+ * This class represents the base monitor that is 'implemented' by all monitors.
+ * 
+ * Each class that 'extends' _MargotMonitor needs to have a public method
+ * expose(), in order to expose variables, and a private method _makeCode(), in
+ * order to generate its code.
+ * */
+ function _MargotMonitor(name) {
+     
+     this._name = name;
+     
+     this._exposes = [];
+ }
+ 
+/**
+* Enum to represent what can be exposed in monitors.
+* */
+var MargotExpose = new Enumeration('AVERAGE');
+ 
+ /**
+  * Add a variable to expose in the monitor.
+  * */
+ _MargotMonitor.prototype._expose = function(varName, what) {
+    
+    this._exposes.push({varName: varName, what: what});
+ }
+
+/*
+ * CODE GENERATION
+ * ****************************************************************************/
+
+ /**
+  * Generates the code for the monitor.
+  * */
+ _MargotMonitor.prototype._makeCode = function(type, additionalCode) {
+    
+    var exposesCode = this._makeExposesCode();
+    
+    return _MonitorTemplate(this._name, type, exposesCode, additionalCode);
+ }
+
+ /**
+  * Generates the code for the expose list.
+  * */
+ _MargotMonitor.prototype._makeExposesCode = function() {
+    
+    var code = '';
+    
+    for (var expose of this._exposes) {
+    
+        code += _ExposeTemplate(expose.varName, expose.what);
+    }
+    
+    return code;
+ }
+
+/*
+ * TEMPLATES
+ * ****************************************************************************/
+
+/**
+ * Template used for the generation of the XML code for monitors.
+ * */
+codedef _MonitorTemplate(name, type, exposesCode, additionalCode) %{
+<monitor name="[[name]]" type="[[type]]"> 
+[[additionalCode]]
+[[exposesCode]]
+</monitor>
+}%
+end
+
+/**
+ * Template used for the generation of the XML code for exposes.
+ * */
+codedef _ExposeTemplate(param1, param2) %{
+<expose var_name="[[param1]]" what="[[param2]]"/> 
+}%
+end

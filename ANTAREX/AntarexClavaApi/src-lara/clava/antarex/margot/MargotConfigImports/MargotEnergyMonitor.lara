@@ -1,0 +1,26 @@
+/**
+ * This class represents an energy monitor.
+ * */
+function EnergyMonitor(name) {
+    
+    this._base = new _MargotMonitor(name);
+}
+
+/**
+ * Adds a variable to expose in the energy monitor.
+ * */
+EnergyMonitor.prototype.expose = function(varName, what) {
+    this._base._expose(varName, what);
+}
+
+/*
+ * CODE GENERATION
+ * ****************************************************************************/
+
+/**
+ * Makes the code of the energy monitor using the base monitor.
+ * */
+EnergyMonitor.prototype._makeCode = function() {
+    
+    return this._base._makeCode('energy', '');
+}

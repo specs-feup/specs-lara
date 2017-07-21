@@ -1,0 +1,136 @@
+/**
+ * This class represents an optimization state of the autotuner execution.
+ * */
+function MargotState(name, starting) {
+    
+    this._name = name;
+    
+    this._starting = starting;
+    if(this._starting === undefined) {
+        this._starting = false;
+    }
+    
+    this._subjects = [];
+    
+    this._minimizes = [];
+    this._maximizes = [];
+}
+
+/**
+ * Enum for the possible combination of the optimizations.
+ * */
+var MargotCombination = new Enumeration('LINEAR');
+
+/**
+ * Sets whether this is the starting state or not.
+ * */
+MargotState.prototype.setStarting = function(starting) {
+    
+    this._starting = starting;
+    if(this._starting === undefined) {
+        this._starting = true;
+    }
+}
+
+/**
+ * Adds a constraint to the state.
+ * */
+MargotState.prototype.subjectTo = function(goalName, metricName, priority) {
+    
+    this._subjects.push({goalName: goalName, metricName: metricName, priority: priority});
+}
+
+/**
+ * Adds a metric for the optimization to minimize.
+ * */
+MargotState.prototype.minimize = function(metricName, combination, coefficient) {
+    
+    this._minimizes.push({metricName: metricName, combination: combination, coefficient: coefficient});
+}
+
+/**
+ * Adds a metric for the optimization to maximize.
+ * */
+MargotState.prototype.maximize = function(metricName, combination, coefficient) {
+    
+    this._maximizes.push({metricName: metricName, combination: combination, coefficient: coefficient});
+}
+
+/*
+ * CODE GENERATION
+ * ****************************************************************************/
+
+/**
+ * Makes the code for the state.
+ * */
+MargotState.prototype._makeCode = function () {
+    
+    var minimizesCode = this._makeMinMaxCode('minimize', this._minimizes);
+    var maximizesCode = this._makeMinMaxCode('maximize', this._maximizes);
+    var subjectCode = this._makeSubjectsCode();
+    
+    return _StateTemplate(this._name, this._starting, minimizesCode, maximizesCode, subjectCode);
+}
+
+/**
+ * Makes the code for the minimizes and maximizes lists.
+ * */
+MargotState.prototype._makeMinMaxCode = function(kind, list) {
+    
+    var code = '';
+    
+    for(var element of list) {
+        code += _MinMaxTemplate(kind, element.metricName, element.combination, element.coefficient);
+    }
+    
+    return code;
+}
+
+/**
+ * Makes the code for the constraints of a state.
+ * */
+MargotState.prototype._makeSubjectsCode = function () {
+    
+    var code = '';
+    
+    for(var subject of this._subjects) {
+        
+        code += _SubjectTemplate(subject.goalName, subject.metricName, subject.priority);
+    }
+    
+    return code;
+}
+
+/*
+ * TEMPLATES
+ * ****************************************************************************/
+
+/**
+ * Template for the state XML code.
+ * */
+ codedef _StateTemplate(name, starting, minimizesCode, maximizesCode, subjectCode) %{
+<state name="[[name]]" starting="[[starting]]">    
+[[minimizesCode]]
+[[maximizesCode]]
+[[subjectCode]]  
+</state> 
+}%
+end
+
+/**
+ * Template for the minimizes and maximizes XML code.
+ * */
+ codedef _MinMaxTemplate(kind, metricName, combination, coefficient) %{
+<[[kind]] combination="[[combination]]">    
+<metric name="[[metricName]]" coef="[[coefficient]]"/>    
+</[[kind]]>
+}%
+end
+
+/**
+ * Template for the constraint XML code.
+ * */
+ codedef _SubjectTemplate(goalName, metricName, priority) %{
+<subject to="[[goalName]]" metric_name="[[metricName]]" priority="[[priority]]" />
+}%
+end
