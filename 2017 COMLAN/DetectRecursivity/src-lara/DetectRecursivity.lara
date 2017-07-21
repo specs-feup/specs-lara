@@ -1,0 +1,26 @@
+aspectdef Recursivity
+	//lib source: https://github.com/cpettitt/graphlib/wiki/API-Reference#alg-components
+    load("http://www.samsarin.com/project/graphlib/latest/graphlib.min.js");
+    
+    var g = new graphlib.Graph({ multigraph: true });
+    
+    select function.call end
+    apply
+        //println("line: " + $call.line + ", callee: " + $call.name + ", caller: " + $function.name);
+        g.setEdge($function.name, $call.name, "line: " + $call.line);
+    end
+    
+	println("Number of nodes: " + g.nodes().length);
+    println("NODES: " + g.nodes() + "\n");
+	
+	if(graphlib.alg.isAcyclic(g)){
+		println("This source code has no recursivity");
+	}else{
+		cycles = graphlib.alg.findCycles(g);
+		println("Recursivity detected ("+cycles.length+" cycles)");
+		for(var i = 0; i < cycles.length; i++){
+			println("Cycle " + (i+1) + ": [" + cycles[i].reverse().join("->") + "] level " + cycles[i].length);
+		}
+	}
+    println("----------------DONE----------------");
+end

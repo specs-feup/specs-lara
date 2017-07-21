@@ -1,0 +1,110 @@
+aspectdef RangeValuesMonitoring
+
+	input
+		funcName = 'analyse'
+	end
+
+	/* Deal with struct assignments */
+	//call PrepareStructs(funcName);
+
+
+	/* Instrument the assignments */
+	var vars = new LaraObject();
+	select function{funcName}.expr end
+	apply
+	    if($expr.name !== null && $expr.name !== undefined && $expr.use !== "read"){
+	        println($expr.line + " - " + $expr.name + " - " 
+	        + $expr.use + " - " + $expr.code + " - " + $expr.joinPointType);
+	        
+	        var id = undefined;
+	        if($expr.instanceOf("memberAccess")){
+	            id = vars.getId(funcName, $expr.code);
+	            //id = vars.getId(funcName, $expr.chain.join("."));
+	        } else {
+	            id = vars.getId(funcName, $expr.name);
+	        }
+    		
+	        insert before '/* monitoring [[$expr.code]] */';
+			insert after 'range_update([[id]], [[$expr.code]]);';
+	    }
+	end
+	condition
+		!$expr.isInsideLoopHeader
+	end
+	
+
+	/* Setup the monitor */
+	call PrepareRangeMonitor(vars);
+	
+	println('\nRangeValuesMonitoring done!');
+end
+
+aspectdef PrepareRangeMonitor
+
+	input
+		vars
+	end
+
+	var total = vars.getTotal();
+
+	/* Add a declaration to every file and definition on main */
+	select file.function end
+	apply
+		if($file.hasMain) 
+			insert before 'double range_min[ [[total]] ] = {0};\ndouble range_max[ [[total]] ] = {0};';
+		else {
+			insert before 'void range_update( unsigned int id, double value );';
+			insert before 'extern double range_min[ [[total]] ]; extern double range_max[ [[total]] ];';
+		}
+		break; // breaks after first function
+	end
+
+
+	/* The code for the printing function */
+	var print_code = '';
+	for(f in vars) {
+		
+		print_code += 'printf("' + f + '\\n");\n';
+		for(v in vars[f]) {
+
+			id = vars[f][v];
+			print_code += 'printf("\\t' + v + ': {%f, %f}\\n", range_min[' + id + '], range_max[' + id + ']);\n';
+		}
+	}
+
+	/* Define the range supporting functions */
+	select function{'main'} end
+	apply
+		insert before %{
+
+void range_init() {
+
+	unsigned int i;
+	for(i=0; i < [[total]]; i++) {
+
+		range_min[i] = 1.0/0.0;
+		range_max[i] = -1.0/0.0;
+	}
+}
+
+void range_update(unsigned int id, double value) {
+
+	if(value < range_min[id]) range_min[id] = value;
+	if(value > range_max[id]) range_max[id] = value;
+}
+
+void print_ranges() {
+	[[print_code]]
+}
+		}%;
+	end
+
+	/* Register the printing function */
+	select function{'main'}.body end
+	apply
+		$body.exec insertBegin('range_init();');
+		$body.exec insertBegin('atexit(print_ranges);');
+	end
+	// */
+end
+
