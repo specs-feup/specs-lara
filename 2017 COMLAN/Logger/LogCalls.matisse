@@ -15,7 +15,7 @@
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>src-matlab</file>
+          <file>src\matlab</file>
         </fileList>
       </FileList>
     </entry>
@@ -59,11 +59,11 @@
     </entry>
     <entry>
       <string>output</string>
-      <file>matlab\weaved_code</file>
+      <file>src-weaved\matlab</file>
     </entry>
     <entry>
       <string>aspect</string>
-      <file>src-lara\LoggerExample.lara</file>
+      <file>lara\LogCalls.lara</file>
     </entry>
     <entry>
       <string>report</string>

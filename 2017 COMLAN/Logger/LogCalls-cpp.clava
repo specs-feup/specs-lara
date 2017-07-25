@@ -11,7 +11,7 @@
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>src-cpp</file>
+          <file>src\cpp</file>
         </fileList>
       </FileList>
     </entry>
@@ -29,9 +29,7 @@
     <entry>
       <string>library includes</string>
       <FileList>
-        <fileList>
-          <file>..\..\..\specs-lara-core\Lara\src-lara-base</file>
-        </fileList>
+        <fileList/>
       </FileList>
     </entry>
     <entry>
@@ -67,7 +65,11 @@
     </entry>
     <entry>
       <string>output</string>
-      <file>src-cpp</file>
+      <file>src-weaved</file>
+    </entry>
+    <entry>
+      <string>Weaved code foldername</string>
+      <string>cpp</string>
     </entry>
     <entry>
       <string>Compiler Flags</string>
@@ -79,7 +81,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>src-lara\LoggerExample.lara</file>
+      <file>lara\LogCalls.lara</file>
     </entry>
     <entry>
       <string>report</string>
