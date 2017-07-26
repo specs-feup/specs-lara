@@ -1,0 +1,96 @@
+import DynamicCallGraphBase;
+
+/**
+ * Inserts code for recording a pair function - call to the call graph
+ */
+DynamicCallGraph.prototype.add = function($call) {
+
+	// Add global to the function of the call
+	$function = $call.ancestor("function");
+	if(isUndefined($function)) {
+		println("Could not add call at line " + $call.line + ", it is not inside a function");
+		return;
+	}
+	
+	// Add global
+	$function.addGlobal(this._getGraphId());
+
+	var id = this._getMatlabId($function.name, $call.name);
+
+	$call.insert after callInc(this._getGraphId(), id);
+/*
+	var id = this._getId($function.name, $call.name);
+	$call.insert after 'call_graph[[[id]]]++;';
+	*/
+}
+
+DynamicCallGraph.prototype._getMatlabId = function(caller, callee) {
+	var id = this._getId(caller, callee);
+	
+	// Id should start at 1	
+	return Number(id) + 1;
+}
+
+
+codedef callInc(varName, id) %{
+	if(numel([[varName]]) < [[id]]); [[varName]]([[id]]) = 1; else; [[varName]]([[id]]) = [[varName]]([[id]]) + 1; end
+}% end
+
+DynamicCallGraph.prototype.print = function($callSite) {
+
+	var $function = this._insertionPoint($callSite, "function");
+
+	var connections = "";
+	for (caller in this.laraObj) {
+		for (callee in this.laraObj[caller]) {
+			var id = this.laraObj[caller][callee];
+			
+			// Id should start at 1	
+			id = Number(id) + 1;
+			connections += connectionCode(this._getGraphId(), id, caller, callee);
+		}
+	}
+
+	// Insert printing function after function of the $callSite
+	$function.exec insertAfter(printGraph(this._getGraphId(), this.name, connections));
+
+	
+	var callCode = "dynamicCallGraph";
+	if($callSite.instanceOf("function")) {
+		$callSite.body.exec insertEnd(callCode);
+		return;
+	}
+	
+	$callSite.insert after callCode;
+	
+/*
+	var total = this._getTotalPairs();
+	call DynamicCallGraphSetup(total);
+
+
+	call DynamicCallGraphPrint(this.name, this.laraObj);
+	*/
+}
+
+codedef printGraph(graphVar, graphName, connections) %{
+function dynamicCallGraph
+	global [[graphVar]]
+	
+	fprintf('digraph [[graphName]] {\n');
+		[[connections]]
+		
+	fprintf('}\n');
+
+	% Clear graph
+	[[graphVar]] = [];
+end
+
+}% end
+
+codedef connectionCode(graphVar, id, caller, callee) %{
+if (numel([[graphVar]]) >= [[id]] && [[graphVar]]([[id]]) ~= 0) 
+	fprintf('\t[[caller]] -> [[callee]] [label=\"%d\"];\n', [[graphVar]]([[id]]));
+end
+	
+}% end
+

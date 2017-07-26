@@ -1,7 +1,6 @@
 function foobar()
-    
     foo();
-
+	other();
 end
 
 function a = foo()

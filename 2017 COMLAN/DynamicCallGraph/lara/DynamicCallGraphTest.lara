@@ -1,8 +1,9 @@
 import DynamicCallGraph;
 
-aspectdef DynamicCallGraphTest
-    
-	var dcg = new DynamicCallGraph("CallGraph");
+aspectdef CreateDynamicCallGraph
+		output dcg end
+		
+	dcg = new DynamicCallGraph("CallGraph");
     
 	// Select all calls that come from a function
 	select function.call end
@@ -10,7 +11,29 @@ aspectdef DynamicCallGraphTest
         dcg.add($call);
     end
 
-	// Insert code for printing the dynamic call graph
-    dcg.print();
-
 end
+
+aspectdef DynamicCallGraphClava
+
+	call dcgOut : CreateDynamicCallGraph();
+
+	select function{"main"} end
+	apply
+		// Insert code for printing the dynamic call graph
+		dcgOut.dcg.print($function);
+	end
+	
+end
+
+aspectdef DynamicCallGraphMatisse
+
+	call dcgOut : CreateDynamicCallGraph();
+
+	select function{"foobar"} end
+	apply
+		// Insert code for printing the dynamic call graph
+		dcgOut.dcg.print($function);
+	end
+	
+end
+

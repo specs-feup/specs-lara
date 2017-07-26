@@ -17,7 +17,7 @@ DynamicCallGraph.prototype.add = function($call) {
 /**
  * Inserts the code for printing the dynamic at the end of the given function
  */
-DynamicCallGraph.prototype.print = function() {
+DynamicCallGraph.prototype.print = function($callSite) {
 	throw ("DynamicCallGraph.print: not implemented");
 }
 
@@ -32,3 +32,24 @@ DynamicCallGraph.prototype._getId = function(caller, callee) {
 DynamicCallGraph.prototype._getTotalPairs = function() {
 	return this.laraObj.getTotal();
 }
+
+DynamicCallGraph.prototype._getGraphId = function() {
+	return "dcg_" + this.name;
+}
+
+DynamicCallGraph.prototype._insertionPoint = function($callSite, ancestorName) {
+
+	if($callSite.instanceOf(ancestorName)) {
+		return $callSite;
+	} 
+	
+	var $ancestor = $callSite.ancestor(ancestorName);
+	
+	if(isUndefined($ancestor)) {
+		throw "DynamicCallGraphPrint: Could not insert at joinpoint " + $callSite.joinPointType + ", only supports " + ancestorName + " or joinpoints inside " + ancestorName;
+	}	
+
+	return $ancestor;
+}
+
+
