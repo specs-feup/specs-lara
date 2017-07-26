@@ -1,4 +1,4 @@
-aspectdef DynamicCallGraph
+aspectdef DynamicCallGraphClava
 
 	var obj = new LaraObject();
 
@@ -6,7 +6,7 @@ aspectdef DynamicCallGraph
 	select function.call end
 	apply
 		var id = obj.getId($function.name, $call.name);
-		$call. insert after 'call_graph[[[id]]]++;';
+		$call.insert after 'call_graph[[[id]]]++;';
 	end
 
 

@@ -1,0 +1,34 @@
+/**
+ * Object for building a dynamic call graph.
+ */
+var DynamicCallGraph = function(name) {
+	this.name = name;
+	this.laraObj = new LaraObject();
+	
+};
+
+/**
+ * Inserts code for recording a pair function - call to the call graph. The call must be inside a function.
+ */
+DynamicCallGraph.prototype.add = function($call) {
+	throw ("DynamicCallGraph.add: not implemented");
+}
+
+/**
+ * Inserts the code for printing the dynamic at the end of the given function
+ */
+DynamicCallGraph.prototype.print = function() {
+	throw ("DynamicCallGraph.print: not implemented");
+}
+
+
+/*** IMPLEMENTED METHODS ***/
+
+
+DynamicCallGraph.prototype._getId = function(caller, callee) {
+	return this.laraObj.getId(caller, callee);
+}
+
+DynamicCallGraph.prototype._getTotalPairs = function() {
+	return this.laraObj.getTotal();
+}

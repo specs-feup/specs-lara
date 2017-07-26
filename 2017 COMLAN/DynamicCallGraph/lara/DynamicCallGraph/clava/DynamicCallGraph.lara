@@ -1,0 +1,33 @@
+import DynamicCallGraphBase;
+import DynamicCallGraphAspects;
+
+/**
+ * Inserts code for recording a pair function - call to the call graph
+ */
+DynamicCallGraph.prototype.add = function($call) {
+
+	// Check if call has a function
+	$function = $call.ancestor("function");
+	if(isUndefined($function)) {
+		println("Could not add call at line " + $call.line + ", it is not inside a function");
+		return;
+	}
+
+	var id = this._getId($function.name, $call.name);
+	$call.insert after 'call_graph[[[id]]]++;';
+}
+
+
+
+DynamicCallGraph.prototype.print = function() {
+
+	/* Declare the array in each file */
+	var total = this._getTotalPairs();
+	call DynamicCallGraphSetup(total);
+
+	/* Print the array at the end of the main function */
+	call DynamicCallGraphPrint(this.name, this.laraObj);
+}
+
+
+

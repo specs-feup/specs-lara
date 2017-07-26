@@ -1,0 +1,46 @@
+/**
+ * Declare the array in each file
+ */
+aspectdef DynamicCallGraphSetup
+	input total end
+
+	select file.function end
+	apply
+		if($file.hasMain) {
+			insert before 'int call_graph[[[total]]] = {0};';
+		} else {
+			insert before 'extern int call_graph[[[total]]];';
+		}
+		// ? What break does in apply ?
+		break;
+	end
+
+end
+
+/**
+ * Print the array at the end of the main function
+ */
+aspectdef DynamicCallGraphPrint
+	input graphName, laraObj end
+	
+	select file.function{"main"} end
+	apply
+		$file.exec addInclude("stdio.h", true);
+		
+		$function.exec insertReturn('printf("digraph ' + graphName + ' {\\n");');
+
+		for (caller in laraObj) {
+			for (callee in laraObj[caller]) {
+				var id = laraObj[caller][callee];
+				$function.exec insertReturn(graphvizConnections(id, caller, callee));
+			}
+		}
+		$function.exec insertReturn(%{printf("}\n");}%);
+	end
+end
+
+codedef graphvizConnections(id, caller, callee) %{
+	if (call_graph[ [[id]] ] != 0) {
+		printf("\t[[caller]] -> [[callee]] [label=\"%d\"];\n", call_graph[[[id]]]);
+	}
+}% end
