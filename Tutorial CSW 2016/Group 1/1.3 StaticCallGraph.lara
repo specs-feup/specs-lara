@@ -12,7 +12,7 @@ aspectdef StaticCallGraph
 
 	/* Print the gathered information to the console. */
 	println('digraph static_call_graph {\n');
-	for (f in callGraph) {
+	for (f in callGraph) { 
 	
 		for (c in callGraph[f]) {
 		
