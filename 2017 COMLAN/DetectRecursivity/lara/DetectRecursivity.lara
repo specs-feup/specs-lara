@@ -7,19 +7,21 @@ aspectdef Recursivity
     select function.call end
     apply
         //println("line: " + $call.line + ", callee: " + $call.name + ", caller: " + $function.name);
-        g.setEdge($function.name, $call.name, "line: " + $call.line);
+        //g.setEdge($function.name, $call.name, "line: " + $call.line);
+		g.setEdge($function.name, $call.name, "");
     end
     
 	println("Number of nodes: " + g.nodes().length);
     println("NODES: " + g.nodes() + "\n");
-	
+
+
 	if(graphlib.alg.isAcyclic(g)){
 		println("This source code has no recursivity");
 	}else{
 		cycles = graphlib.alg.findCycles(g);
 		println("Recursivity detected ("+cycles.length+" cycles)");
 		for(var i = 0; i < cycles.length; i++){
-			println("Cycle " + (i+1) + ": [" + cycles[i].reverse().join("->") + "] level " + cycles[i].length);
+			println("Cycle " + (i+1) + ": [" + cycles[i].reverse().join("->") + "->" + cycles[i][0] + "] level " + cycles[i].length);
 		}
 	}
     println("----------------DONE----------------");
