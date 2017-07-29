@@ -1,0 +1,14 @@
+import lara.code.Energy;
+
+aspectdef InstrumentCode
+	
+	// Instrument call
+	var energy = new Energy();
+
+	select function.call end
+	apply
+		energy.measure($call, "Energy:");
+	end
+	
+	
+end
