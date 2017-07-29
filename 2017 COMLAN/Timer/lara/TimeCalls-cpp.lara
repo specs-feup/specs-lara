@@ -1,0 +1,28 @@
+import lara.code.Timer;
+
+aspectdef TimeCalls
+	
+	
+	var idCounter = 0;
+	var std_chrono_units="microseconds";
+	
+	select function.call end
+	apply
+		var clava_timing_start = "clava_timing_start_"+idCounter;
+		var clava_timing_end = "clava_timing_end_"+idCounter;
+		var clava_timing_duration = "clava_timing_duration_"+idCounter;
+		idCounter++;
+		
+		$call.insertBefore("std::chrono::high_resolution_clock::time_point "+clava_timing_start+" = std::chrono::high_resolution_clock::now();");
+		
+		
+		
+		$call.insertAfter("std::cout << \"Time:\" << "+clava_timing_duration+" << \""+std_chrono_units+"\" << \"\\n\";");
+		
+		$call.insertAfter("auto "+clava_timing_duration+" = std::chrono::duration_cast<std::chrono::"+std_chrono_units+">("+clava_timing_end+" - clava_timing_start_0).count();");
+		
+		$call.insertAfter("std::chrono::high_resolution_clock::time_point "+clava_timing_end+" = std::chrono::high_resolution_clock::now();");
+	end
+	
+
+end
