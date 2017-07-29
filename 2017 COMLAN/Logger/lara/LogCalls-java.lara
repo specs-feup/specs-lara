@@ -5,11 +5,11 @@ aspectdef LogCalls
     select file.call end
     apply
 		
-	    $call.insertBefore(
+	    $call.insert("before",
 	        "System.out.printf(\"Print double %f after println\\n\", 2.0);\npt.up.fe.specs.util.SpecsIo.append(new java.io.File(\""+filename+"\"), String.format(\"Logging to a file\\n\"));"
 	        );
 						
-	    $call.insertAfter(
+	    $call.insert("after",
 	        "pt.up.fe.specs.util.SpecsIo.append(new java.io.File(\""+filename+"\"), String.format(\"Logging again to a file\\n\"));\nSystem.out.printf(\"Printing again\\n\");"
 	        );
 	    
