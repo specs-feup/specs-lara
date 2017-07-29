@@ -1,0 +1,69 @@
+/**
+ * Gather classes and methods that are part of the application 
+ * and other library classes
+ */
+aspectdef GetClasses
+	output
+		apis = new LaraObject(),
+		classes = new LaraObject()
+	end
+	
+	//Select all methods inside classes
+	select class.method end
+	apply
+		//add it to the 'classes' object
+		classes.push($class.name, $method.name);
+	end
+
+	//Select calls inside methods
+	select class.method.call end
+	apply
+	  //if 'classes' does not contain the class of the called method
+	  if(!($call.declarator in classes)){
+		//then add it as an API
+		apis.set($call.declarator, $call.name, $call.qualifiedDecl);
+	  }
+	end
+end
+
+
+
+
+aspectdef GetGraph
+	input graphVar end
+	output $graph end
+	var className = "kadabra.utils.Graphs";
+	select file.class{className}.field{graphVar} end
+	apply
+		$graph = $field;
+		return;
+	end
+	select file.class{className} end
+	apply
+//		call fieldGetter: GetField($class,graphVar);
+		$class.exec $f: newField(["public","static"], "int[]", graphVar, null);
+		$graph = $f;
+		return;
+	end
+	select app end
+	apply
+		exec $class: newClass(className,null,[]);
+		$class.exec $f: newField(["public","static"], "int[]", graphVar, null);
+		$graph = $f;
+	end
+end
+
+
+/*
+aspectdef GetField
+	input $class,graphVar end
+	output $graph end
+	select $class.field{name==graphVar}end
+	apply
+		$graph = $field;
+		return;
+	end
+	$class.exec $f: newField(["public","static"], "int[]", graphVar, null);
+	$graph = f;
+end
+*/

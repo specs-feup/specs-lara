@@ -6,13 +6,13 @@ aspectdef CreateDynamicCallGraph
 	dcg = new DynamicCallGraph("CallGraph");
     
 	// Select all calls that come from a function
-	select function.call end
+    select function.call end
     apply
         dcg.add($call);
     end
 
 end
-
+	
 aspectdef DynamicCallGraphClava
 
 	call dcgOut : CreateDynamicCallGraph();
@@ -37,3 +37,14 @@ aspectdef DynamicCallGraphMatisse
 	
 end
 
+aspectdef DynamicCallGraphKadabra
+
+	call dcgOut : CreateDynamicCallGraph();
+
+	select method{"main"} end
+	apply
+		// Insert code for printing the dynamic call graph
+		dcgOut.dcg.print($method);
+	end
+	
+end
