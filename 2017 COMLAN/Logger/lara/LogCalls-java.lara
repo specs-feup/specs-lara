@@ -1,11 +1,5 @@
 aspectdef LogCalls	
 
-	select file end
-	apply
-		$file.addInclude("iostream", true);
-		$file.addInclude("fstream", true);
-	end
-	
 	var idCounter = 0;
 	var filename = "log.txt";
     select file.call end
