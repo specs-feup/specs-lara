@@ -1,4 +1,5 @@
 import DynamicCallGraphBase;
+import lara.util.StringSet;
 
 /**
  * Inserts code for recording a pair function - call to the call graph
@@ -24,17 +25,7 @@ DynamicCallGraph.prototype.add = function($call) {
 	*/
 }
 
-DynamicCallGraph.prototype._getMatlabId = function(caller, callee) {
-	var id = this._getId(caller, callee);
-	
-	// Id should start at 1	
-	return Number(id) + 1;
-}
 
-
-codedef callInc(varName, id) %{
-	if(numel([[varName]]) < [[id]]); [[varName]]([[id]]) = 1; else; [[varName]]([[id]]) = [[varName]]([[id]]) + 1; end
-}% end
 
 DynamicCallGraph.prototype.print = function($callSite) {
 
@@ -51,8 +42,15 @@ DynamicCallGraph.prototype.print = function($callSite) {
 		}
 	}
 
-	// Insert printing function after function of the $callSite
-	$function.exec insertAfter(printGraph(this._getGraphId(), this.name, connections));
+	// Insert printing function if it has not been inserted yet
+	$file = $function.chainAncestor('file');
+	if(!this._instrumentedFiles.has($file.absolutePath)) {
+		// Insert printing function after function of the $callSite
+		$function.exec insertAfter(printGraph(this._getGraphId(), this.name, connections));	
+
+		this._instrumentedFiles.add($file.absolutePath);
+	}
+
 
 	
 	var callCode = "dynamicCallGraph";
@@ -71,6 +69,20 @@ DynamicCallGraph.prototype.print = function($callSite) {
 	call DynamicCallGraphPrint(this.name, this.laraObj);
 	*/
 }
+
+DynamicCallGraph.prototype._instrumentedFiles = new StringSet();
+
+DynamicCallGraph.prototype._getMatlabId = function(caller, callee) {
+	var id = this._getId(caller, callee);
+	
+	// Id should start at 1	
+	return Number(id) + 1;
+}
+
+
+codedef callInc(varName, id) %{
+	if(numel([[varName]]) < [[id]]); [[varName]]([[id]]) = 1; else; [[varName]]([[id]]) = [[varName]]([[id]]) + 1; end
+}% end
 
 codedef printGraph(graphVar, graphName, connections) %{
 function dynamicCallGraph
