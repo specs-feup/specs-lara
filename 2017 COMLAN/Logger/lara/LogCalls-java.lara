@@ -1,0 +1,24 @@
+aspectdef LogCalls	
+
+	select file end
+	apply
+		$file.addInclude("iostream", true);
+		$file.addInclude("fstream", true);
+	end
+	
+	var idCounter = 0;
+	var filename = "log.txt";
+    select file.call end
+    apply
+		
+	    $call.insertBefore(
+	        "System.out.printf(\"Print double %f after println\\n\", 2.0);\npt.up.fe.specs.util.SpecsIo.append(new java.io.File(\""+filename+"\"), String.format(\"Logging to a file\\n\"));"
+	        );
+						
+	    $call.insertAfter(
+	        "pt.up.fe.specs.util.SpecsIo.append(new java.io.File(\""+filename+"\"), String.format(\"Logging again to a file\\n\"));\nSystem.out.printf(\"Printing again\\n\");"
+	        );
+	    
+    end
+
+end

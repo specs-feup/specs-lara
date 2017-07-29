@@ -1,0 +1,37 @@
+aspectdef LogCalls	
+
+	select file end
+	apply
+		$file.addInclude("iostream", true);
+		$file.addInclude("fstream", true);
+	end
+	
+	var idCounter = 0;
+	var filename = "log.txt";
+    select file.call end
+    apply
+        var log_file_name = "log_file_"+(idCounter++);
+		$call.ancestor("function").body.insertBefore(
+		    "std::ofstream "+log_file_name+";\n"+
+		    log_file_name+".open(\""
+		    +filename+"\", std::ios_base::app);");
+				
+	    $call.insertBefore(
+	        log_file_name + " << \"Logging to a file\" << \"\\n\";"
+	        );
+			
+	    $call.insertBefore(
+	        "std::cout << \"Print double \" << 2 << \" after "+$call.name +"//+"\" << \"\\n\";"
+	        );
+			
+	    $call.insertAfter(
+	        log_file_name + " << \Logging again to a file\" << \"\\n\";"
+	        );
+		
+	    $call.insertAfter(
+	        "std::cout << \"Printing again\;"
+	        );
+	    
+    end
+
+end
