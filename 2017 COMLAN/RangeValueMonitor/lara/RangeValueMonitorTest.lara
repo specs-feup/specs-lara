@@ -1,0 +1,57 @@
+import RangeValueMonitor;
+
+aspectdef RangeValueMonitorClava
+    var range = new RangeValueMonitor("monitor1");
+    select function.varref end
+    apply
+        range.monitor($function, $varref.name);
+        //range.monitorAll();
+        //range.monitorAll($function);
+    end
+    
+    select file.function{"main"} end
+    apply
+        range.print($function, "ranges_"+$file.name+".txt");
+    end
+end
+
+
+/*
+aspectdef CreateDynamicCallGraph
+		output dcg end
+		
+	dcg = new DynamicCallGraph("CallGraph");
+    
+	// Select all calls that come from a function
+	select function.call end
+    apply
+        dcg.add($call);
+    end
+
+end
+
+aspectdef DynamicCallGraphClava
+
+	call dcgOut : CreateDynamicCallGraph();
+
+	select function{"main"} end
+	apply
+		// Insert code for printing the dynamic call graph
+		dcgOut.dcg.print($function);
+	end
+	
+end
+
+aspectdef DynamicCallGraphMatisse
+
+	call dcgOut : CreateDynamicCallGraph();
+
+	select function{"foobar"} end
+	apply
+		// Insert code for printing the dynamic call graph
+		dcgOut.dcg.print($function);
+	end
+	
+end
+
+*/

@@ -1,0 +1,17 @@
+import RangeValueMonitorBase;
+/*** INTERFACE IMPLEMENTATION ***/
+
+/**
+ * Inserts code for monitoring a variable inside a given function
+ */
+RangeValueMonitor.prototype.monitor = function($function, varName) {
+	println("Monitor");
+}
+
+/**
+ * Inserts the code for printing the dynamic at the end of the given function
+ */
+RangeValueMonitor.prototype.print = function($callSite, filename) {
+	println("Print");
+}
+
