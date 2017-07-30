@@ -15,8 +15,35 @@ RangeValueMonitor.prototype.monitor = function($function, varName) {
 		return;
 	}
 
-	// Monitor variable
-	call RangeValueMonitorInstrumentVars($function, varName, this.name, this.laraObj, this.$monitorH);
+	// Get expressions to monitor
+	call validExprs : RangeValueMonitorValidExprs($function, varName);
+	
+	$file = $function.ancestor('file');
+	for($expr of validExprs.exprs) {
+		var id = undefined;
+        
+		if($expr.instanceOf("memberAccess")){
+		
+			// Use chain to identify member access
+			var memberAccessChain = $expr.chain;
+			
+			// If no chain, warn that value could not be monitored
+            if(memberAccessChain.lenght === 0) {
+				println("RangeValuesMonitoring: Could not determine member access chain of expression " + $expr.name +" at line " + $expr.line);
+				continue;
+			}
+			
+			id = this.laraObj.getId($function.name, memberAccessChain.join("."));
+        } else {
+            id = this.laraObj.getId($function.name, $expr.name);
+        }
+   		
+        $expr.insertBefore(%{/* monitoring [[$expr.code]] */}%);
+		$expr.insertAfter(%{[[this.name]]_range_update([[id]], [[$expr.code]]);}%);
+
+		$file.addIncludeJp(this.$monitorH); 
+	}
+	
 }
 
 /**
@@ -29,11 +56,13 @@ RangeValueMonitor.prototype.print = function($callSite, filename) {
 	var monitorCCode = "";
 
 	/* Add declarations to monitor.h, add definitions to monitor.c */
+	monitorHCode += %{extern "C" {}%;
 	monitorHCode += %{extern double [[this.name]]_range_min[[[total]]];}% + "\n";
 	monitorHCode += %{extern double [[this.name]]_range_max[[[total]]];}% + "\n";
 	monitorHCode += %{void [[this.name]]_range_update(unsigned int id, double value);}% + "\n";
 	monitorHCode += %{void [[this.name]]_range_init();}% + "\n";
 	monitorHCode += %{void [[this.name]]_print_ranges();}% + "\n";
+	monitorHCode += "}";
 	
 	monitorCCode += %{double [[this.name]]_range_min[[[total]]] = {0};}% + "\n";
 	monitorCCode += %{double [[this.name]]_range_max[[[total]]] = {0};}% + "\n";
@@ -51,7 +80,7 @@ RangeValueMonitor.prototype.print = function($callSite, filename) {
 	var printRanges = new Logger(false, filename);
 	for(f in this.laraObj) {	
 		printRanges.append(f).ln().logBefore($printRangesEnd);
-		//print_code += 'printf("' + f + '\\n");\n';
+
 		for(v in this.laraObj[f]) {
 			id = this.laraObj[f][v];
 			var rangeMin = this.name +"_range_min[" + id + "]";
@@ -67,25 +96,6 @@ RangeValueMonitor.prototype.print = function($callSite, filename) {
 
 	// Add call to print
 	$callSite.insertAfter(this.name + "_print_ranges();");
-
-	/* The code for the printing function */
-	
-/* Add a declaration to every file and definition on main */
-/*
-var print_code = '';
-	for(f in vars) {
-		
-		print_code += 'printf("' + f + '\\n");\n';
-		for(v in vars[f]) {
-
-			id = vars[f][v];
-			print_code += 'printf("\\t' + v + ': {%f, %f}\\n", " + monitorName +"_range_min[' + id + '], " + monitorName +  "_range_max[' + id + ']);\n';
-		}
-	}
-	
-	call PrepareRangeMonitor($callSite, filename, this.laraObj, this.name, this.$monitorH, this.$monitorC);
-	*/
-	println("Print");
 }
 
 codedef ClavaRangeMonitorInit(monitorName, total) %{
@@ -119,8 +129,8 @@ RangeValueMonitor.prototype._setup = function() {
 	this.$monitorH = AstFactory.file("range_values_" + this.name+ ".h", baseFolder);
 
 	// Add files to the program
-	call AddFile(this.$monitorC);
-	call AddFile(this.$monitorH);
+	Clava.addFile(this.$monitorC);
+	Clava.addFile(this.$monitorH);
 }
 
 

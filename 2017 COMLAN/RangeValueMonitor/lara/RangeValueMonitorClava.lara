@@ -4,16 +4,12 @@ aspectdef RangeValuesMonitorClava
 		funcName = 'analyse'
 	end
 
-	/* Deal with struct assignments */
-	//call PrepareStructs(funcName);
-
-
 	/* Instrument the assignments */
 	var vars = new LaraObject();
 	select function{funcName}.expr end
 	apply
-		// TODO: In the future, LARA Interpreter/Weaver Generator will be modified to only return 'undefined' and not null
-	    if($expr.name === null || $expr.name === undefined) {
+
+	    if($expr.name === undefined) {
 			continue;
 		}
 
@@ -23,8 +19,8 @@ aspectdef RangeValuesMonitorClava
 		}
 		
 
-        println($expr.line + " - " + $expr.name + " - " 
-        + $expr.use + " - " + $expr.code + " - " + $expr.joinPointType);
+        //println($expr.line + " - " + $expr.name + " - " 
+        //+ $expr.use + " - " + $expr.code + " - " + $expr.joinPointType);
         
         var id = undefined;
         if($expr.instanceOf("memberAccess")){
