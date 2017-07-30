@@ -1,0 +1,125 @@
+import RangeValueMonitorBase;
+import RangeValueMonitorAspects;
+import matisse.Matisse;
+import lara.code.Logger;
+
+
+/*** INTERFACE IMPLEMENTATION ***/
+
+/**
+ * Inserts code for monitoring a variable inside a given function
+ */
+RangeValueMonitor.prototype.monitor = function($function, varName) {
+	
+
+
+	// If already monitored, return
+	if(this._isVarMonitored($function.id, varName)) {
+		return;
+	}
+
+	// Get expressions to monitor
+	call validExprs : RangeValueMonitorValidExprs($function, varName);
+
+	//$file = $function.chainAncestor('file');
+
+	for($var of validExprs.vars) {
+
+          id = this._getMatlabId($function.name, $var.name);
+
+          $var.insertBefore(%{% monitoring [[$var.code]]}%);
+		$var.insertAfter(%{[[this.name]]_range_update([[id]], [[$var.code]]);}%);
+
+	}
+	
+}
+
+/**
+ * Inserts the code for printing the dynamic at the end of the given function
+ */
+RangeValueMonitor.prototype.print = function($callSite, filename) {
+
+	
+	var total = this.laraObj.getTotal();
+
+	// Create monitor functions
+	Matisse.addFile(this.name+"_range_init.m", RangeValueMonitorInit(this.name, total));
+	Matisse.addFile(this.name+"_range_update.m", RangeValueMonitorUpdate(this.name));
+	$printFile = Matisse.addFile(this.name+"_range_print.m", RangeValueMonitorPrint(this.name));
+
+	var $printFunctionLastStmt = $printFile.mainFunctionJp.body.lastStatement;
+
+	var printRanges = new Logger(false, filename);
+	for(f in this.laraObj) {	
+		printRanges.append(f).ln().logBefore($printFunctionLastStmt);
+
+		for(v in this.laraObj[f]) {
+			id = this.laraObj[f][v];
+			var matlabId = Number(id) + 1;
+			var rangeMin = this.name +"_range_min(" + matlabId + ")";
+			var rangeMax = this.name +"_range_max(" + matlabId + ")";
+			printRanges.tab().append(v + ": {").appendDouble(rangeMin)
+			.append(", ").appendDouble(rangeMax).append("}").ln()
+			.logBefore($printFunctionLastStmt);
+		}
+	}
+	
+
+	// Initialize monitor
+	$callSite.insertBegin(this.name + "_range_init();");
+
+	// Add call to print
+	$callSite.insertEnd(this.name + "_range_print();");
+	
+}
+
+RangeValueMonitor.prototype._getMatlabId = function(caller, callee) {
+	var id = this.laraObj.getId(caller, callee);
+	
+	// Id should start at 1	
+	return Number(id) + 1;
+}
+
+codedef RangeValueMonitorInit(monitorName, total) %{
+
+function [[monitorName]]_range_init
+	global [[monitorName]]_range_min [[monitorName]]_range_max
+	
+	for i=1:[[total]]
+		[[monitorName]]_range_min(i) = Inf;
+		[[monitorName]]_range_max(i) = -Inf;
+	end
+	
+	
+end
+
+}% end
+
+codedef RangeValueMonitorUpdate(monitorName) %{
+
+function [[monitorName]]_range_update(index, value)
+	global [[monitorName]]_range_min [[monitorName]]_range_max
+	
+	if(value < [[monitorName]]_range_min(index))
+		[[monitorName]]_range_min(index) = value;
+	end
+
+	if(value > [[monitorName]]_range_max(index))
+		[[monitorName]]_range_max(index) = value;
+	end
+
+end
+
+}% end
+
+
+codedef RangeValueMonitorPrint(monitorName) %{
+
+function monitor1_print_ranges()
+	global [[monitorName]]_range_min [[monitorName]]_range_max
+
+	% End of function
+end
+
+}% end
+

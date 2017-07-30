@@ -11,6 +11,8 @@ function a = foo()
         a = a + bar();
     end
     
+	a = libcall(a);
+	
 end
 
 

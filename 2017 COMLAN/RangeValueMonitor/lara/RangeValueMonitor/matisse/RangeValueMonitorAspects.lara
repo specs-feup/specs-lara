@@ -1,0 +1,28 @@
+aspectdef RangeValueMonitorValidExprs
+	input $function, varName end
+	output vars end
+	
+	vars = [];
+	
+	select $function.var end
+	apply
+
+		// Ignore vars that do not match
+		if($var.name !== varName) {
+			continue;
+		}
+
+		// Monitor only writes
+		if(!$var.isWrite) {
+			continue;
+		}
+
+		// Ignore expressions inside loop headers
+		if($var.isInsideLoopHeader) {
+			continue;
+		}
+
+		vars.push($var);
+	end
+
+end

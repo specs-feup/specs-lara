@@ -90,7 +90,7 @@ RangeValueMonitor.prototype.print = function($callSite, filename) {
 			.logBefore($printRangesEnd);
 		}
 	}
-
+	
 	// Initialize monitor
 	call InitRangeMonitor(this.name, this.$monitorH);
 
