@@ -1,10 +1,18 @@
+import lara.util.StringSet;
+
 /**
  * Object for building a dynamic call graph.
  */
 var RangeValueMonitor = function(name) {
+	if(name === undefined) {
+		throw "RangeValueMonitor.new: name is mandatory";
+	}
+	
 	this.name = name;
 	this.laraObj = new LaraObject();
 	
+	this.monitoredVariables = new StringSet();
+	this._setup();	
 };
 
 /*** INTERFACE ***/
@@ -23,8 +31,28 @@ RangeValueMonitor.prototype.print = function($callSite, filename) {
 	throw ("RangeValueMonitor.print: not implemented");
 }
 
+/** 
+ * Empty setup, that can be reimplemented by the user. It is called at the end of the constructor.
+ */ 
+RangeValueMonitor.prototype._setup = function() {
+}
 
 /*** IMPLEMENTED METHODS ***/
+
+/**
+ * @return true if the variable is already monitored, false if not. After the function executes, the pair function/var is added to the set of monitored variables and subsequent calls will always return true for the same pair.
+ */
+RangeValueMonitor.prototype._isVarMonitored = function(functionId, varId) {
+	var id = functionId + "\n" + varId;
+
+	if(this.monitoredVariables.has(id)) {
+		return true;
+	}
+	
+	this.monitoredVariables.add(id);
+	return false;
+}
+
 
 /*
 DynamicCallGraph.prototype._getId = function(caller, callee) {

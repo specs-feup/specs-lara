@@ -1,6 +1,8 @@
 import RangeValueMonitor;
 
+
 aspectdef RangeValueMonitorClava
+
     var range = new RangeValueMonitor("monitor1");
     select function.varref end
     apply
@@ -11,7 +13,8 @@ aspectdef RangeValueMonitorClava
     
     select file.function{"main"} end
     apply
-        range.print($function, "ranges_"+$file.name+".txt");
+    	//range.print($function);
+        range.print($function.body, "ranges_"+$file.name+".txt");
     end
 end
 

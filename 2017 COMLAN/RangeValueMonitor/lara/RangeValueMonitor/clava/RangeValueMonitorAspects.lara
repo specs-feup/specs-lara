@@ -1,0 +1,146 @@
+aspectdef RangeValueMonitorInstrumentVars
+	input $function, varName, monitorName, laraObj, $fileMonitorH end
+
+	$file = $function.ancestor('file');
+
+	select $function.body.stmt.expr end
+	apply
+		// Ignore expressions without name
+		if($expr.name === undefined) {
+			continue;
+		}
+
+		// Ignore expressions without name
+		if($expr.name !== varName) {
+			continue;
+		}
+
+
+		// Monitor only writes
+		if($expr.use === "read") {
+			continue;
+		}
+
+		// Ignore expressions inside loop headers
+		if($expr.isInsideLoopHeader) {
+			continue;
+		}
+
+		//println($expr.line + " - " + $expr.name + " - " + $expr.use + " - " + $expr.code + " - " + $expr.joinPointType);
+
+		var id = undefined;
+        if($expr.instanceOf("memberAccess")){
+			// Use chain to identify member access
+			var memberAccessChain = $expr.chain;
+			
+			// If no chain, warn that value could not be monitored
+            if(memberAccessChain.lenght === 0) {
+				println("RangeValuesMonitoring: Could not determine member access chain of expression " + $expr.name +" at line " + $expr.line);
+				continue;
+			}
+			
+			id = laraObj.getId($function.name, memberAccessChain.join("."));
+        } else {
+            id = laraObj.getId($function.name, $expr.name);
+        }
+   		
+        	insert before '/* monitoring [[$expr.code]] */';
+		insert after '[[monitorName]]_range_update([[id]], [[$expr.code]]);';
+
+		$file.addIncludeJp($fileMonitorH); 
+		
+	end
+
+end
+
+aspectdef AddFile
+	input $file end
+
+	select program end
+	apply
+		$program.exec addFile($file);
+	end
+
+end
+
+aspectdef PrepareRangeMonitor
+
+	input $callSite, filename, vars, monitorName, $fileMonitorH, $fileMonitorC  end
+
+
+	var total = vars.getTotal();
+
+	/* Add declaration to monitor.h, add definition to monitor.c */
+
+	/* Add a declaration to every file and definition on main */
+	select file.function end
+	apply
+		if($file.hasMain) 
+			insert before 'double [[monitorName]]_range_min[ [[total]] ] = {0};\ndouble [[monitorName]]_range_max[ [[total]] ] = {0};';
+		else {
+			insert before 'void [[monitorName]]_range_update( unsigned int id, double value );';
+			insert before 'extern double [[monitorName]]_range_min[ [[total]] ]; extern double [[monitorName]]_range_max[ [[total]] ];';
+		}
+		break; // breaks after first function
+	end
+
+
+	/* The code for the printing function */
+	var print_code = '';
+	for(f in vars) {
+		
+		print_code += 'printf("' + f + '\\n");\n';
+		for(v in vars[f]) {
+
+			id = vars[f][v];
+			print_code += 'printf("\\t' + v + ': {%f, %f}\\n", " + monitorName +"_range_min[' + id + '], " + monitorName +  "_range_max[' + id + ']);\n';
+		}
+	}
+
+	/* Define the range supporting functions */
+	select file.function{'main'} end
+	apply
+		$file.addInclude("stdio.h", true);
+		insert before %{
+
+void [[monitorName]]_range_init() {
+
+	unsigned int i;
+	for(i=0; i < [[total]]; i++) {
+
+		[[monitorName]]_range_min[i] = 1.0/0.0;
+		[[monitorName]]_range_max[i] = -1.0/0.0;
+	}
+}
+
+void [[monitorName]]_range_update(unsigned int id, double value) {
+
+	if(value < [[monitorName]]_range_min[id]) [[monitorName]]_range_min[id] = value;
+	if(value > [[monitorName]]_range_max[id]) [[monitorName]]_range_max[id] = value;
+}
+
+void [[monitorName]]_print_ranges() {
+	[[print_code]]
+}
+		}%;
+	end
+
+	/* Register the printing function */
+	select function{'main'}.body end
+	apply
+		$body.exec insertBegin(monitorName + '_range_init();');
+		$body.exec insertBegin('atexit(" + monitorName +"_print_ranges);');
+	end
+	// */
+end
+
+aspectdef InitRangeMonitor
+	input monitorName, $monitorH end
+
+	select file.function{'main'}.body end
+	apply
+		$body.exec insertBegin(monitorName + '_range_init();');
+		$file.addIncludeJp($monitorH);
+	end
+	
+end

@@ -1,17 +1,127 @@
 import RangeValueMonitorBase;
+import RangeValueMonitorAspects;
+import lara.code.Logger;
+import clava.Clava;
+
 /*** INTERFACE IMPLEMENTATION ***/
 
 /**
  * Inserts code for monitoring a variable inside a given function
  */
 RangeValueMonitor.prototype.monitor = function($function, varName) {
-	println("Monitor");
+	
+	// If already monitored, return
+	if(this._isVarMonitored($function.id, varName)) {
+		return;
+	}
+
+	// Monitor variable
+	call RangeValueMonitorInstrumentVars($function, varName, this.name, this.laraObj, this.$monitorH);
 }
 
 /**
  * Inserts the code for printing the dynamic at the end of the given function
  */
 RangeValueMonitor.prototype.print = function($callSite, filename) {
+	var total = this.laraObj.getTotal();
+
+	var monitorHCode = "";
+	var monitorCCode = "";
+
+	/* Add declarations to monitor.h, add definitions to monitor.c */
+	monitorHCode += %{extern double [[this.name]]_range_min[[[total]]];}% + "\n";
+	monitorHCode += %{extern double [[this.name]]_range_max[[[total]]];}% + "\n";
+	monitorHCode += %{void [[this.name]]_range_update(unsigned int id, double value);}% + "\n";
+	monitorHCode += %{void [[this.name]]_range_init();}% + "\n";
+	monitorHCode += %{void [[this.name]]_print_ranges();}% + "\n";
+	
+	monitorCCode += %{double [[this.name]]_range_min[[[total]]] = {0};}% + "\n";
+	monitorCCode += %{double [[this.name]]_range_max[[[total]]] = {0};}% + "\n";
+
+	monitorCCode += ClavaRangeMonitorInit(this.name, total);
+	monitorCCode += ClavaRangeMonitorUpdate(this.name);
+	
+	this.$monitorH.insertBegin(monitorHCode);
+	this.$monitorC.insertBegin(monitorCCode);
+
+	// Create printing function 
+	var $printRangesFunction = this.$monitorC.addFunction(this.name + "_print_ranges");
+	var $printRangesEnd = $printRangesFunction.getBody().insertBegin("// End of function"); 
+	
+	var printRanges = new Logger(false, filename);
+	for(f in this.laraObj) {	
+		printRanges.append(f).ln().logBefore($printRangesEnd);
+		//print_code += 'printf("' + f + '\\n");\n';
+		for(v in this.laraObj[f]) {
+			id = this.laraObj[f][v];
+			var rangeMin = this.name +"_range_min[" + id + "]";
+			var rangeMax = this.name +"_range_max[" + id + "]";
+			printRanges.tab().append(v + ": {").appendDouble(rangeMin)
+			.append(", ").appendDouble(rangeMax).append("}").ln()
+			.logBefore($printRangesEnd);
+		}
+	}
+
+	// Initialize monitor
+	call InitRangeMonitor(this.name, this.$monitorH);
+
+	// Add call to print
+	$callSite.insertAfter(this.name + "_print_ranges();");
+
+	/* The code for the printing function */
+	
+/* Add a declaration to every file and definition on main */
+/*
+var print_code = '';
+	for(f in vars) {
+		
+		print_code += 'printf("' + f + '\\n");\n';
+		for(v in vars[f]) {
+
+			id = vars[f][v];
+			print_code += 'printf("\\t' + v + ': {%f, %f}\\n", " + monitorName +"_range_min[' + id + '], " + monitorName +  "_range_max[' + id + ']);\n';
+		}
+	}
+	
+	call PrepareRangeMonitor($callSite, filename, this.laraObj, this.name, this.$monitorH, this.$monitorC);
+	*/
 	println("Print");
 }
+
+codedef ClavaRangeMonitorInit(monitorName, total) %{
+void [[monitorName]]_range_init() {
+
+	unsigned int i;
+	for(i=0; i < [[total]]; i++) {
+
+		[[monitorName]]_range_min[i] = 1.0/0.0;
+		[[monitorName]]_range_max[i] = -1.0/0.0;
+	}
+}
+}% end
+
+codedef ClavaRangeMonitorUpdate(monitorName) %{
+void [[monitorName]]_range_update(unsigned int id, double value) {
+	if(value < [[monitorName]]_range_min[id]) [[monitorName]]_range_min[id] = value;
+	if(value > [[monitorName]]_range_max[id]) [[monitorName]]_range_max[id] = value;
+}
+}% end
+
+RangeValueMonitor.prototype.$monitorC = undefined;
+RangeValueMonitor.prototype.$monitorH = undefined;
+
+RangeValueMonitor.prototype._setup = function() {
+
+	var baseFolder = Clava.getBaseFolder();
+
+	// Create files for generated code
+	this.$monitorC = AstFactory.file("range_values_" + this.name+ ".c", baseFolder);
+	this.$monitorH = AstFactory.file("range_values_" + this.name+ ".h", baseFolder);
+
+	// Add files to the program
+	call AddFile(this.$monitorC);
+	call AddFile(this.$monitorH);
+}
+
+
 

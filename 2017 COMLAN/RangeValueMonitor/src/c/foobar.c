@@ -1,3 +1,5 @@
+#include "lib/lib.h"
+
 double bar() {
     return 1.0;
 }
@@ -8,6 +10,8 @@ double foo() {
     for(int i=0; i<1000; i++) {
         a += bar();
     }
+
+	a = lib_call(a);
     
     return a;
 }
