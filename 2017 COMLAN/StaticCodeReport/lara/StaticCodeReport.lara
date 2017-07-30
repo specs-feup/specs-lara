@@ -1,4 +1,9 @@
-import lara.util.StringSet;
+import lara.JoinPoints;
+
+
+// Possible attributes 
+var loopTypeAttr = ["type", "kind"];
+var loopIsInnermostAttr = ["is_innermost", "isInnermost"];
 
 aspectdef StaticCodeReport
 
@@ -35,10 +40,13 @@ aspectdef StaticCodeReport
 	
 	select file.function.loop end
 	apply
-		loopCount.inc($loop.kind, "total");
+		var loopType = JoinPoints.getAttributeStrict($loop, loopTypeAttr);
+	
+		loopCount.inc(loopType, "total");
 
-		if($loop.is_innermost) {
-			loopCount.inc($loop.kind, "innermost");
+		var isInnermost = JoinPoints.getAttributeStrict($loop, loopIsInnermostAttr);
+		if(isInnermost) {
+			loopCount.inc(loopType, "innermost");
 			num_loops_innermost++;
 		}
 		
@@ -101,7 +109,7 @@ aspectdef StaticCodeReport
 
 
 	println(lineWidth('=', totalWidth));
-	println(withWidth('Kind', firstWidth) + ' ' + withWidth('Total', secondWidth) + ' ' + withWidth('Innermost', thirdWidth));
+	println(withWidth('Type', firstWidth) + ' ' + withWidth('Total', secondWidth) + ' ' + withWidth('Innermost', thirdWidth));
 	
 	println(lineWidth('-', totalWidth));
 	
@@ -169,3 +177,53 @@ aspectdef StaticCodeReport
 
 	
 end
+
+
+/*
+function getLoopType($loop) {
+	if($loop.type !== undefined) {
+		return $loop.type;
+	}
+	
+	if($loop.kind !== undefined) {
+		return $loop.kind;
+	}
+	
+	throw "Could not determine type of loop: " + $loop;
+}
+*/
+/*
+function isLoopInnermost($loop) {
+	if($loop.is_innermost !== undefined) {
+		return $loop.is_innermost;
+	}
+	
+	if($loop["isInnermost"] !== undefined) {
+		return $loop["isInnermost"];
+	}
+		
+	throw "Could not determine it loop is innermost: " + $loop;
+}
+*/
+
+/*
+function getAttribute($jp, attributeNames) {
+	for(attribute of attributeNames) {
+		//println("ATT:" + attribute);
+		//println("ATT TYPE:" + typeof attribute);
+		// var value = $jp[attribute];
+		//if(attribute in $jp.hasOwnProperty){
+		//	println("HAS attribute:"+attribute);
+		//}
+		var value = $jp[attribute];
+		//println("VALUE:" + value);
+		//println("VALUE TYPE:" + typeof value);
+		//println("IS NULL:" + (value === null));
+		if(!isUndefined(value)) {
+			return value;
+		}
+	}
+	
+	throw "Could not find any of the given attributes in " + $jp + ":" + attributeNames.join(", ");
+}
+*/
