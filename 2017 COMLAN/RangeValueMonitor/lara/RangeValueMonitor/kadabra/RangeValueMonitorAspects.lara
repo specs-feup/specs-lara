@@ -1,0 +1,109 @@
+aspectdef RangeValueMonitorValidExprs
+	input $function, varName end
+	output exprs end
+	
+	exprs = [];
+	select $function.body.declaration end
+	apply
+		if($declaration.name === varName){
+			exprs.push($declaration);
+		}
+	end
+	
+	select $function.body.statement.var end
+	apply
+		// Ignore expressions without name
+//		if($var.name === undefined) {
+//			continue;
+//		}
+
+		// Ignore expressions if name does not match
+		if($var.name !== varName) {
+			continue;
+		}
+
+		// Monitor only writes
+		if($var.reference === "read") { //$var.reference === undefined || 
+			continue;
+		}
+
+		if($var.isArray){
+			continue;
+		}
+
+		// Ignore expressions inside loop headers
+		if($var.inLoopHeader) {
+			continue;
+		}
+
+		exprs.push($var);
+		
+	end
+
+end
+
+/**
+ * Get/Create the class storing graphs and get/create the field for <graphVar> graph 
+ */
+aspectdef GetMonitor
+	input varName end
+	output $monitor, $min, $max end
+	var className = "kadabra.utils.RangeMonitors";
+	//If both class and field exists
+	select file.class{className}.field{varName+"Min"} end
+	apply
+		$monitor = $class;
+		$min = $field; //return field
+	end
+	//If both class and field exists
+	select file.class{className}.field{varName+"Max"} end
+	apply
+		$max = $field; //return field
+	end
+	if($min !== undefined){
+		return;
+	}
+	//If class exists
+	select file.class{className} end
+	apply
+		$monitor = $class;
+		//Create field
+		$class.exec $newMin: newField(["public","static"], "double[]", varName+"Min", null);
+		$class.exec $newMax: newField(["public","static"], "double[]", varName+"Max", null);
+		$min = $newMin;
+		$max = $newMax;
+		return;
+	end
+	//Otherwise create both
+	select app end
+	apply
+		exec $class: newClass(className,null,[]);
+		$monitor = $class;
+		$class.exec $newMin: newField(["public","static"], "double[]", varName+"Min", null);
+		$class.exec $newMax: newField(["public","static"], "double[]", varName+"Max", null);
+		$min = $newMin;
+		$max = $newMax;
+		return;
+	end
+end
+
+aspectdef GetReference
+	input $m end
+	output $ref end
+	select $m.body.firstStmt end
+	apply
+		$ref = $firstStmt;
+		return;
+	end
+end
+
+aspectdef InitRangeMonitor
+	input monitorName end
+
+	select file.function{'main'}.body end
+	apply
+//		$body.exec insertBegin(monitorName + '_range_init();');
+//		$file.addIncludeJp($monitorH);
+	end
+	
+end

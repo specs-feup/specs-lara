@@ -1,0 +1,108 @@
+import RangeValueMonitorBase;
+import RangeValueMonitorAspects;
+import lara.code.Logger;
+import kadabra.Utils;
+
+/*** INTERFACE IMPLEMENTATION ***/
+
+/**
+ * Inserts code for monitoring a variable inside a given function
+ */
+RangeValueMonitor.prototype.monitor = function($function, varName) {
+	
+	// If already monitored, return
+	if(this._isVarMonitored($function.id, varName)) {
+		return;
+	}
+
+	// Get expressions using this variable to monitor
+	call validExprs : RangeValueMonitorValidExprs($function, varName);
+	
+	for($expr of validExprs.exprs) {
+		var id = this.laraObj.getId($function.name, $expr.name);
+		$expr.insert after%{[[this.$monitor.qualifiedName]].[[this.updateName]]([[id]], [[$expr.name]]);}%;
+	}
+}
+
+/**
+ * Inserts the code for printing the dynamic at the end of the given function
+ */
+RangeValueMonitor.prototype.print = function($callSite, filename) {
+	var total = this.laraObj.getTotal();
+	
+	var $monitor = this.$monitor;
+	var $min = this.$min;
+	var $max = this.$max;
+	var minPath = $monitor.qualifiedName+'.'+$min.name;
+	var maxPath = $monitor.qualifiedName+'.'+$max.name;
+
+	// Initialize monitor
+	$min.exec init %{new double[ [[total]] ]}%;
+	$max.exec init %{new double[ [[total]] ]}%;
+
+	//Declare Methods
+	$monitor.exec insertStatic%{[[$monitor.qualifiedName]].[[this.initName]]();}%;
+	$monitor.exec insertMethod (RangeMonitorInit(this.initName,total, minPath, maxPath));
+	$monitor.exec insertMethod (RangeMonitorUpdate(this.updateName,$min.name,$max.name));
+	$monitor.exec $m: newMethod(['public','static'], 'void', this.printName, [], "//printfunction");
+
+	call get: GetReference($m);
+	$printRangesEnd = get.$ref;
+	//Print ranges
+	var printRanges = new Logger(false, filename);
+	for(f in this.laraObj) {	
+		printRanges.append(f).ln().logBefore($printRangesEnd);
+
+		for(v in this.laraObj[f]) {
+			id = this.laraObj[f][v];
+			var rangeMin = $monitor.qualifiedName+"."+$min.name+"[" + id + "]";
+			var rangeMax = $monitor.qualifiedName+"."+$max.name+"[" + id + "]";
+			printRanges.append(v + ": {").appendDouble(rangeMin)
+			.append(", ").appendDouble(rangeMax).append("}").ln()
+			.logBefore($printRangesEnd);
+		}
+	}
+	$printRangesEnd.replace '';
+
+	//Add call to print
+	call BeforeExit($callSite, $monitor.qualifiedName+'.'+this.printName+'();');
+}
+
+codedef RangeMonitorInit(monitorName, total, minPath, maxPath) %{
+public static void [[monitorName]]() {
+
+	for(int i=0; i < [[total]]; i++) {
+
+		[[minPath]][i] = Double.POSITIVE_INFINITY;
+		[[maxPath]][i] = Double.NEGATIVE_INFINITY;
+	}
+}
+}% end
+
+codedef RangeMonitorUpdate(monitorName,minPath,maxPath) %{
+public static void [[monitorName]](int id, double value) {
+	if(value < [[minPath]][id]) [[minPath]][id] = value;
+	if(value > [[maxPath]][id]) [[maxPath]][id] = value;
+}
+}% end
+
+codedef RangeMonitorPrint(monitorName) %{
+public static void [[monitorName]]() {
+	int dummy = 0;
+}
+}% end
+
+
+RangeValueMonitor.prototype._setup = function() {
+
+	call getter: GetMonitor(this.name);
+	this.$min = getter.$min;
+	this.$max = getter.$max;
+	this.$monitor = getter.$monitor;
+	this.initName = this.name+"_range_init";
+	this.updateName = this.name+"_range_update";
+	this.printName = this.name+"_range_print";
+}
+
+
+
