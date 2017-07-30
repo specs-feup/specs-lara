@@ -4,6 +4,7 @@ import lara.JoinPoints;
 // Possible attributes 
 var loopTypeAttr = ["type", "kind"];
 var loopIsInnermostAttr = ["is_innermost", "isInnermost"];
+var loopNestedLevelAttr = ["nested_level", "nestedLevel"];
 
 aspectdef StaticCodeReport
 
@@ -52,9 +53,10 @@ aspectdef StaticCodeReport
 		
 		num_loops++;
 		
+		var loopNestedLevel = JoinPoints.getAttributeStrict($loop, loopNestedLevelAttr);
 
-		if($loop.nested_level > max_nest) {
-			max_nest = $loop.nested_level;
+		if(loopNestedLevel > max_nest) {
+			max_nest = loopNestedLevel;
 			max_nest_location = $file.name + ' : ' + $function.name + ' : ' + $loop.line;
 		}
 	end
@@ -179,51 +181,3 @@ aspectdef StaticCodeReport
 end
 
 
-/*
-function getLoopType($loop) {
-	if($loop.type !== undefined) {
-		return $loop.type;
-	}
-	
-	if($loop.kind !== undefined) {
-		return $loop.kind;
-	}
-	
-	throw "Could not determine type of loop: " + $loop;
-}
-*/
-/*
-function isLoopInnermost($loop) {
-	if($loop.is_innermost !== undefined) {
-		return $loop.is_innermost;
-	}
-	
-	if($loop["isInnermost"] !== undefined) {
-		return $loop["isInnermost"];
-	}
-		
-	throw "Could not determine it loop is innermost: " + $loop;
-}
-*/
-
-/*
-function getAttribute($jp, attributeNames) {
-	for(attribute of attributeNames) {
-		//println("ATT:" + attribute);
-		//println("ATT TYPE:" + typeof attribute);
-		// var value = $jp[attribute];
-		//if(attribute in $jp.hasOwnProperty){
-		//	println("HAS attribute:"+attribute);
-		//}
-		var value = $jp[attribute];
-		//println("VALUE:" + value);
-		//println("VALUE TYPE:" + typeof value);
-		//println("IS NULL:" + (value === null));
-		if(!isUndefined(value)) {
-			return value;
-		}
-	}
-	
-	throw "Could not find any of the given attributes in " + $jp + ":" + attributeNames.join(", ");
-}
-*/
