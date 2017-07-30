@@ -56,13 +56,13 @@ RangeValueMonitor.prototype.print = function($callSite, filename) {
 	var monitorCCode = "";
 
 	/* Add declarations to monitor.h, add definitions to monitor.c */
-	monitorHCode += %{extern "C" {}%;
+	monitorHCode += Clava.cLinkageBegin;
 	monitorHCode += %{extern double [[this.name]]_range_min[[[total]]];}% + "\n";
 	monitorHCode += %{extern double [[this.name]]_range_max[[[total]]];}% + "\n";
 	monitorHCode += %{void [[this.name]]_range_update(unsigned int id, double value);}% + "\n";
 	monitorHCode += %{void [[this.name]]_range_init();}% + "\n";
 	monitorHCode += %{void [[this.name]]_print_ranges();}% + "\n";
-	monitorHCode += "}";
+	monitorHCode += Clava.cLinkageEnd;
 	
 	monitorCCode += %{double [[this.name]]_range_min[[[total]]] = {0};}% + "\n";
 	monitorCCode += %{double [[this.name]]_range_max[[[total]]] = {0};}% + "\n";
