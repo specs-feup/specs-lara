@@ -15,6 +15,8 @@ public class FooBar {
     }
 
     public static void main(String[] args) {
-        new FooBar().foo();
+       double foo = new FooBar().foo();
+
+       System.out.println(foo);
     }
 }

@@ -47,20 +47,26 @@ DynamicCallGraph.prototype.print = function($callSite) {
 		}	
 	}
 	
-	var code = "";
-	for (caller in this.laraObj) {
-		for (callee in this.laraObj[caller]) {
-			var id = this.laraObj[caller][callee];
-			code+= graphvizConnections(this._getGraphId(), id, caller, callee);
-		}
-	}
+//	var code = "";
+//	for (caller in this.laraObj) {
+//		for (callee in this.laraObj[caller]) {
+//			var id = this.laraObj[caller][callee];
+//			code+= graphvizConnections(this._getGraphId(), id, caller, callee);
+//		}
+//	}
 	var methodName = "print_"+this.getField();
 	$class = this.getField().ancestor("type");
+//	$class.exec insertMethod %{
+//		public static void [[methodName]](){
+//			System.out.println("digraph [[this.name]] {");
+//			[[code]]
+//			System.out.println("}");
+//		}
+//	}%;
+	call printer: GenerateDCGPrinter($class.qualifiedName+'.'+this.getField().name, this.laraObj);
 	$class.exec insertMethod %{
 		public static void [[methodName]](){
-			System.out.println("digraph [[this.name]] {");
-			[[code]]
-			System.out.println("}");
+			[[printer.code]]
 		}
 	}%;
 
@@ -103,9 +109,9 @@ DynamicCallGraph.prototype.print = function($callSite) {
 end
 */
 
-codedef graphvizConnections(graphVar, id, caller, callee) %{
-	if ([[graphVar]][ [[id]] ] != 0) {
-		System.out.printf("\t[[caller]] -> [[callee]] [label=\"%d\"];\n", [[graphVar]][[[id]]]);
-	}
-}% end
+//codedef graphvizConnections(graphVar, id, caller, callee) %{
+//	if ([[graphVar]][ [[id]] ] != 0) {
+//		System.out.printf("\t[[caller]] -> [[callee]] [label=\"%d\"];\n", [[graphVar]][[[id]]]);
+//	}
+//}% end
 

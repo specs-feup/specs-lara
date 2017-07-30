@@ -2,31 +2,31 @@
  * Gather classes and methods that are part of the application 
  * and other library classes
  */
-aspectdef GetClasses
-	output
-		apis = new LaraObject(),
-		classes = new LaraObject()
-	end
-	
-	//Select all methods inside classes
-	select class.method end
-	apply
-		//add it to the 'classes' object
-		classes.push($class.name, $method.name);
-	end
-
-	//Select calls inside methods
-	select class.method.call end
-	apply
-	  //if 'classes' does not contain the class of the called method
-	  if(!($call.declarator in classes)){
-		//then add it as an API
-		apis.set($call.declarator, $call.name, $call.qualifiedDecl);
-	  }
-	end
-end
-
-
+//aspectdef GetClasses
+//	output
+//		apis = new LaraObject(),
+//		classes = new LaraObject()
+//	end
+//	
+//	//Select all methods inside classes
+//	select class.method end
+//	apply
+//		//add it to the 'classes' object
+//		classes.push($class.name, $method.name);
+//	end
+//
+//	//Select calls inside methods
+//	select class.method.call end
+//	apply
+//	  //if 'classes' does not contain the class of the called method
+//	  if(!($call.declarator in classes)){
+//		//then add it as an API
+//		apis.set($call.declarator, $call.name, $call.qualifiedDecl);
+//	  }
+//	end
+//end
+//
+//
 
 
 aspectdef GetGraph
@@ -50,6 +50,108 @@ aspectdef GetGraph
 		exec $class: newClass(className,null,[]);
 		$class.exec $f: newField(["public","static"], "int[]", graphVar, null);
 		$graph = $f;
+	end
+end
+
+
+/**
+ * Generate code to print the DCG
+ */
+aspectdef GenerateDCGPrinter
+	input graphAccess, laraObj  end
+	output code = '\tSystem.out.println("digraph DCG {");\n' end
+
+	call cl: GetClasses();
+	var methods = cl.classes;
+	var apis = cl.apis;
+
+	for(var c in methods) {
+
+		code += '\tSystem.out.println("\\tsubgraph cluster_' + c + ' {\\n");\n';
+		code += '\tSystem.out.println("\\t\\tlabel=\\"' + c + '\\";\\n");\n';
+		code += '\tSystem.out.println("\\t\\tcolor=blue;\\n");\n';
+
+		for (var m in methods[c]) {
+			code += '\tSystem.out.println("\\t\\t' + c + '_' + methods[c][m] + ' [label=\\"' + methods[c][m] + '\\"]' + '\\n");\n';
+			
+		}
+		code += '\tSystem.out.println("\\t}\\n");\n';
+		
+	}
+
+	for(var c in apis) {
+
+		code += '\tSystem.out.println("\\tsubgraph cluster_' + c + ' {\\n");\n';
+		code += '\tSystem.out.println("\\t\\tlabel=\\"' + c + '\\";\\n");\n';
+		code += '\tSystem.out.println("\\t\\tcolor=gray;\\n");\n';
+
+		for (var m in apis[c]) {
+			code += '\tSystem.out.println("\\t\\t' + c + '_' + m + ' [label=\\"' + m + '\\"]' + '\\n");\n';
+			
+		}
+		code += '\tSystem.out.println("\\t}\\n");\n';
+		
+		
+	}
+	
+	for (caller in laraObj) {
+		for (callee in laraObj[caller]) {
+			var id = laraObj[caller][callee];
+			code+= graphvizConnections(graphAccess, id, caller, callee);
+		}
+	}
+     code+=%{
+     	System.out.println("\tSource [shape=rectangle,color=blue];");
+        	System.out.println("\tApi [shape=rectangle,color=gray];");
+     }%;
+	
+	code += '\tSystem.out.println("}");\n';
+end
+
+//TO ADD:
+//   subgraph cluster_Legend {
+//		label="Legend";
+//
+//		color=lightgray;
+//
+//		Source [shape=rectangle,color=blue, label = "Source code"];
+//	        Api [shape=rectangle,color=gray, label= "API Class"];
+//                Source->Api [style=invis]
+//	}
+
+
+
+codedef graphvizConnections(graphVar, id, caller, callee) %{
+	if ([[graphVar]][ [[id]] ] != 0) {
+		System.out.printf("\t[[caller]] -> [[callee]] [label=\"%d\"];\n", [[graphVar]][[[id]]]);
+	}
+}% end
+
+/**
+ * Gather classes and methods that are part of the application 
+ * and other library classes
+ */
+aspectdef GetClasses
+	output
+		apis = new LaraObject(),
+		classes = new LaraObject()
+	end
+	
+	//Select all methods inside classes
+	select class.method end
+	apply
+		//add it to the 'classes' object
+		classes.push($class.name, $method.name);
+	end
+
+	//Select calls inside methods
+	select class.method.call end
+	apply
+	  //if 'classes' does not contain the class of the called method
+	  if(!($call.declarator in classes)){
+		//then add it as an API
+		apis.set($call.declarator, $call.name, $call.qualifiedDecl);
+	  }
 	end
 end
 

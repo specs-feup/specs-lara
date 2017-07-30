@@ -16,8 +16,10 @@ public class FooBar {
     }
 
     public static void main(String[] args) {
-        new FooBar().foo();
+        double foo = new FooBar().foo();
         kadabra.utils.Graphs.dcg_CallGraph[1]++;
+        System.out.println(foo);
+        kadabra.utils.Graphs.dcg_CallGraph[2]++;
         kadabra.utils.Graphs.print_dcg_CallGraph();
     }
 }
