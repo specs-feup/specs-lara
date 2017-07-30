@@ -1,0 +1,117 @@
+import DynamicCallGraphBase;
+import DynamicCallGraphAspects;
+import kadabra.Utils;
+
+/**
+ * Inserts code for recording a pair function - call to the call graph
+ */
+DynamicCallGraph.prototype.add = function($call) {
+	var $graph = this.getField();
+	var fullName = $graph.declarator+"."+$graph.name;
+	$executable = $call.ancestor("executable");
+	if(isUndefined($executable)) {
+		println("Could not add call at line " + $call.line + ", it is not inside an executable");
+		return;
+	}
+	var execName = $executable.name != undefined?$executable.name: "anonymous";
+	$type = $executable.ancestor("type");
+	var typeName = $type.qualifiedName;
+	var callDeclarator = $call.declarator;
+	var id = this._getId(typeName+"_"+ execName, callDeclarator+"_"+$call.name);
+	$call.insert after '[[fullName]][[[id]]]++;';
+}
+
+DynamicCallGraph.prototype.getField = function(){
+	if(this.$graph === undefined){
+		call g: GetGraph(this._getGraphId());
+		this.$graph = g.$graph;
+	}
+	return this.$graph;
+}
+
+DynamicCallGraph.prototype.print = function($callSite) {
+
+	/* Declare the array in each file */
+	var total = this._getTotalPairs();
+	var $graph = this.getField();
+	$graph.exec init(%{new int[ [[total]] ]}%);
+
+	var $function = undefined;
+	if($callSite.instanceOf("method")) {
+		$function = $callSite;
+	} else {	
+		$function = $callSite.ancestor("method");
+		if(isUndefined($function)) {
+			println("DynamicCallGraphPrint: Could not insert at joinpoint " + $callSite.joinPointType + ", only supports methods or inside functions");
+			return;
+		}	
+	}
+	
+//	var code = "";
+//	for (caller in this.laraObj) {
+//		for (callee in this.laraObj[caller]) {
+//			var id = this.laraObj[caller][callee];
+//			code+= graphvizConnections(this._getGraphId(), id, caller, callee);
+//		}
+//	}
+	var methodName = "print_"+this.getField();
+	$class = this.getField().ancestor("type");
+//	$class.exec insertMethod %{
+//		public static void [[methodName]](){
+//			System.out.println("digraph [[this.name]] {");
+//			[[code]]
+//			System.out.println("}");
+//		}
+//	}%;
+	call printer: GenerateDCGPrinter($class.qualifiedName+'.'+this.getField().name, this.laraObj);
+	$class.exec insertMethod %{
+		public static void [[methodName]](){
+			[[printer.code]]
+		}
+	}%;
+
+	call BeforeExit($function, $class.qualifiedName+'.'+methodName+'();');
+}
+
+/**
+ * Print the array at the end of the main function
+ */
+ /*
+DynamicCallGraph.prototype.print = function($callSite) {
+
+	var $function = undefined;
+	if($callSite.instanceOf("function")) {
+		$function = $callSite;
+	} else {	
+		$function = $callSite.ancestor("function");
+		if(isUndefined($function)) {
+			println("DynamicCallGraphPrint: Could not insert at joinpoint " + $callSite.joinPointType + ", only supports functions or inside functions");
+			return;
+		}	
+	}
+
+	
+	var $file = $callSite.ancestor("file");
+
+	
+	$file.exec addInclude("stdio.h", true);
+	
+	$function.exec insertReturn('printf("digraph ' + graphName + ' {\\n");');
+
+	for (caller in laraObj) {
+		for (callee in laraObj[caller]) {
+			var id = laraObj[caller][callee];
+			$function.exec insertReturn(graphvizConnections(this._getGraphId(), id, caller, callee));
+		}
+	}
+	$function.exec insertReturn(%{printf("}\n");}%);
+
+end
+*/
+
+//codedef graphvizConnections(graphVar, id, caller, callee) %{
+//	if ([[graphVar]][ [[id]] ] != 0) {
+//		System.out.printf("\t[[caller]] -> [[callee]] [label=\"%d\"];\n", [[graphVar]][[[id]]]);
+//	}
+//}% end
+

@@ -12,3 +12,8 @@
 # Do not include data inputs in the repository,
 # they should be provided in a separate file
 **/data/*
+
+# Ignore class files and eclipse-related files
+*.class
+*.project
+*.classpath

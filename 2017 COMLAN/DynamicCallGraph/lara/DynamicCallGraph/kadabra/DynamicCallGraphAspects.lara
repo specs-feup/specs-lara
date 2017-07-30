@@ -1,0 +1,152 @@
+
+
+/**
+ * Get/Create the class storing graphs and get/create the field for <graphVar> graph 
+ */
+aspectdef GetGraph
+	input graphVar end
+	output $graph end
+	var className = "kadabra.utils.Graphs";
+	//If both class and field exists
+	select file.class{className}.field{graphVar} end
+	apply
+		$graph = $field; //return field
+		return;
+	end
+	//If class exists
+	select file.class{className} end
+	apply
+		//Create field
+		$class.exec $f: newField(["public","static"], "int[]", graphVar, null);
+		$graph = $f; //return field
+		return;
+	end
+	//Otherwise create both
+	select app end
+	apply
+		exec $class: newClass(className,null,[]);
+		$class.exec $f: newField(["public","static"], "int[]", graphVar, null);
+		$graph = $f;
+	end
+end
+
+
+/**
+ * Generate code to print the DCG
+ */
+aspectdef GenerateDCGPrinter
+	input graphAccess, laraObj  end
+	output code = '\tSystem.out.println("digraph DCG {");\n' end
+
+	call cl: GetClasses();
+	var methods = cl.classes;
+	var apis = cl.apis;
+
+     //Create a cluster for classes defined in the workspace
+	for(var c in methods) {
+
+		code += '\tSystem.out.println("\\tsubgraph cluster_' + c + ' {\\n");\n';
+		code += '\tSystem.out.println("\\t\\tlabel=\\"' + c + '\\";\\n");\n';
+		code += '\tSystem.out.println("\\t\\tcolor=blue;\\n");\n';
+
+		for (var m in methods[c]) {
+			code += '\tSystem.out.println("\\t\\t' + c + '_' + methods[c][m] + ' [label=\\"' + methods[c][m] + '\\"]' + '\\n");\n';
+			
+		}
+		code += '\tSystem.out.println("\\t}\\n");\n';
+		
+	}
+     //Create a cluster for classes for which the source code is not in the workspace
+	for(var c in apis) {
+
+		code += '\tSystem.out.println("\\tsubgraph cluster_' + c + ' {\\n");\n';
+		code += '\tSystem.out.println("\\t\\tlabel=\\"' + c + '\\";\\n");\n';
+		code += '\tSystem.out.println("\\t\\tcolor=gray;\\n");\n';
+
+		for (var m in apis[c]) {
+			code += '\tSystem.out.println("\\t\\t' + c + '_' + m + ' [label=\\"' + m + '\\"]' + '\\n");\n';
+			
+		}
+		code += '\tSystem.out.println("\\t}\\n");\n';
+		
+		
+	}
+
+	//foreach caller->callee
+	for (caller in laraObj) {
+		for (callee in laraObj[caller]) {
+			var id = laraObj[caller][callee];
+			code+= graphvizConnections(graphAccess, id, caller, callee);
+		}
+	}
+	
+	//Add two nodes for the Legend
+     code+=%{
+     	System.out.println("\tSource [shape=rectangle,color=blue];");
+        	System.out.println("\tApi [shape=rectangle,color=gray];");
+     }%;
+	
+	code += '\tSystem.out.println("}");\n';
+end
+codedef graphvizConnections(graphVar, id, caller, callee) %{
+	if ([[graphVar]][ [[id]] ] != 0) {
+		System.out.printf("\t[[caller]] -> [[callee]] [label=\"%d\"];\n", [[graphVar]][[[id]]]);
+	}
+}% end
+//TO ADD:
+//   subgraph cluster_Legend {
+//		label="Legend";
+//
+//		color=lightgray;
+//
+//		Source [shape=rectangle,color=blue, label = "Source code"];
+//	        Api [shape=rectangle,color=gray, label= "API Class"];
+//                Source->Api [style=invis]
+//	}
+
+
+
+
+
+/**
+ * Gather classes and methods that are part of the application 
+ * and other library classes
+ */
+aspectdef GetClasses
+	output
+		apis = new LaraObject(),
+		classes = new LaraObject()
+	end
+	
+	//Select all methods inside classes
+	select class.method end
+	apply
+		//add it to the 'classes' object
+		classes.push($class.name, $method.name);
+	end
+
+	//Select calls inside methods
+	select class.method.call end
+	apply
+	  //if 'classes' does not contain the class of the called method
+	  if(!($call.declarator in classes)){
+		//then add it as an API
+		apis.set($call.declarator, $call.name, $call.qualifiedDecl);
+	  }
+	end
+end
+
+
+/*
+aspectdef GetField
+	input $class,graphVar end
+	output $graph end
+	select $class.field{name==graphVar}end
+	apply
+		$graph = $field;
+		return;
+	end
+	$class.exec $f: newField(["public","static"], "int[]", graphVar, null);
+	$graph = f;
+end
+*/
