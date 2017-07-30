@@ -15,7 +15,7 @@ DynamicCallGraph.prototype.add = function($call) {
 }
 
 /**
- * Inserts the code for printing the dynamic at the end of the given function
+ * Inserts the code for printing the dynamic call graph after the given $callSite
  */
 DynamicCallGraph.prototype.print = function($callSite) {
 	throw ("DynamicCallGraph.print: not implemented");
