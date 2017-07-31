@@ -9,6 +9,7 @@ aspectdef LogCalls
 	
     select file.call end
     apply
+    
         loggerConsole.append("Print double ").appendDouble(2).append(" after " + $call.name).ln();
         loggerConsole.log($call, true);
 		

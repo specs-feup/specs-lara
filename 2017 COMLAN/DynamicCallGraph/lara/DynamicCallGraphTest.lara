@@ -41,10 +41,10 @@ aspectdef DynamicCallGraphKadabra
 
 	call dcgOut : CreateDynamicCallGraph();
 
-	select method{"main"} end
+	select function{"main"} end
 	apply
 		// Insert code for printing the dynamic call graph
-		dcgOut.dcg.print($method);
+		dcgOut.dcg.print($function);
 	end
 	
 end

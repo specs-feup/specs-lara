@@ -6,7 +6,7 @@ aspectdef TimeCalls
 	var timer = new Timer("MICROSECONDS");
 	timer.setPrint(false);
 	// Time all calls inside functions
-	select function.call end
+	select call end
 	apply
 		timer.time($call, "Time:");
 	end
