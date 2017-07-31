@@ -12,7 +12,7 @@ aspectdef InstrumentCode
 		
 		$call.insert("before", "double[] "+energy_output_before+" = weaver.kadabra.monitor.energy.EnergyCheck.getEnergyStats();");
 
-		$call.insert("after","for(int "+forCounter+" = 0; "+forCounter+" < "+energy_output_before+".length; "+forCounter+"++){\n"+kadabra_energy_output+" += "+energy_output_after+"[ "+forCounter+" ] - "+energy_output_before+"[ "+forCounter+" ];\n}\nSystem.out.printf(\"Energy:%f\", "+kadabra_energy_output+");");
+		$call.insert after "for(int "+forCounter+" = 0; "+forCounter+" < "+energy_output_before+".length; "+forCounter+"++){\n"+kadabra_energy_output+" += "+energy_output_after+"[ "+forCounter+" ] - "+energy_output_before+"[ "+forCounter+" ];\n}\nSystem.out.printf(\"Energy:%f\", "+kadabra_energy_output+");";
 		$call.insert("after", "double "+kadabra_energy_output+" = 0;");
 		$call.insert("after", "double[] "+energy_output_after+" = weaver.kadabra.monitor.energy.EnergyCheck.getEnergyStats();");
 	end

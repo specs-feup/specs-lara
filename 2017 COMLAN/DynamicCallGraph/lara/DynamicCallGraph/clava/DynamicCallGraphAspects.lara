@@ -11,7 +11,8 @@ aspectdef DynamicCallGraphSetup
 		} else {
 			insert before 'extern int [[graphVar]][[[total]]];';
 		}
-		// ? What break does in apply ?
+		// Skips remaining join points of last chain element (i.e., function, in this case)
+		// In other others, proceeds to the next file
 		break;
 	end
 

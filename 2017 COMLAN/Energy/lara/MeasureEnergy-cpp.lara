@@ -3,8 +3,8 @@ aspectdef InstrumentCode
 	
 	select file end
 	apply
-		$file.addInclude("rapl.h", false);
-		$file.addInclude("iostream", true);
+		$file.exec addInclude("rapl.h", false);
+		$file.exec addInclude("iostream", true);
 	end
 	
 	var idCounter = 0;
@@ -12,10 +12,10 @@ aspectdef InstrumentCode
 	select function.call end
 	apply
 		var clava_energy_output = "clava_energy_output_"+(idCounter++);
-	
-		$call.insertBefore("rapl_monitor_start();");
-		$call.insertAfter("std::cout << \"Energy:\" << "+clava_energy_output+";");
-		$call.insertAfter("double "+clava_energy_output+" = rapl_monitor_report();");
+
+		$call.insert before "rapl_monitor_start();";
+		$call.insert after "std::cout << \"Energy:\" << "+clava_energy_output+";";
+		$call.insert after "double "+clava_energy_output+" = rapl_monitor_report();";
 	end
 	
 	
