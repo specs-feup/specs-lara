@@ -1,4 +1,4 @@
-import lara.code.Timer;
+import Timer;
 
 aspectdef TimeCalls
 	

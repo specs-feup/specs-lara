@@ -1,0 +1,2 @@
+# Bundle type can be 'weaver' or 'language', and defines how folders are processed
+bundleType = weaver

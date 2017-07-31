@@ -8,7 +8,9 @@
     <entry>
       <string>include</string>
       <FileList>
-        <fileList/>
+        <fileList>
+          <file>lara\Logger</file>
+        </fileList>
       </FileList>
     </entry>
     <entry>

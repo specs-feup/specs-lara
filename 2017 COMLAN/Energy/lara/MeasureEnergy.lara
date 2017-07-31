@@ -1,4 +1,4 @@
-import lara.code.Energy;
+import Energy;
 
 aspectdef InstrumentCode
 	

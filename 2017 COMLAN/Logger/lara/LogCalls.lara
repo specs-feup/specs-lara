@@ -1,4 +1,4 @@
-import lara.code.Logger;
+import Logger;
 
 
 aspectdef LogCalls
