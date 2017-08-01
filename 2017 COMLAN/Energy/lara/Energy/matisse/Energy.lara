@@ -3,7 +3,6 @@ import lara.code.Logger;
 import lara.util.StringSet;
 import matisse.MatisseInternal;
 
-Energy.prototype._instrumentedFiles = new StringSet();
 
 /**
  * Measures the energy spent during the execution of a given section of code.
@@ -24,19 +23,12 @@ Energy.prototype.measure = function($start, prefix, $end) {
 		$end = $start;
 	}
 
-	$function = $end.chainAncestor('function');
-	checkDefined($function);
-	
-	// Insert printing function if it has not been inserted yet
-	$file = $function.chainAncestor('file');
-	checkDefined($file);
-	if(!this._instrumentedFiles.has($file.absolutePath)) {
-		// Insert printing function after function of the $callSite
-		$function.exec insertAfter(MatisseInternal.resourceGetCurrentEnergy());	
+	var $app = $start.root;
+	if(!$app.hasFile("getCurrentEnergy.m")) {
+		$app.exec addFile("getCurrentEnergy.m", MatisseInternal.resourceGetCurrentEnergy());
+	} 
 
-		this._instrumentedFiles.add($file.absolutePath);
-	}
-	
+
 	var startVar = IdGenerator.next("matisse_energy_start_");
 	var endVar = IdGenerator.next("matisse_energy_end_");
 	var intervalVar = IdGenerator.next("matisse_energy_");
@@ -68,11 +60,6 @@ Energy.prototype.measure = function($start, prefix, $end) {
     return intervalVar;
 }
 
-/*
-Energy.prototype.getPrintUnit = function() {
-    return "uJ";
-}
-*/
 
 
 
