@@ -1,0 +1,87 @@
+
+
+aspectdef DynamicCallGraphMatisse
+
+	var laraObj = new LaraObject();
+	var graphName = "dcg";
+
+	// Select all calls that come from a function
+    select function.call end
+    apply
+		// Add global to the function of the call
+		$function = $call.ancestor("function");
+		if(isUndefined($function)) {
+			println("Could not add call at line " + $call.line + ", it is not inside a function");
+			return;
+		}
+	
+		// Add global
+		$function.addGlobal(graphName);
+	
+		var id = new Number(laraObj.getId($function.name, $call.name)) + 1;
+	
+		$call.insert after callInc(graphName, id);
+	end
+	
+	// Create print function
+	select app end
+	apply
+
+		var connections = "";
+		for (caller in laraObj) {
+			for (callee in laraObj[caller]) {
+				var id = laraObj[caller][callee];
+			
+				// Id should start at 1	
+				id = Number(id) + 1;
+				connections += connectionCode(graphName, id, caller, callee);
+			}
+		}
+
+		// Insert printing function if it has not been inserted yet
+		$app.exec addFile("dynamicCallGraph.m", printGraph(graphName,connections));
+	end
+	
+		
+	// Insert code for printing the dynamic call graph
+	select function{"foobar"} end
+	apply
+		var callCode = "dynamicCallGraph";
+		if($function.instanceOf("function")) {
+			$function.body.exec insertEnd(callCode);
+			return;
+		}
+		
+		$function.insert after callCode;
+	end
+
+end
+
+
+
+codedef callInc(varName, id) %{
+	if(numel([[varName]]) < [[id]]); [[varName]]([[id]]) = 1; else; [[varName]]([[id]]) = [[varName]]([[id]]) + 1; end
+}% end
+
+codedef printGraph(graphName, connections) %{
+function dynamicCallGraph
+	global [[graphName]]
+	
+	fprintf('digraph [[graphName]] {\n');
+		[[connections]]
+		
+	fprintf('}\n');
+
+	% Clear graph
+	[[graphName]] = [];
+end
+
+}% end
+
+codedef connectionCode(graphVar, id, caller, callee) %{
+if (numel([[graphVar]]) >= [[id]] && [[graphVar]]([[id]]) ~= 0) 
+	fprintf('\t[[caller]] -> [[callee]] [label=\"%d\"];\n', [[graphVar]]([[id]]));
+end
+	
+}% end
+

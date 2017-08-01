@@ -1,5 +1,8 @@
 import DynamicCallGraphBase;
-import lara.util.StringSet;
+
+
+DynamicCallGraph.prototype._hasWrittenPrintFunction = false;
+
 
 /**
  * Inserts code for recording a pair function - call to the call graph
@@ -43,12 +46,10 @@ DynamicCallGraph.prototype.print = function($callSite) {
 	}
 
 	// Insert printing function if it has not been inserted yet
-	$file = $function.chainAncestor('file');
-	if(!this._instrumentedFiles.has($file.absolutePath)) {
-		// Insert printing function after function of the $callSite
-		$function.exec insertAfter(printGraph(this._getGraphId(), this.name, connections));	
-
-		this._instrumentedFiles.add($file.absolutePath);
+	if(!this._hasWrittenPrintFunction) {
+		$app = $function.root;
+		$app.exec addFile("dynamicCallGraph.m", printGraph(this._getGraphId(), this.name, connections));
+		this._hasWrittenPrintFunction = true;
 	}
 
 
@@ -60,17 +61,9 @@ DynamicCallGraph.prototype.print = function($callSite) {
 	}
 	
 	$callSite.insert after callCode;
-	
-/*
-	var total = this._getTotalPairs();
-	call DynamicCallGraphSetup(total);
 
-
-	call DynamicCallGraphPrint(this.name, this.laraObj);
-	*/
 }
 
-DynamicCallGraph.prototype._instrumentedFiles = new StringSet();
 
 DynamicCallGraph.prototype._getMatlabId = function(caller, callee) {
 	var id = this._getId(caller, callee);

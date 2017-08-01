@@ -2,22 +2,24 @@
   <name>LaraI Options</name>
   <values>
     <entry>
-      <string>CHECK_SYNTAX</string>
+      <string>include</string>
+      <FileList>
+        <fileList/>
+      </FileList>
+    </entry>
+    <entry>
+      <string>astyle</string>
       <boolean>false</boolean>
     </entry>
     <entry>
-      <string>include</string>
-      <FileList>
-        <fileList>
-          <file>lara\DynamicCallGraph</file>
-        </fileList>
-      </FileList>
+      <string>show info</string>
+      <boolean>false</boolean>
     </entry>
     <entry>
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>src\matlab</file>
+          <file>src\java</file>
         </fileList>
       </FileList>
     </entry>
@@ -26,15 +28,19 @@
       <boolean>false</boolean>
     </entry>
     <entry>
-      <string>language_mode</string>
-      <org.specs.MatlabIR.MatlabLanguage.LanguageMode>MATLAB</org.specs.MatlabIR.MatlabLanguage.LanguageMode>
-    </entry>
-    <entry>
       <string>log</string>
       <OptionalFile>
         <file></file>
         <used>false</used>
       </OptionalFile>
+    </entry>
+    <entry>
+      <string>noclasspath</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>outputType</string>
+      <spoon.OutputType>COMPILATION_UNITS</spoon.OutputType>
     </entry>
     <entry>
       <string>main</string>
@@ -56,16 +62,30 @@
       <boolean>false</boolean>
     </entry>
     <entry>
+      <string>clear_output</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
       <string>verbose</string>
       <org.lara.interpreter.joptions.config.interpreter.VerboseLevel>errors</org.lara.interpreter.joptions.config.interpreter.VerboseLevel>
     </entry>
     <entry>
       <string>output</string>
-      <file>src-weaved\matlab</file>
+      <file>src-weaved\java</file>
+    </entry>
+    <entry>
+      <string>java includes dir</string>
+      <FileList>
+        <fileList/>
+      </FileList>
+    </entry>
+    <entry>
+      <string>report kadabra</string>
+      <boolean>false</boolean>
     </entry>
     <entry>
       <string>aspect</string>
-      <file>lara\DynamicCallGraphMatisse.lara</file>
+      <file>lara\DynamicCallGraphOriginalKadabra.lara</file>
     </entry>
     <entry>
       <string>report</string>
@@ -77,7 +97,7 @@
     <entry>
       <string>metrics</string>
       <OptionalFile>
-        <file></file>
+        <file>..\..\..\..\Desktop\metrics.js</file>
         <used>false</used>
       </OptionalFile>
     </entry>

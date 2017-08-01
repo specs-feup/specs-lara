@@ -9,7 +9,7 @@ aspectdef DynamicCallGraphMatisse
     apply
         dcg.add($call);
     end
-	
+		
 	select function{"foobar"} end
 	apply
 		// Insert code for printing the dynamic call graph

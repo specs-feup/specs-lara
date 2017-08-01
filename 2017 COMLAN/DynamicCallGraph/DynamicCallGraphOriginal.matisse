@@ -8,9 +8,7 @@
     <entry>
       <string>include</string>
       <FileList>
-        <fileList>
-          <file>lara\DynamicCallGraph</file>
-        </fileList>
+        <fileList/>
       </FileList>
     </entry>
     <entry>
@@ -65,7 +63,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>lara\DynamicCallGraphMatisse.lara</file>
+      <file>lara\DynamicCallGraphOriginalMatisse.lara</file>
     </entry>
     <entry>
       <string>report</string>
