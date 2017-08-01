@@ -7,7 +7,6 @@ aspectdef LogCalls
 	end
 	
 	var idCounter = 0;
-	var idCounterFile = 0;
 	var filename = "log.txt";
     select file.call end
 	apply
