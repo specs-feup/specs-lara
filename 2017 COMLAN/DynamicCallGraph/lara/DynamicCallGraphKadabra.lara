@@ -1,6 +1,6 @@
 import DynamicCallGraph;
-	
-aspectdef DynamicCallGraphClava
+
+aspectdef DynamicCallGraphKadabra
 
 	dcg = new DynamicCallGraph("CallGraph");
 	

@@ -1,6 +1,6 @@
 import DynamicCallGraph;
-	
-aspectdef DynamicCallGraphClava
+
+aspectdef DynamicCallGraphMatisse
 
 	dcg = new DynamicCallGraph("CallGraph");
 	
@@ -9,8 +9,8 @@ aspectdef DynamicCallGraphClava
     apply
         dcg.add($call);
     end
-
-	select function{"main"} end
+	
+	select function{"foobar"} end
 	apply
 		// Insert code for printing the dynamic call graph
 		dcg.print($function);
