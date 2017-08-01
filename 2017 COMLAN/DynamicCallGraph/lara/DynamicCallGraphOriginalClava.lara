@@ -27,19 +27,20 @@ aspectdef DynamicCallGraphClava
 	select function{"main"}.body end
 	//select file.function end
 	apply
-		$body.exec insertReturn('printf("digraph call_graph {\\n");');
+		
+		$function.exec insertReturn('printf("digraph call_graph {\\n");');
 
 		for (f in obj) {
 			for (c in obj[f]) {
 
 				var id = obj[f][c];
-				$body.exec insertReturn(%{
+				$function.exec insertReturn(%{
 	if (call_graph[ [[id]] ] != 0)
 		printf("\t[[f]] -> [[c]] [label=\"%d\"];\n", call_graph[[[id]]]);
 				}%);
 			}
 		}
-		$body.exec insertReturn(%{printf("}\n");}%);
+		$function.exec insertReturn(%{printf("}\n");}%);
 	end
 
 	println('\nDynamicCallGraph done!');
