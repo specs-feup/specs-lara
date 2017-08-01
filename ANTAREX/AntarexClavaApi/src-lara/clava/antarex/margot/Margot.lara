@@ -114,7 +114,7 @@ var MargotCxxStrings = {
     initCode: 'init();',
     incCode: 'margot.hpp',
     updCode: 'update',
-    appliedCode:  'margot::elaboration::manager.configuration_applied();',
+    appliedCode:  'manager.configuration_applied();',
     startCode: 'start_monitor',
     stopCode: 'stop_monitor',
     logCode: 'log();',
@@ -141,7 +141,7 @@ var MargotCxxStrings = {
         for(var ac of additionalCode) {
             code += ac + '\n';
         }
-        code += this.appliedCode + '\n}';
+        code += this.ns + this.sep + block  +this.sep + this.appliedCode + '\n}';
         return code;
     },
     
