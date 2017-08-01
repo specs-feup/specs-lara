@@ -4,17 +4,15 @@
     <entry>
       <string>include</string>
       <FileList>
-        <fileList>
-          <file>lara\RangeValueMonitor</file>
-        </fileList>
+        <fileList/>
       </FileList>
     </entry>
     <entry>
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>src\cpp</file>
-          <file>src\cpp\lib</file>
+          <file>src\c</file>
+          <file>src\c\lib</file>
         </fileList>
       </FileList>
     </entry>
@@ -72,7 +70,7 @@
     </entry>
     <entry>
       <string>Weaved code foldername</string>
-      <string>cpp</string>
+      <string>c-original</string>
     </entry>
     <entry>
       <string>Compiler Flags</string>
@@ -84,7 +82,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>lara\RangeValueMonitorTestClava.lara</file>
+      <file>lara\RangeValueMonitorOriginalClava.lara</file>
     </entry>
     <entry>
       <string>report</string>
@@ -106,7 +104,7 @@
     </entry>
     <entry>
       <string>C/C++ Standard</string>
-      <pt.up.fe.specs.clava.language.Standard>CXX11</pt.up.fe.specs.clava.language.Standard>
+      <pt.up.fe.specs.clava.language.Standard>C99</pt.up.fe.specs.clava.language.Standard>
     </entry>
   </values>
   <strict>false</strict>

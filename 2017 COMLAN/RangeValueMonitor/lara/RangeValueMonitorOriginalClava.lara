@@ -1,12 +1,9 @@
 aspectdef RangeValuesMonitorClava
 
-	input
-		funcName = 'analyse'
-	end
 
 	/* Instrument the assignments */
 	var vars = new LaraObject();
-	select function{funcName}.expr end
+	select function.expr end
 	apply
 
 	    if($expr.name === undefined) {
@@ -33,12 +30,12 @@ aspectdef RangeValuesMonitorClava
 				continue;
 			}
 			
-			id = vars.getId(funcName, memberAccessChain.join("."));
+			id = vars.getId($function.name, memberAccessChain.join("."));
         } else {
-            id = vars.getId(funcName, $expr.name);
+            id = vars.getId($function.name, $expr.name);
         }
    		
-        insert before '/* monitoring [[$expr.code]] */';
+        	insert before '/* monitoring [[$expr.code]] */';
 		insert after 'range_update([[id]], [[$expr.code]]);';
 	    
 	end

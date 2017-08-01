@@ -45,7 +45,7 @@
     </entry>
     <entry>
       <string>main</string>
-      <string>RangeValueMonitorClava</string>
+      <string></string>
     </entry>
     <entry>
       <string>argv</string>
@@ -84,7 +84,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>lara\RangeValueMonitorTest.lara</file>
+      <file>lara\RangeValueMonitorTestClava.lara</file>
     </entry>
     <entry>
       <string>report</string>
