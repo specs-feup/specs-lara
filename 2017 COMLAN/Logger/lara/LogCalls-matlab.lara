@@ -7,17 +7,17 @@ aspectdef LogCalls
 	apply
 		var log_file_name = "log_file_"+(idCounter++);
 
-		$call.ancestor("function").body.insertBefore(log_file_name + " = fopen('"+filename+"', 'at+');");
+		$call.ancestor("function").body.insertBefore(%{[[log_file_name]] = fopen('[[filename]]', 'at+');}%);
 
-		$call.ancestor("function").insertReturn("fclose("+log_file_name+");");
+		$call.ancestor("function").insertReturn(%{fclose([[log_file_name]]);}%);
 				
-		$call.insert before "fprintf("+log_file_name+", 'Logging to a file\\n');";
-			
-		$call.insert after "fprintf('Print double %f after bar\\n', 2.0);";
-			
-		$call.insert after "fprintf("+log_file_name+", 'Logging again to a file\\n');";
+		$call.insert before %{fprintf([[log_file_name]], 'Logging to a file\n');}%;		
+		$call.insert before %{fprintf('Print double %f after foo\n', 2.0);}%;
+   	
+		$call.insert after %{fprintf('Print double %f after bar\n', 2.0);}%;		
+		$call.insert after %{fprintf([[log_file_name]], 'Logging again to a file\n');}%;
 		
-		$call.insert after "fprintf('Printing again\\n');";
+		$call.insert after %{fprintf('Printing again\n');}%;
 	    
     end
 end

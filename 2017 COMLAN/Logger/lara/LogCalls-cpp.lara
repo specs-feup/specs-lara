@@ -11,15 +11,18 @@ aspectdef LogCalls
     select file.call end
     apply
         var log_file_name = "log_file_"+(idCounter++);
-		$call.ancestor("function").body.insert before "std::ofstream "+log_file_name+";\n"+log_file_name+".open(\""+filename+"\", std::ios_base::app);";
-				
-	    $call.insert before log_file_name + " << \"Logging to a file\" << \"\\n\";";
-			
-	    $call.insert after "std::cout << \"Print double \" << 2 << \" after "+$call.name +"//+"\" << \"\\n\";";
-			
-	    $call.insert after log_file_name + " << \Logging again to a file\" << \"\\n\";";
 		
-	    $call.insert after "std::cout << \"Printing again\;";
+		$call.ancestor("function").body.insertBefore(%{std::ofstream [[log_file_name]];}%);
+		$call.ancestor("function").body.insertBefore(%{[[log_file_name]].open("[[filename]]", std::ios_base::app);}%);
+			
+	    $call.insert before %{[[log_file_name]] << "Logging to a file" << "\n";}%;
+	    $call.insert before %{std::cout << "Print double " << 2 << " after bar" << "\n";}%;
+			
+	    $call.insert after %{std::cout << "Print double " << 2 << " after [[$call.name]]" << "\n";}%;
+			
+	    $call.insert after %{[[log_file_name]] << "Logging again to a file" << "\n";}%;
+		
+	    $call.insert after %{std::cout << "Printing again";}%;
 	    
     end
 
