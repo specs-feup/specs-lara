@@ -1,0 +1,29 @@
+aspectdef LogCalls	
+
+	select file end
+	apply
+		$file.exec addInclude("stdio.h", true);
+		$file.exec addInclude("stdlib.h", true);
+	end
+	
+	var idCounter = 0;
+	var idCounterFile = 0;
+	var filename = "log.txt";
+    select file.call end
+	apply
+		var log_file_name = "log_file_"+(idCounter++);
+
+		$call.ancestor("function").body.insert before "FILE *"+log_file_name+" = fopen(\""+filename+"\", \"a+\");\nif ("+log_file_name+" == NULL){\nprintf(\"Error opening file "+filename+"\\n\");\nexit(1);\n}";
+
+		$call.ancestor("function").body.insertReturn("fclose("+log_file_name+");");
+				
+	    $call.insert before "fprintf("+log_file_name+", \"Logging to a file\\n\");";
+			
+	    $call.insert after "printf(\"Print double %f after bar\\n\", 2.0);";
+			
+	    $call.insert after "fprintf("+log_file_name+", \"Logging again to a file\\n\");";
+		
+	    $call.insert after "printf(\"Printing again\\n\");";
+	    
+    end
+end
