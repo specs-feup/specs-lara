@@ -1,0 +1,23 @@
+import lara.code.Timer;
+
+aspectdef TimeCalls
+	
+	
+	var idCounter = 0;
+	
+	select function.call end
+	apply
+		var clava_timing_start = "clava_timing_start_"+idCounter;
+		var clava_timing_end = "clava_timing_end_"+idCounter;
+		var clava_timing_duration = "clava_timing_duration_"+(idCounter++);
+		
+		$call.insert before %{QueryPerformanceCounter(&[[clava_timing_start]]);}%;
+		$call.insert before %{QueryPerformanceFrequency(&[[clava_timing_frequency]]);}%;
+		$call.insert before %{LARGE_INTEGER [[clava_timing_start]], [[clava_timing_end]], [[clava_timing_frequency]];}%;
+		
+		$call.insert after %{printf("Time:%fus\n", [[clava_timing_duration]]);}%;
+		$call.insert after %{double [[clava_timing_duration]] = (([[clava_timing_end]].QuadPart-[[clava_timing_start]].QuadPart) / (double)[[clava_timing_frequency]].QuadPart) * (1000000);}%;
+		$call.insert after %{QueryPerformanceCounter(&[[clava_timing_end]]);}%;
+		
+	end
+end

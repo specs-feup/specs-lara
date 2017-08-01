@@ -13,16 +13,11 @@ aspectdef TimeCalls
 		var clava_timing_duration = "clava_timing_duration_"+idCounter;
 		idCounter++;
 		
-		$call.insertBefore("std::chrono::high_resolution_clock::time_point "+clava_timing_start+" = std::chrono::high_resolution_clock::now();");
+		$call.insert before %{std::chrono::high_resolution_clock::time_point [[clava_timing_start]] = std::chrono::high_resolution_clock::now();}%;
 		
+		$call.insert after %{std::cout << "Time:" << [[clava_timing_duration]] << "[[std_chrono_units]]" << "\n";}%;
 		
-		
-		$call.insertAfter("std::cout << \"Time:\" << "+clava_timing_duration+" << \""+std_chrono_units+"\" << \"\\n\";");
-		
-		$call.insertAfter("auto "+clava_timing_duration+" = std::chrono::duration_cast<std::chrono::"+std_chrono_units+">("+clava_timing_end+" - clava_timing_start_0).count();");
-		
-		$call.insertAfter("std::chrono::high_resolution_clock::time_point "+clava_timing_end+" = std::chrono::high_resolution_clock::now();");
+		$call.insert after %{auto [[clava_timing_duration]] = std::chrono::duration_cast<std::chrono::[[std_chrono_units]]>([[clava_timing_end]] - [[clava_timing_start]]).count();}%;
+		$call.insert after %{std::chrono::high_resolution_clock::time_point [[clava_timing_end]] = std::chrono::high_resolution_clock::now();}%;
 	end
-	
-
 end

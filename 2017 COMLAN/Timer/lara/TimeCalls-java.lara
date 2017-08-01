@@ -6,11 +6,9 @@ aspectdef TimeCalls
 		var kadabra_timing_start = "kadabra_timing_start_"+idCounter;
 		var kadabra_timing_interval = "kadabra_timing_interval_"+idCounter;
 		idCounter++;
-		
-		$call.insert("before", "long "+kadabra_timing_start+" = System.nanoTime();");
-		
-		$call.insert("after", "System.out.printf(\"Time:%fus\\n\", "+kadabra_timing_interval+");");
-		
-		$call.insert("after", "double "+kadabra_timing_interval+" = (double)(System.nanoTime() - "+kadabra_timing_start+") /  (double)1000;");
+		$call.insert before %{long [[kadabra_timing_start]] = System.nanoTime();}%;
+	
+		$call.insert after %{System.out.printf("Time:%fus\n", [[kadabra_timing_interval]]);}%;
+		$call.insert after %{double [[kadabra_timing_interval]] = (double)(System.nanoTime() - [[kadabra_timing_start]]) /  (double)1000;}%;
 	end
 end

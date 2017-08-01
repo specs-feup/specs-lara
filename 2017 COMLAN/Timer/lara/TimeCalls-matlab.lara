@@ -1,0 +1,15 @@
+import lara.code.Timer;
+
+aspectdef TimeCalls	
+	
+	var idCounter = 0;
+	
+	select function.call end
+	apply
+		var matisse_time = "matisse_time"+(idCounter++);
+		
+		$call.insert before %{tic;}%;
+		
+		$call.insert after %{[[matisse_time]] = toc;}%;
+	end
+end
