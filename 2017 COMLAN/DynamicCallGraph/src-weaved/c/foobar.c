@@ -1,4 +1,5 @@
-int call_graph[2] = {0};
+#include <stdio.h>
+int dcg_CallGraph[2] = {0};
 
 double bar() {
    
@@ -10,7 +11,7 @@ double foo() {
    double a = 0;
    for(int i = 0; i < 1000; i++) {
       a += bar();
-      call_graph[0]++;
+      dcg_CallGraph[0]++;
    }
    
    return a;
@@ -19,15 +20,13 @@ double foo() {
 
 int main() {
    foo();
-   call_graph[1]++;
-   printf("digraph call_graph {\n");
-   
-   	if (call_graph[ 0 ] != 0)
-   		printf("\tfoo -> bar [label=\"%d\"];\n", call_graph[0]);
-   				
-   
-   	if (call_graph[ 1 ] != 0)
-   		printf("\tmain -> foo [label=\"%d\"];\n", call_graph[1]);
-   				
+   dcg_CallGraph[1]++;
+   printf("digraph CallGraph {\n");
+   	if (dcg_CallGraph[ 0 ] != 0) {
+   		printf("\tfoo -> bar [label=\"%d\"];\n", dcg_CallGraph[0]);
+   	}
+   	if (dcg_CallGraph[ 1 ] != 0) {
+   		printf("\tmain -> foo [label=\"%d\"];\n", dcg_CallGraph[1]);
+   	}
    printf("}\n");
 }
