@@ -1,0 +1,19 @@
+import RangeValueMonitor;
+
+
+aspectdef RangeValueMonitorWithApiClava
+
+    var range = new RangeValueMonitor("monitor1");
+    select function.varref end
+    apply
+        range.monitor($function, $varref.name);
+        //range.monitorAll();
+        //range.monitorAll($function);
+    end
+    
+    select file.function{"main"} end
+    apply
+    	//range.print($function);
+        range.print($function.body, "ranges_"+$file.name+".txt");
+    end
+end

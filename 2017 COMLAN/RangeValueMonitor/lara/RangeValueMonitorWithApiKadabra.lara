@@ -1,0 +1,20 @@
+import RangeValueMonitor;
+aspectdef RangeValueMonitorWithApiKadabra
+
+    var range = new RangeValueMonitor("monitor1");
+    select function.var{inLoopHeader==false} end
+    apply
+//    		for(var prop in range){
+//			println("-->"+prop);
+//    		}
+        range.monitor($function, $var.name);
+        //range.monitorAll();
+        //range.monitorAll($function);
+    end
+    
+    select file.function{"main"} end
+    apply
+    		range.print($function);
+//        range.print($function.body, "ranges_"+$file.name+".txt");
+    end
+end

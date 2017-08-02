@@ -1,0 +1,21 @@
+import RangeValueMonitor;
+
+aspectdef RangeValueMonitorWithApiMatisse
+
+    var range = new RangeValueMonitor("monitor1");
+    select function.var end
+    apply
+        range.monitor($function, $var.name);
+        //range.monitorAll();
+        //range.monitorAll($function);
+    end
+    
+    select app.file.function{"foobar"} end
+    apply
+    	//range.print($function);
+        range.print($function.body, "ranges_"+$file.name+".txt");
+    end
+
+    	
+end
+
