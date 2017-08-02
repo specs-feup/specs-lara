@@ -46,7 +46,7 @@
     </entry>
     <entry>
       <string>main</string>
-      <string>DynamicCallGraphKadabra</string>
+      <string></string>
     </entry>
     <entry>
       <string>argv</string>
@@ -87,7 +87,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>lara\DynamicCallGraphTest.lara</file>
+      <file>lara\DynamicCallGraphKadabra.lara</file>
     </entry>
     <entry>
       <string>report</string>

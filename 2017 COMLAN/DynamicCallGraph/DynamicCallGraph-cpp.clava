@@ -44,7 +44,7 @@
     </entry>
     <entry>
       <string>main</string>
-      <string>DynamicCallGraphClava</string>
+      <string></string>
     </entry>
     <entry>
       <string>argv</string>
@@ -83,7 +83,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>lara\DynamicCallGraphTest.lara</file>
+      <file>lara\DynamicCallGraphClava.lara</file>
     </entry>
     <entry>
       <string>report</string>

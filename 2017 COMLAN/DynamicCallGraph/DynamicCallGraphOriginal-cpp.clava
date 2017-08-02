@@ -69,7 +69,7 @@
     </entry>
     <entry>
       <string>Weaved code foldername</string>
-      <string>cpp</string>
+      <string>cpp-original</string>
     </entry>
     <entry>
       <string>Compiler Flags</string>
