@@ -1,10 +1,10 @@
-aspectdef InstrumentCode
+aspectdef MeasureEnergyClavaCpp
 	
 	
 	select file end
 	apply
 		$file.exec addInclude("rapl.h", false);
-		$file.exec addInclude("stdio.h", true);
+		$file.exec addInclude("iostream", true);
 	end
 	
 	var idCounter = 0;
@@ -13,8 +13,9 @@ aspectdef InstrumentCode
 	apply
 		var clava_energy_output = "clava_energy_output_"+(idCounter++);
 
+		
 		$call.insert before %{rapl_monitor_start();}%;
-		$call.insert after %{printf("Energy:%f", [[clava_energy_output]]);}%;
+		$call.insert after %{std::cout << "Energy:" << [[clava_energy_output]];}%;
 		$call.insert after %{double [[clava_energy_output]] = rapl_monitor_report();}%;
 	end
 	

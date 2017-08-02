@@ -4,7 +4,9 @@
     <entry>
       <string>include</string>
       <FileList>
-        <fileList/>
+        <fileList>
+          <file>lara\Energy</file>
+        </fileList>
       </FileList>
     </entry>
     <entry>
@@ -69,7 +71,7 @@
     </entry>
     <entry>
       <string>Weaved code foldername</string>
-      <string>c</string>
+      <string>c_with_api</string>
     </entry>
     <entry>
       <string>Compiler Flags</string>
@@ -81,7 +83,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>lara\MeasureEnergy-c.lara</file>
+      <file>lara\MeasureEnergyWithApi.lara</file>
     </entry>
     <entry>
       <string>report</string>

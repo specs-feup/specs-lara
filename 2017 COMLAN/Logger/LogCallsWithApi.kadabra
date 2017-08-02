@@ -4,14 +4,24 @@
     <entry>
       <string>include</string>
       <FileList>
-        <fileList/>
+        <fileList>
+          <file>lara\Logger</file>
+        </fileList>
       </FileList>
+    </entry>
+    <entry>
+      <string>astyle</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>show info</string>
+      <boolean>false</boolean>
     </entry>
     <entry>
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>src\c</file>
+          <file>src\java</file>
         </fileList>
       </FileList>
     </entry>
@@ -27,18 +37,12 @@
       </OptionalFile>
     </entry>
     <entry>
-      <string>library includes</string>
-      <FileList>
-        <fileList/>
-      </FileList>
+      <string>noclasspath</string>
+      <boolean>false</boolean>
     </entry>
     <entry>
-      <string>Disable Clava Info</string>
-      <boolean>true</boolean>
-    </entry>
-    <entry>
-      <string>Clean intermediate files</string>
-      <boolean>true</boolean>
+      <string>outputType</string>
+      <spoon.OutputType>COMPILATION_UNITS</spoon.OutputType>
     </entry>
     <entry>
       <string>main</string>
@@ -60,28 +64,30 @@
       <boolean>false</boolean>
     </entry>
     <entry>
+      <string>clear_output</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
       <string>verbose</string>
       <org.lara.interpreter.joptions.config.interpreter.VerboseLevel>errors</org.lara.interpreter.joptions.config.interpreter.VerboseLevel>
     </entry>
     <entry>
       <string>output</string>
-      <file>src-weaved</file>
+      <file>src-weaved\java_with_api</file>
     </entry>
     <entry>
-      <string>Weaved code foldername</string>
-      <string>c</string>
+      <string>java includes dir</string>
+      <FileList>
+        <fileList/>
+      </FileList>
     </entry>
     <entry>
-      <string>Compiler Flags</string>
-      <string></string>
-    </entry>
-    <entry>
-      <string>Check C/CXX Syntax</string>
+      <string>report kadabra</string>
       <boolean>false</boolean>
     </entry>
     <entry>
       <string>aspect</string>
-      <file>lara\LogCalls-c.lara</file>
+      <file>lara\LogCallsWithApi.lara</file>
     </entry>
     <entry>
       <string>report</string>
@@ -91,19 +97,11 @@
       </OptionalFile>
     </entry>
     <entry>
-      <string>Disable Weaving</string>
-      <boolean>false</boolean>
-    </entry>
-    <entry>
       <string>metrics</string>
       <OptionalFile>
         <file></file>
         <used>false</used>
       </OptionalFile>
-    </entry>
-    <entry>
-      <string>C/C++ Standard</string>
-      <pt.up.fe.specs.clava.language.Standard>C99</pt.up.fe.specs.clava.language.Standard>
     </entry>
   </values>
   <strict>false</strict>

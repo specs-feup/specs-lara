@@ -4,9 +4,7 @@
     <entry>
       <string>include</string>
       <FileList>
-        <fileList>
-          <file>lara\Energy</file>
-        </fileList>
+        <fileList/>
       </FileList>
     </entry>
     <entry>
@@ -87,7 +85,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>lara\MeasureEnergy.lara</file>
+      <file>lara\MeasureEnergyKadabra.lara</file>
     </entry>
     <entry>
       <string>report</string>

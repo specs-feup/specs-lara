@@ -73,7 +73,7 @@
     </entry>
     <entry>
       <string>output</string>
-      <file>src-weaved\java</file>
+      <file>src-weaved\java_with_api</file>
     </entry>
     <entry>
       <string>java includes dir</string>

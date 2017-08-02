@@ -71,7 +71,7 @@
     </entry>
     <entry>
       <string>Weaved code foldername</string>
-      <string>c</string>
+      <string>c_with_api</string>
     </entry>
     <entry>
       <string>Compiler Flags</string>

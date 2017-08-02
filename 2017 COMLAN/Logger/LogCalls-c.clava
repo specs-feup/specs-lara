@@ -4,9 +4,7 @@
     <entry>
       <string>include</string>
       <FileList>
-        <fileList>
-          <file>lara\Logger</file>
-        </fileList>
+        <fileList/>
       </FileList>
     </entry>
     <entry>
@@ -83,7 +81,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>lara\LogCalls.lara</file>
+      <file>lara\LogCallsClava-c.lara</file>
     </entry>
     <entry>
       <string>report</string>

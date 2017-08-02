@@ -1,4 +1,4 @@
-import LoggerBase;
+import lara.code.LoggerBase;
 import lara.util.IdGenerator;
 import lara.util.PrintOnce;
 import clava.Clava;
@@ -207,15 +207,9 @@ Logger.prototype._setup_cxx_stdcpp_file = function($file, $function) {
 	// Add include
     $file.addInclude("fstream", true);
 
-	// Declare file stream
-	var code = "std::ofstream " + streamName + ";\n";
-
-	// Open file
-	code = code + streamName + ".open(\"" + this.filename + "\", std::ios_base::app);";
+	// Declare file stream and open file
+	$function.body.insertBegin(_clava_logger_filename_declaration_cpp(streamName, this.filename));
 	
-    // Add code at beginning of the function
-    $function.body.insertBegin(code);
-
     return streamName;
 }
 
@@ -304,4 +298,9 @@ if ([[varname]] == NULL)
     printf("Error opening file [[filename]]\n");
     exit(1);
 } 
+}% end
+
+codedef _clava_logger_filename_declaration_cpp(streamName, filename) %{
+std::ofstream [[streamName]];
+[[streamName]].open("[[filename]]", std::ios_base::app);
 }% end

@@ -1,4 +1,4 @@
-aspectdef LogCalls	
+aspectdef LogCallsClavaC
 
 	select file end
 	apply

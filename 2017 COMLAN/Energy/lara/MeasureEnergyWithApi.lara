@@ -1,6 +1,6 @@
 import Energy;
 
-aspectdef InstrumentCode
+aspectdef MeasureEnergyWithApi
 	
 	// Instrument call
 	var energy = new Energy();

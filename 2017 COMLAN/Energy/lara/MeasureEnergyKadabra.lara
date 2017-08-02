@@ -1,4 +1,4 @@
-aspectdef InstrumentCode
+aspectdef MeasureEnergyKadabra
 	
 	var idCounter = 0;
 	

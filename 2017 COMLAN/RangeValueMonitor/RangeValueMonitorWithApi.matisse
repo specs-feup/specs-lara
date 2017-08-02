@@ -61,7 +61,7 @@
     </entry>
     <entry>
       <string>output</string>
-      <file>src-weaved\matlab</file>
+      <file>src-weaved\matlab_with_api</file>
     </entry>
     <entry>
       <string>aspect</string>

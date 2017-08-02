@@ -1,4 +1,4 @@
-aspectdef InstrumentCode
+aspectdef MeasureEnergyMatisse
 	
 	var idCounter = 0;
 	

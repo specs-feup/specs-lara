@@ -1,4 +1,4 @@
-aspectdef LogCalls	
+aspectdef LogCallsClavaCpp
 
 	select file end
 	apply
@@ -12,8 +12,9 @@ aspectdef LogCalls
     apply
         var log_file_name = "log_file_"+(idCounter++);
 		
-		$call.ancestor("function").body.insertBefore(%{std::ofstream [[log_file_name]];}%);
-		$call.ancestor("function").body.insertBefore(%{[[log_file_name]].open("[[filename]]", std::ios_base::app);}%);
+		// Consecutive calls to insertBegin will insert in reversed order (always inserts at the beginning)
+		$call.ancestor("function").body.insertBegin(%{[[log_file_name]].open("[[filename]]", std::ios_base::app);}%);
+		$call.ancestor("function").body.insertBegin(%{std::ofstream [[log_file_name]];}%);
 			
 	    $call.insert before %{[[log_file_name]] << "Logging to a file" << "\n";}%;
 	    $call.insert before %{std::cout << "Print double " << 2 << " after bar" << "\n";}%;

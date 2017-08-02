@@ -1,4 +1,4 @@
-aspectdef LogCalls	
+aspectdef LogCallsKadabra
 
 	var idCounter = 0;
 	var filename = "log.txt";

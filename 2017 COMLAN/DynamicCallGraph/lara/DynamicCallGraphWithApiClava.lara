@@ -1,9 +1,9 @@
 import DynamicCallGraph;
 	
 aspectdef DynamicCallGraphWithApiClava
-
+		
 	dcg = new DynamicCallGraph("CallGraph");
-	
+
 	// Select all calls that come from a function
     select function.call end
     apply
@@ -15,5 +15,5 @@ aspectdef DynamicCallGraphWithApiClava
 		// Insert code for printing the dynamic call graph
 		dcg.print($function);
 	end
-	
+
 end
