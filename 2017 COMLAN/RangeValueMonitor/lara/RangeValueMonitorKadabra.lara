@@ -1,4 +1,3 @@
-import lara.code.Logger;
 import lara.util.StringSet;
 
 aspectdef RangeValueMonitorKadabra
@@ -60,7 +59,6 @@ aspectdef RangeValueMonitorKadabra
 		call get: GetReference($m);
 		$printRangesEnd = get.$ref;
 		//Print ranges
-		var printRanges = new Logger(false);
 		for(f in laraObj) {	
 			$printRangesEnd.insert before %{System.out.printf("[[f]]\n");}%;
 	
@@ -69,9 +67,6 @@ aspectdef RangeValueMonitorKadabra
 				var rangeMin = $monitor.qualifiedName+"."+$min.name+"[" + id + "]";
 				var rangeMax = $monitor.qualifiedName+"."+$max.name+"[" + id + "]";
 				$printRangesEnd.insert before %{System.out.printf("[[v]]: {%f, %f}\n", [[rangeMin]], [[rangeMax]]);}%;
-//				printRanges.append(v + ": {").appendDouble(rangeMin)
-//				.append(", ").appendDouble(rangeMax).append("}").ln()
-//				.logBefore($printRangesEnd);
 			}
 		}
 		$printRangesEnd.replace '';

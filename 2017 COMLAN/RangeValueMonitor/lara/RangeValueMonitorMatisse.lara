@@ -1,4 +1,3 @@
-import lara.code.Logger;
 import lara.util.StringSet;
 
 aspectdef RangeValueMonitorTestMatisse
@@ -48,23 +47,27 @@ aspectdef RangeValueMonitorTestMatisse
 	
 		
 		var $printFunctionLastStmt = $printFile.mainFunctionJp.body.lastStatement;
-	
-		var printRanges = new Logger(false, "ranges_"+$file.name+".txt");
+
+		// Open the file
+		var logFileVar = "log_file";
+		var logFilename = "ranges_"+$file.name+".txt";
+		$printFunctionLastStmt.insert before %{[[logFileVar]] = fopen('[[logFilename]]', 'at+');}%;
+		
+		
 		for(f in laraObj) {	
-			printRanges.append(f).ln().logBefore($printFunctionLastStmt);
-	
+			$printFunctionLastStmt.insert before %{fprintf([[logFileVar]], '[[f]]\n');}%;
+			
 			for(v in laraObj[f]) {
 				id = laraObj[f][v];
 				var matlabId = Number(id) + 1;
 				var rangeMin = monitorName +"_range_min(" + matlabId + ")";
 				var rangeMax = monitorName +"_range_max(" + matlabId + ")";
-				printRanges.tab().append(v + ": {").appendDouble(rangeMin)
-				.append(", ").appendDouble(rangeMax).append("}").ln()
-				.logBefore($printFunctionLastStmt);
+				$printFunctionLastStmt.insert before %{fprintf([[logFileVar]], '\tb: {%f, %f}\n', [[rangeMin]], [[rangeMax]]);}%;
 			}
 		}
-		
-	
+
+		$printFunctionLastStmt.insert before %{fclose([[logFileVar]]);}%;
+
 		// Initialize monitor
 		$body.insertBegin(monitorName + "_range_init();");
 	
