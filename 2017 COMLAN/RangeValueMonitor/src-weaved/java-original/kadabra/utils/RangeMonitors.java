@@ -25,6 +25,8 @@ public class RangeMonitors {
     }
 
     public static void monitor_range_print() {
+        System.out.printf("foo\n");
+        System.out.printf("a: {%f, %f}\n", kadabra.utils.RangeMonitors.monitorMin[0], kadabra.utils.RangeMonitors.monitorMax[0]);
     }
 }
 

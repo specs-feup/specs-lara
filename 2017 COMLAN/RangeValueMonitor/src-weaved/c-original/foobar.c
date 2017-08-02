@@ -1,4 +1,6 @@
 #include "lib/lib.h"
+#include <stdio.h>
+#include <stdlib.h>
 double range_min[ 2 ] = {0};
 double range_max[ 2 ] = {0};
 

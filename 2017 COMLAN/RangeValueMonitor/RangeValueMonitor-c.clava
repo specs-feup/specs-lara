@@ -4,9 +4,7 @@
     <entry>
       <string>include</string>
       <FileList>
-        <fileList>
-          <file>lara\RangeValueMonitor</file>
-        </fileList>
+        <fileList/>
       </FileList>
     </entry>
     <entry>
@@ -72,7 +70,7 @@
     </entry>
     <entry>
       <string>Weaved code foldername</string>
-      <string>c</string>
+      <string>c-original</string>
     </entry>
     <entry>
       <string>Compiler Flags</string>
@@ -84,7 +82,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>lara\RangeValueMonitorTestClava.lara</file>
+      <file>lara\RangeValueMonitorClava.lara</file>
     </entry>
     <entry>
       <string>report</string>
