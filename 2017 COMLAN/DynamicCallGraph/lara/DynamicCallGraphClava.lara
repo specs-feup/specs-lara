@@ -1,19 +1,47 @@
-import DynamicCallGraph;
-	
 aspectdef DynamicCallGraphClava
 
-	dcg = new DynamicCallGraph("CallGraph");
-	
-	// Select all calls that come from a function
-    select function.call end
-    apply
-        dcg.add($call);
-    end
+	var obj = new LaraObject();
 
-	select function{"main"} end
+	/* Instrument function calls and increment the corresponding position */
+	select function.call end
 	apply
-		// Insert code for printing the dynamic call graph
-		dcg.print($function);
+		var id = obj.getId($function.name, $call.name);
+		$call.insert after 'call_graph[[[id]]]++;';
 	end
-	
+
+
+	/* Declare the array in each file */
+	var total = obj.getTotal();
+	select file.function end
+	apply
+		if($file.hasMain) {
+			insert before 'int call_graph[[[total]]] = {0};';
+		} else {
+			insert before 'extern int call_graph[[[total]]];';
+		}
+		break;
+	end
+
+
+	/* Print the array at the end of the main function */
+	select file.function{"main"}.body end
+	apply
+		$file.exec addInclude("stdio.h", true);
+		
+		$function.exec insertReturn('printf("digraph call_graph {\\n");');
+
+		for (f in obj) {
+			for (c in obj[f]) {
+
+				var id = obj[f][c];
+				$function.exec insertReturn(%{
+	if (call_graph[ [[id]] ] != 0)
+		printf("\t[[f]] -> [[c]] [label=\"%d\"];\n", call_graph[[[id]]]);
+				}%);
+			}
+		}
+		$function.exec insertReturn(%{printf("}\n");}%);
+	end
+
+	println('\nDynamicCallGraph done!');
 end

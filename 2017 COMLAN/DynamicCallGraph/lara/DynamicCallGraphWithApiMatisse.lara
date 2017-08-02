@@ -1,0 +1,19 @@
+import DynamicCallGraph;
+
+aspectdef DynamicCallGraphWithApiMatisse
+
+	dcg = new DynamicCallGraph("CallGraph");
+	
+	// Select all calls that come from a function
+    select function.call end
+    apply
+        dcg.add($call);
+    end
+		
+	select function{"foobar"} end
+	apply
+		// Insert code for printing the dynamic call graph
+		dcg.print($function);
+	end
+	
+end

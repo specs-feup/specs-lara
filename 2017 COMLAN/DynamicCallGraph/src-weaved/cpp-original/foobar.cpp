@@ -1,3 +1,4 @@
+#include <stdio.h>
 int call_graph[2] = {0};
 
 double bar() {

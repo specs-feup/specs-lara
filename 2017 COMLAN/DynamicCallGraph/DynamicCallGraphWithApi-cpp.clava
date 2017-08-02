@@ -4,22 +4,16 @@
     <entry>
       <string>include</string>
       <FileList>
-        <fileList/>
+        <fileList>
+          <file>lara\DynamicCallGraph</file>
+        </fileList>
       </FileList>
-    </entry>
-    <entry>
-      <string>astyle</string>
-      <boolean>false</boolean>
-    </entry>
-    <entry>
-      <string>show info</string>
-      <boolean>false</boolean>
     </entry>
     <entry>
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>src\java</file>
+          <file>src\cpp</file>
         </fileList>
       </FileList>
     </entry>
@@ -35,12 +29,18 @@
       </OptionalFile>
     </entry>
     <entry>
-      <string>noclasspath</string>
-      <boolean>false</boolean>
+      <string>library includes</string>
+      <FileList>
+        <fileList/>
+      </FileList>
     </entry>
     <entry>
-      <string>outputType</string>
-      <spoon.OutputType>COMPILATION_UNITS</spoon.OutputType>
+      <string>Disable Clava Info</string>
+      <boolean>true</boolean>
+    </entry>
+    <entry>
+      <string>Clean intermediate files</string>
+      <boolean>true</boolean>
     </entry>
     <entry>
       <string>main</string>
@@ -62,30 +62,28 @@
       <boolean>false</boolean>
     </entry>
     <entry>
-      <string>clear_output</string>
-      <boolean>false</boolean>
-    </entry>
-    <entry>
       <string>verbose</string>
       <org.lara.interpreter.joptions.config.interpreter.VerboseLevel>errors</org.lara.interpreter.joptions.config.interpreter.VerboseLevel>
     </entry>
     <entry>
       <string>output</string>
-      <file>src-weaved\java-original</file>
+      <file>src-weaved</file>
     </entry>
     <entry>
-      <string>java includes dir</string>
-      <FileList>
-        <fileList/>
-      </FileList>
+      <string>Weaved code foldername</string>
+      <string>cpp</string>
     </entry>
     <entry>
-      <string>report kadabra</string>
+      <string>Compiler Flags</string>
+      <string></string>
+    </entry>
+    <entry>
+      <string>Check C/CXX Syntax</string>
       <boolean>false</boolean>
     </entry>
     <entry>
       <string>aspect</string>
-      <file>lara\DynamicCallGraphOriginalKadabra.lara</file>
+      <file>lara\DynamicCallGraphWithApiClava.lara</file>
     </entry>
     <entry>
       <string>report</string>
@@ -95,11 +93,19 @@
       </OptionalFile>
     </entry>
     <entry>
+      <string>Disable Weaving</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
       <string>metrics</string>
       <OptionalFile>
-        <file>..\..\..\..\Desktop\metrics.js</file>
+        <file></file>
         <used>false</used>
       </OptionalFile>
+    </entry>
+    <entry>
+      <string>C/C++ Standard</string>
+      <pt.up.fe.specs.clava.language.Standard>CXX11</pt.up.fe.specs.clava.language.Standard>
     </entry>
   </values>
   <strict>false</strict>

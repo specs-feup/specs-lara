@@ -2,16 +2,22 @@
   <name>LaraI Options</name>
   <values>
     <entry>
+      <string>CHECK_SYNTAX</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
       <string>include</string>
       <FileList>
-        <fileList/>
+        <fileList>
+          <file>lara\DynamicCallGraph</file>
+        </fileList>
       </FileList>
     </entry>
     <entry>
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>src\cpp</file>
+          <file>src\matlab</file>
         </fileList>
       </FileList>
     </entry>
@@ -20,25 +26,15 @@
       <boolean>false</boolean>
     </entry>
     <entry>
+      <string>language_mode</string>
+      <org.specs.MatlabIR.MatlabLanguage.LanguageMode>MATLAB</org.specs.MatlabIR.MatlabLanguage.LanguageMode>
+    </entry>
+    <entry>
       <string>log</string>
       <OptionalFile>
         <file></file>
         <used>false</used>
       </OptionalFile>
-    </entry>
-    <entry>
-      <string>library includes</string>
-      <FileList>
-        <fileList/>
-      </FileList>
-    </entry>
-    <entry>
-      <string>Disable Clava Info</string>
-      <boolean>true</boolean>
-    </entry>
-    <entry>
-      <string>Clean intermediate files</string>
-      <boolean>true</boolean>
     </entry>
     <entry>
       <string>main</string>
@@ -65,23 +61,11 @@
     </entry>
     <entry>
       <string>output</string>
-      <file>src-weaved</file>
-    </entry>
-    <entry>
-      <string>Weaved code foldername</string>
-      <string>cpp-original</string>
-    </entry>
-    <entry>
-      <string>Compiler Flags</string>
-      <string></string>
-    </entry>
-    <entry>
-      <string>Check C/CXX Syntax</string>
-      <boolean>false</boolean>
+      <file>src-weaved\matlab</file>
     </entry>
     <entry>
       <string>aspect</string>
-      <file>lara\DynamicCallGraphOriginalClava.lara</file>
+      <file>lara\DynamicCallGraphWithApiMatisse.lara</file>
     </entry>
     <entry>
       <string>report</string>
@@ -91,19 +75,11 @@
       </OptionalFile>
     </entry>
     <entry>
-      <string>Disable Weaving</string>
-      <boolean>false</boolean>
-    </entry>
-    <entry>
       <string>metrics</string>
       <OptionalFile>
         <file></file>
         <used>false</used>
       </OptionalFile>
-    </entry>
-    <entry>
-      <string>C/C++ Standard</string>
-      <pt.up.fe.specs.clava.language.Standard>CXX11</pt.up.fe.specs.clava.language.Standard>
     </entry>
   </values>
   <strict>false</strict>

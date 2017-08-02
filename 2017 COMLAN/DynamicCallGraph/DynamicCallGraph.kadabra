@@ -4,9 +4,7 @@
     <entry>
       <string>include</string>
       <FileList>
-        <fileList>
-          <file>lara\DynamicCallGraph</file>
-        </fileList>
+        <fileList/>
       </FileList>
     </entry>
     <entry>
@@ -73,7 +71,7 @@
     </entry>
     <entry>
       <string>output</string>
-      <file>src-weaved\java</file>
+      <file>src-weaved\java-original</file>
     </entry>
     <entry>
       <string>java includes dir</string>

@@ -8,9 +8,7 @@
     <entry>
       <string>include</string>
       <FileList>
-        <fileList>
-          <file>lara\DynamicCallGraph</file>
-        </fileList>
+        <fileList/>
       </FileList>
     </entry>
     <entry>
@@ -61,7 +59,7 @@
     </entry>
     <entry>
       <string>output</string>
-      <file>src-weaved\matlab</file>
+      <file>src-weaved\matlab-original</file>
     </entry>
     <entry>
       <string>aspect</string>

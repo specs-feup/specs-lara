@@ -4,9 +4,7 @@
     <entry>
       <string>include</string>
       <FileList>
-        <fileList>
-          <file>lara\DynamicCallGraph</file>
-        </fileList>
+        <fileList/>
       </FileList>
     </entry>
     <entry>
@@ -71,7 +69,7 @@
     </entry>
     <entry>
       <string>Weaved code foldername</string>
-      <string>cpp</string>
+      <string>cpp-original</string>
     </entry>
     <entry>
       <string>Compiler Flags</string>
