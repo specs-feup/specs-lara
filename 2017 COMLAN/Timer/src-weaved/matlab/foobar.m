@@ -1,8 +1,7 @@
 function foobar()
    tic;
    foo();
-   matisse_time_0 = toc;
-   fprintf('Time:%fus\n', matisse_time_0);
+   matisse_time0 = toc;
 end
 
 function [a] = foo()
@@ -10,8 +9,7 @@ function [a] = foo()
    for i = 0:5
       tic;
       a = a + bar();
-      matisse_time_1 = toc;
-      fprintf('Time:%fus\n', matisse_time_1);
+      matisse_time1 = toc;
    end
 end
 

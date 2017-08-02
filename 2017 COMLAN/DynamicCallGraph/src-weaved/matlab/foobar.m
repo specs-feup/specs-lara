@@ -1,29 +1,29 @@
 function foobar()
-   global dcg_CallGraph;
+   global dcg;
    foo();
-   if (numel(dcg_CallGraph) < 1)
-      dcg_CallGraph(1) = 1;
+   if (numel(dcg) < 1)
+      dcg(1) = 1;
    else
-      dcg_CallGraph(1) = dcg_CallGraph(1) + 1;
+      dcg(1) = dcg(1) + 1;
    end
    other();
-   if (numel(dcg_CallGraph) < 2)
-      dcg_CallGraph(2) = 1;
+   if (numel(dcg) < 2)
+      dcg(2) = 1;
    else
-      dcg_CallGraph(2) = dcg_CallGraph(2) + 1;
+      dcg(2) = dcg(2) + 1;
    end
    dynamicCallGraph
 end
 
 function [a] = foo()
-   global dcg_CallGraph;
+   global dcg;
    a = 0;
    for i = 0:5
       a = a + bar();
-      if (numel(dcg_CallGraph) < 3)
-         dcg_CallGraph(3) = 1;
+      if (numel(dcg) < 3)
+         dcg(3) = 1;
       else
-         dcg_CallGraph(3) = dcg_CallGraph(3) + 1;
+         dcg(3) = dcg(3) + 1;
       end
    end
 end

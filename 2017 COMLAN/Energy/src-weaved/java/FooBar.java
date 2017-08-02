@@ -14,9 +14,8 @@ public class FooBar {
             double[] kadabra_energy_output_0After = weaver.kadabra.monitor.energy.EnergyCheck.getEnergyStats();
             double kadabra_energy_output_0 = 0;
             for(int kadabra_energy_output_0Counter = 0; kadabra_energy_output_0Counter < kadabra_energy_output_0Before.length; kadabra_energy_output_0Counter++){
-                kadabra_energy_output_0 += kadabra_energy_output_0After[ kadabra_energy_output_0Counter ] - kadabra_energy_output_0Before[ kadabra_energy_output_0Counter ]; // /10?
+            kadabra_energy_output_0 += kadabra_energy_output_0After[ kadabra_energy_output_0Counter ] - kadabra_energy_output_0Before[ kadabra_energy_output_0Counter ];
             }
-            //weaver.kadabra.monitor.energy.EnergyCheck.ProfileDealloc();
             System.out.printf("Energy:%f", kadabra_energy_output_0);
         }
         return a;
@@ -28,9 +27,8 @@ public class FooBar {
         double[] kadabra_energy_output_1After = weaver.kadabra.monitor.energy.EnergyCheck.getEnergyStats();
         double kadabra_energy_output_1 = 0;
         for(int kadabra_energy_output_1Counter = 0; kadabra_energy_output_1Counter < kadabra_energy_output_1Before.length; kadabra_energy_output_1Counter++){
-            kadabra_energy_output_1 += kadabra_energy_output_1After[ kadabra_energy_output_1Counter ] - kadabra_energy_output_1Before[ kadabra_energy_output_1Counter ]; // /10?
+        kadabra_energy_output_1 += kadabra_energy_output_1After[ kadabra_energy_output_1Counter ] - kadabra_energy_output_1Before[ kadabra_energy_output_1Counter ];
         }
-        //weaver.kadabra.monitor.energy.EnergyCheck.ProfileDealloc();
         System.out.printf("Energy:%f", kadabra_energy_output_1);
     }
 }
