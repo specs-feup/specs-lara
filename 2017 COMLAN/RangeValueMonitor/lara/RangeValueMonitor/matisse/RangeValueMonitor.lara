@@ -1,6 +1,5 @@
 import RangeValueMonitorBase;
 import RangeValueMonitorAspects;
-import matisse.Matisse;
 import lara.code.Logger;
 
 
@@ -42,11 +41,14 @@ RangeValueMonitor.prototype.print = function($callSite, filename) {
 	
 	var total = this.laraObj.getTotal();
 
+	var $app = $callSite.root;
+	
 	// Create monitor functions
-	Matisse.addFile(this.name+"_range_init.m", RangeValueMonitorInit(this.name, total));
-	Matisse.addFile(this.name+"_range_update.m", RangeValueMonitorUpdate(this.name));
-	$printFile = Matisse.addFile(this.name+"_range_print.m", RangeValueMonitorPrint(this.name));
+	$app.exec addFile(this.name+"_range_init.m", RangeValueMonitorInit(this.name, total));
+	$app.exec addFile(this.name+"_range_update.m", RangeValueMonitorUpdate(this.name));
+	$app.exec $printFile : addFile(this.name+"_range_print.m", RangeValueMonitorPrint(this.name));
 
+	
 	var $printFunctionLastStmt = $printFile.mainFunctionJp.body.lastStatement;
 
 	var printRanges = new Logger(false, filename);

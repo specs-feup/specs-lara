@@ -1,6 +1,5 @@
-import RangeValueMonitorAspects;
 import lara.code.Logger;
-import kadabra.Utils;
+import lara.util.StringSet;
 
 aspectdef RangeValueMonitorKadabra
 
@@ -21,7 +20,7 @@ aspectdef RangeValueMonitorKadabra
     	apply
 		var varName = $var.name;
 		var id = $function.id + "#" + varName;
-		// If already monitored, return
+		// If already monitored, continue
 		if(monitoredVariables.has(id)) {
 			continue;
 		}
@@ -33,8 +32,8 @@ aspectdef RangeValueMonitorKadabra
 		call validExprs : RangeValueMonitorValidExprs($function, varName);
 	
 		for($expr of validExprs.exprs) {
-			var id = laraObj.getId($function.name, $expr.name);
-			$expr.insert after%{[[$monitor.qualifiedName]].[[updateName]]([[id]], [[$expr.name]]);}%;
+			var index = laraObj.getId($function.name, $expr.name);
+			$expr.insert after%{[[$monitor.qualifiedName]].[[updateName]]([[index]], [[$expr.name]]);}%;
 		}
   
     end
@@ -210,3 +209,35 @@ public static void [[monitorName]]() {
 }% end
 
 
+/**** UTILS *****/
+
+aspectdef BeforeExit
+	input $method, code end
+	var inserted = false;
+
+	//Try to insert before returns
+	select $method.body.return end
+	apply
+		insert before '[[code]]';
+		inserted = true;
+	end
+	if(inserted){
+		return;
+	}
+	
+	//Try to insert after last stmt (void methods)
+	select $method.body.lastStmt end
+	apply
+		insert after '[[code]]';
+		inserted = true;
+	end
+	if(inserted){
+		return;
+	}
+
+	//Else, is an empty method
+	select $method.body end
+	apply
+		replace '[[code]]';
+	end
+end

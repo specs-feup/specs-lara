@@ -1,5 +1,3 @@
-
-
 aspectdef DynamicCallGraphMatisse
 
 	var laraObj = new LaraObject();

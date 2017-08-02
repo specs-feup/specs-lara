@@ -1,0 +1,152 @@
+import lara.code.Logger;
+import lara.util.StringSet;
+
+aspectdef RangeValueMonitorTestMatisse
+
+	var monitorName = "monitor";
+
+	var monitoredVariables = new StringSet();
+	var laraObj = new LaraObject();
+
+    select function.var end
+    apply
+
+		var varName = $var.name;
+		
+		// If already monitored, continue
+		var id = $function.id + "#" + varName;
+		if(monitoredVariables.has(id)) {
+			continue;
+		}
+		
+		// Add variable as monitored
+		monitoredVariables.add(id);
+	
+		// Get expressions to monitor
+		call validExprs : RangeValueMonitorValidExprs($function, varName);
+	
+	
+		for($currentVar of validExprs.vars) {
+	
+			// Index should start at 1	
+			var index = Number(laraObj.getId($function.name, $currentVar.name)) + 1;
+	
+			$currentVar.insertBefore(%{% monitoring [[$currentVar.code]]}%);
+			$currentVar.insertAfter(%{[[monitorName]]_range_update([[index]], [[$currentVar.code]]);}%);	
+		}
+
+    end
+    
+    select app.file.function{"foobar"}.body end
+    apply
+		var total = laraObj.getTotal();
+		
+		// Create monitor functions
+		$app.exec addFile(monitorName+"_range_init.m", RangeValueMonitorInit(monitorName, total));
+		$app.exec addFile(monitorName+"_range_update.m", RangeValueMonitorUpdate(monitorName));
+		$app.exec $printFile : addFile(monitorName+"_range_print.m", RangeValueMonitorPrint(monitorName));
+	
+		
+		var $printFunctionLastStmt = $printFile.mainFunctionJp.body.lastStatement;
+	
+		var printRanges = new Logger(false, "ranges_"+$file.name+".txt");
+		for(f in laraObj) {	
+			printRanges.append(f).ln().logBefore($printFunctionLastStmt);
+	
+			for(v in laraObj[f]) {
+				id = laraObj[f][v];
+				var matlabId = Number(id) + 1;
+				var rangeMin = monitorName +"_range_min(" + matlabId + ")";
+				var rangeMax = monitorName +"_range_max(" + matlabId + ")";
+				printRanges.tab().append(v + ": {").appendDouble(rangeMin)
+				.append(", ").appendDouble(rangeMax).append("}").ln()
+				.logBefore($printFunctionLastStmt);
+			}
+		}
+		
+	
+		// Initialize monitor
+		$body.insertBegin(monitorName + "_range_init();");
+	
+		// Add call to print
+		$body.insertEnd(monitorName + "_range_print();");
+    end
+
+    	
+end
+
+
+
+aspectdef RangeValueMonitorValidExprs
+	input $function, varName end
+	output vars end
+	
+	vars = [];
+	
+	select $function.var end
+	apply
+
+		// Ignore vars that do not match
+		if($var.name !== varName) {
+			continue;
+		}
+
+		// Monitor only writes
+		if(!$var.isWrite) {
+			continue;
+		}
+
+		// Ignore expressions inside loop headers
+		if($var.isInsideLoopHeader) {
+			continue;
+		}
+
+		vars.push($var);
+	end
+
+end
+
+
+codedef RangeValueMonitorInit(monitorName, total) %{
+
+function [[monitorName]]_range_init
+	global [[monitorName]]_range_min [[monitorName]]_range_max
+	
+	for i=1:[[total]]
+		[[monitorName]]_range_min(i) = Inf;
+		[[monitorName]]_range_max(i) = -Inf;
+	end
+	
+	
+end
+
+}% end
+
+codedef RangeValueMonitorUpdate(monitorName) %{
+
+function [[monitorName]]_range_update(index, value)
+	global [[monitorName]]_range_min [[monitorName]]_range_max
+	
+	if(value < [[monitorName]]_range_min(index))
+		[[monitorName]]_range_min(index) = value;
+	end
+
+	if(value > [[monitorName]]_range_max(index))
+		[[monitorName]]_range_max(index) = value;
+	end
+
+end
+
+}% end
+
+
+codedef RangeValueMonitorPrint(monitorName) %{
+
+function monitor1_print_ranges()
+	global [[monitorName]]_range_min [[monitorName]]_range_max
+
+	% End of function
+end
+
+}% end
+
