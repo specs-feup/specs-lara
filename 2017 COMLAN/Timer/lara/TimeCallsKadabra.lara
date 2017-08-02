@@ -1,4 +1,4 @@
-aspectdef TimeCalls
+aspectdef TimeCallsKadabra
 	var idCounter = 0;
 	
 	select function.call end

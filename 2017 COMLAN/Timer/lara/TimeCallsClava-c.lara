@@ -1,19 +1,24 @@
-import lara.code.Timer;
-
-aspectdef TimeCalls
+aspectdef TimeCallsClavaC
 	
+	// Version for Windows
 	
 	var idCounter = 0;
 	
-	select function.call end
+	select file.function.call end
 	apply
+		$file.exec addInclude("time.h", true);
+		$file.exec addInclude("windows.h", true);
+		$file.exec addInclude("stdio.h", true);
+	
 		var clava_timing_start = "clava_timing_start_"+idCounter;
 		var clava_timing_end = "clava_timing_end_"+idCounter;
+		var clava_timing_frequency = "clava_timing_frequency_"+idCounter;
 		var clava_timing_duration = "clava_timing_duration_"+(idCounter++);
-		
-		$call.insert before %{QueryPerformanceCounter(&[[clava_timing_start]]);}%;
+
+		$call.insert before %{LARGE_INTEGER [[clava_timing_start]], [[clava_timing_end]], [[clava_timing_frequency]];}%;		
 		$call.insert before %{QueryPerformanceFrequency(&[[clava_timing_frequency]]);}%;
-		$call.insert before %{LARGE_INTEGER [[clava_timing_start]], [[clava_timing_end]], [[clava_timing_frequency]];}%;
+		$call.insert before %{QueryPerformanceCounter(&[[clava_timing_start]]);}%;
+
 		
 		$call.insert after %{printf("Time:%fus\n", [[clava_timing_duration]]);}%;
 		$call.insert after %{double [[clava_timing_duration]] = (([[clava_timing_end]].QuadPart-[[clava_timing_start]].QuadPart) / (double)[[clava_timing_frequency]].QuadPart) * (1000000);}%;

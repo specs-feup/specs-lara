@@ -1,13 +1,15 @@
-import lara.code.Timer;
-
-aspectdef TimeCalls
+aspectdef TimeCallsClavaCpp
 	
 	
 	var idCounter = 0;
 	var std_chrono_units="microseconds";
 	
-	select function.call end
+	select file.function.call end
 	apply
+	
+		$file.exec addInclude("chrono", true);
+		$file.exec addInclude("iostream", true);
+	
 		var clava_timing_start = "clava_timing_start_"+idCounter;
 		var clava_timing_end = "clava_timing_end_"+idCounter;
 		var clava_timing_duration = "clava_timing_duration_"+idCounter;
@@ -18,6 +20,9 @@ aspectdef TimeCalls
 		$call.insert after %{std::cout << "Time:" << [[clava_timing_duration]] << "[[std_chrono_units]]" << "\n";}%;
 		
 		$call.insert after %{auto [[clava_timing_duration]] = std::chrono::duration_cast<std::chrono::[[std_chrono_units]]>([[clava_timing_end]] - [[clava_timing_start]]).count();}%;
+		
 		$call.insert after %{std::chrono::high_resolution_clock::time_point [[clava_timing_end]] = std::chrono::high_resolution_clock::now();}%;
+
 	end
+	
 end

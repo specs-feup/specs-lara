@@ -83,7 +83,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>lara\TimeCalls-c.lara</file>
+      <file>lara\TimeCallsWithApi.lara</file>
     </entry>
     <entry>
       <string>report</string>

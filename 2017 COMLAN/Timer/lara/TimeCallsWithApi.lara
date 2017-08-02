@@ -1,10 +1,10 @@
 import Timer;
 
-aspectdef TimeCalls
+aspectdef TimeCallsWithApi
 	
 	// Create microseconds timer that prints information to the console
 	var timer = new Timer("MICROSECONDS");
-	timer.setPrint(false);
+
 	// Time all calls inside functions
 	select call end
 	apply
