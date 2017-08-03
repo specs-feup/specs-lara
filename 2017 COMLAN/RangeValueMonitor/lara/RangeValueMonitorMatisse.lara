@@ -69,10 +69,10 @@ aspectdef RangeValueMonitorTestMatisse
 		$printFunctionLastStmt.insert before %{fclose([[logFileVar]]);}%;
 
 		// Initialize monitor
-		$body.insertBegin(monitorName + "_range_init();");
+		$body.exec insertBegin(monitorName + "_range_init();");
 	
 		// Add call to print
-		$body.insertEnd(monitorName + "_range_print();");
+		$body.exec insertEnd(monitorName + "_range_print();");
     end
 
     	

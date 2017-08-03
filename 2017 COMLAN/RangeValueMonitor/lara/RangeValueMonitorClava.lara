@@ -15,9 +15,6 @@ aspectdef RangeValuesMonitorClava
 			continue;
 		}
 		
-
-        //println($expr.line + " - " + $expr.name + " - " 
-        //+ $expr.use + " - " + $expr.code + " - " + $expr.joinPointType);
         
         var id = undefined;
         if($expr.instanceOf("memberAccess")){
@@ -119,6 +116,6 @@ void print_ranges() {
 		$body.exec insertBegin('range_init();');
 		$body.exec insertBegin('atexit(print_ranges);');
 	end
-	// */
+
 end
 

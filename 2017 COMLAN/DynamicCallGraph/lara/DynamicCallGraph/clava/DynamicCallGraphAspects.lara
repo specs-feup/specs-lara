@@ -12,7 +12,7 @@ aspectdef DynamicCallGraphSetup
 			insert before 'extern int [[graphVar]][[[total]]];';
 		}
 		// Skips remaining join points of last chain element (i.e., function, in this case)
-		// In other others, proceeds to the next file
+		// In other words, proceeds to the next file
 		break;
 	end
 

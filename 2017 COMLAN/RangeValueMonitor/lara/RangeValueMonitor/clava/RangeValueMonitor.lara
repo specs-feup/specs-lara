@@ -38,10 +38,10 @@ RangeValueMonitor.prototype.monitor = function($function, varName) {
             id = this.laraObj.getId($function.name, $expr.name);
         }
    		
-        $expr.insertBefore(%{/* monitoring [[$expr.code]] */}%);
-		$expr.insertAfter(%{[[this.name]]_range_update([[id]], [[$expr.code]]);}%);
+        $expr.exec insertBefore(%{/* monitoring [[$expr.code]] */}%);
+		$expr.exec insertAfter(%{[[this.name]]_range_update([[id]], [[$expr.code]]);}%);
 
-		$file.addIncludeJp(this.$monitorH); 
+		$file.exec addIncludeJp(this.$monitorH); 
 	}
 	
 }
@@ -95,7 +95,7 @@ RangeValueMonitor.prototype.print = function($callSite, filename) {
 	call InitRangeMonitor(this.name, this.$monitorH);
 
 	// Add call to print
-	$callSite.insertAfter(this.name + "_print_ranges();");
+	$callSite.exec insertAfter(this.name + "_print_ranges();");
 }
 
 codedef ClavaRangeMonitorInit(monitorName, total) %{

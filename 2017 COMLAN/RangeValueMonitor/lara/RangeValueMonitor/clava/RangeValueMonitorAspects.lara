@@ -38,7 +38,7 @@ aspectdef InitRangeMonitor
 	select file.function{'main'}.body end
 	apply
 		$body.exec insertBegin(monitorName + '_range_init();');
-		$file.addIncludeJp($monitorH);
+		$file.exec addIncludeJp($monitorH);
 	end
 	
 end

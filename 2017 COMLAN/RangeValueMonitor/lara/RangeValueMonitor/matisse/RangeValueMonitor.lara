@@ -24,10 +24,10 @@ RangeValueMonitor.prototype.monitor = function($function, varName) {
 
 	for($var of validExprs.vars) {
 
-          id = this._getMatlabId($function.name, $var.name);
+		id = this._getMatlabId($function.name, $var.name);
 
-          $var.insertBefore(%{% monitoring [[$var.code]]}%);
-		$var.insertAfter(%{[[this.name]]_range_update([[id]], [[$var.code]]);}%);
+        $var.exec insertBefore(%{% monitoring [[$var.code]]}%);
+		$var.exec insertAfter(%{[[this.name]]_range_update([[id]], [[$var.code]]);}%);
 
 	}
 	
@@ -68,10 +68,10 @@ RangeValueMonitor.prototype.print = function($callSite, filename) {
 	
 
 	// Initialize monitor
-	$callSite.insertBegin(this.name + "_range_init();");
+	$callSite.exec insertBegin(this.name + "_range_init();");
 
 	// Add call to print
-	$callSite.insertEnd(this.name + "_range_print();");
+	$callSite.exec insertEnd(this.name + "_range_print();");
 	
 }
 

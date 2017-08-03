@@ -71,4 +71,6 @@ Logger.prototype._log_file_setup = function($function) {
 	return varname;
 }
 
-codedef _matisse_logger_filename_declaration(varname, filename) %{[[varname]] = fopen('[[filename]]','at+');}% end
+codedef _matisse_logger_filename_declaration(varname, filename) %{
+[[varname]] = fopen('[[filename]]','at+');
+}% end

@@ -86,7 +86,6 @@ function dynamicCallGraph
 		
 	fprintf('}\n');
 
-	% Clear graph
 	[[graphVar]] = [];
 end
 

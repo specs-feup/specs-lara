@@ -6,6 +6,7 @@ aspectdef DynamicCallGraphMatisse
 	// Select all calls that come from a function
     select function.call end
     apply
+	
 		// Add global to the function of the call
 		$function = $call.ancestor("function");
 		if(isUndefined($function)) {
@@ -14,7 +15,7 @@ aspectdef DynamicCallGraphMatisse
 		}
 	
 		// Add global
-		$function.addGlobal(graphName);
+		$function.exec addGlobal(graphName);
 	
 		var id = new Number(laraObj.getId($function.name, $call.name)) + 1;
 	

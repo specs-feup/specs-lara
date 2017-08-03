@@ -136,17 +136,3 @@ aspectdef GetClasses
 	end
 end
 
-
-/*
-aspectdef GetField
-	input $class,graphVar end
-	output $graph end
-	select $class.field{name==graphVar}end
-	apply
-		$graph = $field;
-		return;
-	end
-	$class.exec $f: newField(["public","static"], "int[]", graphVar, null);
-	$graph = f;
-end
-*/

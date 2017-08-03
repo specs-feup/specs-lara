@@ -19,6 +19,7 @@ aspectdef RangeValueMonitorKadabra
     	apply
 		var varName = $var.name;
 		var id = $function.id + "#" + varName;
+		
 		// If already monitored, continue
 		if(monitoredVariables.has(id)) {
 			continue;
@@ -92,10 +93,6 @@ aspectdef RangeValueMonitorValidExprs
 	
 	select $function.body.statement.var end
 	apply
-		// Ignore expressions without name
-//		if($var.name === undefined) {
-//			continue;
-//		}
 
 		// Ignore expressions if name does not match
 		if($var.name !== varName) {
@@ -129,24 +126,30 @@ aspectdef GetMonitor
 	input varName end
 	output $monitor, $min, $max end
 	var className = "kadabra.utils.RangeMonitors";
+	
 	//If both class and field exists
 	select file.class{className}.field{varName+"Min"} end
 	apply
 		$monitor = $class;
-		$min = $field; //return field
+		 //return field
+		$min = $field;
 	end
+	
 	//If both class and field exists
 	select file.class{className}.field{varName+"Max"} end
 	apply
-		$max = $field; //return field
+		//return field
+		$max = $field; 
 	end
 	if($min !== undefined){
 		return;
 	}
+	
 	//If class exists
 	select file.class{className} end
 	apply
 		$monitor = $class;
+		
 		//Create field
 		$class.exec $newMin: newField(["public","static"], "double[]", varName+"Min", null);
 		$class.exec $newMax: newField(["public","static"], "double[]", varName+"Max", null);
@@ -154,6 +157,7 @@ aspectdef GetMonitor
 		$max = $newMax;
 		return;
 	end
+	
 	//Otherwise create both
 	select app end
 	apply

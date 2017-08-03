@@ -77,7 +77,6 @@ Logger.prototype._logSetup = function($jp, insertBefore) {
     }
 
     this.insertBefore = (insertBefore === undefined) ? false : insertBefore;
-	// return $function
     return $jp.ancestor("function");
 }
 
@@ -94,11 +93,6 @@ Logger.prototype._log_cxx = function($file, $function) {
 Logger.prototype._log_cxx_specslogger = function($file, $function) {
     var loggerName = this._setup_cxx_specslogger($file, $function);
 
-	/*
-    if (loggerName === undefined) {
-        return;
-    }
-	*/
 
     // Create code from elements
     var code = loggerName + ".msg(" + this.currentElements.map(function(element) {
@@ -114,7 +108,6 @@ Logger.prototype._log_cxx_specslogger = function($file, $function) {
 Logger.prototype._setup_cxx_specslogger = function($file, $function) {
 
 	// Warn user about dependency to SpecsLogger library
-	//Clava.infoProjectDependency("SpecsLogger", "https://github.com/specs-feup/specs-c-libs");
 	PrintOnce.message("Weaved code has dependency to project SpecsLogger, which can be found at https://github.com/specs-feup/specs-c-libs");
 	
 	var declaredName = this._declareName($function.declaration(true), function(){return IdGenerator.next("clava_logger_");});
@@ -124,21 +117,9 @@ Logger.prototype._setup_cxx_specslogger = function($file, $function) {
 		return loggerName;
 	}
 	
-	
-/*	
-    // Check if setup was already called for this function
-    var declaration = $function.declaration(true);
-    var loggerName = this.functionMap[declaration];
 
-    if (loggerName !== undefined) {
-        return loggerName;
-    } else {
-        loggerName = IdGenerator.next("clava_logger_");
-        this.functionMap[declaration] = loggerName;
-    }
-*/
     // Add include to Logger for Cpp only
-    $file.addInclude("SpecsLogger.h", false);
+    $file.exec addInclude("SpecsLogger.h", false);
 
     // Get correct logger
     var loggerDecl = undefined;
@@ -187,7 +168,7 @@ Logger.prototype._setup_cxx_stdcpp_console = function($file, $function) {
     var streamName = "std::cout";
 
 	// Add include
-    $file.addInclude("iostream", true);
+    $file.exec addInclude("iostream", true);
 	
 	return streamName;
 }
@@ -220,45 +201,14 @@ Logger.prototype._log_c = function($file, $function) {
 	} else {
 		return this._log_c_file($file, $function);
 	}
-	/*
-    if (!this._setup_c($file, $function)) {
-        return;
-    }
-
-    return this._printfFormat("printf");
-	*/
 }
 
-/**
- * Sets up the code for the Logger in the file that is called
- */
- /*
-Logger.prototype._setup_c = function($file, $function) {
-
-	if (this.filename === undefined) {
-		return _setup_c_console($file, $function);
-	} else {
-		return _setup_c_file($file, $function);
-	}
-
-    // Add stdio.h if console, not implemented yet for file
-    if (this.filename !== undefined) {
-        this._warn('Not implemented for C files when a "filename" is defined');
-        return false;
-    }
-
-    $file.addInclude("stdio.h", true);
-
-    return true;
-}
-*/
 
 Logger.prototype._log_c_console = function($file, $function) {
     // Setup
 	$file.addInclude("stdio.h", true);
 	
 	return this._printfFormat("printf");
-//    return true;
 }
 
 Logger.prototype._log_c_file = function($file, $function) {

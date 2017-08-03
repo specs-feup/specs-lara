@@ -46,41 +46,6 @@ DynamicCallGraph.prototype.print = function($callSite) {
 	
 }
 
-/**
- * Print the array at the end of the main function
- */
- /*
-DynamicCallGraph.prototype.print = function($callSite) {
-
-	var $function = undefined;
-	if($callSite.instanceOf("function")) {
-		$function = $callSite;
-	} else {
-		$function = $callSite.ancestor("function");
-		if(isUndefined($function)) {
-			println("DynamicCallGraphPrint: Could not insert at joinpoint " + $callSite.joinPointType + ", only supports functions or inside functions");
-			return;
-		}	
-	}
-
-	
-	var $file = $callSite.ancestor("file");
-
-	
-	$file.exec addInclude("stdio.h", true);
-	
-	$function.exec insertReturn('printf("digraph ' + graphName + ' {\\n");');
-
-	for (caller in laraObj) {
-		for (callee in laraObj[caller]) {
-			var id = laraObj[caller][callee];
-			$function.exec insertReturn(graphvizConnections(this._getGraphId(), id, caller, callee));
-		}
-	}
-	$function.exec insertReturn(%{printf("}\n");}%);
-
-end
-*/
 
 codedef graphvizConnections(graphVar, id, caller, callee) %{
 	if ([[graphVar]][ [[id]] ] != 0) {
