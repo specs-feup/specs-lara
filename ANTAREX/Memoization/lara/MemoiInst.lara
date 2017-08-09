@@ -88,7 +88,7 @@ aspectdef InstrumentWrappers
 				$file.exec addInclude('MemoiInstrumenter.h', false);
 
 				/* add declaration of the monitor */
-				var type = ClavaJoinPoints.typeLiteral("Memoi*");
+				var type = ClavaJoinPoints.typeLiteral('MemoiInst*');
 				$file.exec addGlobal(monitorNames[target], type, 'NULL');
 			}
 		}
