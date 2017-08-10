@@ -4,7 +4,7 @@ aspectdef Launcher
 
 	println('memoization instrumentation');
 
-	call MemoiInst(['log', 'sqrt'], '/home/pedro/Documents/reports_memoi');
+	call MemoiInst(['log', 'sqrt'], '/home/pedro/Documents/');
 end
 
 aspectdef MemoiInst
@@ -21,8 +21,6 @@ aspectdef MemoiInst
 		reportNames,
 		monitorNames
 	end
-
-	var tableSize = 200000;
 
 	/* setup */
 	wrapperNames = {};
@@ -43,7 +41,7 @@ aspectdef MemoiInst
 	call InstrumentWrappers(foundTargets, wrapperNames, monitorNames);
 
 	/* perform setup */
-	call Setup(foundTargets, monitorNames, reportNames, reportsDir, tableSize);
+	call Setup(foundTargets, monitorNames, reportNames, reportsDir);
 end
 
 aspectdef WrapTargets
@@ -81,14 +79,15 @@ aspectdef InstrumentWrappers
 				/* instrument call to target */
 				var monitorName = monitorNames[target];
 				var firstParam = $function.params[0].name;
-				insert after 'mi_inc([[monitorName]], [[firstParam]], result);';
+				insert after 'memoi_inst_inc([[monitorName]], &[[firstParam]], &result);';
 
 				/* add include to the instrumentation library */
 				var $file = $function.ancestor('file');
 				$file.exec addInclude('MemoiInstrumenter.h', false);
+				$file.exec addInclude('stdlib.h', true);
 
 				/* add declaration of the monitor */
-				var type = ClavaJoinPoints.typeLiteral('MemoiInst*');
+				var type = ClavaJoinPoints.typeLiteral('MemoiInstrumenter*');
 				$file.exec addGlobal(monitorNames[target], type, 'NULL');
 			}
 		}
@@ -97,19 +96,29 @@ end
 
 aspectdef Setup
 
-	input targets, monitorNames, reportNames, reportsDir, tableSize end
+	input targets, monitorNames, reportNames, reportsDir end
 
-	select function{'main'}.body end
+	select file.function{'main'}.body end
 	apply
 		for (var target of targets) {
 		
 			var monitor = monitorNames[target];
 			var report = reportNames[target];
-		
-			$body.exec insertBegin(%{[[monitor]] = mi_init("[[target]]", [[tableSize]]);}%);
 
-			$function.exec insertReturn(%{mi_to_json([[monitor]], "[[reportsDir]]/[[report]].json");}%);
-			$function.exec insertReturn(%{[[monitor]] = mi_destroy([[monitor]]);}%);
+			/* add init call at the start of main */
+			$body.exec insertBegin(%{[[monitor]] = memoi_inst_init("[[target]]", DOUBLE);}%);
+
+			/* add functions to print and clean up at every return on main */
+			$function.exec insertReturn(%{memoi_inst_to_json([[monitor]], "[[reportsDir]]/[[report]].json");}%);
+			$function.exec insertReturn(%{[[monitor]] = memoi_inst_destroy([[monitor]]);}%);
+	
+			/* add include to the instrumentation library */
+			$file.exec addInclude('MemoiInstrumenter.h', false);
+			$file.exec addInclude('stdlib.h', true);
+	
+			/* add declaration of the monitor */
+			var type = ClavaJoinPoints.typeLiteral('MemoiInstrumenter*');
+			$file.exec addGlobal(monitorNames[target], type, 'NULL');
 		}
 	end
 end
