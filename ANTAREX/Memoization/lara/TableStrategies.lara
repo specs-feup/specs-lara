@@ -1,0 +1,81 @@
+import TableHelper;
+
+//	Builds a table to hold the k most frequent elements. The table size, S, is equal to the
+// smallest 2^N > k, where N is one of 2^T and N >= 16. If there are collisions in the table,
+// the most frequent element stays. This aspect provides a collision report.
+aspectdef BuildSimpleTable16bit
+
+	input report, k, argName end
+	output collisions = 0, collisionPercentage, maxCollision, coverage, code end
+
+	println('\n\n === 16bit simple table for ' + report.name + ' === ');
+
+	if(k > report.elements) {
+		k = report.elements;
+	}
+
+	var elements = report.counts.slice(0, k); // TODO: check if I should be doing this. With collisions it's possible that using checking more than k elements is better.
+	elements.reverse();
+
+	println('\nfor k = ' + k + ' elements');
+
+	var TS = {'S': Math.pow(2, 16), 'N' : 16};
+
+	var table = [];
+	var mCol = 0;
+	var hashMCol = -1;
+
+	// fill our table
+	for(var i = 0; i < k; i++) {
+
+		var _hash = hash(elements[i].key, TS.N);
+		
+		if(table[_hash] === undefined) {
+
+			table[_hash] = {'key' : elements[i].key,
+						'output' : elements[i].output,
+						'collisions' : 0,
+						'counter' : elements[i].counter};
+		} else {
+
+			table[_hash].key = elements[i].key;
+			table[_hash].output = elements[i].output;
+			table[_hash].counter = elements[i].counter;
+
+			// collisions on this specific position
+			table[_hash].collisions++;
+			if(table[_hash].collisions > mCol) {mCol = table[_hash].collisions; hashMCol = _hash;}
+			
+			// total collisions
+			collisions++;
+		}
+	}
+
+	// report 
+	collisionPercentage = collisions / k * 100;
+	maxCollision = mCol;
+	var tableTotal = 0;
+	for(var i = 0; i < TS.S; i++) {
+
+		if(table[i] != undefined) {
+
+			tableTotal += table[i].counter;
+		}
+	}
+	coverage = tableTotal / report.calls * 100;
+	
+	println('collisions: ' + collisions + ' (' + (collisionPercentage.toFixed(2)) + '%)');
+	println('largest collision: ' + maxCollision);
+	println('coverage: ' + (coverage.toFixed(2)) + '%');
+
+	// generate C table
+	var tableCode = buildTableCode(table, TS.S);
+
+	// generate C memoi logic 
+	var logicCode = buildLogicCode(TS.N, argName);
+
+	// generate C function code
+	var functionCode = buildFunctionCode(tableCode, logicCode);
+
+	code = tableCode + '\n\n' + logicCode;
+end

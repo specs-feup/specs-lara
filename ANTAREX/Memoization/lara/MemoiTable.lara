@@ -1,0 +1,234 @@
+import TableStrategies;
+import clava.ClavaJoinPoints;
+
+aspectdef Launcher
+
+	println('memoization table generation');
+
+	var reportPath = '/home/pedro/Documents/log_memoi_prof.json';
+
+	call MemoiTableGen(['log'], [reportPath], true);
+end
+
+aspectdef MemoiTableGen
+
+	input
+		targets,
+		reportPaths,
+		withStats,
+		wrapperSuffix = '_wrapper'
+	end
+
+	/* setup */
+	if( !(Array.isArray(targets) && Array.isArray(reportPaths)) ) {
+
+		throw 'need an array of targets and an array of reports';
+	}
+
+	if ( targets.length !== reportPaths.length ) {
+
+		throw 'the arrays for targets and reports need to have the same size';
+	}
+
+	wrapperNames = {};
+	for (var target of targets) {
+		wrapperNames[target] = target + wrapperSuffix;
+	}
+
+	/* wrap targets */
+	call wt : WrapTargets(targets, wrapperNames);
+	var foundTargets = wt.foundTargets;
+
+	/* read the reports */
+	call rr : ReadReports(reportPaths);
+	var reports = rr.reports;
+
+	/* print metrics for each report */
+	call CalculateMetrics(reports);
+
+	/* generate the table code and add it to each wrapper */
+	call ChangeWrappers(targets, wrapperNames, reports, withStats);
+
+	/* insert code to print the stats if needed */
+	if (withStats) {
+		call PrintStats(targets);
+	}
+end
+
+aspectdef PrintStats
+	
+	input targets end
+
+	select file.function{'main'} end
+	apply
+		for (var target of targets) {
+			/* declare the needed global variables */
+			var misses = target + '_total_misses';
+			var total = target + '_total_calls';
+			
+			$file.exec addGlobal(misses, ClavaJoinPoints.builtinType("int"), 0);
+			$file.exec addGlobal(total, ClavaJoinPoints.builtinType("int"), 0);
+
+			/* add the needed header include */
+			$file.addInclude('stdio.h', true);
+
+			/* insert the printing code */
+			$function.exec insertReturn(%{
+				printf("[[target]]\ncalls: %d\nhits: %d (%.2f%%)\nmisses: %d (%.2f%%)\n",
+					[[total]],
+					[[total]] - [[misses]],
+					([[total]] - [[misses]]) * 100.0 / [[total]],
+					[[misses]],
+					[[misses]] * 100.0 / [[total]]);
+			}%);
+		}
+	end
+end
+	
+aspectdef ChangeWrappers
+	
+	input targets, wrapperNames, reports, withStats, k = 65536 end
+
+	select file.function.call end
+	apply
+		for (var target of targets) {
+	
+			if($function.name == wrapperNames[target] && $call.name == target) {
+
+				if (withStats) {
+					/* declare global */
+					var varName = target + '_total_calls';
+					$file.exec addGlobal(varName, ClavaJoinPoints.builtinType("int"), 0);
+					
+					/* insert code to collect stats */
+					$call.insert before '[[target]]_total_calls++;';
+				}
+				
+				/* build the table based on the report */
+				var firstParam = $function.params[0].name;
+				call st : BuildSimpleTable16bit(reports[target], k, firstParam);
+
+				/* inject the code before the call */
+				$call.insert before st.code;
+
+				if (withStats) {
+					/* declare global */
+					var varName = target + '_total_misses';
+					$file.exec addGlobal(varName, ClavaJoinPoints.builtinType("int"), 0);
+					
+					/* insert code to collect stats */
+					$call.insert before '[[target]]_total_misses++;';
+				}
+				
+				/* add include to types */
+				$file.exec addInclude('stdint.h', true);
+			}
+		}
+	end
+end
+
+aspectdef WrapTargets
+
+	input targets, wrapperNames end
+	output foundTargets = [] end
+
+	var found = {};
+
+	select call end
+	apply
+		for (var target of targets) {
+			if ($call.name == target) {
+
+				if(found[target] === undefined) {
+					foundTargets.push(target);
+					found[target] = true;
+				}
+				exec wrap(wrapperNames[target]);
+			}
+		}
+	end
+end
+
+aspectdef CalculateMetrics
+
+	input reports end
+
+	for(var reportName in reports) {
+
+		println(' === metrics for ' + reportName + ' === ');
+
+		var report = reports[reportName];
+		
+		var total = 0;
+		for(var i in report.counts) {
+
+			total += report.counts[i].counter;
+		}
+		
+		var repetitionRate = (total - report.elements) / total;
+		
+		var averageRepetition = total / report.elements;
+		
+		function totalTopN(report, n) {
+		
+			var result = 0;
+		
+			for(var i = 0; i < Math.min(n, report.counts.length); i++){
+		
+				result += report.counts[i].counter;
+			}
+		
+			return result;
+		};
+		
+		var top3total = totalTopN(report, 3);
+		var top3percentage = top3total / total * 100;
+		
+		var top5total = totalTopN(report, 5);
+		var top5percentage = top5total / total * 100;
+		
+		var top10total = totalTopN(report, 10);
+		var top10percentage = top10total / total * 100;
+		
+		// print metrics
+		println('  > # elements: ' + report.elements);
+		println('  > total calls: ' + total);
+		println('  > repetition rate: ' + repetitionRate.toFixed(4));
+		println('  > average repetition: ' + averageRepetition.toFixed(4));
+		println('  > top 3: ' + top3percentage.toFixed(2) + '%');
+		println('  > top 5: ' + top5percentage.toFixed(2) + '%');
+		println('  > top 10: ' + top10percentage.toFixed(2) + '%\n');
+
+	}
+end
+
+aspectdef ReadReports
+
+	input reportNames end
+	output reports end
+
+	reports = {};
+	
+	for(var r = 0; r < reportNames.length; r++) {
+	
+		var report = fileToJSON(reportNames[r]);
+	
+		// convert counters to integers and sort
+		for(var i in report.counts)
+			report.counts[i].counter = parseInt(report.counts[i].counter);
+	
+		report.counts.sort(function(a, b){
+	
+			if(a.counter < b.counter)
+				return 1;
+			else if(a.counter > b.counter)
+				return -1;
+			else
+				return 0;
+		});
+		
+		reports[report.name] = report;
+	}
+end
+
+

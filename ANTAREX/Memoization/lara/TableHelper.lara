@@ -1,0 +1,105 @@
+var nanBits = 'fff8000000000000';
+
+var buildFunctionCode = function(tableCode, logicCode) {
+
+	var functionCode = '#include <stdint.h>\n';
+	functionCode += 'double pow_memoi_wrapper(double base) {\n';
+	functionCode += tableCode + '\n\n' + logicCode;
+	functionCode += '\n}';
+
+	return functionCode;
+};
+
+var buildLogicCode = function(N, argName) {
+
+	var logicCode = buildHashCode(64, N, argName);
+	
+	logicCode += '\nif(table[hash_' + N + '_bits][0] == hash_' + 64 + '_bits){\n\treturn *(double *) &table[hash_' + N + '_bits][1];\n}';
+
+	return logicCode;
+	
+};
+
+var buildHashCode = function(startingBits, finalBits, inputName) {
+
+	var div = startingBits /finalBits;
+	var iters = Math.log(div) / Math.log(2);
+
+	var large = startingBits;
+	var code = 'uint' + large + '_t hash_' + large +'_bits = *(uint' + large + '_t*)&' + inputName + ';\n';
+
+	for(var i = 0; i < iters; i++) {
+
+		var small = large / 2;
+		code += 'uint' + small + '_t hash_' + small +'_bits = (hash_' + large +'_bits ^ (hash_' + large +'_bits >> ' + small + '));\n';
+		large = large / 2;
+	}
+
+	return code;
+};
+
+var buildTableCode = function(table, S) {
+
+	var tableCode = 'static const uint64_t table[' + S + '][2] = {\n';
+	for(var i = 0; i < S; i++) {
+
+		if(table[i] === undefined) {
+
+			tableCode += '\t{0xfff8000000000000, 0},\n';
+		} else {
+
+			tableCode += '\t{0x' + table[i].key + ', 0x' + table[i].output + '},\n';
+		}
+	}
+	tableCode += '};';
+
+	return tableCode;
+};
+
+var findTableSize = function(k) {
+
+	for(var T = 0; T <= 4; T++) {
+
+		var N = Math.pow(2, T);
+
+		var S = Math.pow(2, N);
+		if(S >= k) {
+
+			println('\nS = ' + S + ' and N = ' + N);
+			return {'S': S, 'N':N};
+		}
+	}
+	throw 'For k = ' + k + ', table size is larger than 2^16 (65536)';
+};
+
+var hashHalf = function(bits64){
+	
+	var len = bits64.length;
+	var hashString = '';
+	
+	for(var i = 0; i < len / 2; i++) {
+
+		var number = parseInt(bits64.charAt(i), 16) ^ parseInt(bits64.charAt(i+len/2), 16);
+		hashString +=  number.toString(16);
+	}
+
+	return hashString;
+};
+
+var hash = function(bits64, numBits) {
+	switch(numBits) {
+
+		case 8:
+			var bits32 = hashHalf(bits64);
+			var bits16 = hashHalf(bits32);
+			var bits8 = hashHalf(bits16);
+			return parseInt(bits8, 16);
+		case 16:
+			var bits32 = hashHalf(bits64);
+			var bits16 = hashHalf(bits32);
+			return parseInt(bits16, 16);
+		default:
+			return bits64;
+			break;				
+	}
+};
