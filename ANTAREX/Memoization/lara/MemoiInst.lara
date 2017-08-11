@@ -4,7 +4,9 @@ aspectdef Launcher
 
 	println('memoization instrumentation');
 
-	call MemoiInst(['log', 'sqrt'], '/home/pedro/Documents/');
+	var reportPath = '/home/pedro/Documents/';
+
+	call MemoiInst(['log', 'sqrt'], reportPath);
 end
 
 aspectdef MemoiInst
