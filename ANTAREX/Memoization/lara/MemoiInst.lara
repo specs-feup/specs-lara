@@ -1,0 +1,124 @@
+import clava.ClavaJoinPoints;
+
+aspectdef Launcher
+
+	println('memoization instrumentation');
+
+	call MemoiInst(['log', 'sqrt'], '/home/pedro/Documents/');
+end
+
+aspectdef MemoiInst
+
+	input
+		targets = [],
+		reportsDir = '.',
+		wrapperSuffix = '_wrapper',
+		jsonSuffix = '_memoi_prof'
+	end
+
+	output
+		wrapperNames,
+		reportNames,
+		monitorNames
+	end
+
+	/* setup */
+	wrapperNames = {};
+	reportNames = {};
+	monitorNames = {};
+	for (var target of targets) {
+
+		wrapperNames[target] = target + wrapperSuffix;
+		reportNames[target] = target + jsonSuffix;
+		monitorNames[target] = 'mi_' + target;
+	}
+
+	/* wrap targets */
+	call wt : WrapTargets(targets, wrapperNames);
+	var foundTargets = wt.foundTargets;
+
+	/* instrument the wrappers */
+	call InstrumentWrappers(foundTargets, wrapperNames, monitorNames);
+
+	/* perform setup */
+	call Setup(foundTargets, monitorNames, reportNames, reportsDir);
+end
+
+aspectdef WrapTargets
+
+	input targets, wrapperNames end
+	output foundTargets = [] end
+
+	var found = {};
+
+	select call end
+	apply
+		for (var target of targets) {
+			if ($call.name == target) {
+
+				if(found[target] === undefined) {
+					foundTargets.push(target);
+					found[target] = true;
+				}
+				exec wrap(wrapperNames[target]);
+			}
+		}
+	end
+end
+
+aspectdef InstrumentWrappers
+
+	input targets, wrapperNames, monitorNames end
+
+	select function.call end
+	apply
+		for (var target of targets) {
+			
+			if($function.name == wrapperNames[target] && $call.name == target) {
+
+				/* instrument call to target */
+				var monitorName = monitorNames[target];
+				var firstParam = $function.params[0].name;
+				insert after 'memoi_inst_inc([[monitorName]], &[[firstParam]], &result);';
+
+				/* add include to the instrumentation library */
+				var $file = $function.ancestor('file');
+				$file.exec addInclude('MemoiInstrumenter.h', false);
+				$file.exec addInclude('stdlib.h', true);
+
+				/* add declaration of the monitor */
+				var type = ClavaJoinPoints.typeLiteral('MemoiInstrumenter*');
+				$file.exec addGlobal(monitorNames[target], type, 'NULL');
+			}
+		}
+	end
+end
+
+aspectdef Setup
+
+	input targets, monitorNames, reportNames, reportsDir end
+
+	select file.function{'main'}.body end
+	apply
+		for (var target of targets) {
+		
+			var monitor = monitorNames[target];
+			var report = reportNames[target];
+
+			/* add init call at the start of main */
+			$body.exec insertBegin(%{[[monitor]] = memoi_inst_init("[[target]]", DOUBLE);}%);
+
+			/* add functions to print and clean up at every return on main */
+			$function.exec insertReturn(%{memoi_inst_to_json([[monitor]], "[[reportsDir]]/[[report]].json");}%);
+			$function.exec insertReturn(%{[[monitor]] = memoi_inst_destroy([[monitor]]);}%);
+	
+			/* add include to the instrumentation library */
+			$file.exec addInclude('MemoiInstrumenter.h', false);
+			$file.exec addInclude('stdlib.h', true);
+	
+			/* add declaration of the monitor */
+			var type = ClavaJoinPoints.typeLiteral('MemoiInstrumenter*');
+			$file.exec addGlobal(monitorNames[target], type, 'NULL');
+		}
+	end
+end
