@@ -60,7 +60,7 @@ aspectdef MultiTuner
 		call InsertAutotunerCode(wrapperName, globalNameThreads, globalNameOpt, globalNameBind);
 	}
 
-	println("Starting Done");
+	println("MultiTuner Done");
 end
 
 aspectdef GetOriginalData
