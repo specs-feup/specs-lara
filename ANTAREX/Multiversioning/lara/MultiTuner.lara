@@ -94,8 +94,10 @@ aspectdef GetOriginalData
 	var foundFunction = false;
 	select function{targetFunction} end
 	apply
-		originalParams = $function.paramList.join(',');
-
+		originalParams = $function.params.map(function(p) {
+			return p.code;
+		});
+		originalParams = originalParams.join(',');
 		foundFunction = true;
 	end
 
