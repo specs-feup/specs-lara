@@ -9,7 +9,7 @@ aspectdef MultiTuner
 		targetFunction = 'kernel_2mm',
 		wrapperName,
 		doCli = true,
-		doTuner = true
+		doTuner = false
 	end
 
 	println("Starting MultiTuner");
