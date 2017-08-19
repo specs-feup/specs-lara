@@ -1,33 +1,4 @@
-aspectdef MargotExampleLauncher
-
-	println("mARGOt library testing");
-	
-
-	var m = new Margot('block1', 'alpha', 'beta');
-
-	select call{'foo'} end
-	apply
-	    /* inserts update call */
-	    /* the last arguments are addition statements to be included in the if */
-	    m.update($call, '// update performed', '// do not forget to log');
-	    
-	    /* inserts the log call */
-	    //m.log($call);
-	    
-	    /* inserts start monitor call */
-	    //m.startMonitor($call, '/* arg for monitor start */');
-	    /* inserts stop monitor call */
-	    //m.stopMonitor($call, '/* arg for monitor stop */');
-	    
-	    /* inserts start and stop monitor calls */
-	    //m.monitor($call, ['/*start*/'], ['/*stop*/']);
-	    
-	    /* insert log, start and stop monitor calls */
-	    //m.monitorLog($call);
-	end
-end
-
-/* LIBRARY CODE */
+import antarex.margot.MargotCodeGenSupport;
 
 /**
  * Represents a mARGOt autotuner instance.
@@ -37,7 +8,7 @@ end
  * @param {string} vars - the variables that will be updated, this is an optional list
  * */
 var Margot = function (block) {
-    
+    println('creating margot code gen object');
     this.block = block;
     this.vars = Array.prototype.slice.call(arguments, 1);
     
@@ -134,7 +105,9 @@ var MargotCxxStrings = {
         var code = 'if(';
         
         code += this.ns + this.sep + block + this.sep + this.updCode;
-        code += '(' + vars.toString() + ')';
+        code += '(' + vars.map(function (v) {
+				return '&' + v;
+        }).toString() + ')';
         code += ' != 0';
         
         code += ') {\n';
@@ -166,78 +139,3 @@ var MargotCxxStrings = {
         return this.ns + this.sep + block + this.sep + this.logCode;
     }
 };
-
-aspectdef MargotInit
-
-    select file.function{'main'}.body end
-    apply
-        $body.exec insertBegin(MargotCxxStrings.init());
-        $file.exec addInclude(MargotCxxStrings.inc(), true);
-    end
-end
-
-aspectdef MargotUpdate
-
-    input
-        $joinpoint,
-        block,
-        vars,
-        additionalCode = []
-    end
-    
-    $joinpoint.insert before(MargotCxxStrings.update(block, vars, additionalCode));
-    
-    var $parentFile = $joinpoint.ancestor('file');
-    $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
-end
-
-aspectdef MargotLog
-    input
-        $joinpoint,
-        block
-    end
-    
-    $joinpoint.insert after(MargotCxxStrings.log(block));
-    
-    var $parentFile = $joinpoint.ancestor('file');
-    $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
-end
-
-
-aspectdef MargotStartMonitor
-    input
-        $joinpoint,
-        block,
-        startArgs = []
-    end
-    
-    $joinpoint.insert before(MargotCxxStrings.start(block, startArgs));
-    
-    var $parentFile = $joinpoint.ancestor('file');
-    $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
-end
-
-aspectdef MargotStopMonitor
-    input
-        $joinpoint,
-        block,
-        stopArgs = []
-    end
-    
-    $joinpoint.insert after(MargotCxxStrings.stop(block, stopArgs));
-    
-    var $parentFile = $joinpoint.ancestor('file');
-    $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
-end
-
-aspectdef MargotMonitor
-    input
-        $joinpoint,
-        block,
-        startArgs = [],
-        stopArgs = []
-    end
-    
-    call MargotStartMonitor($joinpoint, block, startArgs);
-    call MargotStopMonitor($joinpoint, block, stopArgs);
-end

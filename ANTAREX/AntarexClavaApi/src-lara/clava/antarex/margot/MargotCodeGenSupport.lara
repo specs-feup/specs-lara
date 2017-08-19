@@ -1,0 +1,74 @@
+aspectdef MargotInit
+	println('-----> margot init');
+    select file.function{'main'}.body end
+    apply
+        $body.exec insertBegin(MargotCxxStrings.init());
+        $file.exec addInclude(MargotCxxStrings.inc(), true);
+    end
+end
+
+aspectdef MargotUpdate
+
+    input
+        $joinpoint,
+        block,
+        vars,
+        additionalCode = []
+    end
+    
+    $joinpoint.insert before(MargotCxxStrings.update(block, vars, additionalCode));
+    
+    var $parentFile = $joinpoint.ancestor('file');
+    $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
+end
+
+aspectdef MargotLog
+    input
+        $joinpoint,
+        block
+    end
+    
+    $joinpoint.insert after(MargotCxxStrings.log(block));
+    
+    var $parentFile = $joinpoint.ancestor('file');
+    $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
+end
+
+
+aspectdef MargotStartMonitor
+    input
+        $joinpoint,
+        block,
+        startArgs = []
+    end
+    
+    $joinpoint.insert before(MargotCxxStrings.start(block, startArgs));
+    
+    var $parentFile = $joinpoint.ancestor('file');
+    $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
+end
+
+aspectdef MargotStopMonitor
+    input
+        $joinpoint,
+        block,
+        stopArgs = []
+    end
+    
+    $joinpoint.insert after(MargotCxxStrings.stop(block, stopArgs));
+    
+    var $parentFile = $joinpoint.ancestor('file');
+    $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
+end
+
+aspectdef MargotMonitor
+    input
+        $joinpoint,
+        block,
+        startArgs = [],
+        stopArgs = []
+    end
+    
+    call MargotStartMonitor($joinpoint, block, startArgs);
+    call MargotStopMonitor($joinpoint, block, stopArgs);
+end
