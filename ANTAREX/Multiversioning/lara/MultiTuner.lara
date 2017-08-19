@@ -1,3 +1,5 @@
+import clava.ClavaJoinPoints;
+
 aspectdef MultiTuner
 
 	input
@@ -187,7 +189,7 @@ aspectdef PrepareData
 
 	println("\t Preparing data");
 	
-	var intType = AstFactory.builtinType("int");
+	var intType = ClavaJoinPoints.builtinType("int");
 
 	// define and declare a global variable to hold the number of OpenMP threads
 	select file end
