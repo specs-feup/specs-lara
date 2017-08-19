@@ -1,0 +1,29 @@
+import antarex.margot.MargotCodeGen;
+
+aspectdef MargotCodeGen
+
+	println("mARGOt code generation library testing");
+
+	var m = new Margot('block1', 'alpha', 'beta');
+
+	select call{'kernel_2mm'} end
+	apply
+	    /* inserts update call */
+	    /* the last arguments are addition statements to be included in the if */
+	    m.update($call, '// update performed', '// do not forget to log');
+	    
+	    /* inserts the log call */
+	    //m.log($call);
+	    
+	    /* inserts start monitor call */
+	    //m.startMonitor($call, '/* arg for monitor start */');
+	    /* inserts stop monitor call */
+	    //m.stopMonitor($call, '/* arg for monitor stop */');
+	    
+	    /* inserts start and stop monitor calls */
+	    //m.monitor($call, ['/*start*/'], ['/*stop*/']);
+	    
+	    /* insert log, start and stop monitor calls */
+	    m.monitorLog($call);
+	end
+end
