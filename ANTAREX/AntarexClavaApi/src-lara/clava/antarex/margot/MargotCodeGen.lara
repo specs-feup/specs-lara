@@ -8,7 +8,7 @@ import antarex.margot.MargotCodeGenSupport;
  * @param {string} vars - the variables that will be updated, this is an optional list
  * */
 var Margot = function (block) {
-    println('creating margot code gen object');
+    
     this.block = block;
     this.vars = Array.prototype.slice.call(arguments, 1);
     
