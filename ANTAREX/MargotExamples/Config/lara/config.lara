@@ -1,0 +1,32 @@
+import antarex.margot.MargotConfig;
+
+aspectdef MargotConfigDemo
+
+    // make a config and a new block
+    var mc = new MargotConfig();
+    var mb1 = mc.newBlock('foo');
+    
+    // add a goal
+    mb1.addGoal('my_execution_time_goal', 'my_elapsed_time_monitor', MargotDFun.AVERAGE, MargotCFun.LESS_THAN, 600000);
+    
+    // add a software knob
+    mb1.addKnob('num_trials', 'trials', 'int');
+    
+    // make an energy monitor
+    var em = mb1.newEnergyMonitor('my_energy_monitor');
+    em.expose('avg_energy', MargotExpose.AVERAGE);
+    
+    // make a time monitor
+    var tm = mb1.newTimeMonitor('my_elapsed_time_monitor');
+    tm.expose('avg_computation_time', MargotExpose.AVERAGE);
+    tm.useMicro();
+    
+    // make a new state
+    var s = mb1.newState('my_optimization');
+    s.setStarting();
+    s.subjectTo('my_execution_time_goal', 'exec_time', 20);
+    s.minimize('error', MargotCombination.LINEAR, 1.0);
+    
+    // generate the code
+    println(mc.build());
+end
