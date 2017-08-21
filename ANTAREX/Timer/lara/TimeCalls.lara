@@ -1,0 +1,15 @@
+import lara.code.Timer;
+
+aspectdef TimeCallsWithApi
+	
+	// Create microseconds timer that prints information to the console
+	var timer = new Timer("MICROSECONDS");
+
+	// Time all calls inside functions
+	select call end
+	apply
+		timer.time($call, "Time:");
+	end
+	
+
+end
