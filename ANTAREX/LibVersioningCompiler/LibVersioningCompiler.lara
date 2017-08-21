@@ -42,7 +42,7 @@ aspectdef LibVersioningCompiler
 
 
 	// Get joinpoint program
-	var $program = $fcall.astAncestor("program");
+	var $program = $fcall.root;
 
 	// Code for creating a compiled version of the function
 	var createVersion = "std::shared_ptr<vc::Version> " + id + " = vc::createVersion(";
