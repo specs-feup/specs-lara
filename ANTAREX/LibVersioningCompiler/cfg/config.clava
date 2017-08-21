@@ -65,7 +65,7 @@
     </entry>
     <entry>
       <string>output</string>
-      <file>weaved_code</file>
+      <file>../weaved_code</file>
     </entry>
     <entry>
       <string>Weaved code foldername</string>
