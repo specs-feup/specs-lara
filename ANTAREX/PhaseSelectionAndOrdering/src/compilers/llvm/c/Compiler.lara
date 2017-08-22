@@ -1,0 +1,97 @@
+import lara.Io;
+import lara.util.ProcessExecutor;
+
+import LaradSetup;
+import CompilerSetup;
+
+
+var Compiler = {};
+
+
+Compiler.clean = function(params) {
+	
+	var files = Io.getPaths("./", LaradSetup.getExeName("application"), LaradSetup.getExeName("application_verify"), "function.optim.ll", "function.optim.s", "function.ll", "function.c", "main_wtiming.c", "main_wtiming.ll", "main_wtiming.s", "include.h", "info.dat", "*.dot");
+
+	for(file of files) {
+		//println("Deleting " + file);
+		Io.deleteFile(file);
+	}
+}
+
+Compiler.compilemain = function(params) {
+	
+	Io.deleteFiles("main_wtiming.ll", "main_wtiming.s");
+	
+	System.execute(CompilerSetup.getClang() + " main_wtiming.c " + params[0] + " -emit-llvm -S -o main_wtiming.ll");
+	System.execute(CompilerSetup.getLlc() + " " + params[1] + " main_wtiming.ll -o main_wtiming.s");
+	
+
+	// If verification is performed in a separated main
+	var verifyExeName = CompilerSetup.getVerifyExeName();
+	if(LaradSetup.isVerificationSeparated === true) {
+		Io.deleteFile(verifyExeName);
+		new ProcessExecutor()
+		.setTimeout(LaradSetup.defaultTimelimit)
+		.execute(CompilerSetup.getClang() + " " + params[2] + " main_verify.c function.c -fopenmp -lm -o " + verifyExeName);
+		// " " + CompilerSetup.getClangIncludes() +
+	}
+}
+
+
+Compiler.frontend = function(params) {
+
+	Io.deleteFile("function.ll");
+
+	System.execute(CompilerSetup.getClang() + " " + params[0] + " function.c -emit-llvm -S -o function.ll");
+}
+
+Compiler.opt = function(params) {
+
+	Io.deleteFiles("function.optim.ll", "*.dot");
+
+	new ProcessExecutor()
+		.setTimeout(LaradSetup.defaultTimelimit)
+		.execute(CompilerSetup.getOpt() + " " + params[0] + " function.ll -S -o function.optim.ll");
+
+}
+
+Compiler.backend = function(params) {
+
+	Io.deleteFiles("function.optim.s", LaradSetup.getExeName("application"));
+
+	new ProcessExecutor()
+		.setTimeout(LaradSetup.defaultTimelimit)
+		.execute(CompilerSetup.getLlc() + " " + params[0] + " function.optim.ll -o function.optim.s");
+}
+
+
+Compiler.link = function(params) {
+
+		new ProcessExecutor()
+		.setTimeout(LaradSetup.defaultTimelimit)
+		.execute(CompilerSetup.getClang() + " " + params[0] + " -o " + LaradSetup.getExeName("application") + " function.optim.s main_wtiming.s -lm");
+
+	}
+
+Compiler.execute = function() {
+	
+	Io.deleteFile("info.dat");
+	
+	var application = new ProcessExecutor()
+		.setTimeout(LaradSetup.defaultTimelimit)
+		.setPrintToConsole(false);
+	
+	var result = application.execute(LaradSetup.getExeName("application"));
+		
+	Io.writeFile("info.dat", result);
+
+	if(LaradSetup.isVerificationSeparated === true) {
+		var verifyResult = application.execute(LaradSetup.getExeName("application_verify"));
+	
+		Io.appendFile("info.dat", verifyResult + 
+			"return: " + application.getReturnValue() + "\n");
+	}
+	else{
+		Io.appendFile("info.dat", "return: " + application.getReturnValue() + "\n");
+	}
+}

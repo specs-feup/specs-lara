@@ -1,0 +1,69 @@
+import lara.Io;
+import LaradSetup;
+
+//aspectdef AddTiming
+//	input filename, laradFolder end
+
+
+function AddTiming(filename, laradFolder) {
+
+	Io.deleteFiles("main_verify.c", "main_wtiming.c", "main_notiming.c", "function.c", "include.h");
+
+	//println(filename);
+	var filenameNoExt = Io.removeExtension(filename);
+	//println(filenameNoExt);
+	var funcname = Io.removeExtension(Io.getPath(filename).getName());
+	println(funcname);
+
+	// Copy main verify, if present
+	var verifySrc = filenameNoExt + "_verify.c";
+	if(Io.isFile(verifySrc)) {
+		Io.copyFile(filenameNoExt + "_verify.c", "main_verify.c");
+		LaradSetup.isVerificationSeparated = true;
+	}
+
+	
+	var clavaSrc = Io.mkdir("clava_src");
+	//var srcVerify = Io.getPath(clavaSrc, "main_verify.c");
+	//Io.copyFile(filenameNoExt + "_verify.c", srcVerify);
+	
+	var weavedFolder = "clava_timed";
+	
+	// Clava arguments
+	var clavaArgs = [];
+	clavaArgs.push(Io.getPath(laradFolder, "Timing.lara").getAbsolutePath());
+	clavaArgs.push("-p");
+	clavaArgs.push(clavaSrc.getAbsolutePath());
+	clavaArgs.push("-of");
+	clavaArgs.push(weavedFolder);
+	clavaArgs.push("-s");
+	clavaArgs.push("c99");
+	clavaArgs.push("-b");
+	clavaArgs.push("2");
+	//clavaArgs.push("--check-syntax");
+	clavaArgs.push("-nci");
+	
+	//Clava.runClava(clavaArgs);
+	
+//	var mainVerify = Io.getPath(weavedFolder, "main_verify.c");
+//	Io.copyFile(mainVerify, "main_verify.c");
+//	Io.deleteFile(mainVerify);
+//	Io.deleteFile(srcVerify);
+	
+	var srcNoTiming = Io.getPath(clavaSrc, "main_notiming.c");
+	Io.copyFile(filenameNoExt + "_main.c", srcNoTiming);
+	Io.copyFile(filename, "function.c");
+	
+	Clava.runClava(clavaArgs);
+	var weavedMain = Io.getPath(weavedFolder, "main_notiming.c");
+	Io.copyFile(weavedMain, "main_wtiming.c");
+	Io.deleteFiles("main_notiming.c", srcNoTiming, weavedMain);
+/*
+	Io.deleteFile("main_notiming.c");
+	Io.deleteFile(srcNoTiming);
+	Io.deleteFile(weavedMain);
+*/	
+
+}
+
+//end

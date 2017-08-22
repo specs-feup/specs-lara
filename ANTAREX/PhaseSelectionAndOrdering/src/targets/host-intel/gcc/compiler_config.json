@@ -1,0 +1,14 @@
+{
+	"language":"c",
+	"exporter_name": {
+			"performance":["exectimeexporter", "μs"],
+			"size":["romsizeexporter", "B"],
+			"energy":["raplexporter","mJ"]
+	},
+	"passes":"passes_v540.json",
+	"compilemain_params":["-march=native -ffp-contract=fast -fopenmp"],
+	"frontend_params":[],
+	"opt_params":["-march=native -ffp-contract=fast -fopenmp"],
+	"backend_params":[],
+	"link_params":["-march=native -ffp-contract=fast -fopenmp"]
+}

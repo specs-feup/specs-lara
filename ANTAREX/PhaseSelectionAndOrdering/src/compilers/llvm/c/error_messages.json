@@ -1,0 +1,20 @@
+{
+    "filenames":[
+        "main_wtiming.s",
+        "function.ll",
+        "function.optim.ll",
+        "function.optim.s",
+        "application",
+        "info.dat"
+    ],
+    
+    "error_messages":[
+        "ASM for main function not generated.",
+        "IR for function to optimize not generated",
+        "Optimized function IR not generated",
+        "ASM for optimized function IR not generated",
+        "Binary not generated",
+        "Report not generated"
+    ]
+    
+}

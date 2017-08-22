@@ -1,0 +1,81 @@
+import lara.Io;
+import lara.Platforms;
+import LaradSetup;
+
+var CompilerSetup = {};
+
+CompilerSetup._getExecutableFile = function(executableName, executableFolder) {
+	var exe = undefined;
+	if(executableFolder === undefined) {
+	  exe = executableName;
+	} else {
+	  exe = Io.getPath(executableFolder, executableName).getAbsolutePath();
+	}
+
+	
+	if(Platforms.isWindows()) {
+		exe = exe + ".exe";
+	}
+	
+	if(executableFolder !== undefined && !Io.isFile(exe)) {
+		throw "CompilerSetup._getExecutableFile: Could not find executable '"+exe+"'";
+	}
+	
+	return exe;
+}
+
+CompilerSetup.getClang = function() {
+	var compilerFolder = LaradSetup.getCompilerFolder();
+	
+	return CompilerSetup._getExecutableFile("clang", compilerFolder);
+/*
+	var clangExe = Io.getPath(compilerFolder, "clang").getAbsolutePath();
+	if(Platforms.isWindows()) {
+		clangExe = clangExe + ".exe";
+	}
+	
+	if(!Io.isFile(clangExe)) {
+		throw "Could not find compiler '"+clangExe+"'";
+	}
+	*/
+	//return clangExe;
+}
+
+CompilerSetup.getLlc = function() {
+	var compilerFolder = LaradSetup.getCompilerFolder();
+	return CompilerSetup._getExecutableFile("llc", compilerFolder);
+}
+
+CompilerSetup.getOpt = function() {
+	var compilerFolder = LaradSetup.getCompilerFolder();
+	return CompilerSetup._getExecutableFile("opt", compilerFolder);
+}
+
+//LaradSetup.customCompilationFlags = "-I"+LaradSetup.getLaradFolder()+"/compilers/llvm/clang_includes";
+CompilerSetup.getClangIncludes = function() {
+
+	return "-I"+LaradSetup.getLaradFolder()+"/compilers/llvm/clang_includes";	// O "clang_includes" esta aqui a fazer o que?
+/*
+	if(LaradSetup.customCompilationFlags === undefined) {
+		return "";
+	}
+	
+	return LaradSetup.customCompilationFlags;
+	*/
+}
+
+CompilerSetup.getVerifyExeName = function() {
+	return LaradSetup.getExeName("application_verify");
+}
+
+/*
+Moved method to LaradSetup, it is a generic method not tied to the compiler
+CompilerSetup.getExeName = function(baseName) {
+	var exeName = baseName;
+	if(Platforms.isWindows()) {
+		exeName = exeName + ".exe";
+	}
+	
+	return exeName;
+}
+*/

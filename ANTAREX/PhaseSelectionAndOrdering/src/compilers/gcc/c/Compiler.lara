@@ -1,0 +1,83 @@
+import lara.Io;
+import lara.util.ProcessExecutor;
+
+import LaradSetup;
+import CompilerSetup;
+
+
+var Compiler = {};
+
+
+Compiler.clean = function(params) {
+
+	var files = Io.getPaths("./", LaradSetup.getExeName("application"), LaradSetup.getExeName("application_verify"), "function.optim.s", "function.c", "main_wtiming.c", "main_wtiming.s", "include.h", "info.dat", "*.dot");
+
+	for(file of files) {
+		//println("Deleting " + file);
+		Io.deleteFile(file);
+	}
+}
+
+Compiler.compilemain = function(params) {
+	
+	Io.deleteFiles("main_wtiming.s");
+	System.execute(CompilerSetup.getGcc() + " " + params[0] + " -S main_wtiming.c -o main_wtiming.s");
+	
+	// If verification is performed in a separated main
+	var verifyExeName = CompilerSetup.getVerifyExeName();
+	if(LaradSetup.isVerificationSeparated === true) {
+		Io.deleteFile(verifyExeName);
+		new ProcessExecutor()
+		.setTimeout(LaradSetup.defaultTimelimit)
+		.execute(CompilerSetup.getGcc() + " " + params[0] + " main_verify.c function.c -lm -o " + verifyExeName);
+	}
+}
+
+
+Compiler.frontend = function(params) {
+	// do nothing
+}
+
+Compiler.opt = function(params) {
+
+	Io.deleteFiles("function.optim.s", "*.dot");
+
+	new ProcessExecutor()
+		.setTimeout(LaradSetup.defaultTimelimit)
+		.execute(CompilerSetup.getGcc() + " " + params[0] + " function.c -S -o function.optim.s");
+}
+
+Compiler.backend = function(params) {
+	// do nothing
+}
+
+
+Compiler.link = function(params) {
+
+		new ProcessExecutor()
+		.setTimeout(LaradSetup.defaultTimelimit)
+		.execute(CompilerSetup.getGcc() + " " + params[0] + " -o " + LaradSetup.getExeName("application") + " function.optim.s main_wtiming.s -lm");
+	}
+
+Compiler.execute = function() {
+	
+	Io.deleteFile("info.dat");
+	
+	var application = new ProcessExecutor()
+		.setTimeout(LaradSetup.defaultTimelimit)
+		.setPrintToConsole(false);
+	
+	var result = application.execute(LaradSetup.getExeName("application"));
+		
+	Io.writeFile("info.dat", result);
+
+	if(LaradSetup.isVerificationSeparated === true) {
+		var verifyResult = application.execute(LaradSetup.getExeName("application_verify"));
+	
+		Io.appendFile("info.dat", verifyResult + 
+			"return: " + application.getReturnValue() + "\n");
+	}
+	else{
+		Io.appendFile("info.dat", "return: " + application.getReturnValue() + "\n");
+	}
+}

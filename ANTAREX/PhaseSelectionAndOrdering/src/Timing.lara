@@ -1,0 +1,40 @@
+import lara.code.Timer;
+
+aspectdef Timming
+	//input fileName, functionName end
+
+	var timer = new Timer("SECONDS");
+	timer.setPrintUnit(false);
+
+	var $start = undefined;
+	var $end = undefined;
+	
+	var found = false;
+	//select file{fileName}.function{functionName}.pragma end
+	select file.function.pragma end
+	apply
+		if($pragma.name !== "monitor") {
+			continue;
+		}
+		
+		if($pragma.content === "start") {
+			$start = $pragma;
+			continue;
+		}
+
+		if($pragma.content === "stop") {
+			$end = $pragma;
+			continue;
+		}
+		
+		// Warn if found more than one set
+		if(found) {
+			println("Timing: found more than one #pragma monitor start/stop pair");
+		} else {
+			found = true;
+		}
+	end
+
+	timer.time($start, "elapsed: ", $end);
+
+end

@@ -1,0 +1,40 @@
+import lara.Io;
+import lara.Platforms;
+import LaradSetup;
+
+var CompilerSetup = {};
+
+CompilerSetup._getExecutableFile = function(executableName, executableFolder) {
+	var exe = undefined;
+	if(executableFolder === undefined) {
+	  exe = executableName;
+	} else {
+	  exe = Io.getPath(executableFolder, executableName).getAbsolutePath();
+	}
+
+	
+	if(Platforms.isWindows()) {
+		exe = exe + ".exe";
+	}
+	
+	if(executableFolder !== undefined && !Io.isFile(exe)) {
+		throw "CompilerSetup._getExecutableFile: Could not find executable '"+exe+"'";
+	}
+	
+	return exe;
+}
+
+CompilerSetup.getGcc = function() {
+	var compilerFolder = LaradSetup.getCompilerFolder();
+	
+	return CompilerSetup._getExecutableFile("gcc", compilerFolder);
+}
+
+CompilerSetup.getGccIncludes = function() {
+
+	return "-I"+LaradSetup.getLaradFolder()+"/compilers/gcc/gcc_includes";	// O "clang_includes" esta aqui a fazer o que?
+}
+
+CompilerSetup.getVerifyExeName = function() {
+	return LaradSetup.getExeName("application_verify");
+}

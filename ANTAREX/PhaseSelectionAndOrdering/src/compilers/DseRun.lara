@@ -1,0 +1,396 @@
+/*      Ricardo Nobre                                   *
+ *      Departamento de Engenharia Informática          *
+ *      FEUP, Porto, Portugal                           *
+ *      ricardo.nobre@fe.up.pt                          */
+
+
+import LaradSetup;
+import AddTiming;
+import Compiler;
+
+import lara.Io;
+
+var DseRun = {};
+//compilerSetup.isAspectVersion = false;
+
+	var isMinimization = true;
+
+	var sequencesGenerated = {};
+	var sequencesGeneratedNumTimes = {};
+
+	var binaries_generated = {};
+	var numBinariesSavedFromTesting = 0;
+	var bestSolution = {};
+	var totalSteps = 0;
+
+	var filesThatShouldExist;
+	var messagesForMissingFiles;
+
+	var cfile_noext;
+
+	var language;
+	var exporter_name;
+	var compilemain_params;
+	var frontend_params;
+	var opt_params;
+	var backend_params;
+	var link_params;
+
+	var cfile;
+	var compilerName;
+	var nexecutions;
+	var aditionalflags;
+	var larad_path;
+	var target_name;
+
+
+
+	DseRun.startup = function(cfile2, target_name2, metric_name, compilerConfig, compilerName2, nexecutions2, aditionalflags2, larad_path2) {
+		
+
+		language = compilerConfig.language;
+		exporter_name = compilerConfig.exporter_name[metric_name][0];
+
+		compilemain_params = compilerConfig.compilemain_params;
+		frontend_params = compilerConfig.frontend_params;
+		opt_params = compilerConfig.opt_params;
+		backend_params = compilerConfig.backend_params;
+		link_params = compilerConfig.link_params;
+
+		target_name = target_name2;
+		cfile = cfile2;
+		compilerName = compilerName2;
+		nexecutions = nexecutions2;
+		aditionalflags = aditionalflags2;
+		larad_path = larad_path2;
+
+		cfile_noext = cfile.substring(0, cfile.length - 2);     // Removes ".c" extension
+
+		bestSolution.config = [];
+		bestSolution.fitness = isMinimization ? Number.MAX_VALUE : Number.MIN_VALUE;
+
+		var jsonObj = fileToJSON(larad_path + "/compilers/" + compilerName + "/" + language + "/error_messages.json");
+		filesThatShouldExist = jsonObj.filenames;
+		messagesForMissingFiles = jsonObj.error_messages;
+
+	}
+
+
+
+	function sha256sum() {
+
+		//cmd("sha256sum", ["application", ""]);	// , 1);	// has already calculated in the JAVA reporter
+		if(@function != undefined) {
+			@function[cfile_noext].hash = undefined;
+		}
+		report("binaryhashexporter", [cfile_noext, target_name]);
+		var hash = @function[cfile_noext].hash;
+		return hash;
+	}
+
+	// Auxiliar function, used by 'execute_and_report' and by 'compile_execute_and_report'
+	function report_fitness() {
+
+		if(@function != undefined) {
+			@function[cfile_noext].latency = undefined;
+		}
+		report(exporter_name, [cfile_noext]);
+		var fitness = @function[cfile_noext].latency;
+		return fitness;
+	}
+
+	/*
+	// NOT USED ANYMORE
+	function execute_script(scriptName, params) {
+
+		var scriptToExecute = "";
+		var pathToGenericScripts = larad_path + "/compilers/" + compilerName + "/" + language + "/scripts/";
+		var pathToSpecializedScripts = larad_path + "/targets/" + target_name + "/" + compilerName + "/scripts/";
+		
+		if(Io.isFile(pathToSpecializedScripts + scriptName)) {
+			scriptToExecute = pathToSpecializedScripts + scriptName;
+		}
+		else {
+			scriptToExecute = pathToGenericScripts + scriptName;
+		}
+
+		cmd("sh", [scriptToExecute, params[0], params[1], params[2], params[3], params[4], params[5]]);	// , mcpu, opencl_include, opencl_lib, liblc]);	// , 1);
+
+	}
+	*/
+
+	function compile(optimLevel){		
+
+		//if(LaradSetup.isAspectVersion) {
+			Compiler.opt([aditionalflags + " " + optimLevel].concat(opt_params));
+			Compiler.backend(backend_params);
+			Compiler.link(link_params);
+		/*
+		}
+		else {
+			execute_script("opt.sh", [aditionalflags + " " + optimLevel].concat(opt_params));
+			execute_script("backend.sh", backend_params);
+			execute_script("link.sh", link_params);
+		}
+		*/
+	}
+
+	function execute_and_report() {
+
+			var latency = 0;
+			var hash = sha256sum();
+
+
+			if(hash in binaries_generated) {	// binary has been already evaluated, so new execution is avoided
+					latency = binaries_generated[hash];
+					numBinariesSavedFromTesting += 1;
+			}
+			else
+			{
+					var latency_acc = 0;
+					for(var i=0; i<nexecutions; i++) {
+					//deleteFile("info.dat"); 
+
+						//if(LaradSetup.isAspectVersion) {
+							Compiler.execute();
+						/*
+						}
+						else {
+							execute_script("execute.sh", []);
+						}
+						*/
+
+						var lat = report_fitness();
+						if(lat <= 0) {	// A single failed execution of any of the (e.g., 30) evaluations is enough to discard phase selection/ordering
+							binaries_generated[hash] = lat;
+							return lat;
+						}
+						latency_acc = latency_acc + lat;
+					}
+					latency = Math.floor(latency_acc / nexecutions);
+					binaries_generated[hash] = latency;
+			}
+			return latency;
+
+	}
+
+	
+	DseRun.frontend = function() {
+		//if(LaradSetup.isAspectVersion) {
+			Compiler.compilemain(compilemain_params);
+			Compiler.frontend(frontend_params);
+		/*
+		}
+		else {
+			execute_script("compilemain.sh", compilemain_params);
+			execute_script("frontend.sh", frontend_params);
+		}
+		*/
+	}
+
+
+	function getProblemMessage (fitness) {
+
+
+		for(var i=0; i < filesThatShouldExist.length; i++) {
+			if(Io.isFile(filesThatShouldExist[i]) == false) {
+			
+				// Temporary solution: if file does not exist, 
+				// check if the name as an executable exists
+				if(Io.isFile(LaradSetup.getExeName(filesThatShouldExist[i])) === true) {
+					continue;
+				}	
+				return messagesForMissingFiles[i];
+			}
+		}
+
+		if(fitness == 0) {
+			return "Incorrect result";
+		}
+		else if(firness == -1) {
+			return "Report is malformed";
+		}
+	}
+
+	DseRun.isSolutionValid = function (fitness) {
+
+		for(var i=0; i < filesThatShouldExist.length; i++) {
+			if(Io.isFile(filesThatShouldExist[i]) == false) {
+			
+				// Temporary solution: if file does not exist, 
+				// check if the name as an executable exists
+				if(Io.isFile(LaradSetup.getExeName(filesThatShouldExist[i])) === true) {
+					continue;
+				}	
+				return false;
+			}
+		}
+
+		if(fitness <= 0) {	// '-1' means the report file (info.dat) is malformed, '0' means the output of the code being optimized is different from expected
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+
+	DseRun.printIterationInfo = function (sequence, fitness, symbolStr) {
+		
+		var message = symbolStr;
+
+		var isValid = DseRun.isSolutionValid();
+		if(isValid == false) {
+			message = getProblemMessage(fitness);
+			fitness = (isMinimization ? "+" : "-") + "infinity";
+		}
+		println("\t" + totalSteps + " (" + message + ") : " + fitness + " : " + sequence.join(" "));
+
+	}
+
+
+	DseRun.compile_execute_and_report = function(sequence) {
+
+		var optimLevel = sequence.join(" ");	// compresses sequence to save memory
+		var fitness = 0;
+		var compressedSeq = LZString.compress(optimLevel);
+
+		if(compressedSeq in sequencesGenerated) {
+			fitness = sequencesGenerated[compressedSeq];
+			sequencesGeneratedNumTimes[compressedSeq] = sequencesGeneratedNumTimes[compressedSeq] + 1;
+		}
+		else {	// Only compiles and executes if sequence was not already tested
+			compile(optimLevel);
+			fitness = execute_and_report();
+			sequencesGenerated[compressedSeq] = fitness;
+			sequencesGeneratedNumTimes[compressedSeq] = 1;
+			totalSteps++;
+		}
+
+		return fitness;
+	}
+
+
+	DseRun.instrumentCode = function(metric) {	// TODO: use the metric
+
+//		if(LaradSetup.isAspectVersion) {
+			AddTiming(cfile, larad_path);
+//		}
+
+		/*
+		else {
+			//println("Is bash script version");
+			cmd("sh", [larad_path + "/targets/" + target_name + "/" + compilerName + "/scripts/add_timing.sh", cfile]);
+		}
+		*/
+		
+
+	}
+
+	DseRun.cleanAll = function() {
+		//if(LaradSetup.isAspectVersion) {
+			Compiler.clean();
+		//}
+		/*
+		else {
+			execute_script("cleanAll.sh", []);
+		//cmd("sh", [larad_path + "/compilers/" + compilerName + "/scripts/cleanAll.sh", ""]);
+		}
+		*/
+	}
+
+	DseRun.getNumSavedExecutions = function() {
+		return numBinariesSavedFromTesting;
+	}
+
+
+	DseRun.getBestSolutionConfig = function() {
+		return bestSolution.config;
+	}
+
+	DseRun.getBestSolutionFitness = function() {
+		return bestSolution.fitness;
+	}
+
+	DseRun.updateBestSolution = function(newConfig, newFitness) {
+		bestSolution.config = newConfig;
+		bestSolution.fitness = newFitness;
+	}
+	
+
+
+	DseRun.getStepCounter = function() {
+		return totalSteps;
+	}
+
+	// This is only to be called from 'dse_algo.lara' if there is a need to force the step counter
+	DseRun.forceIncreaseStepCounter = function() {
+		totalSteps++;
+	}
+
+	DseRun.resetStepCounter = function() {
+		totalSteps = 0;
+	}
+
+	DseRun.getNumTimesSequenceWasGenerated = function(sequence) {
+		return sequencesGeneratedNumTimes[LZString.compress(sequence.join(" "))];
+	}
+
+	
+	DseRun.isLeftFitnessBetterOrEqualThanRightFitness = function (fitnessLeft, fitnessRight) {
+		if(isMinimization == true) {	// in case the objective of DSE is minimization of the target metric (which is the default)
+			if(fitnessLeft <= fitnessRight) return true;
+			else return false;
+		}
+		else {	// in case the objective is maximization
+			if(fitnessLeft >= fitnessRight) return true;	
+			else return false;
+
+		}
+	}
+
+	DseRun.getWorsePossibleFitness = function () {
+		return isMinimization == true ? Number.MAX_VALUE : Number.MIN_VALUE;
+	}
+	
+
+	/*
+	// FOR DOING MEASURES 30 TIMES
+	function execute_and_report2() {
+		
+		var latency = 0;
+		var hash = sha256sum();
+
+//		if(hash in binaries_generated) {
+//			//println("BINARY ALREADY TESTED! SAVING EXECUTION! :)");
+//			latency = binaries_generated[hash];
+//			numBinariesSavedFromTesting += 1;
+//		}
+//		else
+		{
+			var latency_acc = 0;
+			for(var i=0; i<nexecutions; i++) {
+						cmd("sh", [larad_path + "/targets/" + target_name + "/" + compilerName + "/scripts/execute.sh", ""]);
+				var lat = report_fitness();
+				latency_acc = latency_acc + lat;
+			}
+			latency = Math.floor(latency_acc / nexecutions);
+			binaries_generated[hash] = latency;
+		}
+		return latency;
+
+	}
+
+*/
+
+//	frontend = frontend2;
+//	compile = compile2;
+//	execute_and_report = execute_and_report2;
+//	compile_execute_and_report = compile_execute_and_report2;
+//	check_sequence_is_valid = check_sequence_is_valid2;
+//	add_timing = add_timing2;
+//	cleanAll = cleanAll2;
+
+//end
+
+
+

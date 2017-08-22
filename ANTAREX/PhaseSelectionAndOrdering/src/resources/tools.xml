@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<tools>
+
+        <exectimeexporter type="java">
+				<java  class="ExecNanosecLARA" 
+						method="ExecNanosecLARAtoString" />
+		</exectimeexporter>
+
+        <raplexporter type="java">
+                <java  class="RaplExporter" 
+                        method="RaplExporterToString" />
+        </raplexporter>
+
+        <binaryhashexporter type="java">
+                <java  class="BinaryHashLARA" 
+                        method="BinaryHashLARAtoString" />
+        </binaryhashexporter>
+
+        <codesizeexporter type="java">
+                <java  class="ROMSizeLARA" 
+                        method="ROMSizeLARAtoString" />
+        </codesizeexporter>
+
+
+</tools>

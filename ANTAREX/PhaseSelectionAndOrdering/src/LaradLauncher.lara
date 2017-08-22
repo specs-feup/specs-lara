@@ -1,0 +1,76 @@
+import clava.Clava;
+import lara.Io;
+import lara.Strings;
+
+aspectdef LaradLauncher
+	input
+		laradFoldername,
+		sourceFile,
+		compiler = "gcc",
+		nsteps = 1000,
+		language = "c",
+		target = "host-intel",
+		algo = "sa",
+		metric = "performance",
+		compilerFolderName = undefined,
+		seqlen = 32,
+		nexec = 30,
+		nr = -1,
+		clean = 1,
+		passes = "",
+		percent = 2,
+		append = ""
+	end
+
+	checkDefined(laradFoldername, "laradFoldername", "LaradLauncher");
+	checkDefined(sourceFile, "sourceFile", "LaradLauncher");
+
+	var laradFile = argPath(laradFoldername, "Larad.lara");
+	var laradFolder = argPath(laradFoldername);
+	var pathSeparator = Io.getPathSeparator();
+	
+	// Example of command line that will be built (without the absolute paths):
+	// clava ../lara-dse/Larad.lara -av "('../lara-dse', 'gcc', 'C:/msys64/mingw64/bin', 'DSP_autocor_c/DSP_autocor_c.c', 10)" -bt compiler=gcc,algo=sa,language=c,target=host-intel -i "../lara-dse/compilers;../lara-dse/algorithms;../lara-dse/targets;../lara-dse;../lara-dse/larai/includes/scripts;../lara-dse/larai/includes/java" -t ../lara-dse/larai/resources/tools.xml -b 2  -nw
+	
+	// Input file and arguments
+	var clavaArgs = laradFile + " -av \"('" + laradFolder + "', '" + compiler + "', ";
+	if(compilerFolderName === undefined) {
+		clavaArgs += "undefined";
+	} else {
+		clavaArgs += "'" + argPath(compilerFolderName) + "'";
+	}
+	
+	clavaArgs += ", '" + argPath(sourceFile) + "'";
+	
+	clavaArgs += ", " + nsteps + ")\"";
+	
+	// Bundles
+	clavaArgs += " -bt compiler=" + compiler +",algo=" + algo + ",language=" + language + ",target=" + target;
+	
+	// Includes
+	clavaArgs += " -i \"" + argPath(laradFolder, "compilers") + pathSeparator
+		+ argPath(laradFolder, "algorithms") + pathSeparator
+		+ argPath(laradFolder, "targets") + pathSeparator
+		+ argPath(laradFolder) + pathSeparator
+		+ argPath(laradFolder, "includes/scripts") + pathSeparator
+		+ argPath(laradFolder, "includes/java") + "\"";
+	
+	// Tools
+	clavaArgs += " -t " + argPath(laradFolder, "resources/tools.xml");
+	
+	// Verbose level
+	clavaArgs += " -b 2";
+	
+	// No weaving and no Clava info
+	clavaArgs += " -nw -nci";
+	
+	//println("Running Clava: " + clavaArgs);
+	Clava.runClava(clavaArgs);
+end
+
+
+function argPath(baseFolderOrFile, optionalFile) {
+	var path = Io.getAbsolutePath(baseFolderOrFile, optionalFile);
+	
+	return Strings.replacer(path, "\\", "/");
+}

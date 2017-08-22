@@ -1,0 +1,46 @@
+import lara.Io;
+
+LaradSetup = {};
+
+LaradSetup.isAspectVersion = false;
+LaradSetup.isVerificationSeparated = false;	// "joint";
+LaradSetup.defaultTimelimit = 15;
+
+LaradSetup.laradFolder = undefined;
+
+LaradSetup.getLaradFolder = function() {
+	checkDefined(LaradSetup.laradFolder, "LaradSetup.laradFolder");	
+	return Io.getPath(LaradSetup.laradFolder).getAbsolutePath();
+}
+
+// Set this variable if you want to set a specific version of the compiler
+// this now set by command line
+
+// WINDOWS
+//LaradSetup.compilerFolder = "C:\\msys64\\mingw64\\bin";
+
+// LINUX
+//LaradSetup.compilerFolder = "/opt/clang+llvm-3.7.1-x86_64-linux-gnu-ubuntu-15.10/bin";
+//LaradSetup.compilerFolder = "/opt/gcc-5.4.0/bin"
+
+LaradSetup.getCompilerFolder = function() {
+
+	if(LaradSetup.compilerFolder === undefined) {
+		return undefined;
+	}
+	
+	return LaradSetup.compilerFolder;
+}
+
+LaradSetup.getExeName = function(baseName) {
+	var exeName = baseName;
+	if(Platforms.isWindows()) {
+		exeName = exeName + ".exe";
+	}
+	else {
+		exeName = "./" + exeName;
+	}
+	
+	return exeName;
+}
+

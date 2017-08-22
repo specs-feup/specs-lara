@@ -1,0 +1,6 @@
+{
+    "referenceNames" : ["-O0", "-O1", "-O2", "-O3", "-Os", "-Ofast"],
+    "referenceConfigs" : ["-O0", "-O1", "-O2", "-O3", "-Os", "-Ofast"]
+}
+
+

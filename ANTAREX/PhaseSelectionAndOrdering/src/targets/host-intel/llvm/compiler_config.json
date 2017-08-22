@@ -1,0 +1,14 @@
+{
+	"language":"c",
+	"exporter_name": {
+			"performance":["exectimeexporter", "μs"],
+			"size":["romsizeexporter", "B"],
+			"energy":["raplexporter","mJ"]
+	},
+	"passes":"passes_v371_intelhaswell.json",
+	"compilemain_params":["-march=native", "-mcpu=native -fp-contract=fast", "-march=native -fopenmp"],
+	"frontend_params":["-march=native -fopenmp"],
+	"opt_params":[],
+	"backend_params":["-mcpu=native -fp-contract=fast"],
+	"link_params":["-fopenmp"]
+}
