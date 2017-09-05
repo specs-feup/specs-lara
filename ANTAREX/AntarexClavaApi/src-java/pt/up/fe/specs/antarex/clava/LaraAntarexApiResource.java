@@ -21,6 +21,12 @@ import org.lara.interpreter.weaver.utils.LaraResourceProvider;
  */
 public enum LaraAntarexApiResource implements LaraResourceProvider {
     TEST("Test.lara"),
+
+    // LIBVC
+    LIBVC("libvc/LibVC.lara"),
+    LIBVC_ASPECTS("libvc/LibVCAspects.lara"),
+
+    // MARGOT
     MARGOT_CODE_GEN("margot/MargotCodeGen.lara"),
     MARGOT_CODE_GEN_SUPPORT("margot/MargotCodeGenSupport.lara"),
     // MargotConfig and all the sub files that are imported by MargotConfig

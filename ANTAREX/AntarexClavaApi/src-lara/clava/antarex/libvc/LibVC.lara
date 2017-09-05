@@ -1,0 +1,7 @@
+import antarex.libvc.LibVCAspects;
+
+var LibVC = {};
+
+LibVC.instrumentCall = function($fcall, id, flags) {
+	call LibVersioningCompiler($fcall, id, flags);
+}
