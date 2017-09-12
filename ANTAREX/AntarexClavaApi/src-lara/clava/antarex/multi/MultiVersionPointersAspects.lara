@@ -1,0 +1,21 @@
+import clava.ClavaJoinPoints;
+
+aspectdef DeclarePointers
+
+	input
+		$file,
+		name,
+		typeName,
+		typedef,
+		dims
+	end
+
+
+	var pointersType = ClavaJoinPoints.constArrayType(typeName, dims);
+	$file.exec addGlobal(name, pointersType, '{}');
+	
+	select $file.vardecl{name} end
+	apply
+		insert before typedef;
+	end
+end
