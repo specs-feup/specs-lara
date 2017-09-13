@@ -1,0 +1,168 @@
+aspectdef ChangeCallToWrapper
+	input targetFunction, wrapperName end
+
+	println("\t Changing original call to wrapper");
+
+	select stmt.call{targetFunction} end
+	apply
+		exec setName(wrapperName);
+	end
+end
+
+aspectdef GenerateWrapper
+	input
+		targetFunction,
+		wrapperName,
+		globalNameThreads,
+		globalNameOpt,
+		globalNameBind,
+		optLevels,
+		procBindOptions
+	end
+
+	println("\t Generating wrapper");
+
+	// get original args and params of the target function
+	call od: GetOriginalData(targetFunction);
+	var originalArgs = od.originalArgs;
+	var originalParams = od.originalParams;
+	var returnType = od.returnType;
+
+	var isVoid = returnType.indexOf('void') !== -1;
+
+	// generate switch code
+	var newArgs = originalArgs.split('&').join('');
+	var newArgs = originalArgs.split('*').join('');
+
+	var bindCode = 'switch(' + globalNameBind + ') {\n';
+	for (var bindId in procBindOptions) {
+
+		var bindStr = procBindOptions[bindId];
+
+		bindCode += 'case ' + bindId + ': //' + bindStr + '\n';
+
+		// build the switch statement for the optimization levels
+		var optCode = 'switch(' + globalNameOpt + ') {\n';
+		for(var optId in optLevels) {
+	
+			var optStr = optLevels[optId];
+			var cloneName = targetFunction + '_' + optStr + '_' + bindStr;
+			
+			optCode += 'case ' + optId + ': //' + optStr + '\n';
+			if(isVoid) {
+				optCode += '\t' + cloneName + '(' + newArgs +');\n\tbreak;\n';
+			} else {
+				optCode += '\treturn ' + cloneName + '(' + newArgs +');\n';
+			}
+		}
+		if(isVoid) {
+		
+			optCode += 'default:\n' + targetFunction + '(' + newArgs + ');\n\tbreak;\n}';
+		} else {
+			optCode += 'default:\nreturn ' + targetFunction + '(' + newArgs + ');\n}';
+		}
+
+		bindCode += optCode;
+		bindCode += '\nbreak;\n';
+	}
+	if(isVoid) {
+		bindCode += 'default:\n' + targetFunction + '(' + newArgs + ');\n\tbreak;\n}';
+	} else {
+		bindCode += 'default:\nreturn ' + targetFunction + '(' + newArgs + ');\n\tbreak;\n}';
+	}
+
+	
+	// generate wrapper
+	var wrapper = returnType + ' ' + wrapperName + '(' + originalParams + ') {\n';
+	wrapper += bindCode;
+	wrapper += '\n}\n';
+
+	select function{'main'} end
+	apply
+		insert before wrapper;
+	end
+end
+
+aspectdef GetOriginalData
+
+	input
+		targetFunction
+	end
+	output
+		originalArgs,
+		originalParams,
+		returnType
+	end
+
+	println("\t Getting original data");
+
+	var foundCall = false;
+	select stmt.call{targetFunction} end
+	apply
+		originalArgs = $call.argList.join(',');
+		// find return type of target
+		returnType = $call.returnType.code;
+
+		foundCall = true;
+	end
+
+	if(!foundCall) {
+
+		throw 'ERROR: Could not find call to function "' + targetFunction + '"';
+	}
+
+	var foundFunction = false;
+	select function{targetFunction} end
+	apply
+		originalParams = $function.params.map(function(p) {
+			return p.code;
+		});
+		originalParams = originalParams.join(',');
+		foundFunction = true;
+	end
+
+	
+	if(!foundFunction) {
+
+		throw 'ERROR: Could not find function "' + targetFunction + '"';
+	}
+end
+
+aspectdef GeneratePointersArray
+
+	input targetFunction, dims end
+	output mvp end
+
+	println("\t Generating pointers array");
+
+	select function{targetFunction} end
+	apply
+		mvp = new MultiVersionPointers($function, dims);
+	end
+
+	select file end
+	apply
+		mvp.declare($file);
+	end
+end
+
+aspectdef ChangeCallToPointers
+
+	input targetFunction, mvp, knobs end
+
+	println("\t Changing original calls to pointers array");
+
+	select stmt.call{targetFunction} end
+	apply
+		mvp.replaceCall($call, knobs);
+	end
+end
+
+aspectdef InitPointers
+	input targetFunc, mvp end
+
+	select function{targetFunc} end
+	apply
+		mvp.init($function);
+	end
+end

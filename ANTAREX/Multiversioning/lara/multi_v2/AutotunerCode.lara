@@ -1,0 +1,44 @@
+aspectdef InsertAutotunerCode
+	
+	input
+		wrapperName,
+		globalNameThreads,
+		globalNameOpt,
+		globalNameBind
+	end
+
+	println("\t Inserting autotuner code");
+
+	// add include
+	select file.stmt.call{wrapperName} end
+	apply
+		$file.exec addInclude('argo.h', true);
+	end
+	
+	// init autotuner
+	select function{'main'}.body end
+	apply
+		exec insertBegin('argo_init();');
+	end
+	
+	
+	select stmt.call{wrapperName} end
+	apply
+		// update
+		insert before %{
+			#pragma update
+			if(argo_elaboration_update(&[[globalNameOpt]], &[[globalNameThreads]], &[[globalNameBind]]) != 0) {
+				argo_elaboration_configuration_applied();
+			}
+		}%;
+		// start monitor
+		insert before %{
+			argo_elaboration_start_monitor();
+		}%;
+		// end monitor and log
+		insert after %{
+			argo_elaboration_stop_monitor();
+			argo_elaboration_log();
+		}%;
+	end
+end

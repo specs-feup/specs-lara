@@ -1,0 +1,229 @@
+/* weaver imports */
+import clava.ClavaJoinPoints;
+import antarex.multi.MultiVersionPointers;
+
+/* support imports */
+import AutotunerCode;
+import SwitchCode;
+import KnobsCode;
+
+aspectdef MultiTuner
+
+	input
+		/* optimization options */
+		globalNameOpt = "opt_level",
+		optLevels = ["O0", "O3"],
+		
+		/* proc_bind options */
+		globalNameBind = "proc_bind",
+		procBindOptions = ['close', 'spread'],
+		
+		/* thread options */
+		globalNameThreads = "num_threads",
+		
+		/* target function */
+		targetFunction = 'kernel_2mm',
+		
+		/* wrapper options -- we either use a wrapper with switch or an array of function pointers */
+		useWrapper = false,
+		wrapperName,
+
+		/* version options -- we either generate clones on the same files and use pragmas or we generate clones in separate files */
+		usePragmas = false,
+		
+		/* whether to add code that reads initial knob values from CLI */
+		doKnobsCli = true,
+		
+		/* whether to add the autotuner code */
+		doTuner = false
+	end
+
+	println("Starting MultiTuner");
+
+	var clonedFunctions = {};
+	if(usePragmas) {
+		// generate clones according to the optimization levels
+		call gc: GenerateClones(targetFunction, optLevels, procBindOptions);
+		clonedFunctions = gc.clonedFunctions;
+	
+		// insert optimization pragmas in each cloned function
+		call InsertOptPragmas(clonedFunctions);
+	} else {
+
+		call gc: GenerateClonesInFiles(targetFunction, optLevels, procBindOptions);
+		clonedFunctions = gc.clonedFunctions;
+
+		call MakeMapFile(clonedFunctions);
+	}
+
+	// change OpenMP directives in each cloned function
+	call ChangeOmpPragmas(clonedFunctions, globalNameThreads);
+
+	// insert global variables
+	call AddKnobs(globalNameThreads, globalNameOpt, globalNameBind);
+
+	if(useWrapper) {
+
+		if(wrapperName === undefined) {
+			wrapperName = targetFunction + '_wrapper';
+		}
+	
+		call GenerateWrapper(targetFunction, wrapperName, globalNameThreads, globalNameOpt, globalNameBind, optLevels, procBindOptions);
+
+		call ChangeCallToWrapper(targetFunction, wrapperName);
+	} else {
+
+		call gpa : GeneratePointersArray(targetFunction, [optLevels.length, procBindOptions.length]);
+
+
+		for(var cf in clonedFunctions) {
+
+			var cfData = clonedFunctions[cf];
+			gpa.mvp.add(cf, [cfData.optId, cfData.bindId]);
+		}
+
+		call InitPointers('main', gpa.mvp);
+		
+		call ChangeCallToPointers(targetFunction, gpa.mvp, [globalNameOpt, globalNameBind]);
+	}
+
+	if(doKnobsCli) {
+		call AddKnobsCli(globalNameBind, globalNameOpt, globalNameThreads);
+	}
+
+	if(doTuner) {
+		call InsertAutotunerCode(wrapperName, globalNameThreads, globalNameOpt, globalNameBind);
+	}
+
+	println("MultiTuner Done");
+end
+
+aspectdef MakeMapFile
+	
+	input clonedFunctions end
+
+	var content = "";
+
+	for(var clone in clonedFunctions) {
+		content += clonedFunctions[clone].file + ' : ' + clonedFunctions[clone].opt + '\n';
+	}
+
+	println(contents);
+	writeFile('opt_map.txt', content);
+end
+
+aspectdef GenerateClones
+	input
+		targetFunction,
+		optLevels,
+		procBindOptions
+	end
+	output
+		clonedFunctions = {}
+	end
+
+	println("\t Generating clones");
+
+	select function{targetFunction} end
+	apply
+		for(var oi in optLevels) {
+		
+			var opt = optLevels[oi];
+			for (var bi in procBindOptions) {
+			
+				var bind = procBindOptions[bi];
+			
+				var newName = targetFunction + '_' + opt + '_' + bind;
+				exec clone(newName);
+
+				if($function.hasDefinition) {
+					clonedFunctions[newName] = {'opt': opt, 'optId': oi, 'bind': bind, 'bindId': bi};
+				}
+			}
+		}
+	end
+end
+
+aspectdef GenerateClonesInFiles
+	input
+		targetFunction,
+		optLevels,
+		procBindOptions
+	end
+	output
+		clonedFunctions = {}
+	end
+
+	println("\t Generating clones");
+
+	select function{targetFunction} end
+	apply
+		for(var oi in optLevels) {
+		
+			var opt = optLevels[oi];
+			for (var bi in procBindOptions) {
+			
+				var bind = procBindOptions[bi];
+			
+				var newName = targetFunction + '_' + opt + '_' + bind;
+				exec cof: cloneOnFile(newName);
+
+				if($function.hasDefinition) {
+					clonedFunctions[newName] = {'opt': opt, 'optId': oi, 'bind': bind, 'bindId': bi, 'file': cof};
+				}
+			}
+		}
+	end
+end
+
+aspectdef InsertOptPragmas
+	input
+		clonedFunctions
+	end
+
+	println("\t Inserting opt pragmas");
+
+	select function end
+	apply
+		var clone = clonedFunctions[$function.name];
+		if(clone !== undefined) {
+		
+			insert before %{
+				#pragma GCC push_options
+				#pragma GCC optimize ("[[clone.opt]]")
+			}%;
+			insert after %{
+				#pragma GCC pop_options
+			}%;
+		}
+	end
+	condition
+		$function.hasDefinition
+	end
+end
+
+aspectdef ChangeOmpPragmas
+
+	input
+		clonedFunctions,
+		globalNameThreads
+	end
+
+	println("\t Changing OpenMP pragmas");
+
+	select function.omp{kind ~= 'parallel'} end
+	apply
+		var clone = clonedFunctions[$function.name];
+		if(clone !== undefined) {
+
+
+			exec setProcBind(clone.bind);
+			exec setNumThreads(globalNameThreads);
+		}
+	end
+	condition
+		$function.hasDefinition
+	end
+end
+
+
