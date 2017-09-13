@@ -1,6 +1,6 @@
 import clava.ClavaJoinPoints;
 
-aspectdef DeclarePointers
+aspectdef _MVP_DeclarePointers_
 
 	input
 		$file,
@@ -17,5 +17,18 @@ aspectdef DeclarePointers
 	select $file.vardecl{name} end
 	apply
 		insert before typedef;
+	end
+end
+
+aspectdef _MVP_InitPointers_
+
+	input
+		$function,
+		code
+	end
+	
+	select $function.body end
+	apply
+		exec insertBegin(code);
 	end
 end

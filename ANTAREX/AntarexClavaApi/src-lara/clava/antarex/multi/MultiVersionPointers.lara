@@ -31,7 +31,7 @@ var MultiVersionPointers = function($func, dims, name) {
 
 MultiVersionPointers.prototype.declare = function($file) {
 	
-	var d = new DeclarePointers($file, this._name, this._typeName, this._typedef, this._dims);
+	var d = new _MVP_DeclarePointers_($file, this._name, this._typeName, this._typedef, this._dims);
 	call d();
 }
 
@@ -50,11 +50,12 @@ MultiVersionPointers.prototype.init = function($func) {
 		code += '\n';
 	}
 	
-	$func.exec insertBegin(code);
+	var i = new _MVP_InitPointers_($func, code);
+	i.call();
 }
 
 MultiVersionPointers.prototype.replaceCall = function($call, dims) {
 	
-	var newName = this._name + '[' + dims.join('][') + ']'; println(newName);
+	var newName = this._name + '[' + dims.join('][') + ']';
 	$call.exec setName(newName);
 }
