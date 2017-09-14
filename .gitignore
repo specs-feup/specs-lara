@@ -4,6 +4,8 @@
 
 # Ignore weaved code folders
 **/weaved_code/*
+**/woven/*
+**/woven_code/*
 
 # Ignore automatically created results
 *.csv
