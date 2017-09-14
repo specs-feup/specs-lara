@@ -144,6 +144,9 @@ aspectdef GeneratePointersArray
 	apply
 		mvp.declare($file);
 	end
+	condition
+		$file.hasMain
+	end
 end
 
 aspectdef ChangeCallToPointers

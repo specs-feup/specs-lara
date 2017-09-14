@@ -30,7 +30,10 @@ aspectdef MultiTuner
 		wrapperName,
 
 		/* version options -- we either generate clones on the same files and use pragmas or we generate clones in separate files */
-		usePragmas = false,
+		usePragmas = true,
+
+		/* whether the clones are generated in sperated files or next to the original version */
+		useSeparateFiles = true,
 		
 		/* whether to add code that reads initial knob values from CLI */
 		doKnobsCli = true,
@@ -41,18 +44,26 @@ aspectdef MultiTuner
 
 	println("Starting MultiTuner");
 
+	/* force the use of separate files if we're not using pragmas bu a map file instead */
+	if(usePragmas == false) {
+		useSeparateFiles = true;
+	}
+
 	var clonedFunctions = {};
-	if(usePragmas) {
-		// generate clones according to the optimization levels
-		call gc: GenerateClones(targetFunction, optLevels, procBindOptions);
-		clonedFunctions = gc.clonedFunctions;
-	
-		// insert optimization pragmas in each cloned function
-		call InsertOptPragmas(clonedFunctions);
-	} else {
+	if(useSeparateFiles) {
 
 		call gc: GenerateClonesInFiles(targetFunction, optLevels, procBindOptions);
 		clonedFunctions = gc.clonedFunctions;
+	} else {
+
+		call gc: GenerateClones(targetFunction, optLevels, procBindOptions);
+		clonedFunctions = gc.clonedFunctions;
+	}
+
+	if(usePragmas) {
+
+		call InsertOptPragmas(clonedFunctions);
+	} else {
 
 		call MakeMapFile(clonedFunctions);
 	}
