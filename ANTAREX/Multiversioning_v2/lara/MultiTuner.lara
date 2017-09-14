@@ -1,6 +1,7 @@
 /* weaver imports */
 import clava.ClavaJoinPoints;
 import antarex.multi.MultiVersionPointers;
+import clava.Clava;
 
 /* support imports */
 import AutotunerCode;
@@ -107,9 +108,9 @@ aspectdef MakeMapFile
 	for(var clone in clonedFunctions) {
 		content += clonedFunctions[clone].file + ' : ' + clonedFunctions[clone].opt + '\n';
 	}
-
-	println(contents);
-	writeFile('opt_map.txt', content);
+	
+	var path = Clava.getWeavingFolder() + '/' + 'opt_map.txt';
+	writeFile(path, content);
 end
 
 aspectdef GenerateClones
