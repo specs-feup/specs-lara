@@ -13,7 +13,13 @@ aspectdef MultiTuner
 	input
 		/* optimization options */
 		globalNameOpt = "opt_level",
-		optLevels = ["O0", "O3"],
+		optLevels = 	[
+						"O0", "O1", "O2", "O3",
+						"O3,no-guess-branch-probability,no-ivopts,no-tree-loop-optimize,no-inline",
+						"O3,no-inline,unroll-all-loops",
+						"O3,unsafe-math-optimizations,no-ivopts,no-tree-loop-optimize,unroll-all-loops,O2",
+						"O3,no-inline,O2"
+					],
 		
 		/* proc_bind options */
 		globalNameBind = "proc_bind",
@@ -117,7 +123,10 @@ aspectdef MakeMapFile
 	var content = "";
 
 	for(var clone in clonedFunctions) {
-		content += clonedFunctions[clone].file + ' : ' + clonedFunctions[clone].opt + '\n';
+
+		var flagsCode = '-' + clonedFunctions[clone].opt.split(',').join(' -');
+		
+		content += clonedFunctions[clone].file + ' : ' + flagsCode + '\n';
 	}
 	
 	var path = Clava.getWeavingFolder() + '/' + 'opt_map.txt';
@@ -145,7 +154,7 @@ aspectdef GenerateClones
 			
 				var bind = procBindOptions[bi];
 			
-				var newName = targetFunction + '_' + opt + '_' + bind;
+				var newName = targetFunction + '_opt' + oi + '_' + bind;
 				exec clone(newName);
 
 				if($function.hasDefinition) {
@@ -177,7 +186,7 @@ aspectdef GenerateClonesInFiles
 			
 				var bind = procBindOptions[bi];
 			
-				var newName = targetFunction + '_' + opt + '_' + bind;
+				var newName = targetFunction + '_opt' + oi + '_' + bind;
 				exec cof: cloneOnFile(newName);
 
 				if($function.hasDefinition) {
