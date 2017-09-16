@@ -46,7 +46,7 @@ aspectdef GenerateWrapper
 		for(var optId in optLevels) {
 	
 			var optStr = optLevels[optId];
-			var cloneName = targetFunction + '_' + optStr + '_' + bindStr;
+			var cloneName = targetFunction + '_opt' + optId + '_' + bindStr;
 			
 			optCode += 'case ' + optId + ': //' + optStr + '\n';
 			if(isVoid) {
