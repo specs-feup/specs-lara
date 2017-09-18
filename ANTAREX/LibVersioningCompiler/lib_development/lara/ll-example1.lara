@@ -1,8 +1,36 @@
+
+
 aspectdef LowLevelExample1
 
 	println('starting ll-example1');
 
-	
+	checkType("a string", "string");
+
+	checkInstance(new D(), D, "LowLevelExample1");
+
+	//checkJoinPoint(10, 'function', 'LowLevelExample1');
+	select stmt.call end
+	apply
+		checkJoinPoint($call, 'call', 'LowLevelExample1 -- call');
+		checkJoinPoint($call, 'function', 'LowLevelExample1 -- function');
+	end
+
 
 	println('ll-example1 done');
 end
+
+var A = function() {
+	var a = 0;
+};
+
+
+var B = function() {
+	var b = 0;
+};
+
+function C() {
+}
+
+
+function D() {
+}
