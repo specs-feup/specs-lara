@@ -1,7 +1,66 @@
 import antarex.libvc.LibVCAspects;
 
-var LibVC = {};
+//~ old code
 
-LibVC.instrumentCall = function($fcall, id, flags) {
-	call LibVersioningCompiler($fcall, id, flags);
+//~ var LibVC = {};
+
+//~ LibVC.instrumentCall = function($fcall, id, flags) {
+	//~ call LibVersioningCompiler($fcall, id, flags);
+//~ }
+
+//~ old code
+
+
+function LibVC ($func, options, name) {
+	
+	checkDefined($func, '$func', 'LibVC');
+	
+	checkjoinPoint($func, 'function', 'LibVC ($func)');
+	
+	checkTrue($func.hasDefinition, '$func should be a function definition', 'LibVC');
+	
+	this._funcName = $func.name;
+	this._funcPath = $func.ancestor('file').filepath;
+	
+	this._options = new LibVCOptions();
+}
+
+/**
+ * 
+ * Sets the options of the LibVC object.
+ * 
+ * */
+LibVC.prototype.setOptions = function(options) {
+	
+	checkDefined(options, 'options', 'LibVC.setOptions');
+	checkInstance(options, LibVCOptions, 'LibVC.setOptions');
+	
+	/* TODO: make this a deep copy */
+	this._options = options;
+}
+
+/**
+ * 
+ * Options object ofr LibVC. This can be set independently and then passed to the main LibVC object.
+ * 
+ * */
+function LibVCOptions() {
+	
+	this._options = [];
+	
+	this.addOption = function(prefix, value, tag) {
+		
+	};
+	
+	this.addOptionLiteral = function(prefix, value, tag) {
+		
+	};
+	
+	this.addDefine = function(prefix, value, tag) {
+		
+	};
+	
+	this.addDefineLiteral = function(prefix, value, tag) {
+		
+	};
 }
