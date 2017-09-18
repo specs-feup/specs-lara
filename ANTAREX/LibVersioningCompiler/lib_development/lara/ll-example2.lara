@@ -1,0 +1,8 @@
+aspectdef LowLevelExample2
+
+	println('starting ll-example2');
+
+	
+
+	println('ll-example2 done');
+end
