@@ -1,3 +1,18 @@
+aspectdef _LVC_INIT_
+	input name end
+	output compName end
+	
+	compName = name + '_compiler';
+	
+	select file.function{'main'}.body end
+	apply
+		$file.addInclude('versioningCompiler/Utils.hpp', false);
+		exec insertBegin('vc::compiler_ptr_t ' + compName + ' = vc::make_compiler<vc::SystemCompiler>();');
+	end
+end
+
+/* everything below is old code */
+
 aspectdef LibVersioningCompiler
 	input $fcall, id, flags end
 

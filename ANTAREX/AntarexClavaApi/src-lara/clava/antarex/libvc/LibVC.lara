@@ -1,28 +1,25 @@
 import antarex.libvc.LibVCAspects;
 
-//~ old code
-
-//~ var LibVC = {};
-
-//~ LibVC.instrumentCall = function($fcall, id, flags) {
-	//~ call LibVersioningCompiler($fcall, id, flags);
-//~ }
-
-//~ old code
-
-
 function LibVC ($func, options, name) {
 	
 	checkDefined($func, '$func', 'LibVC');
 	
-	checkjoinPoint($func, 'function', 'LibVC ($func)');
+	checkJoinPointType($func, 'function', 'LibVC ($func)');
 	
 	checkTrue($func.hasDefinition, '$func should be a function definition', 'LibVC');
+	
+	/* TODO: make name if undefined */
+	this._name = name;
 	
 	this._funcName = $func.name;
 	this._funcPath = $func.ancestor('file').filepath;
 	
 	this._options = new LibVCOptions();
+	
+	/* initialize the library at the start if the main function */
+	call lvcInit : _LVC_INIT_(name);
+	
+	this._compName = lvcInit.compName;
 }
 
 /**
@@ -35,9 +32,105 @@ LibVC.prototype.setOptions = function(options) {
 	checkDefined(options, 'options', 'LibVC.setOptions');
 	checkInstance(options, LibVCOptions, 'LibVC.setOptions');
 	
-	/* TODO: make this a deep copy */
-	this._options = options;
+	this._options = deepClone(options);
 }
+
+LibVC.prototype.addOption = function(prefix, value, tag) {
+
+	this._options.addOption(prefix, value, tag);
+}
+
+LibVC.prototype.addOptionLiteral = function(prefix, value, tag) {
+
+	this._options.addOptionLiteral(prefix, value, tag);
+}
+
+LibVC.prototype.addDefine = function(prefix, value, tag) {
+
+	this._options.addDefine(prefix, value, tag);
+}
+
+LibVC.prototype.addDefineLiteral = function(prefix, value, tag) {
+
+	this._options.addDefineLiteral(prefix, value, tag);
+}
+
+/* TODO: move this to a LARA library */
+function deepClone(obj) {
+	if (typeof obj === 'object') {
+		var newObj = new obj.__proto__.constructor();
+		for (var key in obj) {
+			newObj[key] = deepClone(obj[key]);
+		}
+		return newObj;
+	}
+	return obj;
+}
+
+LibVC.prototype.buildOptionListAfter = function($joinpoint) {
+	
+	checkJoinPoint($joinpoint, 'buildOptionListAfter ($joinpoint)');
+	
+	var code = '';
+	
+	$joinpoint.insert after code;
+}
+
+LibVC.prototype.buildOptionListBefore = function($joinpoint) {
+	
+	checkJoinPoint($joinpoint, 'buildOptionListBefore ($joinpoint)');
+	
+	var code = this._makeOptionsCode();
+	
+	$joinpoint.insert before code;
+}
+
+LibVC.prototype._makeOptionsCode = function() {
+	
+	if(this._options._options.length === 0) {
+		println('no compilation options were provided to LibVC');
+		return;
+	}
+	
+	var optionsList = [];
+	var optionsCode = '';
+	
+	for(var optId in this._options._options) {
+		
+		var opt = this._options._options[optId];
+		
+		var singleName = 'opt_' + this._name + '_' + optId;
+		optionsList.push(singleName);
+		
+		var singleOpt = 'vc::Option ' + singleName + ' = vc::Option("' + opt.t + '", ' + opt.p;
+		if(opt.v !== undefined) {
+			
+			singleOpt += ', ' + this._makeValueCode(opt);
+		} 
+		singleOpt += ');';
+		
+		optionsCode += singleOpt + '\n';
+	}
+	
+	return OptionListTemplate(this._name, optionsCode, optionsList);
+}
+
+LibVC.prototype._makeValueCode = function(opt) {
+	
+	if(opt.l) {
+		return '"' + opt.v + '"';
+	} else {
+		throw 'LibVC does not support non-literal options yet';
+	}
+}
+
+codedef OptionListTemplate(name, optionsCode, optionsList) %{
+[[optionsCode]]
+vc::opt_list_t kernel_opt_list_[[name]] = {
+	[[optionsList]];
+};
+}%
+end
 
 /**
  * 
@@ -49,18 +142,28 @@ function LibVCOptions() {
 	this._options = [];
 	
 	this.addOption = function(prefix, value, tag) {
-		
+		prefix = '"' + prefix + '"';
+		tag = tag === undefined ? '' : tag;
+		this._options.push({p: prefix, v: value, t:tag, l: false});
 	};
 	
 	this.addOptionLiteral = function(prefix, value, tag) {
-		
+		prefix = '"' + prefix + '"';
+		tag = tag === undefined ? '' : tag;
+		this._options.push({p: prefix, v: value, t:tag, l: true});
 	};
 	
 	this.addDefine = function(prefix, value, tag) {
-		
+		prefix = '-D' + prefix + (value === undefined ? '' : '=');
+		prefix = '"' + prefix + '"';
+		tag = tag === undefined ? '' : tag;
+		this._options.push({p: prefix, v: value, t:tag, l: false});
 	};
 	
 	this.addDefineLiteral = function(prefix, value, tag) {
-		
+		prefix = '-D' + prefix + (value === undefined ? '' : '=');
+		prefix = '"' + prefix + '"';
+		tag = tag === undefined ? '' : tag;
+		this._options.push({p: prefix, v: value, t:tag, l: true});
 	};
 }
