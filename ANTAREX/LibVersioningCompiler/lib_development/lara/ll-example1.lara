@@ -1,36 +1,34 @@
-
+import antarex.libvc.LibVC;
 
 aspectdef LowLevelExample1
 
 	println('starting ll-example1');
 
-	checkType("a string", "string");
+	var opt = new LibVCOptions();
+	opt.addOptionLiteral('-O3');
+	opt.addOptionLiteral('-march=', 'native', 'arch');
+	
+	opt.addDefineLiteral('VERIFY');
+	opt.addDefineLiteral('TYPE', 'FLOAT', 'type macro');
+	opt.addDefineLiteral('PRES', '2.f');
 
-	checkInstance(new D(), D, "LowLevelExample1");
-
-	//checkJoinPoint(10, 'function', 'LowLevelExample1');
-	select stmt.call end
+	select function{'kernel'} end
 	apply
-		checkJoinPoint($call, 'call', 'LowLevelExample1 -- call');
-		checkJoinPoint($call, 'function', 'LowLevelExample1 -- function');
+		/* instantiate the LibVC object */
+		var lvc = new LibVC($function, {}, 'll_example1');
+	end
+	condition
+		$function.hasDefinition
 	end
 
+	/* set the options defined before */
+	lvc.setOptions(opt);
+
+	select stmt.call{'kernel'} end
+	apply
+		/* add the options initialization code before the kernel call */
+		lvc.buildOptionListBefore($call);
+	end
 
 	println('ll-example1 done');
 end
-
-var A = function() {
-	var a = 0;
-};
-
-
-var B = function() {
-	var b = 0;
-};
-
-function C() {
-}
-
-
-function D() {
-}
