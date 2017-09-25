@@ -26,8 +26,12 @@ aspectdef LowLevelExample1
 
 	select stmt.call{'kernel'} end
 	apply
-		/* add the options initialization code before the kernel call */
-		lvc.buildOptionListBefore($call);
+		
+//		lvc.buildOptionListBefore($call);
+//		lvc.buildVersionBefore($call);
+//		lvc.compileVersionBefore($call);
+//		lvc.loadBefore($call);
+		lvc.replaceCall($call);
 	end
 
 	println('ll-example1 done');

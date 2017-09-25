@@ -1,13 +1,28 @@
 aspectdef _LVC_INIT_
-	input name end
-	output compName end
-	
-	compName = name + '_compiler';
+	input name, compName, lvc end
 	
 	select file.function{'main'}.body end
 	apply
-		$file.addInclude('versioningCompiler/Utils.hpp', false);
+	
+		lvc._includeHeader($function);
+		
 		exec insertBegin('vc::compiler_ptr_t ' + compName + ' = vc::make_compiler<vc::SystemCompiler>();');
+	end
+end
+
+aspectdef _LVC_C_LINKAGE_
+	input $func end
+	
+	var funcName = $func.name;
+	
+	select function{name == funcName} end
+	apply
+		var $linkage = AstFactory.externC($function);
+		
+		// Replace original function declaration with new linkage node, if created
+		if($linkage !== null) {
+			$function.exec replaceWith($linkage);
+		}
 	end
 end
 

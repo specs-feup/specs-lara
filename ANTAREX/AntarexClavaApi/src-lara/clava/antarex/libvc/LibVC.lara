@@ -3,23 +3,73 @@ import antarex.libvc.LibVCAspects;
 function LibVC ($func, options, name) {
 	
 	checkDefined($func, '$func', 'LibVC');
-	
 	checkJoinPointType($func, 'function', 'LibVC ($func)');
-	
 	checkTrue($func.hasDefinition, '$func should be a function definition', 'LibVC');
 	
 	/* TODO: make name if undefined */
 	this._name = name;
 	
+	/* names of intermediate variables */
+	this._compName = this._name + '_compiler';
+	this._optListName = this._name + '_opt_list';
+	this._builderName = this._name + '_builder';
+	this._versionName = this._name + '_version';
+	this._symbolName = this._name;
+	
+	/* function data */
 	this._funcName = $func.name;
 	this._funcPath = $func.ancestor('file').filepath;
-	
+	this._type = '';
+	this._typedef = '';
+	this._makeType($func);
+
+	/* compiler options for the version */
 	this._options = new LibVCOptions();
 	
-	/* initialize the library at the start if the main function */
-	call lvcInit : _LVC_INIT_(name);
+	/* set of files in which we already added headers */
+	this._filesWithHeader = {};
 	
-	this._compName = lvcInit.compName;
+	/* variables that signal whether dependecies are satisfied */
+	this._buildOptionListCalled = false;
+	this._buildVersionCalled = false;
+	this._compileVersionCalled = false;
+	this._loadCalled = false;
+	
+	/* initialize the library at the start if the main function */
+	call _LVC_INIT_(name, this._compName, this);
+	
+	/* force C linkage for the target function */
+	/* $func may no longer be valid from this moment on TODO: check this */
+	call _LVC_C_LINKAGE_($func);
+}
+
+/**
+ * Makes the code for the typedef based on the original function.
+ * */
+LibVC.prototype._makeType = function($func) {
+	
+	this._type = this._name + '_ptr_t';
+	this._typedef = 'typedef ' + $func.type.code + '(*' + this._type + ') (';
+	
+	this._typedef += $func.params.map(function($p){
+		return $p.code;
+	}).join(',');
+
+	this._typedef += ');';
+}
+
+/**
+ * Adds the LibVC header file if needed.
+ * */
+LibVC.prototype._includeHeader = function($jp) {
+	
+	$file = $jp.ancestor('file');
+	
+	if(this._filesWithHeader[$file.filepath] === undefined) {
+		
+		$file.exec addInclude('versioningCompiler/Utils.hpp', false);
+		this._filesWithHeader[$file.filepath] = true;
+	}
 }
 
 /**
@@ -71,9 +121,11 @@ LibVC.prototype.buildOptionListAfter = function($joinpoint) {
 	
 	checkJoinPoint($joinpoint, 'buildOptionListAfter ($joinpoint)');
 	
-	var code = '';
+	var code = this._makeOptionsCode();
 	
 	$joinpoint.insert after code;
+	
+	this._buildOptionListCalled = true;
 }
 
 LibVC.prototype.buildOptionListBefore = function($joinpoint) {
@@ -83,6 +135,8 @@ LibVC.prototype.buildOptionListBefore = function($joinpoint) {
 	var code = this._makeOptionsCode();
 	
 	$joinpoint.insert before code;
+	
+	this._buildOptionListCalled = true;
 }
 
 LibVC.prototype._makeOptionsCode = function() {
@@ -99,7 +153,7 @@ LibVC.prototype._makeOptionsCode = function() {
 		
 		var opt = this._options._options[optId];
 		
-		var singleName = 'opt_' + this._name + '_' + optId;
+		var singleName = this._name + '_opt_' + optId;
 		optionsList.push(singleName);
 		
 		var singleOpt = 'vc::Option ' + singleName + ' = vc::Option("' + opt.t + '", ' + opt.p;
@@ -112,7 +166,7 @@ LibVC.prototype._makeOptionsCode = function() {
 		optionsCode += singleOpt + '\n';
 	}
 	
-	return OptionListTemplate(this._name, optionsCode, optionsList);
+	return OptionListTemplate(this._optListName, optionsCode, optionsList);
 }
 
 LibVC.prototype._makeValueCode = function(opt) {
@@ -126,7 +180,7 @@ LibVC.prototype._makeValueCode = function(opt) {
 
 codedef OptionListTemplate(name, optionsCode, optionsList) %{
 [[optionsCode]]
-vc::opt_list_t kernel_opt_list_[[name]] = {
+vc::opt_list_t [[name]] = {
 	[[optionsList]];
 };
 }%
@@ -166,4 +220,137 @@ function LibVCOptions() {
 		tag = tag === undefined ? '' : tag;
 		this._options.push({p: prefix, v: value, t:tag, l: true});
 	};
+}
+
+LibVC.prototype.buildVersionAfter = function($joinpoint) {
+	
+	checkJoinPoint($joinpoint, 'buildVersionAfter ($joinpoint)');
+	
+	if(this._buildOptionListCalled === false) {
+		this.buildOptionListAfter($joinpoint);
+	}
+	
+	var code = BuilderTemplate(this._builderName, this._versionName, this._funcName, this._funcPath, this._compName, this._optListName);
+	
+	$joinpoint.insert after code;
+	
+	this._buildVersionCalled = true;
+}
+
+LibVC.prototype.buildVersionBefore = function($joinpoint) {
+	
+	checkJoinPoint($joinpoint, 'buildVersionBefore ($joinpoint)');
+	
+	if(this._buildOptionListCalled === false) {
+		this.buildOptionListBefore($joinpoint);
+	}
+	
+	var code = BuilderTemplate(this._builderName, this._versionName, this._funcName, this._funcPath, this._compName, this._optListName);
+	
+	$joinpoint.insert before code;
+	
+	this._buildVersionCalled = true;
+}
+
+codedef BuilderTemplate(builderName, versionName, funcName, filePath, compilerName, optListName) %{
+vc::Version::Builder [[builderName]];
+[[builderName]]._functionName = "[[funcName]]";
+[[builderName]]._fileName_src = "[[filePath]]";
+[[builderName]]._compiler = [[compilerName]];
+[[builderName]]._optionList = [[optListName]];
+
+auto [[versionName]] = [[builderName]].build();
+}%
+end
+
+LibVC.prototype.compileVersionAfter = function($joinpoint) {
+	
+	checkJoinPoint($joinpoint, 'compileVersionAfter ($joinpoint)');
+	
+	if(this._buildVersionCalled === false) {
+		this.buildVersionAfter($joinpoint);
+	}
+
+	var code = CompileTemplate(this._versionName);
+	
+	$joinpoint.insert after code;
+	
+	this._compileVersionCalled = true;
+}
+
+LibVC.prototype.compileVersionBefore = function($joinpoint) {
+	
+	checkJoinPoint($joinpoint, 'compileVersionBefore ($joinpoint)');
+	
+	if(this._buildVersionCalled === false) {
+		this.buildVersionBefore($joinpoint);
+	}
+
+	var code = CompileTemplate(this._versionName);
+	
+	$joinpoint.insert before code;
+	
+	this._compileVersionCalled = true;
+}
+
+codedef CompileTemplate(versionName) %{
+auto ok =  [[versionName]]->compile();
+}%
+end
+
+LibVC.prototype.loadAfter = function($joinpoint, symbolName) {
+	
+	checkJoinPoint($joinpoint, 'loadAfter ($joinpoint)');
+	
+	if(symbolName !== undefined) {
+		
+		this._symbolName = symbolName;
+	}
+	
+	if(this._compileVersionCalled === false) {
+		this.compileVersionAfter($joinpoint);
+	}
+
+	var code = LoadTemplate(this._symbolName, this._type, this._versionName);
+	
+	$joinpoint.insert after code;
+	
+	this._loadCalled = true;
+}
+
+LibVC.prototype.loadBefore = function($joinpoint, symbolName) {
+	
+	checkJoinPoint($joinpoint, 'loadBefore ($joinpoint)');
+
+	if(symbolName !== undefined) {
+		
+		this._symbolName = symbolName;
+	}
+	
+	if(this._compileVersionCalled === false) {
+		this.compileVersionBefore($joinpoint);
+	}
+
+	var code = LoadTemplate(this._symbolName, this._typedef, this._type, this._versionName);
+	
+	$joinpoint.insert before code;
+	
+	this._loadCalled = true;
+}
+
+codedef LoadTemplate(name, typedef, type, versionName) %{
+[[typedef]]
+kernel_t [[name]] = ([[type]]) [[versionName]]->getSymbol();
+}%
+end
+
+LibVC.prototype.replaceCall = function($call) {
+	
+	checkJoinPointType($call, 'call', 'replaceCall ($call)');
+	
+	if(this._loadCalled === false) {
+		this.loadBefore($call);
+	}
+	
+	$call.exec setName(this._symbolName);
 }
