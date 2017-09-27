@@ -492,7 +492,7 @@ LibVC.prototype.loadBefore = function($joinpoint, symbolName) {
 
 codedef LoadTemplate(name, typedef, type, versionName) %{
 [[typedef]]
-kernel_t [[name]] = ([[type]]) [[versionName]]->getSymbol();
+[[type]] [[name]] = ([[type]]) [[versionName]]->getSymbol();
 }%
 end
 
