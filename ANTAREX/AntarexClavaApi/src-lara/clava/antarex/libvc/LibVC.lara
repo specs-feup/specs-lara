@@ -28,6 +28,8 @@ function LibVC ($func, options, name) {
 	
 	/* set of files in which we already added headers */
 	this._filesWithHeader = {};
+	/* set of files in which we already added the declaration of the error logging function */
+	this._filesWithErrorDecl = {};
 	
 	/* variables that signal whether dependecies are satisfied */
 	this._buildOptionListCalled = false;
@@ -35,12 +37,92 @@ function LibVC ($func, options, name) {
 	this._compileVersionCalled = false;
 	this._loadCalled = false;
 	
+	/* whether we check errors and log them to the console */
+	this._logErrorsInConsole = true;
+	
+	/* how to deal with errors */
+	this._errorStrategy = LibVC.ErrorHandle.NONE;
+	this._errorUserCode = undefined;
+	this._errorReturnValue = -1;
+	
 	/* initialize the library at the start if the main function */
 	call _LVC_INIT_(name, this._compName, this);
 	
 	/* force C linkage for the target function */
 	/* $func may no longer be valid from this moment on TODO: check this */
 	call _LVC_C_LINKAGE_($func);
+}
+
+/**
+ * Enum that controls the error handling strategy.
+ * */
+LibVC.ErrorHandle = {
+	NONE: "none",
+	RETURN: "return",
+	EXIT: "exit",
+	USER: "user"
+}
+
+LibVC.prototype.setErrorStrategy = function(strat, code) {
+	
+	checkDefined(strat, 'strat', 'LibVC.setErrorStrategy');
+	/* TODO: check to confirm enum? */
+	
+	this._errorStrategy = strat;
+	
+	if(strat == LibVC.ErrorHandle.RETURN) {
+		
+		if(code !== undefined) {
+			this._errorReturnValue = code;
+		}
+	} else if(strat == LibVC.ErrorHandle.USER) {
+		
+		checkDefined(code, 'code', 'LibVC.setErrorStrategy');
+		checkType(code, 'string', 'LibVC.setErrorStrategy (code)');
+		this._errorUserCode = code;
+	}
+}
+
+LibVC.prototype.setErrorStrategyNone = function() {
+	
+	this._errorStrategy = LibVC.ErrorHandle.NONE;
+}
+
+LibVC.prototype.setErrorStrategyReturn = function(value) {
+	
+	this._errorStrategy = LibVC.ErrorHandle.RETURN;
+	
+	if(value !== undefined) {
+		this._errorReturnValue = value;
+	}
+}
+
+LibVC.prototype.setErrorStrategyExit = function() {
+	
+	this._errorStrategy = LibVC.ErrorHandle.EXIT;
+}
+
+LibVC.prototype.setErrorStrategyUser = function(code) {
+
+	checkDefined(code, 'code', 'LibVC.setErrorStrategyUser');
+	checkType(code, 'string', 'LibVC.setErrorStrategyUser (code)');
+	
+	this._errorStrategy = LibVC.ErrorHandle.USER;
+	this._errorUserCode = code;
+}
+
+LibVC.prototype._makeErrorCode = function() {
+	
+	switch(this._errorStrategy) {
+		case LibVC.ErrorHandle.RETURN:
+			return "return " + this._errorReturnValue + ";";
+		case LibVC.ErrorHandle.EXIT:
+			return "exit(EXIT_FAILURE);"; /* TODO: check if stdlib needs to be included */
+		case LibVC.ErrorHandle.USER:
+			return this._errorUserCode;
+		default:
+			return "";
+	}
 }
 
 /**
@@ -70,6 +152,28 @@ LibVC.prototype._includeHeader = function($jp) {
 		$file.exec addInclude('versioningCompiler/Utils.hpp', false);
 		this._filesWithHeader[$file.filepath] = true;
 	}
+}
+
+/**
+ * Adds the declaration of the error loggin funciton if needed.
+ * */
+LibVC.prototype._includeErrorDecl = function($jp) {
+	
+	$file = $jp.ancestor('file');
+	
+	if(this._filesWithErrorDecl[$file.filepath] === undefined) {
+		
+		call _LVC_INSERT_ERROR_DECL_($file, 'void libVC_error_procedure(const std::string& msg);');
+		this._filesWithErrorDecl[$file.filepath] = true;
+	}
+}
+
+LibVC.prototype.setLogErrorsInConsole = function(log) {
+
+	checkDefined(log, 'value', 'LibVC.setLogErrorsInConsole');
+	checkType(log, 'boolean', 'LibVC.setLogErrorsInConsole (log)');
+	
+	this._logErrorsInConsole = log;
 }
 
 /**
@@ -230,7 +334,8 @@ LibVC.prototype.buildVersionAfter = function($joinpoint) {
 		this.buildOptionListAfter($joinpoint);
 	}
 	
-	var code = BuilderTemplate(this._builderName, this._versionName, this._funcName, this._funcPath, this._compName, this._optListName);
+	var checkCode = this._makeBuilderCheckCode();
+	var code = BuilderTemplate(this._builderName, this._versionName, this._funcName, this._funcPath, this._compName, this._optListName, checkCode);
 	
 	$joinpoint.insert after code;
 	
@@ -245,14 +350,15 @@ LibVC.prototype.buildVersionBefore = function($joinpoint) {
 		this.buildOptionListBefore($joinpoint);
 	}
 	
-	var code = BuilderTemplate(this._builderName, this._versionName, this._funcName, this._funcPath, this._compName, this._optListName);
+	var checkCode = this._makeBuilderCheckCode();
+	var code = BuilderTemplate(this._builderName, this._versionName, this._funcName, this._funcPath, this._compName, this._optListName, checkCode);
 	
 	$joinpoint.insert before code;
 	
 	this._buildVersionCalled = true;
 }
 
-codedef BuilderTemplate(builderName, versionName, funcName, filePath, compilerName, optListName) %{
+codedef BuilderTemplate(builderName, versionName, funcName, filePath, compilerName, optListName, checkCode) %{
 vc::Version::Builder [[builderName]];
 [[builderName]]._functionName = "[[funcName]]";
 [[builderName]]._fileName_src = "[[filePath]]";
@@ -260,6 +366,28 @@ vc::Version::Builder [[builderName]];
 [[builderName]]._optionList = [[optListName]];
 
 auto [[versionName]] = [[builderName]].build();
+
+[[checkCode]]
+}%
+end
+
+LibVC.prototype._makeBuilderCheckCode = function () {
+	
+	var code = "";
+	
+	if(this._logErrorsInConsole) {
+		var errorCode = this._makeErrorCode();
+		code = BuilderCheckTemplate(this._versionName, errorCode);
+	}
+	
+	return code;
+}
+
+codedef BuilderCheckTemplate(versionName, errorCode) %{
+if (![[versionName]]) {
+	libVC_error_procedure("Parameters error during version creation");
+	[[errorCode]]
+}
 }%
 end
 
@@ -271,7 +399,8 @@ LibVC.prototype.compileVersionAfter = function($joinpoint) {
 		this.buildVersionAfter($joinpoint);
 	}
 
-	var code = CompileTemplate(this._versionName);
+	var checkCode = this._makeCompileCheckCode();
+	var code = CompileTemplate(this._versionName, checkCode);
 	
 	$joinpoint.insert after code;
 	
@@ -286,15 +415,38 @@ LibVC.prototype.compileVersionBefore = function($joinpoint) {
 		this.buildVersionBefore($joinpoint);
 	}
 
-	var code = CompileTemplate(this._versionName);
+	var checkCode = this._makeCompileCheckCode();
+	var code = CompileTemplate(this._versionName, checkCode);
 	
 	$joinpoint.insert before code;
 	
 	this._compileVersionCalled = true;
 }
 
-codedef CompileTemplate(versionName) %{
-auto ok =  [[versionName]]->compile();
+LibVC.prototype._makeCompileCheckCode = function() {
+	
+	var code = "";
+	
+	if(this._logErrorsInConsole) {
+		var errorCode = this._makeErrorCode();
+		code = CompileCheckTemplate(this._versionName, errorCode);
+	}
+	
+	return code;
+}
+
+codedef CompileCheckTemplate(versionName, errorCode) %{
+if (![[versionName]]_ok) {
+	libVC_error_procedure("Compilation Error");
+	[[errorCode]]
+}
+}%
+end
+
+codedef CompileTemplate(versionName, checkCode) %{
+auto [[versionName]]_ok =  [[versionName]]->compile();
+
+[[checkCode]]
 }%
 end
 

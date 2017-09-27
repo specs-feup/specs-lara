@@ -5,12 +5,8 @@ aspectdef LowLevelExample1
 	println('starting ll-example1');
 
 	var opt = new LibVCOptions();
-	opt.addOptionLiteral('-O3');
-	opt.addOptionLiteral('-march=', 'native', 'arch');
-	
-	opt.addDefineLiteral('VERIFY');
-	opt.addDefineLiteral('TYPE', 'FLOAT', 'type macro');
-	opt.addDefineLiteral('PRES', '2.f');
+	opt.addOptionLiteral('-O', '3', 'opt_level');
+	opt.addOptionLiteral('--std=', 'c++11', 'arch');
 
 	select function{'kernel'} end
 	apply
@@ -23,6 +19,13 @@ aspectdef LowLevelExample1
 
 	/* set the options defined before */
 	lvc.setOptions(opt);
+
+//	lvc.setLogErrorsInConsole(false);
+	
+//	lvc.setErrorStrategy(LibVC.ErrorHandle.RETURN, -1);
+//	lvc.setErrorStrategy(LibVC.ErrorHandle.RETURN, -1);
+//	lvc.setErrorStrategyReturn(-1);
+	lvc.setErrorStrategyExit();
 
 	select stmt.call{'kernel'} end
 	apply

@@ -5,8 +5,18 @@ aspectdef _LVC_INIT_
 	apply
 	
 		lvc._includeHeader($function);
+		lvc._includeErrorDecl($function);
 		
 		exec insertBegin('vc::compiler_ptr_t ' + compName + ' = vc::make_compiler<vc::SystemCompiler>();');
+		
+		$function.insert before %{
+void libVC_error_procedure(const std::string& msg)
+{
+	std::cerr << "libVC has incourred in an error" << std::endl;
+	std::cerr << msg << std::endl;
+	return;
+}
+		}%;
 	end
 end
 
@@ -23,6 +33,16 @@ aspectdef _LVC_C_LINKAGE_
 		if($linkage !== null) {
 			$function.exec replaceWith($linkage);
 		}
+	end
+end
+
+aspectdef _LVC_INSERT_ERROR_DECL_
+	input $file, declCode end
+	
+	select $file.function end
+	apply
+		insert before declCode;
+		break;
 	end
 end
 
