@@ -1,4 +1,6 @@
 import antarex.libvc.LibVCAspects;
+import clava.Clava;
+import lara.Io;
 
 function LibVC ($func, options, name) {
 	
@@ -18,7 +20,7 @@ function LibVC ($func, options, name) {
 	
 	/* function data */
 	this._funcName = $func.name;
-	this._funcPath = $func.ancestor('file').filepath;
+	this._funcPath =  Io.getAbsolutePath(Clava.getWeavingFolder(), $func.ancestor('file').relativeFilepath);
 	this._type = '';
 	this._typedef = '';
 	this._makeType($func);
@@ -30,6 +32,8 @@ function LibVC ($func, options, name) {
 	this._filesWithHeader = {};
 	/* set of files in which we already added the declaration of the error logging function */
 	this._filesWithErrorDecl = {};
+	/* set of files in which we already added <iostream> */
+	this._filesWithIostream = {};
 	
 	/* variables that signal whether dependecies are satisfied */
 	this._buildOptionListCalled = false;
@@ -151,6 +155,20 @@ LibVC.prototype._includeHeader = function($jp) {
 		
 		$file.exec addInclude('versioningCompiler/Utils.hpp', false);
 		this._filesWithHeader[$file.filepath] = true;
+	}
+}
+
+/**
+ * Adds the <iostream> header file if needed.
+ * */
+LibVC.prototype._includeIostream = function($jp) {
+	
+	$file = $jp.ancestor('file');
+	
+	if(this._filesWithIostream[$file.filepath] === undefined) {
+		
+		$file.exec addInclude('iostream', true);
+		this._filesWithIostream[$file.filepath] = true;
 	}
 }
 
@@ -285,7 +303,7 @@ LibVC.prototype._makeValueCode = function(opt) {
 codedef OptionListTemplate(name, optionsCode, optionsList) %{
 [[optionsCode]]
 vc::opt_list_t [[name]] = {
-	[[optionsList]];
+	[[optionsList]]
 };
 }%
 end

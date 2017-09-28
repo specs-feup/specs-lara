@@ -6,6 +6,7 @@ aspectdef _LVC_INIT_
 	
 		lvc._includeHeader($function);
 		lvc._includeErrorDecl($function);
+		lvc._includeIostream($function);
 		
 		exec insertBegin('vc::compiler_ptr_t ' + compName + ' = vc::make_compiler<vc::SystemCompiler>();');
 		
