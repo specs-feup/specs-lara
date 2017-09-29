@@ -47,6 +47,72 @@ aspectdef _LVC_INSERT_ERROR_DECL_
 	end
 end
 
+aspectdef _LVC_GET_VALUE_CODE_
+	input option, $joinpoint end
+	output code end
+	
+	/* find the declaration closest to the insert location */
+	call gvd : _LVC_GET_VALUE_DECL_(option.v, $joinpoint);
+	var $found = gvd.$found;
+	
+	/* generate the code based on the declaration */
+	call gvcfd : _LVC_GET_VALUE_CODE_FROM_DECL_($found, option);
+	code = gvcfd.code;
+end
+
+aspectdef _LVC_GET_VALUE_DECL_
+	input declName, $joinpoint end
+	output $found end
+	
+	var $file = $joinpoint.ancestor('file');
+	var $scope = $joinpoint.ancestor('scope');
+	if($scope === undefined) {
+		throw "The insert location for option building must be inside a function. Could not find an ancestor of type 'scope'.";
+	}
+	
+	while($scope !== undefined) {
+		
+		call lfdis : _LVC_FIND_DECL_IN_SCOPE_(declName, $scope);
+		if(lfdis.$found !== undefined) {
+			$found = lfdis.$found;
+			return;
+		}
+		
+		$scope = $scope.ancestor('scope');
+	}
+	
+	/* if we have no more scopes, we've reached a function already, look at the file for declarations */
+	select $file.vardecl{name == declName} end
+	apply
+		$found = $vardecl;
+		return;
+	end
+	
+	throw "Could not find the declaration of variable 'declName'.";
+end
+
+aspectdef _LVC_FIND_DECL_IN_SCOPE_
+	input declName, $scope end
+	output $found end
+	
+	select $scope.stmt.vardecl{name == declName} end
+	apply
+		$found = $vardecl;
+		return;
+	end
+end
+
+aspectdef _LVC_GET_VALUE_CODE_FROM_DECL_
+	input $vardecl, option end
+	output code end
+	
+	if($vardecl.type.code != 'string' && $vardecl.type.code != 'std::string') {
+		code = 'std::to_string('+ option.v +')';
+	} else {
+		code = '"\\\"" +' + option.v + '+ "\\\""';
+	}
+end
+
 /* everything below is old code */
 
 aspectdef LibVersioningCompiler

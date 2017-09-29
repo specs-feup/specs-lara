@@ -6,12 +6,15 @@ aspectdef LowLevelExample1
 
 	var opt = new LibVCOptions();
 	opt.addOptionLiteral('-O', '3', 'opt_level');
-	opt.addOptionLiteral('--std=', 'c++11', 'arch');
+	opt.addOptionLiteral('--std=', 'c++11', 'standard');
+
+	opt.addOption('-O', 'opt_level', 'code_opt_level');
+	opt.addOption('--std=', 'standard', 'code_standard');
 
 	select function{'kernel'} end
 	apply
 		/* instantiate the LibVC object */
-		var lvc = new LibVC($function, {}, 'll_example1');
+		var lvc = new LibVC($function, {log:"./log.txt"}, 'll_example1');
 	end
 	condition
 		$function.hasDefinition

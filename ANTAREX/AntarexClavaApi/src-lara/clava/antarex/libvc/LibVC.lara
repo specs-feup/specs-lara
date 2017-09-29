@@ -2,7 +2,7 @@ import antarex.libvc.LibVCAspects;
 import clava.Clava;
 import lara.Io;
 
-function LibVC ($func, options, name) {
+function LibVC ($func, compilerOptions, name) {
 	
 	checkDefined($func, '$func', 'LibVC');
 	checkJoinPointType($func, 'function', 'LibVC ($func)');
@@ -243,7 +243,7 @@ LibVC.prototype.buildOptionListAfter = function($joinpoint) {
 	
 	checkJoinPoint($joinpoint, 'buildOptionListAfter ($joinpoint)');
 	
-	var code = this._makeOptionsCode();
+	var code = this._makeOptionsCode($joinpoint);
 	
 	$joinpoint.insert after code;
 	
@@ -254,14 +254,14 @@ LibVC.prototype.buildOptionListBefore = function($joinpoint) {
 	
 	checkJoinPoint($joinpoint, 'buildOptionListBefore ($joinpoint)');
 	
-	var code = this._makeOptionsCode();
+	var code = this._makeOptionsCode($joinpoint);
 	
 	$joinpoint.insert before code;
 	
 	this._buildOptionListCalled = true;
 }
 
-LibVC.prototype._makeOptionsCode = function() {
+LibVC.prototype._makeOptionsCode = function($joinpoint) {
 	
 	if(this._options._options.length === 0) {
 		println('no compilation options were provided to LibVC');
@@ -281,7 +281,7 @@ LibVC.prototype._makeOptionsCode = function() {
 		var singleOpt = 'vc::Option ' + singleName + ' = vc::Option("' + opt.t + '", ' + opt.p;
 		if(opt.v !== undefined) {
 			
-			singleOpt += ', ' + this._makeValueCode(opt);
+			singleOpt += ', ' + this._makeValueCode(opt, $joinpoint);
 		} 
 		singleOpt += ');';
 		
@@ -291,12 +291,14 @@ LibVC.prototype._makeOptionsCode = function() {
 	return OptionListTemplate(this._optListName, optionsCode, optionsList);
 }
 
-LibVC.prototype._makeValueCode = function(opt) {
+LibVC.prototype._makeValueCode = function(opt, $joinpoint) {
 	
 	if(opt.l) {
 		return '"' + opt.v + '"';
 	} else {
-		throw 'LibVC does not support non-literal options yet';
+		//throw 'LibVC does not support non-literal options yet';
+		call gvc: _LVC_GET_VALUE_CODE_(opt, $joinpoint);
+		return gvc.code;
 	}
 }
 
