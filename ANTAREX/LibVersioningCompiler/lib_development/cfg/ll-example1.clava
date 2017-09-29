@@ -61,7 +61,7 @@
     </entry>
     <entry>
       <string>verbose</string>
-      <org.lara.interpreter.joptions.config.interpreter.VerboseLevel>warnings</org.lara.interpreter.joptions.config.interpreter.VerboseLevel>
+      <org.lara.interpreter.joptions.config.interpreter.VerboseLevel>errors</org.lara.interpreter.joptions.config.interpreter.VerboseLevel>
     </entry>
     <entry>
       <string>output</string>
@@ -104,6 +104,10 @@
     <entry>
       <string>C/C++ Standard</string>
       <pt.up.fe.specs.clava.language.Standard>CXX11</pt.up.fe.specs.clava.language.Standard>
+    </entry>
+    <entry>
+      <string>stack trace</string>
+      <boolean>false</boolean>
     </entry>
   </values>
   <strict>false</strict>

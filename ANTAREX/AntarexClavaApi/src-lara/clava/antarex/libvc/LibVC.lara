@@ -2,7 +2,7 @@ import antarex.libvc.LibVCAspects;
 import clava.Clava;
 import lara.Io;
 
-function LibVC ($func, compilerOptions, name) {
+function LibVC ($func, compilerSetup, name) {
 	
 	checkDefined($func, '$func', 'LibVC');
 	checkJoinPointType($func, 'function', 'LibVC ($func)');
@@ -17,6 +17,10 @@ function LibVC ($func, compilerOptions, name) {
 	this._builderName = this._name + '_builder';
 	this._versionName = this._name + '_version';
 	this._symbolName = this._name;
+
+	/* compiler setup */
+	this._compilerSetup = compilerSetup;
+	this._compilerInit = this._makeCompilerInit();
 	
 	/* function data */
 	this._funcName = $func.name;
@@ -50,11 +54,44 @@ function LibVC ($func, compilerOptions, name) {
 	this._errorReturnValue = -1;
 	
 	/* initialize the library at the start if the main function */
-	call _LVC_INIT_(name, this._compName, this);
+	call _LVC_INIT_(name, this._compilerInit, this);
 	
 	/* force C linkage for the target function */
 	/* $func may no longer be valid from this moment on TODO: check this */
 	call _LVC_C_LINKAGE_($func);
+}
+
+LibVC.prototype._makeCompilerInit = function() {
+	
+	switch (this._compilerSetup.compilerID) {
+		
+		default:
+			return this._makeDefaultCompilerInit();
+	}
+}
+
+LibVC.prototype._makeDefaultCompilerInit = function() {
+	
+	var code = 'vc::compiler_ptr_t ' + this._compName + ' = vc::make_compiler<vc::SystemCompiler>(';
+	
+	/* ID and command */
+	code += '"cc", "cc", ';
+	
+	/* working directory */
+	code += '"' + (this._compilerSetup.workingDir || '.') + '", ';
+	
+	/* log file */
+	code += '"' + (this._compilerSetup.logFile || '') + '", ';
+	
+	/* install dir */
+	code += '"' + (this._compilerSetup.installDir || '/usr/bin') + '", ';
+	
+	/* IR support */
+	code += this._compilerSetup.supportsIR || 'false';
+	
+	code += ');';
+	
+	return code;
 }
 
 /**

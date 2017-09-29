@@ -1,5 +1,5 @@
 aspectdef _LVC_INIT_
-	input name, compName, lvc end
+	input name, compilerInit, lvc end
 	
 	select file.function{'main'}.body end
 	apply
@@ -8,7 +8,7 @@ aspectdef _LVC_INIT_
 		lvc._includeErrorDecl($function);
 		lvc._includeIostream($function);
 		
-		exec insertBegin('vc::compiler_ptr_t ' + compName + ' = vc::make_compiler<vc::SystemCompiler>();');
+		exec insertBegin(compilerInit);
 		
 		$function.insert before %{
 void libVC_error_procedure(const std::string& msg)
