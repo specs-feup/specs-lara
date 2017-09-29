@@ -1,8 +1,30 @@
+import antarex.libvc.LibVC;
+
 aspectdef LowLevelExample2
 
 	println('starting ll-example2');
 
+	var opt = new LibVCOptions();
+	opt.addOptionLiteral('-O', '3', 'opt_level');
+	opt.addOptionLiteral('--std=', 'c++11', 'standard');
+
+	select function{'kernel'} end
+	apply
+		/* instantiate the LibVC object */
+		var lvc = new LibVC($function, {logFile:"./log.txt"}, 'll_example1');
+	end
+	condition
+		$function.hasDefinition
+	end
+
+	lvc.setOptions(opt);
 	
+	lvc.setErrorStrategyReturn();
+
+	select stmt.call{'kernel'} end
+	apply
+		lvc.replaceCall($call);
+	end
 
 	println('ll-example2 done');
 end
