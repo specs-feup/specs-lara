@@ -114,10 +114,15 @@ aspectdef _LVC_GET_VALUE_CODE_FROM_DECL_
 	input $vardecl, option end
 	output code end
 	
-	if($vardecl.type.code != 'string' && $vardecl.type.code != 'std::string') {
+	var type = $vardecl.type;
+	var typeCode = type.code.trim();
+	
+	var isString = typeCode.indexOf('string') != -1 || typeCode.indexOf('std::string') != -1;
+	
+	if(!isString) {
 		code = 'std::to_string('+ option.v +')';
 	} else {
-		code = '"\\\"" +' + option.v + '+ "\\\""';
+		code = '"\\\\\\\"" +' + option.v + '+ "\\\\\\\""';
 	}
 end
 
