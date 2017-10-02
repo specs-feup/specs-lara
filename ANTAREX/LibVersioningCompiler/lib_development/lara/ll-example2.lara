@@ -24,6 +24,8 @@ aspectdef LowLevelExample2
 	select stmt.call{'kernel'} end
 	apply
 		lvc.replaceCall($call);
+		break #stmt; /* stop after the first call found */
+		/* TODO: we need a positional way to find the right call, e.g., we can use a marker to find the right call */
 	end
 
 	println('ll-example2 done');

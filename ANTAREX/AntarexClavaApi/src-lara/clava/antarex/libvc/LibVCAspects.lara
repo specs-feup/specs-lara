@@ -29,12 +29,12 @@ aspectdef _LVC_C_LINKAGE_
 	select function{name == funcName} end
 	apply
 		
-		if(!$function.hasDefinition) {
+		//~ if(!$function.hasDefinition) {
 			
-			if($function.getCode().trim().startsWith('extern')) {
-				continue;
-			}
-		}
+			//~ if($function.getCode().trim().startsWith('extern')) {
+				//~ continue;
+			//~ }
+		//~ }
 		
 		var $linkage = AstFactory.externC($function);
 		
