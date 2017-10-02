@@ -43,6 +43,8 @@ int main(int argc, char const *argv[]) {
 
   // some code here after function call
 
+  kernel();
+
   return 0;
 }
 
