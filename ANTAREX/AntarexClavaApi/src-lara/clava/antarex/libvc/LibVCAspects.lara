@@ -126,6 +126,22 @@ aspectdef _LVC_GET_VALUE_CODE_FROM_DECL_
 	}
 end
 
+aspectdef _LVC_CHANGE_IN_TAG_
+	input $stmt, symbolName end
+	
+	var foundCall = false;
+	
+	select $stmt.call end
+	apply
+		$call.exec setName(symbolName);
+		foundCall = true;
+	end
+	
+	if(!foundCall) {
+		throw "Could not find a 'call' from the provided tag.";
+	}
+end
+
 /* everything below is old code */
 
 aspectdef LibVersioningCompiler

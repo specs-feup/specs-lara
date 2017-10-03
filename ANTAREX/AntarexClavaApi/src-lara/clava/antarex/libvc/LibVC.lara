@@ -553,13 +553,26 @@ codedef LoadTemplate(name, typedef, type, versionName) %{
 }%
 end
 
-LibVC.prototype.replaceCall = function($call) {
+LibVC.prototype.replaceCall = function($joinpoint) {
 	
-	checkJoinPointType($call, 'call', 'replaceCall ($call)');
+	// checkJoinPointType($joinpoint, 'joinpoint', 'replaceCall ($joinpoint)');
 	
+	checkJoinPoint($joinpoint, '$joinpoint', 'replaceCall ($joinpoint)');
+
 	if(this._loadCalled === false) {
-		this.loadBefore($call);
+		this.loadBefore($joinpoint); // TODO: propagate tag 
 	}
 	
-	$call.exec setName(this._symbolName);
+	if(Weaver.isJoinPoint($joinpoint, 'call')) {
+	
+		$call.exec setName(this._symbolName);
+		
+	} else if(Weaver.isJoinPoint($joinpoint, 'tag')) {
+		
+		var $stmt = $joinpoint.target;
+		call _LVC_CHANGE_IN_TAG_($stmt, this._symbolName);
+	} else {
+		
+		throw "Expected variable to be a join point of type 'call' or 'tag', but it's of type '" + $joinpoint.joinPointType + "'";
+	}
 }
