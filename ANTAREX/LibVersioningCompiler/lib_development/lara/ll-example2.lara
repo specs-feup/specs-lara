@@ -21,12 +21,9 @@ aspectdef LowLevelExample2
 	
 	lvc.setErrorStrategyReturn();
 
-	select stmt.call{'kernel'} end
+	select tag{'kernel_libvc'} end
 	apply
-		lvc.replaceCall($call);
-		break #stmt; /* stop after the first call found */
-		/* TODO: we need a positional way to find the right call, e.g., we can use a marker to find the right call */
+		lvc.replaceCall($tag);
 	end
-
 	println('ll-example2 done');
 end

@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include "kernel.hpp"
 
 extern "C" {
 void kernel()

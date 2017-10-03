@@ -2,9 +2,10 @@
 
 int main(int argc, char const *argv[]) {
 
-  kernel(); // some DSL annotation here - VERSION THIS FUNCTION
+	#pragma lara tag kernel_libvc
+	kernel();
 
-  kernel();
+ 	kernel();
 
-  return 0;
+ 	return 0;
 }
