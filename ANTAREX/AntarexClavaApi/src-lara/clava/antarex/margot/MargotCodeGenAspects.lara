@@ -1,4 +1,4 @@
-aspectdef MargotInit
+aspectdef MargotInitMain
 	
     select file.function{'main'}.body end
     apply
@@ -34,7 +34,7 @@ aspectdef MargotLog
     $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
 end
 
-
+/* TODO: change the interface to take a monitor name and its arguments */
 aspectdef MargotStartMonitor
     input
         $joinpoint,
@@ -48,6 +48,8 @@ aspectdef MargotStartMonitor
     $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
 end
 
+
+/* TODO: change the interface to take a monitor name and its arguments */
 aspectdef MargotStopMonitor
     input
         $joinpoint,

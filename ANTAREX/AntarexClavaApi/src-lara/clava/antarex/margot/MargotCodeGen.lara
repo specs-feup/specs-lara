@@ -10,14 +10,17 @@ import antarex.margot.MargotCodeGenAspects;
 var Margot = function (block) {
     
     this.block = block;
-    this.vars = Array.prototype.slice.call(arguments, 1);
+    this.vars = arrayFromArgs(arguments, 1);
+    
+    this._initDone = false;
     
     /* initializes the framework */
-    var mi = new MargotInit();
-    mi.call();
+    //~ var mi = new MargotInitMain();
+    //~ mi.call();
     
     /* update function */
     this.update = function(joinpoint) {
+		this._checkDefaultInit();
         var mu = new MargotUpdate();
         mu.call(joinpoint,
                 this.block,
@@ -28,31 +31,16 @@ var Margot = function (block) {
     
     /* log function */
     this.log = function(joinpoint) {
+		this._checkDefaultInit();
         var ml = new MargotLog();
         ml.call(joinpoint, this.block);
     };
-    
-    /* start monitor function */
-    this.startMonitor = function(joinpoint) {
-        var mstart = new MargotStartMonitor();
-        mstart.call(joinpoint,
-                this.block,
-                Array.prototype.slice.call(arguments, 1)
-        );
-    };
-    
-    /* stop monitor function */
-    this.stopMonitor = function(joinpoint) {
-        var mstop = new MargotStopMonitor();
-        mstop.call(joinpoint,
-                this.block,
-                Array.prototype.slice.call(arguments, 1)
-        );
-    };
+  
     
     /* start and stop monitor functions */
     /* needs two arrays for the parameters of start and stop */
     this.monitor = function(joinpoint, startArgs, stopArgs) {
+		this._checkDefaultInit();
         var mm = new MargotMonitor();
         mm.call(joinpoint,
                 this.block,
@@ -64,6 +52,8 @@ var Margot = function (block) {
     /* log, start and stop monitor functions */
     /* needs two arrays for the parameters of start and stop */
     this.monitorLog = function(joinpoint, startArgs, stopArgs) {
+        
+        this._checkDefaultInit();
         
         var ml = new MargotLog();
         ml.call(joinpoint, this.block);
@@ -77,6 +67,201 @@ var Margot = function (block) {
     };
 };
 
+/**
+ * Inserts the include directive with the mARGOt header in the parent file of the provided join point.
+ * 
+ * @param {joinpoint} $joinpoint The reference join point
+ * */
+Margot.prototype._includeHeader = function($joinpoint) {
+	
+	var includeCode = MargotCxxStrings.inc();
+	var $parentFile = $joinpoint.ancestor('file');
+	$parentFile.exec addInclude(includeCode, true);
+}
+
+/**
+ * Checks if the initialization was performed and, if it wasn't, performed default initialization at the main function.
+ * 
+ * This should be called in every API function that inserts code except 'init'.
+ * */
+Margot.prototype._checkDefaultInit = function() {
+	
+	if(!this._initDone) {
+		
+		var mi = new MargotInitMain();
+		mi.call();
+		
+		this._initDone = true;
+	}
+}
+
+/**
+ * Inserts code to start all monitors specified in the configuration.
+ * 
+ * Also inserts the header file if needed.
+ * 
+ * For a block named 'block1', it will insert the code 'margot::block1::start_monitor();'.
+ * 
+ * @param {joinpoint} $joinpoint The point in the code where the code will be inserted
+ * @param {string...} startArgs The arguments to the start monitors call (optional)
+ * 
+ * */
+Margot.prototype.startMonitors = function($joinpoint) {
+	
+	checkJoinPoint($joinpoint, 'startMonitors ($joinpoint)');
+	
+	this._checkDefaultInit();
+	
+	var monitorCode = MargotCxxStrings.startAllMonitors(this.block, arrayFromArgs(arguments, 1));
+	$joinpoint.insert before monitorCode;
+
+	this._includeHeader($joinpoint);
+};
+
+/**
+ * Inserts code to stop all monitors specified in the configuration.
+ * 
+ * Also inserts the header file if needed.
+ * 
+ * For a block named 'block1', it will insert the code 'margot::block1::stop_monitor();'.
+ * 
+ * @param {joinpoint} $joinpoint The point in the code where the code will be inserted
+ * @param {string...} args The arguments to the stop monitors call (optional)
+ * 
+ * */
+Margot.prototype.stopMonitors = function($joinpoint) {
+	
+	checkJoinPoint($joinpoint, 'stopMonitors ($joinpoint)');
+	
+	this._checkDefaultInit();
+	
+	var monitorCode = MargotCxxStrings.stopAllMonitors(this.block, arrayFromArgs(arguments, 1));
+	$joinpoint.insert after monitorCode;
+
+	this._includeHeader($joinpoint);
+};
+
+/**
+ * Inserts code to start a single monitor specified in the configuration.
+ * 
+ * Also inserts the header file if needed.
+ * 
+ * For a block named 'block1' and a monitor named 'my_monitor', it will insert the code 'margot::travel::monitor::my_monitor.start();'.
+ * 
+ * @param {joinpoint} $joinpoint The point in the code where the code will be inserted
+ * @param {string} monitorName The name of the monitor to be started
+ * @param {string...} args The arguments to the start monitor call (optional)
+ * 
+ * */
+Margot.prototype.startMonitor = function($joinpoint, monitorName) {
+	
+	checkJoinPoint($joinpoint, 'startMonitors ($joinpoint)');
+	
+	checkDefined(monitorName, 'monitorName', 'startMonitor');
+	checkType(monitorName, 'string', 'startMonitor (monitorName)');
+
+	this._checkDefaultInit();
+
+	var monitorCode = MargotCxxStrings.startMonitor(this.block, monitorName, arrayFromArgs(arguments, 2));
+	$joinpoint.insert before monitorCode;
+
+	this._includeHeader($joinpoint);
+};
+
+/**
+ * Inserts code to stop a single monitor specified in the configuration.
+ * 
+ * Also inserts the header file if needed.
+ * 
+ * For a block named 'block1' and a monitor named 'my_monitor', it will insert the code 'margot::travel::monitor::my_monitor.stop();'.
+ * 
+ * @param {joinpoint} $joinpoint The point in the code where the code will be inserted
+ * @param {string} monitorName The name of the monitor to be stoped
+ * @param {string...} args The arguments to the stop monitor call (optional)
+ * 
+ * */
+Margot.prototype.stopMonitor = function($joinpoint, monitorName) {
+	
+	checkJoinPoint($joinpoint, 'stopMonitors ($joinpoint)');
+	
+	checkDefined(monitorName, 'monitorName', 'stopMonitor');
+	checkType(monitorName, 'string', 'stopMonitor (monitorName)');
+
+	this._checkDefaultInit();
+
+	var monitorCode = MargotCxxStrings.stopMonitor(this.block, monitorName, arrayFromArgs(arguments, 2));
+	$joinpoint.insert after monitorCode;
+
+	this._includeHeader($joinpoint);
+};
+
+/**
+ * Inserts code to set the value of a goal.
+ * 
+ * Also inserts the header file if needed.
+ * 
+ * For a block named 'block1', a goal named 'my_monitor' and a value of 10, it will insert the code 'margot::block1::goal::my_goal.set(10);'.
+ * 
+ * @param {joinpoint} $joinpoint The point in the code where the code will be inserted
+ * @param {string} goalName The name of the goal
+ * @param {string} goalValue The value to assign to the goal
+ * 
+ * */
+Margot.prototype.setGoal = function($joinpoint, goalName, goalValue) {
+	
+	checkJoinPoint($joinpoint, 'setGoal ($joinpoint)');
+	
+	checkDefined(goalName, 'goalName', 'setGoal');
+	checkType(goalName, 'string', 'setGoal (goalName)');
+	
+	checkDefined(goalValue, 'goalValue', 'setGoal');
+	checkType(goalValue, 'string', 'setGoal (goalValue)');
+
+	this._checkDefaultInit();
+
+	var goalCode = MargotCxxStrings.setGoal(this.block, goalName, goalValue);
+	$joinpoint.insert before goalCode;
+
+	this._includeHeader($joinpoint);
+};
+
+/**
+ * Inserts the code for the mARGOt initialization call. This function will find the parent scope of the provided join point and will insert the 'init' call at the start of that scope.
+ * 
+ * This function will throw an exception if it is not possible to find a scope from the provided join point.
+ * 
+ * This function will issue a warning and perform nothing if the initialization was already performed. Two possible causes:
+ * 	1) This function is called following any other function that inserts code. By default, if any of those functions is called and 'init' was not called beforehand, the initialization code will be inserted at the start of the main function.
+ * 	2) This function is called multiple times.
+ * 
+ * @param {joinpoint} $joinpoint The reference point in the code for the insertion.
+ * */
+Margot.prototype.init = function($joinpoint) {
+	
+	if(this._initDone) {
+		println("\n[WARN] Initialization called multiple times. Make sure that if 'init' is being called explicitly, it is called before any other function and not called twice.\n");
+		return;
+	}
+	
+	checkJoinPoint($joinpoint, 'init ($joinpoint)');
+	
+	var scope = $joinpoint.ancestor('scope');
+	if(scope === undefined) {
+		
+		throw 'Could not find a suitable scope to insert the initialization code from the join point provided: \n' + $joinpoint.code;
+	}
+	
+	var initCode = MargotCxxStrings.init();
+	scope.insertBegin(initCode);
+	
+	this._includeHeader($joinpoint);
+	
+	this._initDone = true;
+}
+
+/**
+ * Contains strings and methods to generate mARGOt's cxx interface code.
+ * */
 var MargotCxxStrings = {
     
     /* code parts */
@@ -86,9 +271,14 @@ var MargotCxxStrings = {
     incCode: 'margot.hpp',
     updCode: 'update',
     appliedCode:  'manager.configuration_applied();',
-    startCode: 'start_monitor',
-    stopCode: 'stop_monitor',
+    startAllCode: 'start_monitor',
+    stopAllCode: 'stop_monitor',
+    monitorCode: 'monitor',
+    startCode: '.start',
+    stopCode: '.stop',
     logCode: 'log();',
+    goalCode: 'goal',
+    setCode: '.set',
     
     
     /* code generation functions */
@@ -105,10 +295,7 @@ var MargotCxxStrings = {
         var code = 'if(';
         
         code += this.ns + this.sep + block + this.sep + this.updCode;
-        code += '(' + vars.map(function (v) {
-				return '&' + v;
-        }).toString() + ')';
-        code += ' != 0';
+        code += '(' + vars.toString() + ')';
         
         code += ') {\n';
         for(var ac of additionalCode) {
@@ -118,17 +305,15 @@ var MargotCxxStrings = {
         return code;
     },
     
-    start: function(block, args) {
-        
-        var code = this.ns + this.sep + block + this.sep + this.startCode;
+    startMonitor: function(block, monitorName, args) {
+        var code = this.ns + this.sep + block + this.sep + this.monitorCode + this.sep + monitorName + this.startCode;
         code += '(' + args.toString() + ');';
         
         return code;
     },
     
-    
-    stop: function(block, args) {
-        var code = this.ns + this.sep + block + this.sep + this.stopCode;
+    stopMonitor: function(block, monitorName, args) {
+        var code = this.ns + this.sep + block + this.sep + this.monitorCode + this.sep + monitorName + this.stopCode;
         code += '(' + args.toString() + ');';
         
         return code;
@@ -137,5 +322,28 @@ var MargotCxxStrings = {
     
     log: function(block) {
         return this.ns + this.sep + block + this.sep + this.logCode;
-    }
+    },
+    
+    startAllMonitors: function(block, args) {
+		
+		var code = this.ns + this.sep + block + this.sep + this.startAllCode;
+        code += '(' + args.toString() + ');';
+        
+        return code;
+	},
+	
+	stopAllMonitors: function(block, args) {
+		
+		var code = this.ns + this.sep + block + this.sep + this.stopAllCode;
+        code += '(' + args.toString() + ');';
+        
+        return code;
+	},
+	
+	setGoal: function(block, goalName, goalValue) {
+		
+		var code = this.ns + this.sep + block + this.sep + this.goalCode + this.sep + goalName + this.setCode;
+		code += '(' + goalValue + ');';
+		return code;
+	}
 };
