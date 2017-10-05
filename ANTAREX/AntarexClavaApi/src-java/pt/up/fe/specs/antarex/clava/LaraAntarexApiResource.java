@@ -32,7 +32,7 @@ public enum LaraAntarexApiResource implements LaraResourceProvider {
 
     // MARGOT
     MARGOT_CODE_GEN("margot/MargotCodeGen.lara"),
-    MARGOT_CODE_GEN_SUPPORT("margot/MargotCodeGenSupport.lara"),
+    MARGOT_CODE_GEN_ASPECTS("margot/MargotCodeGenAspects.lara"),
     // MargotConfig and all the sub files that are imported by MargotConfig
     MARGOT_CONFIG("margot/MargotConfig.lara"),
     MARGOT_CONFIG_BLOCK("margot/MargotConfigImports/MargotBlock.lara"),

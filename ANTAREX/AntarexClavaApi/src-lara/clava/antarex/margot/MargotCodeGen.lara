@@ -1,4 +1,4 @@
-import antarex.margot.MargotCodeGenSupport;
+import antarex.margot.MargotCodeGenAspects;
 
 /**
  * Represents a mARGOt autotuner instance.
