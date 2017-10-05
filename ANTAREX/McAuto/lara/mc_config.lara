@@ -1,0 +1,45 @@
+import antarex.margot.MargotConfig;
+
+aspectdef McAutoConfig
+
+	println("Starting Monte Carlo Autotuner config generation");
+
+	var config = new MargotConfig();
+	var travel = config.newBlock('travel');
+
+	/* Monitor section */
+	var tm = travel.newTimeMonitor('my_elapsed_time_monitor');
+	tm.expose('avg_computation_time', MargotExpose.AVERAGE);
+	tm.useMicro();
+
+
+
+	/* Goal section */
+	travel.addGoal('my_error_goal', 'my_elapsed_time_monitor', MargotDFun.AVERAGE, MargotCFun.LESS_EQUAL, 0.03);
+	travel.addGoal('my_predictability_goal', 'my_elapsed_time_monitor', MargotDFun.AVERAGE, MargotCFun.GREATER_EQUAL, 1.0);
+
+
+
+	/* Knobs section */
+	travel.addKnob('num_threads', 'num_threads', 'int');
+	travel.addKnob('num_samples', 'samples', 'int');
+	travel.addKnob('unpredictability', 'unpredictability', 'float');
+
+
+
+	/* Optimization / State section  */
+	var problem = travel.newState('problem');
+	problem.setStarting();
+
+	problem.subjectTo('my_predictability_goal', '', 10);
+	problem.subjectTo('my_error_goal', '', 9);
+
+	problem.maximize('measured_throughput', MargotCombination.LINEAR, 1.0);
+
+
+	
+	/* Config code generation */
+	println(config.build());
+	
+	println("Monte Carlo Autotuner config generation done!");
+end
