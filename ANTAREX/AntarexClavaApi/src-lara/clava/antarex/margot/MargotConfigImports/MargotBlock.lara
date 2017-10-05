@@ -42,7 +42,12 @@ MargotBlock.prototype.addGoal = function(name, monitorName, dFun, cFun, value) {
  * Enums for the function definitions of goal in mARGOt.
  * */
 var MargotDFun = new Enumeration('AVERAGE');
-var MargotCFun = new Enumeration({LESS_THAN: 'LT'});
+var MargotCFun = new Enumeration({
+	LESS_THAN: 'LT',
+	LESS_EQUAL: 'LE',
+	GREATER_THAN: 'GT',
+	GREATER_EQUAL: 'GE'
+});
 
 /**
  * Adds a monitor to the block.
