@@ -1,0 +1,75 @@
+import antarex.margot.MargotCodeGen;
+
+aspectdef Main
+
+	call McAuto('version_2', 'travel', 'autotuned_num_threads', 'autotuned_samples', 'unpredictability');
+end
+
+aspectdef McAuto
+
+	input
+		funcName,
+		blockName,
+		threadsVarName,
+		samplesVarName,
+		unpredictabilityVarName
+	end
+
+	println("Starting Monte Carlo Autotuner code generation");
+
+	var m = new Margot(blockName, threadsVarName, samplesVarName, unpredictabilityVarName);
+
+	select stmt.call{funcName} end
+	apply
+
+		call InsertTestRun($call);
+		call InsertVariables($call, threadsVarName, samplesVarName, unpredictabilityVarName);
+
+		m.init($call);
+		
+		m.setGoal($call, 'my_predictability_goal', 'stats.variationCoeff'); // TODO: stats.variationCoeff needs to come from somewhere
+		
+		m.update($call, 'omp_set_num_threads(' + threadsVarName + ');');
+	    
+		m.log($call);
+
+		/* start all monitors at the same time */
+		m.startMonitors($call);
+
+		/* stop all monitors, one by one */
+		/* needs to be called in reverse order */
+		m.stopMonitor($call, 'my_energy_monitor');
+		m.stopMonitor($call, 'my_throughput_monitor', 'number_of_segments'); // TODO: number_of_segments needs to come from somewhere
+		m.stopMonitor($call, 'my_elapsed_time_monitor');
+	end
+
+	println("Monte Carlo Autotuner code generation done!");
+end
+
+aspectdef InsertVariables
+	input
+		$call,
+		threadsVarName,
+		samplesVarName,
+		unpredictabilityVarName
+	end
+
+	var $scope = $call.ancestor('scope');
+
+	/* declare all variables */
+	/* needs to be called in reverse order */
+	$scope.insertBegin('float ' + unpredictabilityVarName + ' = 0.0f;');
+	$scope.insertBegin('int ' + threadsVarName + ' = omp_get_max_threads();');
+	$scope.insertBegin('int ' + samplesVarName + ' = samples;'); // TODO: samples needs to come from somewhere
+end
+
+aspectdef InsertTestRun
+	input
+		$call
+	end
+
+	var $scope = $call.ancestor('scope');
+
+	/* TODO: how do we get to this code? */
+	$scope.insertBegin('std::vector<float> test_result = mc.RunMonteCarloSimulation(10, startDay, startHour, startMinute, all);\nResultStats stats(test_result);');
+end
