@@ -9,14 +9,22 @@ aspectdef McAutoConfig
 
 	/* Monitor section */
 	var tm = travel.newTimeMonitor('my_elapsed_time_monitor');
-	tm.expose('avg_computation_time', MargotExpose.AVERAGE);
+	tm.expose('avg_computation_time', MargotExpose.AVG);
 	tm.useMicro();
+
+	var em = travel.newEnergyMonitor('my_energy_monitor');
+	em.expose('avg_energy', MargotExpose.AVG);
+	em.setDomain(MargotEnergyDomain.PACKAGE);
+
+	var tpm = travel.newThroughputMonitor('my_throughput_monitor', 'num_segment', 'int');
+	tpm.expose('avg_throughput', MargotExpose.AVG);
 
 
 
 	/* Goal section */
-	travel.addGoal('my_error_goal', 'my_elapsed_time_monitor', MargotDFun.AVERAGE, MargotCFun.LESS_EQUAL, 0.03);
-	travel.addGoal('my_predictability_goal', 'my_elapsed_time_monitor', MargotDFun.AVERAGE, MargotCFun.GREATER_EQUAL, 1.0);
+	travel.addMetricGoal('my_error_goal', MargotCFun.LESS_EQUAL, 0.03, 'my_error');
+	travel.addKnobGoal('my_predictability_goal', MargotCFun.GREATER_EQUAL, 1.0, 'unpredictability');
+	travel.addMonitorGoal('goal_name', MargotCFun.GREATER_THAN, 1.0, 'monitor_name', MargotDFun.MAX);
 
 
 
