@@ -1,0 +1,64 @@
+/**
+ * This class represents a custom monitor.
+ * */
+function CustomMonitor(name) {
+	
+    this._base = new _MargotMonitor(name);
+    
+    this._spec = undefined;
+    
+    this._starts = [];
+    this._stops = [];
+}
+
+/**
+ * Adds a variable to expose in the custom monitor.
+ * */
+CustomMonitor.prototype.expose = function(varName, what) {
+    this._base._expose(varName, what);
+}
+
+
+/**
+ * Adds a stop parameter to the custom monitor.
+ * */
+CustomMonitor.prototype.addStopParam = function(name, value, type) {
+
+	var stop = undefined;
+	if(type === undefined) {
+		
+		stop = {paramType: MargotParamType.FIXED , name: name, value: value};
+	} else {
+		
+		stop = {paramType: MargotParamType.LOCAL , name: name, value: value, cType: type};
+	}
+	this._stops.push(stop);
+}
+
+
+
+
+/*
+ * TEMPLATES
+ * ****************************************************************************/
+
+/**
+ * Templates used for the generation of the XML code for the stop parameters portion of the custom monitor.
+ * */
+codedef _StopFixedTemplate(name, value) %{
+<stop>    
+<param name="[[name]]">    
+<fixed value="[[value]]"/>    
+</param>    
+</stop>
+}%
+end
+
+codedef _StopLocalTemplate(name, type, value) %{
+<stop>    
+<param name="[[name]]">    
+<local_var type="[[type]]" value="[[value]]"/>    
+</param>    
+</stop>
+}%
+end
