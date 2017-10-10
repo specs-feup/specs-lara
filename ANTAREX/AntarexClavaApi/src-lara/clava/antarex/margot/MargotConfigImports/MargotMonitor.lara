@@ -1,5 +1,6 @@
 import antarex.margot.MargotConfigImports.MargotEnergyMonitor;
 import antarex.margot.MargotConfigImports.MargotTimeMonitor;
+import antarex.margot.MargotConfigImports.MargotThroughputMonitor;
 
 /**
  * This class represents the base monitor that is 'implemented' by all monitors.
@@ -18,8 +19,18 @@ import antarex.margot.MargotConfigImports.MargotTimeMonitor;
 /**
 * Enum to represent what can be exposed in monitors.
 * */
-var MargotExpose = new Enumeration('AVERAGE');
- 
+var MargotExpose = new Enumeration({
+	AVG: 'AVERAGE'
+});
+
+/**
+ * Enum to represent the type of a param.
+ * */
+ var MargotParamType = new Enumeration({
+	FIXED: 'fixed',
+	LOCAL: 'local_var'
+});
+
  /**
   * Add a variable to expose in the monitor.
   * */

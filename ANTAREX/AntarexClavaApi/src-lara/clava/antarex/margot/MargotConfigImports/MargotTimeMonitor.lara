@@ -56,16 +56,8 @@ TimeMonitor.prototype.useSecond = function() {
  * */
 TimeMonitor.prototype._makeCode = function() {
     
-    var creationCode = this._makeGranularityCode();
-    return this._base._makeCode('Time', creationCode);
-}
-
-/**
- * Make the code for the granularity parameter.
- * */
-TimeMonitor.prototype._makeGranularityCode = function() {
-    
-    return _GranularityTemplate(this._granularity);
+    var granularityCode = _GranularityTemplate(this._granularity);
+    return this._base._makeCode('TIME', granularityCode);
 }
 
 /*

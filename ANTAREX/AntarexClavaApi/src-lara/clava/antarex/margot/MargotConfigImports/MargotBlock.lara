@@ -24,24 +24,136 @@ MargotBlock.prototype.addKnob = function(name, varName, varType) {
 };
 
 /**
- * Adds a goal to the block with the given data.
+ * Adds a monitor goal to the block with the given data.
  * */
-MargotBlock.prototype.addGoal = function(name, monitorName, dFun, cFun, value) {
+MargotBlock.prototype.addMonitorGoal = function(name, cFun, value, monitor, dFun) {
     
     for(var arg of arguments) {
         
         if(arg === undefined) {
-            throw 'To define a goal you need a name, a monitor name, a dFun, a cFun and a value.';
+            throw 'To define a monitor goal you need a name, a cFun, a value, a monitor name and a dFun.';
         }
     }
     
-    this._goals.push({name: name, monitorName: monitorName, dFun: dFun, cFun: cFun, value: value});
+    this._goals.push(new MargotMonitorGoal(name, cFun, value, monitor, dFun));
 };
+
+/**
+ * Adds a metric goal to the block with the given data.
+ * */
+MargotBlock.prototype.addMetricGoal = function(name, cFun, value, metric) {
+    
+    for(var arg of arguments) {
+        
+        if(arg === undefined) {
+            throw 'To define a metric goal you need a name, a cFun, a value and a metric name.';
+        }
+    }
+    
+    this._goals.push(new MargotMetricGoal(name, cFun, value, metric));
+};
+
+/**
+ * Adds a knob goal to the block with the given data.
+ * */
+MargotBlock.prototype.addKnobGoal = function(name, cFun, value, knob) {
+    
+    for(var arg of arguments) {
+        
+        if(arg === undefined) {
+            throw 'To define a knob goal you need a name, a cFun, a value and a knob name.';
+        }
+    }
+    
+    this._goals.push(new MargotKnobGoal(name, cFun, value, knob));
+};
+
+/**
+ * @constructor
+ * 
+ * A generic goal.
+ * */
+function MargotGoal(name, cFun, value) {
+	
+	/* TODO: check parameters */
+	
+	this._name = name;
+	this._cFun = cFun;
+	this._value = value;
+	
+	this._makeCode = function(additionalCode) {
+		
+		return _GoalTemplate(this._name, this._cFun, this._value, additionalCode);
+	};
+}
+
+/**
+ * @constructor
+ * 
+ * A monitor goal.
+ * */
+function MargotMonitorGoal(name, cFun, value, monitor, dFun) {
+	
+	/* TODO: check parameters */
+	
+	this._baseGoal = new MargotGoal(name, cFun, value);
+	this._monitor = monitor;
+	this._dFun = dFun;
+	
+	this._makeCode = function() {
+		
+		var monitorCode = 'monitor="' + this._monitor + '" dFun="' + this._dFun + '"';
+		return this._baseGoal._makeCode(monitorCode);
+	};
+}
+
+/**
+ * @constructor
+ * 
+ * A knob goal.
+ * */
+function MargotKnobGoal(name, cFun, value, knob) {
+	
+	/* TODO: check parameters */
+	
+	this._baseGoal = new MargotGoal(name, cFun, value);
+	this._knob = knob;
+	
+	this._makeCode = function() {
+		
+		var monitorCode = 'knob_name="' + this._knob + '"';
+		return this._baseGoal._makeCode(monitorCode);
+	};
+}
+
+/**
+ * @constructor
+ * 
+ * A metric goal.
+ * */
+function MargotMetricGoal(name, cFun, value, metric) {
+	
+	/* TODO: check parameters */
+	
+	this._baseGoal = new MargotGoal(name, cFun, value);
+	this._metric = metric;
+	
+	this._makeCode = function() {
+		
+		var monitorCode = 'metric_name="' + this._metric + '"';
+		return this._baseGoal._makeCode(monitorCode);
+	};
+}
 
 /**
  * Enums for the function definitions of goal in mARGOt.
  * */
-var MargotDFun = new Enumeration('AVERAGE');
+var MargotDFun = new Enumeration({
+	AVG: 'AVERAGE',
+	VAR: 'VARIANCE',
+	MAX: 'MAX',
+	MIN: 'MIN'
+});
 var MargotCFun = new Enumeration({
 	LESS_THAN: 'LT',
 	LESS_EQUAL: 'LE',
@@ -73,6 +185,25 @@ MargotBlock.prototype.newTimeMonitor = function(name) {
     var tm = new TimeMonitor(name);
     this._monitors.push(tm);
     return tm;
+}
+
+/**
+* Builds a throughput monitor, adds it to the list of monitors, and returns it.
+* */
+MargotBlock.prototype.newThroughputMonitor = function(name, param1, param2) {
+    
+    checkDefined(name, 'name', 'newThroughputMonitor');
+    checkDefined(param1, 'param1', 'newThroughputMonitor');
+    
+    var tpm = undefined;
+    
+	if(param2 !== undefined) {
+		tpm = new ThroughputMonitor(name, param1, param2);
+    } else {
+		tpm = new ThroughputMonitor(name, param1);
+	}
+    this._monitors.push(tpm);
+    return tpm;
 }
 
 /**
@@ -137,11 +268,7 @@ MargotBlock.prototype._makeGoalsCode = function() {
     
     for (var goal of this._goals) {
     
-        code += _GoalTemplate(goal.name,
-                                goal.monitorName,
-                                goal.dFun,
-                                goal.cFun,
-                                goal.value);
+        code += goal._makeCode() + '\n';
     }
     
     return code;
@@ -192,7 +319,7 @@ end
 /**
  * Template used for the generation of the XML code for goals.
  * */
-codedef _GoalTemplate(param1, param2, param3, param4, param5) %{
-<goal name="[[param1]]" monitor="[[param2]]" dFun="[[param3]]" cFun="[[param4]]" value="[[param5]]"/> 
+codedef _GoalTemplate(name, cFun, value, additionalCode) %{
+<goal name="[[name]]" cFun="[[cFun]]" value="[[value]]" [[additionalCode]]/> 
 }%
 end

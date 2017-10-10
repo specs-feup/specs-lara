@@ -4,6 +4,7 @@
 function EnergyMonitor(name) {
     
     this._base = new _MargotMonitor(name);
+    this._domain = MargotEnergyDomain.PACKAGE;
 }
 
 /**
@@ -12,6 +13,51 @@ function EnergyMonitor(name) {
 EnergyMonitor.prototype.expose = function(varName, what) {
     this._base._expose(varName, what);
 }
+
+/**
+ * Sets the domain as PACKAGE.
+ * */
+EnergyMonitor.prototype.setPackage = function() {
+    this._domain = MargotEnergyDomain.PACKAGE;
+}
+
+/**
+ * Sets the domain as CORES.
+ * */
+EnergyMonitor.prototype.setCores = function() {
+    this._domain = MargotEnergyDomain.CORES;
+}
+
+/**
+ * Sets the domain as RAM.
+ * */
+EnergyMonitor.prototype.setRam = function() {
+    this._domain = MargotEnergyDomain.RAM;
+}
+
+/**
+ * Sets the domain as UNCORES.
+ * */
+EnergyMonitor.prototype.setUncores = function() {
+    this._domain = MargotEnergyDomain.UNCORES;
+}
+
+/**
+ * Sets the domain to the one provided.
+ * */
+EnergyMonitor.prototype.setDomain = function(domain) {
+    this._domain = domain;
+}
+
+/**
+ * Enum that represents the domain of the time monitor.
+ * */
+var MargotEnergyDomain = new Enumeration(
+    {PACKAGE: 'margot::energy_monitor_t::Domain::Package'},
+    {CORES: 'margot::energy_monitor_t::Domain::Cores'},
+    {RAM: 'margot::energy_monitor_t::Domain::Ram'},
+    {UNCORES: 'margot::energy_monitor_t::Domain::Uncores'}
+);
 
 /*
  * CODE GENERATION
@@ -22,5 +68,22 @@ EnergyMonitor.prototype.expose = function(varName, what) {
  * */
 EnergyMonitor.prototype._makeCode = function() {
     
-    return this._base._makeCode('energy', '');
+    var domainCode = _DomainTemplate(this._domain);
+    return this._base._makeCode('ENERGY', domainCode);
 }
+
+/*
+ * TEMPLATES
+ * ****************************************************************************/
+
+/**
+ * Template used for the generation of the XML code for the domain portion of the energy monitor.
+ * */
+codedef _DomainTemplate(param1) %{
+<creation>    
+<param name="domain">    
+<fixed value="[[param1]]"/>    
+</param>    
+</creation>
+}%
+end
