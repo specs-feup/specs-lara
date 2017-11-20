@@ -3,7 +3,6 @@ import antarex.margot.MargotConfig;
 aspectdef McAutoConfig
 
 	println("Starting Monte Carlo Autotuner config generation");
-
 	var config = new MargotConfig();
 	var travel = config.newBlock('travel');
 
@@ -51,3 +50,4 @@ aspectdef McAutoConfig
 	
 	println("Monte Carlo Autotuner config generation done!");
 end
+
