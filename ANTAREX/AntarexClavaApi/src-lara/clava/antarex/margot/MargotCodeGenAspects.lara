@@ -1,12 +1,15 @@
 aspectdef MargotInitMain
 	
+	input gen end
+	
     select file.function{'main'}.body end
     apply
-        $body.exec insertBegin(MargotCxxStrings.init());
-        $file.exec addInclude(MargotCxxStrings.inc(), true);
+        $body.exec insertBegin(gen.init());
+        $file.exec addInclude(gen.inc(), true);
     end
 end
 
+/*
 aspectdef MargotUpdate
 
     input
@@ -34,7 +37,7 @@ aspectdef MargotLog
     $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
 end
 
-/* TODO: change the interface to take a monitor name and its arguments */
+
 aspectdef MargotStartMonitor
     input
         $joinpoint,
@@ -49,7 +52,7 @@ aspectdef MargotStartMonitor
 end
 
 
-/* TODO: change the interface to take a monitor name and its arguments */
+
 aspectdef MargotStopMonitor
     input
         $joinpoint,
@@ -74,3 +77,4 @@ aspectdef MargotMonitor
     call MargotStartMonitor($joinpoint, block, startArgs);
     call MargotStopMonitor($joinpoint, block, stopArgs);
 end
+*/

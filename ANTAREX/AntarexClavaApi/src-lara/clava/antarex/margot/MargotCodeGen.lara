@@ -1,4 +1,7 @@
 import antarex.margot.MargotCodeGenAspects;
+import antarex.margot.MargotStringsGen;
+
+import clava.Clava;
 
 /**
  * Represents a mARGOt autotuner instance.
@@ -9,62 +12,15 @@ import antarex.margot.MargotCodeGenAspects;
  * */
 var Margot = function (block) {
     
-    this.block = block;
-    this.vars = arrayFromArgs(arguments, 1);
+    this._block = block;
+    this._vars = arrayFromArgs(arguments, 1);
+    
+    /* change the strings based on the standard */
+    this._stringsGen = new MargotStringsGen(
+		Clava.isCxx() ? MargotCxxStrings : MargotCStrings
+	);
     
     this._initDone = false;
-    
-    /* initializes the framework */
-    //~ var mi = new MargotInitMain();
-    //~ mi.call();
-    
-    /* update function */
-    this.update = function(joinpoint) {
-		this._checkDefaultInit();
-        var mu = new MargotUpdate();
-        mu.call(joinpoint,
-                this.block,
-                this.vars,
-                Array.prototype.slice.call(arguments, 1)
-        );
-    };
-    
-    /* log function */
-    this.log = function(joinpoint) {
-		this._checkDefaultInit();
-        var ml = new MargotLog();
-        ml.call(joinpoint, this.block);
-    };
-  
-    
-    /* start and stop monitor functions */
-    /* needs two arrays for the parameters of start and stop */
-    this.monitor = function(joinpoint, startArgs, stopArgs) {
-		this._checkDefaultInit();
-        var mm = new MargotMonitor();
-        mm.call(joinpoint,
-                this.block,
-                startArgs,
-                stopArgs
-        );
-    };
-    
-    /* log, start and stop monitor functions */
-    /* needs two arrays for the parameters of start and stop */
-    this.monitorLog = function(joinpoint, startArgs, stopArgs) {
-        
-        this._checkDefaultInit();
-        
-        var ml = new MargotLog();
-        ml.call(joinpoint, this.block);
-        
-        var mm = new MargotMonitor();
-        mm.call(joinpoint,
-                this.block,
-                startArgs,
-                stopArgs
-        );
-    };
 };
 
 /**
@@ -74,7 +30,7 @@ var Margot = function (block) {
  * */
 Margot.prototype._includeHeader = function($joinpoint) {
 	
-	var includeCode = MargotCxxStrings.inc();
+	var includeCode = this._stringsGen.inc();
 	var $parentFile = $joinpoint.ancestor('file');
 	$parentFile.exec addInclude(includeCode, true);
 }
@@ -89,10 +45,23 @@ Margot.prototype._checkDefaultInit = function() {
 	if(!this._initDone) {
 		
 		var mi = new MargotInitMain();
-		mi.call();
+		mi.call(this._stringsGen);
 		
 		this._initDone = true;
 	}
+}
+
+Margot.prototype.update = function($joinpoint) {
+	
+	checkJoinPoint($joinpoint, 'update ($joinpoint)');
+	
+	this._checkDefaultInit();
+	
+	var additionalCode = arrayFromArgs(arguments, 1);
+	var code = this._stringsGen.update(this._block, this._vars, additionalCode);
+	$joinpoint.insert before(code);
+
+	this._includeHeader($joinpoint);
 }
 
 /**
@@ -112,7 +81,7 @@ Margot.prototype.startMonitors = function($joinpoint) {
 	
 	this._checkDefaultInit();
 	
-	var monitorCode = MargotCxxStrings.startAllMonitors(this.block, arrayFromArgs(arguments, 1));
+	var monitorCode = this._stringsGen.startAllMonitors(this._block, arrayFromArgs(arguments, 1));
 	$joinpoint.insert before monitorCode;
 
 	this._includeHeader($joinpoint);
@@ -135,7 +104,7 @@ Margot.prototype.stopMonitors = function($joinpoint) {
 	
 	this._checkDefaultInit();
 	
-	var monitorCode = MargotCxxStrings.stopAllMonitors(this.block, arrayFromArgs(arguments, 1));
+	var monitorCode = this._stringsGen.stopAllMonitors(this._block, arrayFromArgs(arguments, 1));
 	$joinpoint.insert after monitorCode;
 
 	this._includeHeader($joinpoint);
@@ -162,7 +131,7 @@ Margot.prototype.startMonitor = function($joinpoint, monitorName) {
 
 	this._checkDefaultInit();
 
-	var monitorCode = MargotCxxStrings.startMonitor(this.block, monitorName, arrayFromArgs(arguments, 2));
+	var monitorCode = this._stringsGen.startMonitor(this._block, monitorName, arrayFromArgs(arguments, 2));
 	$joinpoint.insert before monitorCode;
 
 	this._includeHeader($joinpoint);
@@ -189,11 +158,81 @@ Margot.prototype.stopMonitor = function($joinpoint, monitorName) {
 
 	this._checkDefaultInit();
 
-	var monitorCode = MargotCxxStrings.stopMonitor(this.block, monitorName, arrayFromArgs(arguments, 2));
+	var monitorCode = this._stringsGen.stopMonitor(this._block, monitorName, arrayFromArgs(arguments, 2));
 	$joinpoint.insert after monitorCode;
 
 	this._includeHeader($joinpoint);
 };
+
+/**
+ * Inserts code to start and stop all monitors specified in the configuration around the provided join point.
+ * 
+ * Also inserts the header file if needed.
+ * 
+ * For a block named 'block1', it will insert the code 'margot::block1::start_monitor();' and 'margot::block1::stop_monitor();'.
+ * 
+ * @param {joinpoint} $joinpoint The point in the code around which the code will be inserted
+ * @param {string[]} startArgs The arguments to the start monitors call (optional)
+ * @param {string[]} stopArgs The arguments to the stop monitors call (optional)
+ * */
+Margot.prototype.monitor = function($joinpoint, startArgs, stopArgs) {
+	
+	checkJoinPoint($joinpoint, 'monitor ($joinpoint)');
+	
+	//~ this._checkDefaultInit();
+	
+	//~ var startCode = this._stringsGen.startAllMonitors(this._block, startArgs);
+	//~ var stopCode = this._stringsGen.stopAllMonitors(this._block, stopArgs);
+	
+	//~ $joinpoint.insert before startCode;
+	//~ $joinpoint.insert after stopCode;
+	
+	//~ this._includeHeader($joinpoint);
+	
+	
+	this.startMonitors($joinpoint, startArgs);
+	this.stopMonitors($joinpoint, stopArgs);
+}
+
+/**
+ * Inserts code to log the collected data after the provided join point.
+ * 
+ * Also inserts the header file if needed.
+ * 
+ * For a block named 'block1', it will insert the code 'margot::block1::log();'.
+ * 
+ * @param {joinpoint} $joinpoint The point in the code after which the code will be inserted
+ * */
+Margot.prototype.log = function($joinpoint) {
+	
+	checkJoinPoint($joinpoint, 'log ($joinpoint)');
+	
+	this._checkDefaultInit();
+	
+	var code = this._stringsGen.log(this._block);
+	$joinpoint.insert after code;
+	
+	this._includeHeader($joinpoint);
+}
+
+
+/**
+ * Inserts code to start and stop all monitors specified in the configuration around the provided join point, and also inserts the code to log after the join point.
+ * 
+ * Also inserts the header file if needed.
+ * 
+ * @param {joinpoint} $joinpoint The point in the code around which the code will be inserted
+ * @param {string[]} startArgs The arguments to the start monitors call (optional)
+ * @param {string[]} stopArgs The arguments to the stop monitors call (optional)
+ * */
+Margot.prototype.monitorLog = function($joinpoint, startArgs, stopArgs) {
+	
+	checkJoinPoint($joinpoint, 'monitorLog ($joinpoint)');
+	
+	this.log($joinpoint);
+	this.startMonitors($joinpoint, startArgs);
+	this.stopMonitors($joinpoint, stopArgs);
+}
 
 /**
  * Inserts code to set the value of a goal.
@@ -219,7 +258,7 @@ Margot.prototype.setGoal = function($joinpoint, goalName, goalValue) {
 
 	this._checkDefaultInit();
 
-	var goalCode = MargotCxxStrings.setGoal(this.block, goalName, goalValue);
+	var goalCode = this._stringsGen.setGoal(this._block, goalName, goalValue);
 	$joinpoint.insert before goalCode;
 
 	this._includeHeader($joinpoint);
@@ -251,99 +290,10 @@ Margot.prototype.init = function($joinpoint) {
 		throw 'Could not find a suitable scope to insert the initialization code from the join point provided: \n' + $joinpoint.code;
 	}
 	
-	var initCode = MargotCxxStrings.init();
+	var initCode = this._stringsGen.init();
 	scope.insertBegin(initCode);
 	
 	this._includeHeader($joinpoint);
 	
 	this._initDone = true;
 }
-
-/**
- * Contains strings and methods to generate mARGOt's cxx interface code.
- * */
-var MargotCxxStrings = {
-    
-    /* code parts */
-    ns: 'margot',
-    sep: '::',
-    initCode: 'init();',
-    incCode: 'margot.hpp',
-    updCode: 'update',
-    appliedCode:  'manager.configuration_applied();',
-    startAllCode: 'start_monitor',
-    stopAllCode: 'stop_monitor',
-    monitorCode: 'monitor',
-    startCode: '.start',
-    stopCode: '.stop',
-    logCode: 'log();',
-    goalCode: 'goal',
-    setCode: '.set',
-    
-    
-    /* code generation functions */
-    init: function() {
-        return this.ns + this.sep + this.initCode;
-    },
-    
-    inc: function() {
-        return this.incCode;
-    },
-    
-    update: function(block, vars, additionalCode) {
-        
-        var code = 'if(';
-        
-        code += this.ns + this.sep + block + this.sep + this.updCode;
-        code += '(' + vars.toString() + ')';
-        
-        code += ') {\n';
-        for(var ac of additionalCode) {
-            code += ac + '\n';
-        }
-        code += this.ns + this.sep + block  +this.sep + this.appliedCode + '\n}';
-        return code;
-    },
-    
-    startMonitor: function(block, monitorName, args) {
-        var code = this.ns + this.sep + block + this.sep + this.monitorCode + this.sep + monitorName + this.startCode;
-        code += '(' + args.toString() + ');';
-        
-        return code;
-    },
-    
-    stopMonitor: function(block, monitorName, args) {
-        var code = this.ns + this.sep + block + this.sep + this.monitorCode + this.sep + monitorName + this.stopCode;
-        code += '(' + args.toString() + ');';
-        
-        return code;
-    },
-    
-    
-    log: function(block) {
-        return this.ns + this.sep + block + this.sep + this.logCode;
-    },
-    
-    startAllMonitors: function(block, args) {
-		
-		var code = this.ns + this.sep + block + this.sep + this.startAllCode;
-        code += '(' + args.toString() + ');';
-        
-        return code;
-	},
-	
-	stopAllMonitors: function(block, args) {
-		
-		var code = this.ns + this.sep + block + this.sep + this.stopAllCode;
-        code += '(' + args.toString() + ');';
-        
-        return code;
-	},
-	
-	setGoal: function(block, goalName, goalValue) {
-		
-		var code = this.ns + this.sep + block + this.sep + this.goalCode + this.sep + goalName + this.setCode;
-		code += '(' + goalValue + ');';
-		return code;
-	}
-};

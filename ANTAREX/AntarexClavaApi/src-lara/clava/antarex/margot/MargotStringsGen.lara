@@ -1,0 +1,146 @@
+var MargotCxxStrings = {
+	
+	ns: 'margot',
+    sep: '::',
+    initCode: 'init();',
+    incCode: 'margot.hpp',
+    updCode: 'update',
+    appliedCode:  'manager.configuration_applied();',
+    startAllCode: 'start_monitor',
+    stopAllCode: 'stop_monitor',
+    monitorCode: 'monitor',
+    startCode: '.start',
+    stopCode: '.stop',
+    logCode: 'log();',
+    goalCode: 'goal',
+    setCode: '.set',
+    
+    makeVarList: function(vars) {
+		return vars.toString();
+	}
+};
+
+var MargotCStrings = {
+	
+	ns: 'margot',
+    sep: '_',
+    initCode: 'init();',
+    incCode: 'margot.h',
+    updCode: 'update',
+    appliedCode:  'configuration_applied();',
+    startAllCode: 'start_monitor',
+    stopAllCode: 'stop_monitor',
+    monitorCode: 'monitor',
+    startCode: '.start',
+    stopCode: '.stop',
+    logCode: 'log();',
+    goalCode: 'goal',
+    setCode: '.set',
+    
+    makeVarList: function(vars) {
+		return vars
+			.map(function(v){return '&'+v;})
+			.toString();
+	}
+};
+
+
+
+/**
+ * Contains methods to generate mARGOt's interface code.
+ * */
+var MargotStringsGen = function(strings) {
+    
+    this._strings = strings; 
+};
+
+MargotStringsGen.prototype.init = function() {
+	return this._strings.ns + this._strings.sep + this._strings.initCode;
+};
+    
+MargotStringsGen.prototype.inc = function() {
+	return this._strings.incCode;
+};
+    
+MargotStringsGen.prototype.update = function(block, vars, additionalCode) {
+	
+	var code = 'if(';
+	
+	code += this._strings.ns + this._strings.sep + block + this._strings.sep + this._strings.updCode;
+	code += '(' + this._strings.makeVarList(vars) + ')';
+	
+	code += ') {\n';
+	for(var ac of additionalCode) {
+		code += ac + '\n';
+	}
+	code += this._strings.ns + this._strings.sep + block  +this._strings.sep + this._strings.appliedCode + '\n}';
+	return code;
+};
+    
+MargotStringsGen.prototype.startMonitor = function(block, monitorName, args) {
+
+	var code = this._strings.ns + this._strings.sep + block + this._strings.sep + this._strings.monitorCode + this._strings.sep + monitorName + this._strings.startCode;
+	code += '(';
+	
+	if(args !== undefined) {
+		code += args.toString();
+	}
+	
+	code += ');';
+	
+	return code;
+};
+    
+MargotStringsGen.prototype.stopMonitor = function(block, monitorName, args) {
+	
+	var code = this._strings.ns + this._strings.sep + block + this._strings.sep + this._strings.monitorCode + this._strings.sep + monitorName + this._strings.stopCode;
+	code += '(';
+	
+	if(args !== undefined) {
+		code += args.toString();
+	}
+	
+	code += ');';
+	
+	return code;
+};
+    
+    
+MargotStringsGen.prototype.log = function(block) {
+	return this._strings.ns + this._strings.sep + block + this._strings.sep + this._strings.logCode;
+};
+    
+MargotStringsGen.prototype.startAllMonitors = function(block, args) {
+		
+	var code = this._strings.ns + this._strings.sep + block + this._strings.sep + this._strings.startAllCode;
+	code += '(';
+	
+	if(args !== undefined) {
+		code += args.toString();
+	}
+	
+	code += ');';
+	
+	return code;
+};
+	
+MargotStringsGen.prototype.stopAllMonitors = function(block, args) {
+		
+	var code = this._strings.ns + this._strings.sep + block + this._strings.sep + this._strings.stopAllCode;
+	code += '(';
+	
+	if(args !== undefined) {
+		code += args.toString();
+	}
+	
+	code += ');';
+	
+	return code;
+};
+	
+MargotStringsGen.prototype.setGoal = function(block, goalName, goalValue) {
+		
+	var code = this._strings.ns + this._strings.sep + block + this._strings.sep + this._strings.goalCode + this._strings.sep + goalName + this._strings.setCode;
+	code += '(' + goalValue + ');';
+	return code;
+};
