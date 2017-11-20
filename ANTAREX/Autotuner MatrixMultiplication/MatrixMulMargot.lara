@@ -1,0 +1,168 @@
+import lara.code.Timer;
+
+import lat.Lat;
+import lat.LatUtils;
+import lat.vars.LatVarSet;
+
+import lara.Io;
+/*
+aspectdef test
+
+// Real search
+	var bs1 = new LatVarList("BS1", [8, 16, 32, 64]);
+	var bs2 = new LatVarList("BS2", [8, 16, 32, 64]);
+
+	var n = new LatVarList("N", [512, 512, 512, 256, 256, 512, 128, 128, 256, 512]);
+	var m = new LatVarList("M", [512, 512, 256, 256, 256, 512, 128, 256, 256, 512]);
+	var k = new LatVarList("K", [512, 256, 512, 256, 128, 512, 128, 128, 256, 512]);
+
+	var matrixSizes = new LatVarSet(n, m, k);
+
+	println("BS1 name: " + bs1.getNameArray());
+	println("matrix sizes name: " + matrixSizes.getNameArray());
+
+	//println("Name array: " + bs1.getNameArray);
+
+
+end
+*/
+/*
+aspectdef ConvertLatResults
+
+	var latResults = Io.readJson("results_parsed.json");
+	println("Results:");
+	printObject(latResults);
+	
+	
+
+	// Get object
+
+	println("\n\nCSVs:");
+	printObject(csvs);
+
+end
+*/
+aspectdef MatrixMulDse
+
+	var lat = new Lat("matrix_mul");
+
+	// For debuging
+	lat.setVerbose(true);
+
+	// Specific to my PC setup
+	if(Platforms.isWindows()) {
+		lat.loadCmaker().cmaker.setGenerator("MinGW Makefiles").setMakeCommand("mingw32-make");
+	}
+
+	// Output folder
+	lat.setOutputFolder("./lat_output");
+
+	// Select portion of code that we will explore
+	select function{"main"}.body.call{"matrix_mult_tiling"} end
+	apply
+		lat.setScope($body);
+		lat.setMeasure($call);		
+	end
+
+	// Real search
+	var bs1 = new LatVarList("BS1", [8, 16, 32, 64]);
+	var bs2 = new LatVarList("BS2", [8, 16, 32, 64]);
+
+	var n = new LatVarList("N", [512, 512, 512, 256, 256, 512, 128, 128, 256, 512]);
+	var m = new LatVarList("M", [512, 512, 256, 256, 256, 512, 128, 256, 256, 512]);
+	var k = new LatVarList("K", [512, 256, 512, 256, 128, 512, 128, 128, 256, 512]);
+
+	var matrixSizes = new LatVarSet(n, m, k);
+
+//	lat.addSearchGroup([bs1, bs2, matrixSizes]);
+
+
+	// Dummy search
+
+	var bs1_test = new LatVarList("BS1", [8]);
+	var bs2_test = new LatVarList("BS2", [8]);
+	
+
+	var n1 = new LatVarList("N", [512, 256]);
+	var n2 = new LatVarList("M", [512, 256]);
+
+	var matrixSizesTest = new LatVarSet(n1, n2);
+	lat.addSearchGroup([bs1_test, bs2_test, matrixSizesTest]);
+
+
+	lat.setNumTests(10);
+	
+	var results = lat.tune();
+	LatUtils.resultToCsv(results, "./");
+
+	println("Current folder: " + Io.getAbsolutePath("."));
+	//println("Results:");
+	//printObject(results);
+	
+	Io.writeJson("results_parsed.json", results);
+end
+
+aspectdef MatrixMulMargot
+
+	call SetKnobs("main", {BS1: "32", BS2: "32", N: "256", M: "512", K: "256"});
+	call TimeCall("main", "matrix_mult_tiling");	
+end
+
+	//call SetKnobs();
+	//call SetKnobsV2("BS1", "32", "BS2", "32", "N", "512", "M", "256", "K", "512");
+
+
+aspectdef SetKnobsV1
+
+	// Select variable BS1 in main function
+	select function{"main"}.stmt.vardecl{"BS1"} end
+	apply
+		// Sets initialization value to 32
+		$vardecl.setInit("32");
+	end
+
+end
+
+aspectdef TimeCall 
+	input functionName, callName end
+
+	var timer = new Timer("MICROSECONDS");
+
+	select function{functionName}.stmt.call{callName} end
+	apply
+		timer.time($call);
+	end
+
+end
+
+
+aspectdef SetKnobs
+	input functionName, varValuePairs end	
+
+	printObject(varValuePairs);
+
+	select function{functionName}.stmt.vardecl end
+	apply
+//		println("VARDECL NAME:" + $vardecl.name);
+		var newValue = varValuePairs[$vardecl.name];
+		if(newValue !== undefined) {
+//			println("SETTING");
+			$vardecl.setInit(newValue);
+		}
+	end
+
+end
+
+aspectdef OperatingPoints
+	// First array represents the parameters names, the second array the system metrics names
+	var operatinPoints = new OperatingPoints(["unpredictability", "num_samples"], ["measured_time_us", "error"]);
+	operatinPoints.addPoint([0.0673661, 3000], [7627.121372031662, 0.003]);
+
+	// Since the matrices sizes are data features, we are not sure how to represent them in the operating points
+	// We should be able to represent them in the next margot version
+	var operatingPoints = new OperatingPoints(["BS1", "BS2"], ["measured_time_us", "measured_energy_j"]);
+	operatingPoints.addPoint([32, 32], [100, 200]);
+	operatingPoints.addPoint([64, 64], [500, 250]);
+	operatingPoints.generate("oplist.matrix_mul.conf");
+	
+end
