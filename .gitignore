@@ -1,6 +1,7 @@
 # Ignore build folders
 **/build-*/*
 **/build/*
+**/CMakeFiles/*
 
 # Ignore weaved code folders
 **/weaved_code/*
@@ -26,3 +27,10 @@ mweaver_typeDef.txt
 a.exe
 ranges_foobar*
 **/matlab-handwritten/*
+
+
+
+
+#AutuTuner folders
+**/autotuner/*
+**/high_level_interface/*
