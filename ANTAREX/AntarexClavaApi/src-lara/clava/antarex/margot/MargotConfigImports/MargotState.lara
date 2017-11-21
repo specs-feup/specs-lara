@@ -19,7 +19,7 @@ function MargotState(name, starting) {
 /**
  * Enum for the possible combination of the optimizations.
  * */
-var MargotCombination = new Enumeration('LINEAR');
+var MargotCombination = new Enumeration('LINEAR', 'SIMPLE');
 
 /**
  * Sets whether this is the starting state or not.
@@ -35,9 +35,9 @@ MargotState.prototype.setStarting = function(starting) {
 /**
  * Adds a constraint to the state.
  * */
-MargotState.prototype.subjectTo = function(goalName, metricName, priority) {
+MargotState.prototype.subjectTo = function(goalName, confidence, priority) {
     
-    this._subjects.push({goalName: goalName, metricName: metricName, priority: priority});
+    this._subjects.push({goalName: goalName, confidence: confidence, priority: priority});
 }
 
 /**
@@ -95,7 +95,7 @@ MargotState.prototype._makeSubjectsCode = function () {
     
     for(var subject of this._subjects) {
         
-        code += _SubjectTemplate(subject.goalName, subject.metricName, subject.priority);
+        code += _SubjectTemplate(subject.goalName, subject.confidence, subject.priority);
     }
     
     return code;
@@ -130,7 +130,7 @@ end
 /**
  * Template for the constraint XML code.
  * */
- codedef _SubjectTemplate(goalName, metricName, priority) %{
-<subject to="[[goalName]]" metric_name="[[metricName]]" priority="[[priority]]" />
+ codedef _SubjectTemplate(goalName, confidence, priority) %{
+<subject to="[[goalName]]" confidence="[[confidence]]" priority="[[priority]]" />
 }%
 end
