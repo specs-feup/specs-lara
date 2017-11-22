@@ -1,4 +1,5 @@
 import lara.code.Timer;
+import lara.metrics.FileSizeMetric;
 
 import lat.Lat;
 import lat.LatUtils;
@@ -63,6 +64,8 @@ aspectdef MatrixMulDse
 		lat.setScope($body);
 		lat.setMeasure($call);		
 	end
+	
+	//lat.addMetric(new FileSizeMetric());
 
 	// Real search
 	var bs1 = new LatVarList("BS1", [8, 16, 32, 64]);
@@ -90,7 +93,8 @@ aspectdef MatrixMulDse
 	lat.addSearchGroup([bs1_test, bs2_test, matrixSizesTest]);
 
 
-	lat.setNumTests(10);
+	lat.setNumTests(3);
+	//lat.setNumTests(10);
 	
 	var results = lat.tune();
 	LatUtils.resultToCsv(results, "./");
