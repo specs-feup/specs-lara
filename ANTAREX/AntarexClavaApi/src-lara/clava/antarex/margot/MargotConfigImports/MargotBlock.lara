@@ -8,6 +8,8 @@ function MargotBlock(name) {
     this._goals = [];
     this._monitors = [];
     this._states = [];
+    this._metrics = [];
+    this._runtimes = [];
 }
 
 /**
@@ -22,6 +24,37 @@ MargotBlock.prototype.addKnob = function(name, varName, varType) {
     
     this._knobs.push({name: name, varName: varName, varType: varType});
 };
+
+/**
+ * Adds a metric to the block with the given data.
+ * */
+MargotBlock.prototype.addMetric = function(name, type, distribution) {
+
+    if(name === undefined || type === undefined || distribution === undefined) {
+        
+        throw 'To define a metric you need a name, a type and a distribution.';
+    }
+    
+    this._metrics.push({name: name, type: type, distribution: distribution});
+}
+
+/**
+ * Adds a runtime information provider to the block with the given data.
+ * */
+MargotBlock.prototype.addRuntimeProvider = function(metricName, monitorName, inertia) {
+
+    if(metricName === undefined || monitorName === undefined || inertia === undefined) {
+        
+        throw 'To define a runtime information provider you need a metric name, a monitor name and an inertia value.';
+    }
+    
+    this._runtimes.push({metricName: metricName, monitorName: monitorName, inertia: inertia});
+}
+
+/**
+ * Enum for metric definitioni.
+ * */
+var MargotDistribution = new Enumeration('YES', 'NO');
 
 /**
  * Adds a monitor goal to the block with the given data.
@@ -154,12 +187,7 @@ var MargotDFun = new Enumeration({
 	MAX: 'MAX',
 	MIN: 'MIN'
 });
-var MargotCFun = new Enumeration({
-	LESS_THAN: 'LT',
-	LESS_EQUAL: 'LE',
-	GREATER_THAN: 'GT',
-	GREATER_EQUAL: 'GE'
-});
+var MargotCFun = new Enumeration('LT','LE','GT','GE');
 
 /**
  * Adds a monitor to the block.
@@ -235,8 +263,10 @@ MargotBlock.prototype._makeCode = function() {
     var code = '<block name="' + this._name + '">\n';
     
     code += this._makeMonitorsCode();
-    code += this._makeGoalsCode();
     code += this._makeKnobsCode();
+    code += this._makeMetricsCode();
+    code += this._makeRuntimesCode();
+    code += this._makeGoalsCode();
     code += this._makeStatesCode();
     
     code += '</block>\n';
@@ -290,6 +320,36 @@ MargotBlock.prototype._makeKnobsCode = function() {
 }
 
 /**
+* Generates the code of the metrics.
+* */
+MargotBlock.prototype._makeMetricsCode = function() {
+    
+    var code = '<!-- METRIC SECTION -->\n';
+    
+    for (var metric of this._metrics) {
+    
+        code += _MetricTemplate(metric.name, metric.type, metric.distribution);
+    }
+    
+    return code;
+}
+
+/**
+* Generates the code of the runtime information providers.
+* */
+MargotBlock.prototype._makeRuntimesCode = function() {
+    
+    var code = '<!-- RUNTIME INFORMATION PROVIDER -->\n';
+    
+    for (var runtime of this._runtimes) {
+    
+        code += _RuntimeTemplate(runtime.metricName, runtime.monitorName, runtime.inertia);
+    }
+    
+    return code;
+}
+
+/**
 * Generates the code of the states.
 * */
 MargotBlock.prototype._makeStatesCode = function() {
@@ -313,6 +373,22 @@ MargotBlock.prototype._makeStatesCode = function() {
  * */
 codedef _KnobTemplate(param1, param2, param3) %{
 <knob name="[[param1]]" var_name="[[param2]]" var_type="[[param3]]"/> 
+}%
+end
+
+/**
+ * Template used for the generation of the XML code for metrics.
+ * */
+codedef _MetricTemplate(param1, param2, param3) %{
+<metric name="[[param1]]" type="[[param2]]" distribution="[[param3]]"/> 
+}%
+end
+
+/**
+ * Template used for the generation of the XML code for runtime information providers.
+ * */
+codedef _RuntimeTemplate(param1, param2, param3) %{
+<metric metric_name="[[param1]]" using="[[param2]]" inertia="[[param3]]"/> 
 }%
 end
 
