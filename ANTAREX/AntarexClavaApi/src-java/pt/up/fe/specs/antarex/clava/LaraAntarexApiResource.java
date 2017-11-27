@@ -30,11 +30,15 @@ public enum LaraAntarexApiResource implements LaraResourceProvider {
     LIBVC("libvc/LibVC.lara"),
     LIBVC_ASPECTS("libvc/LibVCAspects.lara"),
 
-    // MARGOT
+    // mARGOt metric
+    MARGOT_METRIC("margot/metric/MargotMetric.lara"),
+
+    // mARGOt code generation
     MARGOT_CODE_GEN("margot/MargotCodeGen.lara"),
     MARGOT_CODE_GEN_ASPECTS("margot/MargotCodeGenAspects.lara"),
     MARGOT_CODE_GEN_STRINGS("margot/MargotStringsGen.lara"),
-    // MargotConfig and all the sub files that are imported by MargotConfig
+
+    // mARGOt configuration
     MARGOT_CONFIG("margot/MargotConfig.lara"),
     MARGOT_CONFIG_BLOCK("margot/MargotConfigImports/MargotBlock.lara"),
     MARGOT_CONFIG_MONITOR("margot/MargotConfigImports/MargotMonitor.lara"),
