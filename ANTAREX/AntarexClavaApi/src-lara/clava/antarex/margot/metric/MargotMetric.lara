@@ -1,10 +1,13 @@
 /**
  * Enum that holds the names of the metrics supported by mARGOt.
  * */
-var MargotMetricName = new Enumeration('TIME', 'ENERGY');
+var MargotMetricName = new Enumeration('TIME', 'ENERGY', 'THROUGHPUT');
 
 /**
  * Class that represents a metric used by mARGOt. It has a name and a unit.
+ * 
+ * @param {MargotMetricName} name - the name of the metric
+ * @param {Unit} unit - the unit this metric is measured in
  * 
  * @constructor
  * */
@@ -20,6 +23,15 @@ MargotMetric.prototype.getName = function() {
 
 MargotMetric.prototype.getUnit = function() {
     return this._unit;
+}
+
+/**
+ * Sets the unit of this metric.
+ * 
+ * @param {Unit} unit - the new unit
+ * */
+MargotMetric.prototype.setUnit = function(unit) {
+    this._unit = unit;
 }
 
 MargotMetric.prototype.getUnitName = function() {

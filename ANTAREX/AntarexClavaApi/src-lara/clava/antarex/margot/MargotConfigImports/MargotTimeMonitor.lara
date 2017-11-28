@@ -11,11 +11,13 @@ function TimeMonitor(name) {
     _MargotMonitor.call(this, name);
     
     // save super prototype
-    this._super = makeSuper(this, _MargotMonitor.prototype);
     this._super = _MargotMonitor.prototype;
     
-    // default, can be changed
+    // default granularity, can be changed
     this._granularity = MargotTimeMeasure.MICRO;
+    
+    // default matric, the unit can be changed
+    this._metric = new MargotMetric(MargotMetricName.TIME, new TimeUnit('s', TimeModifier.MICRO));
 }
 // Inheritance
 TimeMonitor.prototype = Object.create(_MargotMonitor.prototype);
@@ -25,7 +27,7 @@ TimeMonitor.prototype = Object.create(_MargotMonitor.prototype);
  * */
 var MargotTimeMeasure = new Enumeration(
     {SEC: 'margot::TimeMeasure::Seconds'},
-    {MILI: 'margot::TimeMeasure::Miliseconds'},
+    {MILLI: 'margot::TimeMeasure::Miliseconds'}, // TODO: check if this is the correct spelling used in mARGOt
     {MICRO: 'margot::TimeMeasure::Microseconds'}
 );
 
@@ -35,14 +37,20 @@ var MargotTimeMeasure = new Enumeration(
 TimeMonitor.prototype.useMicro = function() {
     
     this._granularity = MargotTimeMeasure.MICRO;
+    
+    // change the unit of the metric
+    this._metric.setUnit(new TimeUnit('s', TimeModifier.MICRO));
 }
 
 /**
  * Set the granularity to miliseconds.
  * */
-TimeMonitor.prototype.useMili = function() {
+TimeMonitor.prototype.useMilli = function() {
     
-    this._granularity = MargotTimeMeasure.MILI;
+    this._granularity = MargotTimeMeasure.MILLI;
+    
+    // change the unit of the metric
+    this._metric.setUnit(new TimeUnit('s', TimeModifier.MILLI));
 }
 
 /**
@@ -51,6 +59,9 @@ TimeMonitor.prototype.useMili = function() {
 TimeMonitor.prototype.useSecond = function() {
     
     this._granularity = MargotTimeMeasure.SEC;
+    
+    // change the unit of the metric
+    this._metric.setUnit(new TimeUnit('s', TimeModifier.SECOND));
 }
 
 /*

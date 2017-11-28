@@ -15,6 +15,9 @@ function EnergyMonitor(name) {
     
     // default domain, can be changed
     this._domain = MargotEnergyDomain.PACKAGE;
+    
+    // default metric, the unit can be changed if there are functions for it
+    this._metric = new MargotMetric(MargotMetricName.ENERGY, new TimeUnit('J', TimeModifier.MICRO));
 }
 // Inheritance
 EnergyMonitor.prototype = Object.create(_MargotMonitor.prototype);

@@ -1,9 +1,9 @@
 /**
  * This class represents the base monitor that is 'implemented' by all monitors.
  * 
- * Each class that 'extends' _MargotMonitor needs to have a public method
- * expose(), in order to expose variables, and a private method _makeCode(), in
- * order to generate its code.
+ * 
+ * Each class that extends this needs to define a field _margotMetric with the metric that it intends to measure. This base class already defines the get logic in the function getMargotMetric.
+ * 
  * */
  function _MargotMonitor(name) {
      
@@ -30,10 +30,18 @@ var MargotExpose = new Enumeration({
  /**
   * Add a variable to expose in the monitor.
   * */
- _MargotMonitor.prototype.expose = function(varName, what) {
+_MargotMonitor.prototype.expose = function(varName, what) {
     
-    this._exposes.push({varName: varName, what: what});
- }
+	this._exposes.push({varName: varName, what: what});
+}
+
+/**
+ * Returns the MargotMetric associated with this monitor.
+ * */
+_MargotMonitor.prototype.getMargotMetric = function() {
+	
+	return this._margotMetric;
+}
 
 /*
  * CODE GENERATION
