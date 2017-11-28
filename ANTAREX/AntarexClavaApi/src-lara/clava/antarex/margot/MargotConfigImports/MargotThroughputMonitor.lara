@@ -1,9 +1,17 @@
+import antarex.margot.MargotConfigImports.MargotMonitor;
+
 /**
  * This class represents a throughput monitor.
+ * 
+ * @extends _MargotMonitor
  * */
 function ThroughputMonitor(name) {
 	
-    this._base = new _MargotMonitor(name);
+    // super contructor
+    _MargotMonitor.call(this, name);
+    
+    // save super prototype
+    this._super = _MargotMonitor.prototype;
     
     var args = arrayFromArgs(arguments, 1);
     
@@ -25,12 +33,8 @@ function ThroughputMonitor(name) {
 	}
 }
 
-/**
- * Adds a variable to expose in the throughput monitor.
- * */
-ThroughputMonitor.prototype.expose = function(varName, what) {
-    this._base._expose(varName, what);
-}
+// Inheritance
+ThroughputMonitor.prototype = Object.create(_MargotMonitor.prototype);
 
 
 /*
@@ -55,7 +59,7 @@ ThroughputMonitor.prototype._makeCode = function() {
 			numJobsCode = _NumJobFixedTemplate(this._numJobDone);
 	}
     
-    return this._base._makeCode('THROUGHPUT', numJobsCode);
+    return this._super._makeCode.call(this, 'THROUGHPUT', numJobsCode);
 }
 
 /*

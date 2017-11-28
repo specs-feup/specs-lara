@@ -1,9 +1,16 @@
+import antarex.margot.MargotConfigImports.MargotMonitor;
 /**
  * This class represents a custom monitor.
+ * 
+ * @extends _MargotMonitor
  * */
 function CustomMonitor(name) {
 	
-    this._base = new _MargotMonitor(name);
+    // super contructor
+    _MargotMonitor.call(this, name);
+    
+    // save super prototype
+    this._super = _MargotMonitor.prototype;
     
     this._spec = undefined;
     
@@ -11,12 +18,8 @@ function CustomMonitor(name) {
     this._stops = [];
 }
 
-/**
- * Adds a variable to expose in the custom monitor.
- * */
-CustomMonitor.prototype.expose = function(varName, what) {
-    this._base._expose(varName, what);
-}
+// Inheritance
+CustomMonitor.prototype = Object.create(_MargotMonitor.prototype);
 
 
 /**

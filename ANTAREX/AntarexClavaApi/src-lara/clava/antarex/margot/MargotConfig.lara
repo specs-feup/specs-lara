@@ -1,6 +1,10 @@
 import antarex.margot.MargotConfigImports.MargotBlock;
-import antarex.margot.MargotConfigImports.MargotMonitor;
 import antarex.margot.MargotConfigImports.MargotState;
+import antarex.margot.MargotConfigImports.MargotMonitor;
+import antarex.margot.MargotConfigImports.MargotEnergyMonitor;
+import antarex.margot.MargotConfigImports.MargotTimeMonitor;
+import antarex.margot.MargotConfigImports.MargotThroughputMonitor;
+
 
 /**
  * This class holds the data needed to generate an XML configuration file for the autotuner.

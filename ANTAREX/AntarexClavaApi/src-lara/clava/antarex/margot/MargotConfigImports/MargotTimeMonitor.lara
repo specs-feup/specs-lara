@@ -1,18 +1,24 @@
+import antarex.margot.MargotConfigImports.MargotMonitor;
+
 /**
  * This class represents a time monitor.
+ * 
+ * @extends _MargotMonitor
  * */
 function TimeMonitor(name) {
     
-    this._base = new _MargotMonitor(name);
-    this._granularity = MargotTimeMeasure.MICRO; // default, can be changed
+    // super contructor
+    _MargotMonitor.call(this, name);
+    
+    // save super prototype
+    this._super = makeSuper(this, _MargotMonitor.prototype);
+    this._super = _MargotMonitor.prototype;
+    
+    // default, can be changed
+    this._granularity = MargotTimeMeasure.MICRO;
 }
-
-/**
- * Adds a variable to expose in the time monitor.
- * */
-TimeMonitor.prototype.expose = function(varName, what) {
-    this._base._expose(varName, what);
-}
+// Inheritance
+TimeMonitor.prototype = Object.create(_MargotMonitor.prototype);
 
 /**
  * Enum that represents the granularity of the time monitor.
@@ -57,7 +63,8 @@ TimeMonitor.prototype.useSecond = function() {
 TimeMonitor.prototype._makeCode = function() {
     
     var granularityCode = _GranularityTemplate(this._granularity);
-    return this._base._makeCode('TIME', granularityCode);
+        
+    return this._super._makeCode.call(this, 'TIME', granularityCode);
 }
 
 /*

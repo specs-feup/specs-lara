@@ -1,18 +1,23 @@
+import antarex.margot.MargotConfigImports.MargotMonitor;
+
 /**
  * This class represents an energy monitor.
+ * 
+ * @extends _MargotMonitor
  * */
 function EnergyMonitor(name) {
     
-    this._base = new _MargotMonitor(name);
+    // super contructor
+    _MargotMonitor.call(this, name);
+    
+    // save super prototype
+    this._super = _MargotMonitor.prototype;
+    
+    // default domain, can be changed
     this._domain = MargotEnergyDomain.PACKAGE;
 }
-
-/**
- * Adds a variable to expose in the energy monitor.
- * */
-EnergyMonitor.prototype.expose = function(varName, what) {
-    this._base._expose(varName, what);
-}
+// Inheritance
+EnergyMonitor.prototype = Object.create(_MargotMonitor.prototype);
 
 /**
  * Sets the domain as PACKAGE.
@@ -69,7 +74,7 @@ var MargotEnergyDomain = new Enumeration(
 EnergyMonitor.prototype._makeCode = function() {
     
     var domainCode = _DomainTemplate(this._domain);
-    return this._base._makeCode('ENERGY', domainCode);
+    return this._super._makeCode.call(this, 'ENERGY', domainCode);
 }
 
 /*

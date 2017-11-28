@@ -1,7 +1,3 @@
-import antarex.margot.MargotConfigImports.MargotEnergyMonitor;
-import antarex.margot.MargotConfigImports.MargotTimeMonitor;
-import antarex.margot.MargotConfigImports.MargotThroughputMonitor;
-
 /**
  * This class represents the base monitor that is 'implemented' by all monitors.
  * 
@@ -34,7 +30,7 @@ var MargotExpose = new Enumeration({
  /**
   * Add a variable to expose in the monitor.
   * */
- _MargotMonitor.prototype._expose = function(varName, what) {
+ _MargotMonitor.prototype.expose = function(varName, what) {
     
     this._exposes.push({varName: varName, what: what});
  }
