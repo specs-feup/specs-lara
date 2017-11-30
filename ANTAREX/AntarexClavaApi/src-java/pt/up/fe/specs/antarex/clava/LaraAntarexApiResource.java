@@ -33,6 +33,9 @@ public enum LaraAntarexApiResource implements LaraResourceProvider {
     // mARGOt metric
     MARGOT_METRIC("margot/metric/MargotMetric.lara"),
 
+    // mARGOT DSE
+    MARGOT_DSE_INFO("margot/dse/MargotDseInfo.lara"),
+
     // mARGOt code generation
     MARGOT_CODE_GEN("margot/MargotCodeGen.lara"),
     MARGOT_CODE_GEN_ASPECTS("margot/MargotCodeGenAspects.lara"),
@@ -45,7 +48,8 @@ public enum LaraAntarexApiResource implements LaraResourceProvider {
     MARGOT_CONFIG_ENERGY_MONITOR("margot/MargotConfigImports/MargotEnergyMonitor.lara"),
     MARGOT_CONFIG_TIME_MONITOR("margot/MargotConfigImports/MargotTimeMonitor.lara"),
     MARGOT_CONFIG_THROUGHPUT_MONITOR("margot/MargotConfigImports/MargotThroughputMonitor.lara"),
-    MARGOT_CONFIG_STATE("margot/MargotConfigImports/MargotState.lara");
+    MARGOT_CONFIG_STATE("margot/MargotConfigImports/MargotState.lara"),
+    MARGOT_KNOB("margot/MargotConfigImports/MargotKnob.lara");
 
     private final String resource;
 

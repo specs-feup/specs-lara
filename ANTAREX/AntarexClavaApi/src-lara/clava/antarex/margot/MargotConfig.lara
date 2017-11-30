@@ -5,13 +5,15 @@ import antarex.margot.MargotConfigImports.MargotEnergyMonitor;
 import antarex.margot.MargotConfigImports.MargotTimeMonitor;
 import antarex.margot.MargotConfigImports.MargotThroughputMonitor;
 
+import antarex.margot.dse.MargotDseInfo;
+
 
 /**
  * This class holds the data needed to generate an XML configuration file for the autotuner.
  * */
 function MargotConfig() {
     
-    this._blocks = [];
+    this._blocks = {};
 }
 
 /**
@@ -19,7 +21,7 @@ function MargotConfig() {
 * */
 MargotConfig.prototype.addBlock = function(block) {
 
-    this._blocks.push(block);
+    this._blocks[block._name] = block;
 }
 
 /**
@@ -28,9 +30,48 @@ MargotConfig.prototype.addBlock = function(block) {
 MargotConfig.prototype.newBlock = function(blockName) {
 
     var block = new MargotBlock(blockName);
-    this._blocks.push(block);
+    this._blocks[blockName] = block;
     
     return block;
+}
+
+/**
+ * Generates and returns the DSE information for the block with the provided name.
+ * 
+ * @param {String} blockName - the name of the block for which the DSE info will be returned.
+ * @returns {MargotDseInfo} an object with the DSE information
+ * */
+MargotConfig.prototype.getDseInfo = function(blockName) {
+	
+	var block = this._blocks[blockName];
+	if(block === undefined) {
+		throw 'Could not find a block with name ' + blockName;
+	}
+	
+	var info = new MargotDseInfo(blockName);
+	
+	// knobs
+	var knobs = {};
+	for(var knob of block._knobs) {
+		knobs[knob.getName()] = knob;
+	}
+	info.setKnobs(knobs);
+	
+	// data features
+	//~ var features = {};
+	//~ for(var feature of block._features) {
+		//~ features[feature.getFeatureName()] = feature;
+	//~ }
+	//~ info.setFeatures(features);
+	
+	// metrics
+	var metrics = [];
+	for(var monitor of block._monitors) {
+		metrics.push(monitor.getMargotMetric());
+	}
+	info.setMargotMetrics(metrics);
+	
+	return info;
 }
 
 /*

@@ -1,0 +1,78 @@
+/**
+ * Class that holds information for the DSE step needed in mARGOt's toolflow. This concerns a single block.
+ * 
+ * @param {string} blockName - the name of the block for which this information is meant
+ * 
+ * @constructor
+ * */
+function MargotDseInfo(blockName) {
+	
+	/**
+	 * The name of the block
+	 * */
+	this._block = blockName;
+	
+	/**
+	 * The map of knobs
+	 * */
+	this._knobs = {};
+	/**
+	 * The map of data features
+	 * */
+	this._features = {};
+	/**
+	 * The array of margot metrics
+	 * */
+	this._metrics = [];
+	
+	/**
+	 * The number of DSE runs
+	 * */
+	this._dseRuns = 0;
+}
+
+
+MargotDseInfo.prototype.getBlockName = function() {
+	
+	return this._block;
+};
+
+MargotDseInfo.prototype.getKnobs = function() {
+	
+	return this._knobs;
+};
+
+MargotDseInfo.prototype.setKnobs = function(knobs) {
+	
+	this._knobs = knobs;
+};
+
+MargotDseInfo.prototype.getDataFeatures = function() {
+	
+	return this._features;
+};
+
+MargotDseInfo.prototype.setDataFeatures = function(dataFeatures) {
+	
+	this._features = dataFeatures;
+};
+
+MargotDseInfo.prototype.getMargotMetrics = function() {
+	
+	return this._metrics;
+};
+
+MargotDseInfo.prototype.setMargotMetrics = function(margotMetrics) {
+	
+	this._metrics = margotMetrics;
+};
+
+MargotDseInfo.prototype.getDseRuns = function() {
+	
+	return this._dseRuns;
+};
+
+MargotDseInfo.prototype.setDseRuns = function(dseRuns) {
+	
+	this._dseRuns = dseRuns;
+};
