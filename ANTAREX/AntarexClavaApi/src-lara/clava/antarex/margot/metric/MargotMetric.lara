@@ -15,15 +15,15 @@ var MargotMetric = function(name, unit) {
     
     this._name = name;
     this._unit = unit;
-}
+};
 
 MargotMetric.prototype.getName = function() {
     return this._name;
-}
+};
 
 MargotMetric.prototype.getUnit = function() {
     return this._unit;
-}
+};
 
 /**
  * Sets the unit of this metric.
@@ -32,12 +32,12 @@ MargotMetric.prototype.getUnit = function() {
  * */
 MargotMetric.prototype.setUnit = function(unit) {
     this._unit = unit;
-}
+};
 
 MargotMetric.prototype.getUnitName = function() {
     return this._unit.getName();
-}
+};
 
 MargotMetric.prototype.convertUnit = function(value, unit) {
     return this._unit.convert(value, unit);
-}
+};

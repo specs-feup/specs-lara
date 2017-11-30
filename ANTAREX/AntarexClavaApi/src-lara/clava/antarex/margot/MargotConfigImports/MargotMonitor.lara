@@ -1,3 +1,5 @@
+import antarex.margot.metric.MargotMetric;
+
 /**
  * This class represents the base monitor that is 'implemented' by all monitors.
  * 
@@ -5,12 +7,12 @@
  * Each class that extends this needs to define a field _margotMetric with the metric that it intends to measure. This base class already defines the get logic in the function getMargotMetric.
  * 
  * */
- function _MargotMonitor(name) {
+function _MargotMonitor(name) {
      
      this._name = name;
      
      this._exposes = [];
- }
+}
  
 /**
 * Enum to represent what can be exposed in monitors.

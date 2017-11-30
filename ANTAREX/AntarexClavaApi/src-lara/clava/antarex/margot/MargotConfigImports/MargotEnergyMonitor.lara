@@ -1,5 +1,6 @@
 import antarex.margot.MargotConfigImports.MargotMonitor;
-
+import lara.units.SiUnit;
+import lara.units.SiModifier;
 /**
  * This class represents an energy monitor.
  * 
@@ -17,7 +18,7 @@ function EnergyMonitor(name) {
     this._domain = MargotEnergyDomain.PACKAGE;
     
     // default metric, the unit can be changed if there are functions for it
-    this._metric = new MargotMetric(MargotMetricName.ENERGY, new TimeUnit('J', TimeModifier.MICRO));
+    this._margotMetric = new MargotMetric(MargotMetricName.ENERGY, new SiUnit('J', SiModifier.MICRO));
 }
 // Inheritance
 EnergyMonitor.prototype = Object.create(_MargotMonitor.prototype);

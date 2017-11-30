@@ -1,4 +1,6 @@
 import antarex.margot.MargotConfigImports.MargotMonitor;
+import lara.units.TimeUnit;
+import lara.units.TimeModifier;
 
 /**
  * This class represents a time monitor.
@@ -17,7 +19,7 @@ function TimeMonitor(name) {
     this._granularity = MargotTimeMeasure.MICRO;
     
     // default matric, the unit can be changed
-    this._metric = new MargotMetric(MargotMetricName.TIME, new TimeUnit('s', TimeModifier.MICRO));
+    this._margotMetric = new MargotMetric(MargotMetricName.TIME, new TimeUnit('s', TimeModifier.MICRO));
 }
 // Inheritance
 TimeMonitor.prototype = Object.create(_MargotMonitor.prototype);
@@ -39,7 +41,7 @@ TimeMonitor.prototype.useMicro = function() {
     this._granularity = MargotTimeMeasure.MICRO;
     
     // change the unit of the metric
-    this._metric.setUnit(new TimeUnit('s', TimeModifier.MICRO));
+    this._margotMetric.setUnit(new TimeUnit('s', TimeModifier.MICRO));
 }
 
 /**
@@ -50,7 +52,7 @@ TimeMonitor.prototype.useMilli = function() {
     this._granularity = MargotTimeMeasure.MILLI;
     
     // change the unit of the metric
-    this._metric.setUnit(new TimeUnit('s', TimeModifier.MILLI));
+    this._margotMetric.setUnit(new TimeUnit('s', TimeModifier.MILLI));
 }
 
 /**
@@ -61,7 +63,7 @@ TimeMonitor.prototype.useSecond = function() {
     this._granularity = MargotTimeMeasure.SEC;
     
     // change the unit of the metric
-    this._metric.setUnit(new TimeUnit('s', TimeModifier.SECOND));
+    this._margotMetric.setUnit(new TimeUnit('s', TimeModifier.SECOND));
 }
 
 /*
