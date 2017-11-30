@@ -1,3 +1,4 @@
+import antarex.margot.MargotConfigImports.MargotKnob;
 /**
  * This holds information about a mARGOt configuration block.
  * */
@@ -22,7 +23,7 @@ MargotBlock.prototype.addKnob = function(name, varName, varType) {
         throw 'To define a knob you need a name, a variable name and a variable type.';
     }
     
-    this._knobs.push({name: name, varName: varName, varType: varType});
+    this._knobs.push(new MargotKnob(name, varName, varType));
 };
 
 /**
@@ -313,7 +314,7 @@ MargotBlock.prototype._makeKnobsCode = function() {
     
     for (var knob of this._knobs) {
     
-        code += _KnobTemplate(knob.name, knob.varName, knob.varType);
+        code += _KnobTemplate(knob.getName(), knob.getVarName(), knob.getVarType());
     }
     
     return code;
