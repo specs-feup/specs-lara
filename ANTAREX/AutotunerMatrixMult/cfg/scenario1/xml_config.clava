@@ -20,6 +20,10 @@
       <boolean>false</boolean>
     </entry>
     <entry>
+      <string>Disable Code Generation</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
       <string>log</string>
       <OptionalFile>
         <file></file>
@@ -111,7 +115,7 @@
     </entry>
     <entry>
       <string>stack trace</string>
-      <boolean>false</boolean>
+      <boolean>true</boolean>
     </entry>
   </values>
   <strict>false</strict>

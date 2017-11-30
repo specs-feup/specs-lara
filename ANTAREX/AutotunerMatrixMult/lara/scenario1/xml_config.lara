@@ -7,7 +7,7 @@ aspectdef XmlConfig
 
 	/* monitors */
 	var timeMonitor = matmul.newTimeMonitor('timer');
-	timeMonitor.useMili();
+	timeMonitor.useMilli();
 	timeMonitor.expose('mean_exec_time', MargotExpose.AVG);
 
 	/* knobs */
@@ -30,4 +30,17 @@ aspectdef XmlConfig
 	state.subjectTo('exec_time_lower_bound', 3, 30);
 
 	println(config.build());
+
+
+	var dseInfo = config.getDseInfo('matmul');
+
+	println('knobs:');
+	for(knob of dseInfo.getKnobs()) {
+		println(knob.getName() + ' in code: ' + knob.getVarType() + ' ' + knob.getVarName());
+	}
+
+	println('metrics:');
+	for(metric of dseInfo.getMargotMetrics()) {
+		print(metric.getName() + ' in ' + metric.getUnitName());
+	}
 end
