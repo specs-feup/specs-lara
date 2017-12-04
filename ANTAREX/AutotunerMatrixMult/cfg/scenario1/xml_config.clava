@@ -100,7 +100,7 @@
     </entry>
     <entry>
       <string>Disable Weaving</string>
-      <boolean>true</boolean>
+      <boolean>false</boolean>
     </entry>
     <entry>
       <string>metrics</string>

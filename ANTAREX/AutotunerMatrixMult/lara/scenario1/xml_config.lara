@@ -32,6 +32,7 @@ aspectdef XmlConfig
 	println(config.build());
 
 
+	/* generate the information needed for DSE */
 	var dseInfo = config.getDseInfo('matmul');
 
 	println('knobs:');
@@ -43,4 +44,7 @@ aspectdef XmlConfig
 	for(metric of dseInfo.getMargotMetrics()) {
 		print(metric.getName() + ' in ' + metric.getUnitName());
 	}
+
+	/* generate the information needed for the code gen */
+	var codeGenInfo = config.getCodeGenInfo('matmul');
 end

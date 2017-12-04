@@ -6,6 +6,7 @@ import antarex.margot.MargotConfigImports.MargotTimeMonitor;
 import antarex.margot.MargotConfigImports.MargotThroughputMonitor;
 
 import antarex.margot.dse.MargotDseInfo;
+import antarex.margot.MargotCodeGen;
 
 
 /**
@@ -72,6 +73,39 @@ MargotConfig.prototype.getDseInfo = function(blockName) {
 	info.setMargotMetrics(metrics);
 	
 	return info;
+}
+
+/**
+ * Generates and returns the code generation information needed for block with provided name.
+ * 
+ * @param {String} blockName - the name of the block for which the code generation infor will be returned
+ * 
+ * @returns {Margot} and object with the code generation information
+ * */
+MargotConfig.prototype.getCodeGenInfo = function(blockName) {
+	
+	var block = this._blocks[blockName];
+	if(block === undefined) {
+		throw 'Could not find a block with name ' + blockName;
+	}
+	
+	var codegen = new Margot(blockName);
+	
+	// knobs
+	var knobNames = [];
+	for(var knob of block._knobs) {
+		knobNames.push(knob.getVarName()); // code generation needs the names of the code variables
+	}
+	codegen.setKnobs(knobNames);
+	
+	// features
+	//~ var featureNames = [];
+	//~ for(var feature of block._features) {
+		//~ featureNames.push(feature.getFeatureName());
+	//~ }
+	//~ codegen.setFeatures(featureNames);
+	
+	return codegen;
 }
 
 /*
