@@ -14,6 +14,7 @@ var Margot = function (block) {
     
     this._block = block;
     this._vars = arrayFromArgs(arguments, 1);
+    this._features = undefined;
     
     /* change the strings based on the standard */
     this._stringsGen = new MargotStringsGen(
@@ -22,6 +23,36 @@ var Margot = function (block) {
     
     this._initDone = false;
 };
+
+/**
+ * Sets the names of the variables that hold the values of the knobs.
+ * 
+ * @param {Array} knobs - the list of variable names (can be either an array of strings or a list of strings)
+ * */
+Margot.prototype.setKnobs = function(knobs) {
+	
+	// if type array
+	if(Array.isArray(knobs)) {
+		this._vars = knobs;
+	} else {
+		this._vars = arrayFromArgs(arguments, 0);
+	}
+}
+
+/**
+ * Sets the names of the variables that hold the values of the data features.
+ * 
+ * @param {Array} features - the list of variable names (can be either an array of strings or a list of strings)
+ * */
+Margot.prototype.setFeatures = function(features) {
+	
+	// if type array
+	if(Array.isArray(features)) {
+		this._features = knobs;
+	} else {
+		this._features = arrayFromArgs(arguments, 0);
+	}
+}
 
 /**
  * Inserts the include directive with the mARGOt header in the parent file of the provided join point.
