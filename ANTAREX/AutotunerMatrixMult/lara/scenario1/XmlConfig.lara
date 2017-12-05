@@ -2,6 +2,15 @@ import antarex.margot.MargotConfig;
 
 aspectdef XmlConfig
 
+	input
+		configPath
+	end
+
+	output
+		dseInfo,
+		codeGenInfo
+	end
+
 	var config = new MargotConfig();
 	var matmul = config.newBlock('matmul');
 
@@ -29,22 +38,13 @@ aspectdef XmlConfig
 	state.minimize('exec_time_ms', MargotCombination.SIMPLE, 1.0);
 	state.subjectTo('exec_time_lower_bound', 3, 30);
 
-	println(config.build());
-
+	config.build(configPath);
 
 	/* generate the information needed for DSE */
-	var dseInfo = config.getDseInfo('matmul');
-
-	println('knobs:');
-	for(knob of dseInfo.getKnobs()) {
-		println(knob.getName() + ' in code: ' + knob.getVarType() + ' ' + knob.getVarName());
-	}
-
-	println('metrics:');
-	for(metric of dseInfo.getMargotMetrics()) {
-		print(metric.getName() + ' in ' + metric.getUnitName());
-	}
+	dseInfo = config.getDseInfo('matmul');
 
 	/* generate the information needed for the code gen */
-	var codeGenInfo = config.getCodeGenInfo('matmul');
+	codeGenInfo = config.getCodeGenInfo('matmul');
+
+	println('XmlConfig done');
 end
