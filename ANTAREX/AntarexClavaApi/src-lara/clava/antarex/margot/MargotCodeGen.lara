@@ -27,31 +27,22 @@ var Margot = function (block) {
 /**
  * Sets the names of the variables that hold the values of the knobs.
  * 
- * @param {Array} knobs - the list of variable names (can be either an array of strings or a list of strings)
+ * @param {(string[]|...string)} knobs - the list of variable names
  * */
 Margot.prototype.setKnobs = function(knobs) {
-	
-	// if type array
-	if(Array.isArray(knobs)) {
-		this._vars = knobs;
-	} else {
-		this._vars = arrayFromArgs(arguments, 0);
-	}
+
+	this._vars = arrayFromArgs(arguments, 0);
 }
 
 /**
  * Sets the names of the variables that hold the values of the data features.
  * 
- * @param {Array} features - the list of variable names (can be either an array of strings or a list of strings)
+ * @param {(string[]|...string)} features - the list of variable names
  * */
 Margot.prototype.setFeatures = function(features) {
+
+	this._features = arrayFromArgs(arguments, 0);
 	
-	// if type array
-	if(Array.isArray(features)) {
-		this._features = knobs;
-	} else {
-		this._features = arrayFromArgs(arguments, 0);
-	}
 }
 
 /**
@@ -102,8 +93,8 @@ Margot.prototype.update = function($joinpoint) {
  * 
  * For a block named 'block1', it will insert the code 'margot::block1::start_monitor();'.
  * 
- * @param {joinpoint} $joinpoint The point in the code where the code will be inserted
- * @param {string...} startArgs The arguments to the start monitors call (optional)
+ * @param {joinpoint} $joinpoint - The point in the code where the code will be inserted
+ * @param {string...} [startArgs] - The arguments to the start monitors call
  * 
  * */
 Margot.prototype.startMonitors = function($joinpoint) {
@@ -202,9 +193,9 @@ Margot.prototype.stopMonitor = function($joinpoint, monitorName) {
  * 
  * For a block named 'block1', it will insert the code 'margot::block1::start_monitor();' and 'margot::block1::stop_monitor();'.
  * 
- * @param {joinpoint} $joinpoint The point in the code around which the code will be inserted
- * @param {string[]} startArgs The arguments to the start monitors call (optional)
- * @param {string[]} stopArgs The arguments to the stop monitors call (optional)
+ * @param {joinpoint} $joinpoint - The point in the code around which the code will be inserted
+ * @param {string[]} [startArgs] - The arguments to the start monitors call (optional)
+ * @param {string[]} [stopArgs] - The arguments to the stop monitors call (optional)
  * */
 Margot.prototype.monitor = function($joinpoint, startArgs, stopArgs) {
 	
@@ -220,6 +211,13 @@ Margot.prototype.monitor = function($joinpoint, startArgs, stopArgs) {
 	
 	//~ this._includeHeader($joinpoint);
 	
+	if(startArgs === undefined) {
+		startArgs = [];
+	}
+	
+	if(stopArgs === undefined) {
+		stopArgs = [];
+	}
 	
 	this.startMonitors($joinpoint, startArgs);
 	this.stopMonitors($joinpoint, stopArgs);
@@ -253,12 +251,20 @@ Margot.prototype.log = function($joinpoint) {
  * Also inserts the header file if needed.
  * 
  * @param {joinpoint} $joinpoint The point in the code around which the code will be inserted
- * @param {string[]} startArgs The arguments to the start monitors call (optional)
- * @param {string[]} stopArgs The arguments to the stop monitors call (optional)
+ * @param {string[]} [startArgs] - The arguments to the start monitors call (optional)
+ * @param {string[]} [stopArgs] - The arguments to the stop monitors call (optional)
  * */
 Margot.prototype.monitorLog = function($joinpoint, startArgs, stopArgs) {
 	
 	checkJoinPoint($joinpoint, 'monitorLog ($joinpoint)');
+	
+	if(startArgs === undefined) {
+		startArgs = [];
+	}
+	
+	if(stopArgs === undefined) {
+		stopArgs = [];
+	}
 	
 	this.log($joinpoint);
 	this.startMonitors($joinpoint, startArgs);
@@ -304,7 +310,7 @@ Margot.prototype.setGoal = function($joinpoint, goalName, goalValue) {
  * 	1) This function is called following any other function that inserts code. By default, if any of those functions is called and 'init' was not called beforehand, the initialization code will be inserted at the start of the main function.
  * 	2) This function is called multiple times.
  * 
- * @param {joinpoint} $joinpoint The reference point in the code for the insertion.
+ * @param {joinpoint} $joinpoint - The reference point in the code for the insertion.
  * */
 Margot.prototype.init = function($joinpoint) {
 	
