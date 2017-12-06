@@ -99,11 +99,11 @@ MargotConfig.prototype.getCodeGenInfo = function(blockName) {
 	codegen.setKnobs(knobNames);
 	
 	// features
-	//~ var featureNames = [];
-	//~ for(var feature of block._features) {
-		//~ featureNames.push(feature.getFeatureName());
-	//~ }
-	//~ codegen.setFeatures(featureNames);
+	var featureNames = [];
+	for(var feature of block._features.getFeatures()) {
+		featureNames.push(feature.getName());
+	}
+	codegen.setFeatures(featureNames);
 	
 	return codegen;
 }

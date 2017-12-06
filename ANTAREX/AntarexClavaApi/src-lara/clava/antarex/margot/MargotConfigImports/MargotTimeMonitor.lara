@@ -28,9 +28,9 @@ TimeMonitor.prototype = Object.create(_MargotMonitor.prototype);
  * Enum that represents the granularity of the time monitor.
  * */
 var MargotTimeMeasure = new Enumeration(
-    {SEC: 'margot::TimeMeasure::Seconds'},
-    {MILLI: 'margot::TimeMeasure::Miliseconds'}, // TODO: check if this is the correct spelling used in mARGOt
-    {MICRO: 'margot::TimeMeasure::Microseconds'}
+    {SEC: 'margot::TimeUnit::SECONDS'},
+    {MILLI: 'margot::TimeUnit::MILLISECONDS'},
+    {MICRO: 'margot::TimeUnit::MICROSECONDS'}
 );
 
 /**
@@ -89,7 +89,7 @@ TimeMonitor.prototype._makeCode = function() {
  * */
 codedef _GranularityTemplate(param1) %{
 <creation>    
-<param name="time granularity">    
+<param name="unit of measure">    
 <fixed value="[[param1]]"/>    
 </param>    
 </creation>

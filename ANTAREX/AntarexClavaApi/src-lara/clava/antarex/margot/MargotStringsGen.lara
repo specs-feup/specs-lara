@@ -62,12 +62,21 @@ MargotStringsGen.prototype.inc = function() {
 	return this._strings.incCode;
 };
     
-MargotStringsGen.prototype.update = function(block, vars, additionalCode) {
+MargotStringsGen.prototype.update = function(block, vars, features, additionalCode) {
 	
 	var code = 'if(';
 	
 	code += this._strings.ns + this._strings.sep + block + this._strings.sep + this._strings.updCode;
-	code += '(' + this._strings.makeVarList(vars) + ')';
+	code += '(';
+	code += this._strings.makeVarList(vars);
+	
+	if(features !== undefined) {
+		for(var f of features) {
+			code += ', ' + f;
+		}
+	}
+	
+	code += ')';
 	
 	code += ') {\n';
 	for(var ac of additionalCode) {

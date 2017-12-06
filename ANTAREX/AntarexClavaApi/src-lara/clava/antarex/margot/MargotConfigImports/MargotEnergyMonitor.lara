@@ -62,10 +62,10 @@ EnergyMonitor.prototype.setDomain = function(domain) {
  * Enum that represents the domain of the time monitor.
  * */
 var MargotEnergyDomain = new Enumeration(
-    {PACKAGE: 'margot::energy_monitor_t::Domain::Package'},
-    {CORES: 'margot::energy_monitor_t::Domain::Cores'},
-    {RAM: 'margot::energy_monitor_t::Domain::Ram'},
-    {UNCORES: 'margot::energy_monitor_t::Domain::Uncores'}
+    {PACKAGE: 'margot::EnergyMonitor::Domain::Package'},
+    {CORES: 'margot::EnergyMonitor::Domain::Cores'},
+    {RAM: 'margot::EnergyMonitor::Domain::Ram'},
+    {UNCORES: 'margot::EnergyMonitor::Domain::Uncores'}
 );
 
 /*
@@ -90,7 +90,7 @@ EnergyMonitor.prototype._makeCode = function() {
  * */
 codedef _DomainTemplate(param1) %{
 <creation>    
-<param name="domain">    
+<param name="energy domain">    
 <fixed value="[[param1]]"/>    
 </param>    
 </creation>

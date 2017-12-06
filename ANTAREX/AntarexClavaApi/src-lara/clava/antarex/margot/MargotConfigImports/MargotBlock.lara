@@ -1,4 +1,6 @@
 import antarex.margot.MargotConfigImports.MargotKnob;
+import antarex.margot.MargotConfigImports.MargotDataFeature;
+
 /**
  * This holds information about a mARGOt configuration block.
  * */
@@ -11,6 +13,39 @@ function MargotBlock(name) {
     this._states = [];
     this._metrics = [];
     this._runtimes = [];
+    this._features = undefined;
+}
+
+/**
+ * Sets the distance type of the feature group of this block.
+ * 
+ * @param {MargotDistanceType} distanceType - the type of distance calculation for data features
+ * */
+MargotBlock.prototype.setDataFeatureDistanceType = function(distanceType) {
+	
+	if(this._features === undefined) {
+		
+		this._features = orDefault(this._features, new MargotDataFeatureGroup(distanceType));
+	} else {
+		
+		this._features.setDistanceType(distanceType);
+	}
+}
+
+/**
+ * Adds a new feature to the feature group of this block.
+ * 
+ * If it wasn't defined before, a new group will be created with a default distance type value of MargotDistanceType.EUCLIDEAN.
+ * 
+ * @param {string} name - the name of the variable that holds the value of the data feature
+ * @param {string} type - the type of the variable that holds the value of the data feature
+ * @param {MargotValidity} [validity='-'] - the comparison used to test the validity
+ * */
+MargotBlock.prototype.addDataFeature = function(name, type, validity) {
+	
+	this._features = orDefault(this._features, new MargotDataFeatureGroup(MargotDistanceType.EUCLIDEAN));
+	
+	this._features.addFeature(name, type, validity);
 }
 
 /**
@@ -53,7 +88,7 @@ MargotBlock.prototype.addRuntimeProvider = function(metricName, monitorName, ine
 }
 
 /**
- * Enum for metric definitioni.
+ * Enum for metric definition.
  * */
 var MargotDistribution = new Enumeration('YES', 'NO');
 
@@ -266,6 +301,7 @@ MargotBlock.prototype._makeCode = function() {
     code += this._makeMonitorsCode();
     code += this._makeKnobsCode();
     code += this._makeMetricsCode();
+    code += this._makeFeaturesCode();
     code += this._makeRuntimesCode();
     code += this._makeGoalsCode();
     code += this._makeStatesCode();
@@ -273,6 +309,22 @@ MargotBlock.prototype._makeCode = function() {
     code += '</block>\n';
     
     return code;
+}
+
+/**
+* Generates the code of the features.
+* */
+MargotBlock.prototype._makeFeaturesCode = function() {
+	
+	if(this._features === undefined) {
+		return '';
+	}
+	
+	var code = '<!-- FEATURE SECTION -->\n';
+	
+	code += this._features._makeCode();
+	
+	return code;
 }
 
 /**

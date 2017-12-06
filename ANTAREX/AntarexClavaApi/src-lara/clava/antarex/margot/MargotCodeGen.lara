@@ -80,7 +80,7 @@ Margot.prototype.update = function($joinpoint) {
 	this._checkDefaultInit();
 	
 	var additionalCode = arrayFromArgs(arguments, 1);
-	var code = this._stringsGen.update(this._block, this._vars, additionalCode);
+	var code = this._stringsGen.update(this._block, this._vars, this._features, additionalCode);
 	$joinpoint.insert before(code);
 
 	this._includeHeader($joinpoint);
