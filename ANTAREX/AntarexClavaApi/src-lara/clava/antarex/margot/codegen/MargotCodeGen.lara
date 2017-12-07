@@ -4,11 +4,15 @@ import antarex.margot.codegen._internal.MargotStringsGen;
 import clava.Clava;
 
 /**
- * Represents a mARGOt autotuner instance.
+ * This class contains the methods to generate and insert the code of the mARGOt interface in a target application.
+ * 
+ * Every method provided here will include the mARGOt header in the correct place if needed.
+ * 
+ * Every method provided here, except {@link MargotCodeGen.init}, will also insert a default initialization to the mARGOt framework at the start of the main function.
  * 
  * @constructor
  * @param {string} block - the name of the block, this is mandatory
- * @param {string} vars - the variables that will be updated, this is an optional list
+ * @param {...string} [vars] - the names of the knob variables
  * */
 var MargotCodeGen = function (block) {
     
@@ -48,7 +52,7 @@ MargotCodeGen.prototype.setFeatures = function(features) {
 /**
  * Inserts the include directive with the mARGOt header in the parent file of the provided join point.
  * 
- * @param {joinpoint} $joinpoint The reference join point
+ * @param {joinpoint} $joinpoint - The reference join point
  * */
 MargotCodeGen.prototype._includeHeader = function($joinpoint) {
 	
@@ -58,9 +62,9 @@ MargotCodeGen.prototype._includeHeader = function($joinpoint) {
 }
 
 /**
- * Checks if the initialization was performed and, if it wasn't, performed default initialization at the main function.
+ * Checks if the initialization was performed and, if it wasn't, performes default initialization at the main function.
  * 
- * This should be called in every API function that inserts code except 'init'.
+ * This should be called in every API function that inserts code, except 'init'.
  * */
 MargotCodeGen.prototype._checkDefaultInit = function() {
 	
@@ -73,6 +77,11 @@ MargotCodeGen.prototype._checkDefaultInit = function() {
 	}
 }
 
+/**
+ * Inserts the update code before the provided join point.
+ * 
+ * @param {joinpoint} $joinpoint - the reference join point
+ * */
 MargotCodeGen.prototype.update = function($joinpoint) {
 	
 	checkJoinPoint($joinpoint, 'update ($joinpoint)');
@@ -87,14 +96,10 @@ MargotCodeGen.prototype.update = function($joinpoint) {
 }
 
 /**
- * Inserts code to start all monitors specified in the configuration.
+ * Inserts code to start all monitors specified in the configuration before the provided join point.
  * 
- * Also inserts the header file if needed.
- * 
- * For a block named 'block1', it will insert the code 'margot::block1::start_monitor();'.
- * 
- * @param {joinpoint} $joinpoint - The point in the code where the code will be inserted
- * @param {string...} [startArgs] - The arguments to the start monitors call
+ * @param {joinpoint} $joinpoint - the reference join point
+ * @param {...string} [startArgs] - the arguments to the start monitors call
  * 
  * */
 MargotCodeGen.prototype.startMonitors = function($joinpoint) {
@@ -110,14 +115,10 @@ MargotCodeGen.prototype.startMonitors = function($joinpoint) {
 };
 
 /**
- * Inserts code to stop all monitors specified in the configuration.
+ * Inserts code to stop all monitors specified in the configuration after the provided join point.
  * 
- * Also inserts the header file if needed.
- * 
- * For a block named 'block1', it will insert the code 'margot::block1::stop_monitor();'.
- * 
- * @param {joinpoint} $joinpoint The point in the code where the code will be inserted
- * @param {string...} args The arguments to the stop monitors call (optional)
+ * @param {joinpoint} $joinpoint - the reference join point
+ * @param {...string} [stopArgs] - the arguments to the start monitors call
  * 
  * */
 MargotCodeGen.prototype.stopMonitors = function($joinpoint) {
@@ -133,15 +134,11 @@ MargotCodeGen.prototype.stopMonitors = function($joinpoint) {
 };
 
 /**
- * Inserts code to start a single monitor specified in the configuration.
+ * Inserts code to start a single monitor specified in the configuration before the provided join point.
  * 
- * Also inserts the header file if needed.
- * 
- * For a block named 'block1' and a monitor named 'my_monitor', it will insert the code 'margot::travel::monitor::my_monitor.start();'.
- * 
- * @param {joinpoint} $joinpoint The point in the code where the code will be inserted
- * @param {string} monitorName The name of the monitor to be started
- * @param {string...} args The arguments to the start monitor call (optional)
+ * @param {joinpoint} $joinpoint - the reference join point
+ * @param {string} monitorName - the name of the monitor to be started
+ * @param {...string} [args] - the arguments to the start monitor call
  * 
  * */
 MargotCodeGen.prototype.startMonitor = function($joinpoint, monitorName) {
@@ -160,15 +157,11 @@ MargotCodeGen.prototype.startMonitor = function($joinpoint, monitorName) {
 };
 
 /**
- * Inserts code to stop a single monitor specified in the configuration.
+ * Inserts code to stop a single monitor specified in the configuration after the provided join point.
  * 
- * Also inserts the header file if needed.
- * 
- * For a block named 'block1' and a monitor named 'my_monitor', it will insert the code 'margot::travel::monitor::my_monitor.stop();'.
- * 
- * @param {joinpoint} $joinpoint The point in the code where the code will be inserted
- * @param {string} monitorName The name of the monitor to be stoped
- * @param {string...} args The arguments to the stop monitor call (optional)
+ * @param {joinpoint} $joinpoint - the reference join point
+ * @param {string} monitorName - the name of the monitor to be stopped
+ * @param {...string} [args] - the arguments to the stop monitor call
  * 
  * */
 MargotCodeGen.prototype.stopMonitor = function($joinpoint, monitorName) {
@@ -189,27 +182,16 @@ MargotCodeGen.prototype.stopMonitor = function($joinpoint, monitorName) {
 /**
  * Inserts code to start and stop all monitors specified in the configuration around the provided join point.
  * 
- * Also inserts the header file if needed.
+ * This is equivalent to calling {@link MargotCodeGen.startMonitors} and then {@link MargotCodeGen.stopMonitors} with the same join point.
  * 
- * For a block named 'block1', it will insert the code 'margot::block1::start_monitor();' and 'margot::block1::stop_monitor();'.
- * 
- * @param {joinpoint} $joinpoint - The point in the code around which the code will be inserted
- * @param {string[]} [startArgs] - The arguments to the start monitors call (optional)
- * @param {string[]} [stopArgs] - The arguments to the stop monitors call (optional)
+ * @param {joinpoint} $joinpoint - the reference join point
+ * @param {string[]} [startArgs] - the arguments to the start monitors call
+ * @param {string[]} [stopArgs] - the arguments to the stop monitors call
  * */
 MargotCodeGen.prototype.monitor = function($joinpoint, startArgs, stopArgs) {
 	
 	checkJoinPoint($joinpoint, 'monitor ($joinpoint)');
-	
-	//~ this._checkDefaultInit();
-	
-	//~ var startCode = this._stringsGen.startAllMonitors(this._block, startArgs);
-	//~ var stopCode = this._stringsGen.stopAllMonitors(this._block, stopArgs);
-	
-	//~ $joinpoint.insert before startCode;
-	//~ $joinpoint.insert after stopCode;
-	
-	//~ this._includeHeader($joinpoint);
+
 	
 	if(startArgs === undefined) {
 		startArgs = [];
@@ -226,11 +208,7 @@ MargotCodeGen.prototype.monitor = function($joinpoint, startArgs, stopArgs) {
 /**
  * Inserts code to log the collected data after the provided join point.
  * 
- * Also inserts the header file if needed.
- * 
- * For a block named 'block1', it will insert the code 'margot::block1::log();'.
- * 
- * @param {joinpoint} $joinpoint The point in the code after which the code will be inserted
+ * @param {joinpoint} $joinpoint - the reference join point
  * */
 MargotCodeGen.prototype.log = function($joinpoint) {
 	
@@ -248,7 +226,7 @@ MargotCodeGen.prototype.log = function($joinpoint) {
 /**
  * Inserts code to start and stop all monitors specified in the configuration around the provided join point, and also inserts the code to log after the join point.
  * 
- * Also inserts the header file if needed.
+ * This is equivalent to calling {@link MargotCodeGen.monitor} and then {@link MargotCodeGen.log} with the same join point.
  * 
  * @param {joinpoint} $joinpoint The point in the code around which the code will be inserted
  * @param {string[]} [startArgs] - The arguments to the start monitors call (optional)
@@ -274,13 +252,9 @@ MargotCodeGen.prototype.monitorLog = function($joinpoint, startArgs, stopArgs) {
 /**
  * Inserts code to set the value of a goal.
  * 
- * Also inserts the header file if needed.
- * 
- * For a block named 'block1', a goal named 'my_monitor' and a value of 10, it will insert the code 'margot::block1::goal::my_goal.set(10);'.
- * 
- * @param {joinpoint} $joinpoint The point in the code where the code will be inserted
- * @param {string} goalName The name of the goal
- * @param {string} goalValue The value to assign to the goal
+ * @param {joinpoint} - the reference join point
+ * @param {string} goalName  - the name of the goal
+ * @param {string} goalValue - the value to assign to the goal
  * 
  * */
 MargotCodeGen.prototype.setGoal = function($joinpoint, goalName, goalValue) {
@@ -310,7 +284,7 @@ MargotCodeGen.prototype.setGoal = function($joinpoint, goalName, goalValue) {
  * 	1) This function is called following any other function that inserts code. By default, if any of those functions is called and 'init' was not called beforehand, the initialization code will be inserted at the start of the main function.
  * 	2) This function is called multiple times.
  * 
- * @param {joinpoint} $joinpoint - The reference point in the code for the insertion.
+ * @param {joinpoint} $joinpoint - the reference join point
  * */
 MargotCodeGen.prototype.init = function($joinpoint) {
 	

@@ -2,6 +2,10 @@
  * This class represents an optimization state of the autotuner execution.
  * 
  * By default, metrics are combined with MargotCombination.SIMPLE.
+ * 
+ * @constructor
+ * @param {string} name - the name of the state
+ * @param {boolean} starting - whether this is a starting state
  * */
 function MargotState(name, starting) {
     
@@ -21,7 +25,7 @@ function MargotState(name, starting) {
 }
 
 /**
- * Enum for the possible combination of the optimizations.
+ * Enum for the possible combination of the metrics.
  * */
 var MargotCombination = new Enumeration('LINEAR', 'SIMPLE', 'GEOMETRIC');
 
@@ -45,6 +49,8 @@ MargotState.prototype.setMaximizeCombination = function(combination) {
 
 /**
  * Sets whether this is the starting state or not.
+ * 
+ * @param {boolean} starting - whether this is a starting state
  * */
 MargotState.prototype.setStarting = function(starting) {
     
@@ -56,6 +62,10 @@ MargotState.prototype.setStarting = function(starting) {
 
 /**
  * Adds a constraint to the state.
+ * 
+ * @param {string} goalName - the name of the goal
+ * @param {Number} confidence - the confidence level of the constraint
+ * @param {Number} priority - the priority of the constraint
  * */
 MargotState.prototype.subjectTo = function(goalName, confidence, priority) {
     
@@ -64,18 +74,46 @@ MargotState.prototype.subjectTo = function(goalName, confidence, priority) {
 
 /**
  * Adds a metric for the optimization to minimize.
+ * 
+ * @param {string} name - the name of the metric
+ * @param {Number} coefficient - the coefficient to use when combining metrics/knobs
  * */
-MargotState.prototype.minimize = function(metricName, coefficient) {
+MargotState.prototype.minimizeMetric = function(name, coefficient) {
     
-    this._minimizes.push({metricName: metricName, coefficient: coefficient});
+    this._minimizes.push({kind: 'metric', name: name, coefficient: coefficient});
+}
+
+/**
+ * Adds a knob for the optimization to minimize.
+ * 
+ * @param {string} name - the name of the knob
+ * @param {Number} coefficient - the coefficient to use when combining metrics/knobs
+ * */
+MargotState.prototype.minimizeKnob = function(name, coefficient) {
+    
+    this._minimizes.push({kind: 'knob', name: name, coefficient: coefficient});
 }
 
 /**
  * Adds a metric for the optimization to maximize.
+ * 
+ * @param {string} name - the name of the metric
+ * @param {Number} coefficient - the coefficient to use when combining metrics/knobs
  * */
-MargotState.prototype.maximize = function(metricName, coefficient) {
+MargotState.prototype.maximizeMetric = function(name, coefficient) {
     
-    this._maximizes.push({metricName: metricName, coefficient: coefficient});
+    this._maximizes.push({kind: 'metric', name: name, coefficient: coefficient});
+}
+
+/**
+ * Adds a knob for the optimization to maximize.
+ * 
+ * @param {string} name - the name of the knob
+ * @param {Number} coefficient - the coefficient to use when combining metrics/knobs
+ * */
+MargotState.prototype.maximizeMetric = function(name, coefficient) {
+    
+    this._maximizes.push({kind: 'knob', name: name, coefficient: coefficient});
 }
 
 /*
@@ -103,16 +141,20 @@ MargotState.prototype._makeCode = function () {
 
 /**
  * Makes the code for the minimizes and maximizes lists.
+ * 
+ * @param {string} kind - the type of problem, minimize or maximize
+ * @param {MargotCombination} - the kinds of combination for metrics/knobs
+ * @param {Object[]} list - the list of metrics/knobs
  * */
 MargotState.prototype._makeMinMaxCode = function(kind, combination, list) {
     
-    var metricsCode = '';
+    var elementsCode = '';
     
     for(var element of list) {
-        metricsCode += _MinMaxMetricTemplate(element.metricName, element.coefficient);
+        elementsCode += _MinMaxElementTemplate(element.kind, element.name, element.coefficient);
     }
     
-    return _MinMaxTemplate(kind, combination, metricsCode);
+    return _MinMaxTemplate(kind, combination, elementsCode);
 }
 
 /**
@@ -149,9 +191,9 @@ end
 /**
  * Template for the minimizes and maximizes XML code.
  * */
- codedef _MinMaxTemplate(kind, combination, metricsCode) %{
+ codedef _MinMaxTemplate(kind, combination, elementsCode) %{
 <[[kind]] combination="[[combination]]">    
-[[metricsCode]]   
+[[elementsCode]]   
 </[[kind]]>
 }%
 end
@@ -159,8 +201,8 @@ end
 /**
  * Template for the minimizes and maximizes XML code.
  * */
-codedef _MinMaxMetricTemplate(metricName, coefficient) %{
-<metric name="[[metricName]]" coef="[[coefficient]]"/>  
+codedef _MinMaxElementTemplate(kind, name, coefficient) %{
+<[[kind]] name="[[name]]" coef="[[coefficient]]"/>  
 }%
 end
 

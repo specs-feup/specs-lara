@@ -31,47 +31,81 @@ function MargotDseInfo(blockName) {
 	this._dseRuns = 0;
 }
 
-
+/**
+ * Returns the name of the block.
+ * */
 MargotDseInfo.prototype.getBlockName = function() {
 	
 	return this._block;
 };
 
+/**
+ * Returns the map of knobs.
+ * */
 MargotDseInfo.prototype.getKnobs = function() {
 	
 	return this._knobs;
 };
 
+/**
+ * Sets the map of knobs. The map of knobs should map a knob name to the corresponding {@link MargotKnob} instance.
+ * 
+ * @param {Object} knobs - the map of knobs
+ * */
 MargotDseInfo.prototype.setKnobs = function(knobs) {
 	
 	this._knobs = knobs;
 };
 
+/**
+ * Returns the data features.
+ * */
 MargotDseInfo.prototype.getDataFeatures = function() {
 	
 	return this._features;
 };
 
+/**
+ * Sets the map of data features. The map of data features should map a feature name to the corresponding {@link MargotDataFeature} instance.
+ * 
+ * @param {Object} dataFeatures - the map of features
+ * */
 MargotDseInfo.prototype.setDataFeatures = function(dataFeatures) {
 	
 	this._features = dataFeatures;
 };
 
+/**
+ * Returns the metrics to be measured.
+ * */
 MargotDseInfo.prototype.getMargotMetrics = function() {
 	
 	return this._metrics;
 };
 
+/**
+ * Sets the metrics to be measured.
+ * 
+ * @param {MargotMetric[]} margotMetrics - the array of metrics to be measured
+ * */
 MargotDseInfo.prototype.setMargotMetrics = function(margotMetrics) {
 	
 	this._metrics = margotMetrics;
 };
 
+/**
+ * Returns the number of runs to perform.
+ * */
 MargotDseInfo.prototype.getDseRuns = function() {
 	
 	return this._dseRuns;
 };
 
+/**
+ * Sets the number of runs to perform.
+ * 
+ * @param {Number} dseRuns - the number of runs
+ * */
 MargotDseInfo.prototype.setDseRuns = function(dseRuns) {
 	
 	this._dseRuns = dseRuns;

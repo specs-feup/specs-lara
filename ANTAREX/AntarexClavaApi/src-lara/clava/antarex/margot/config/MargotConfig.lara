@@ -14,6 +14,8 @@ function MargotConfig() {
 
 /**
 * Adds the provided block to the list of blocks.
+* 
+* @param {MargotBlock} block - the block to add
 * */
 MargotConfig.prototype.addBlock = function(block) {
 
@@ -22,6 +24,10 @@ MargotConfig.prototype.addBlock = function(block) {
 
 /**
 * Builds a block, adds it to the list of blocks, and returns it.
+* 
+* @param {string} blockName - the name of the block to add
+* 
+* @returns {MargotBlock} the created block
 * */
 MargotConfig.prototype.newBlock = function(blockName) {
 
@@ -35,6 +41,7 @@ MargotConfig.prototype.newBlock = function(blockName) {
  * Generates and returns the DSE information for the block with the provided name.
  * 
  * @param {String} blockName - the name of the block for which the DSE info will be returned.
+ * 
  * @returns {MargotDseInfo} an object with the DSE information
  * */
 MargotConfig.prototype.getDseInfo = function(blockName) {
@@ -54,11 +61,11 @@ MargotConfig.prototype.getDseInfo = function(blockName) {
 	info.setKnobs(knobs);
 	
 	// data features
-	//~ var features = {};
-	//~ for(var feature of block._features) {
-		//~ features[feature.getFeatureName()] = feature;
-	//~ }
-	//~ info.setFeatures(features);
+	var features = {};
+	for(var feature of block._features.getFeatures()) {
+		features[feature.getName()] = feature;
+	}
+	info.setDataFeatures(features);
 	
 	// metrics
 	var metrics = [];
@@ -75,7 +82,7 @@ MargotConfig.prototype.getDseInfo = function(blockName) {
  * 
  * @param {String} blockName - the name of the block for which the code generation infor will be returned
  * 
- * @returns {Margot} and object with the code generation information
+ * @returns {MargotCodeGen} an object with the code generation information
  * */
 MargotConfig.prototype.getCodeGenInfo = function(blockName) {
 	
@@ -108,9 +115,11 @@ MargotConfig.prototype.getCodeGenInfo = function(blockName) {
  * ****************************************************************************/
 
 /**
-* Generates the code and writes it to the file, if a file path is provided.
+* Generates the XML code and writes it to the file, if a file path is provided.
+* 
+* @param {string} [filePath] - the path where the XML file will be generated
 * */
-MargotConfig.prototype.build = function(filepath) {
+MargotConfig.prototype.build = function(filePath) {
  
     var code = '<margot>\n';
     
@@ -118,16 +127,16 @@ MargotConfig.prototype.build = function(filepath) {
 
     code += '</margot>';
 
-    if(filepath !== undefined) {
-        println('Writing configuration to ' + filepath);
-        writeFile(filepath, code);
+    if(filePath !== undefined) {
+        println('Writing configuration to ' + filePath);
+        writeFile(filePath, code);
     }
 
     return code;
 }
 
 /**
-* Generates the code for all blocks.
+* Generates the XML code for all blocks.
 * */
 MargotConfig.prototype._makeBlocksCode = function() {
 

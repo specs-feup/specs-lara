@@ -12,11 +12,13 @@ function MargotDataFeature(name, type, validity) {
 	
 	this._name = name;
 	this._type = type;
-	this._validity = orDefault(validity, '-');
+	this._validity = orDefault(validity, MargotValidity.NONE);
 }
 
 /**
  * Enum that represents the type of conditions to check the validity of data features.
+ * 
+ * @enum
  * */
 var MargotValidity = new Enumeration({
 	GE: 'GE',
@@ -46,7 +48,7 @@ MargotDataFeature.prototype.getValidity = function() {
 }
 
 /**
- * Makes the XML code for each data feature of the XML configuration.
+ * Makes the XML code for a data feature of the XML configuration.
  * */
 MargotDataFeature.prototype._makeCode = function() {
 	
@@ -79,7 +81,9 @@ function MargotDataFeatureGroup(distanceType) {
 
 /**
  * Enum that represents the distance types supported by data features.
- * */
+ *
+ * @enum
+ *  */
 var MargotDistanceType = new Enumeration('NORMALIZED', 'EUCLIDEAN');
 
 /**
@@ -113,7 +117,7 @@ MargotDataFeatureGroup.prototype.addFeature = function(name, type, validity) {
 }
 
 /**
- * Makes the XML code for the data features part of the XML configuration.
+ * Makes the XML code for the data features group of the XML configuration.
  * */
 MargotDataFeatureGroup.prototype._makeCode = function() {
 	

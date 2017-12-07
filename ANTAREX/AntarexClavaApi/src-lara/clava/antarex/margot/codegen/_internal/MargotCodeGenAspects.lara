@@ -1,3 +1,9 @@
+/**
+ * Calls the initialization function of mARGOt at the start of the main function.
+ * 
+ * @param {MargotStringsGen} gen - the code generation instance
+ * @aspect
+ * */
 aspectdef MargotInitMain
 	
 	input gen end
@@ -8,73 +14,3 @@ aspectdef MargotInitMain
         $file.exec addInclude(gen.inc(), true);
     end
 end
-
-/*
-aspectdef MargotUpdate
-
-    input
-        $joinpoint,
-        block,
-        vars,
-        additionalCode = []
-    end
-    
-    $joinpoint.insert before(MargotCxxStrings.update(block, vars, additionalCode));
-    
-    var $parentFile = $joinpoint.ancestor('file');
-    $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
-end
-
-aspectdef MargotLog
-    input
-        $joinpoint,
-        block
-    end
-    
-    $joinpoint.insert after(MargotCxxStrings.log(block));
-    
-    var $parentFile = $joinpoint.ancestor('file');
-    $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
-end
-
-
-aspectdef MargotStartMonitor
-    input
-        $joinpoint,
-        block,
-        startArgs = []
-    end
-    
-    $joinpoint.insert before(MargotCxxStrings.start(block, startArgs));
-    
-    var $parentFile = $joinpoint.ancestor('file');
-    $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
-end
-
-
-
-aspectdef MargotStopMonitor
-    input
-        $joinpoint,
-        block,
-        stopArgs = []
-    end
-    
-    $joinpoint.insert after(MargotCxxStrings.stop(block, stopArgs));
-    
-    var $parentFile = $joinpoint.ancestor('file');
-    $parentFile.exec addInclude(MargotCxxStrings.inc(), true);
-end
-
-aspectdef MargotMonitor
-    input
-        $joinpoint,
-        block,
-        startArgs = [],
-        stopArgs = []
-    end
-    
-    call MargotStartMonitor($joinpoint, block, startArgs);
-    call MargotStopMonitor($joinpoint, block, stopArgs);
-end
-*/

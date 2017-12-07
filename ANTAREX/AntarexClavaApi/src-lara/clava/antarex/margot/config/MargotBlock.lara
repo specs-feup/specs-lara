@@ -7,6 +7,10 @@ import antarex.margot.config.MargotDataFeature;
 
 /**
  * This holds information about a mARGOt configuration block.
+ * 
+ * @constructor
+ * 
+ * @param {string} name - the name of the this block
  * */
 function MargotBlock(name) {
     
@@ -54,6 +58,12 @@ MargotBlock.prototype.addDataFeature = function(name, type, validity) {
 
 /**
  * Adds a knob to the block with the given data.
+ * 
+ * @param {string} name - the name of the knob
+ * @param {string} varName - the name of the variable that holds the knob value
+ * @param {string} varType - the type of the variable that holds the knob value
+ * 
+ * @see MargotKnob
  * */
 MargotBlock.prototype.addKnob = function(name, varName, varType) {
     
@@ -67,6 +77,10 @@ MargotBlock.prototype.addKnob = function(name, varName, varType) {
 
 /**
  * Adds a metric to the block with the given data.
+ * 
+ * @param {string} name - the name of the metric
+ * @param {string} type - the type of the metric
+ * @param {boolean} - whether this metric is a distribution
  * */
 MargotBlock.prototype.addMetric = function(name, type, distribution) {
 
@@ -80,6 +94,10 @@ MargotBlock.prototype.addMetric = function(name, type, distribution) {
 
 /**
  * Adds a runtime information provider to the block with the given data.
+ * 
+ * @param {string} metricName - the name of the metric
+ * @param {string} monitorName - the name of the monitor
+ * @param {number} inertia - the inertia of the adaptation
  * */
 MargotBlock.prototype.addRuntimeProvider = function(metricName, monitorName, inertia) {
 
@@ -92,27 +110,12 @@ MargotBlock.prototype.addRuntimeProvider = function(metricName, monitorName, ine
 }
 
 /**
- * Enum for metric definition.
- * */
-var MargotDistribution = new Enumeration('YES', 'NO');
-
-/**
- * Adds a monitor goal to the block with the given data.
- * */
-MargotBlock.prototype.addMonitorGoal = function(name, cFun, value, monitor, dFun) {
-    
-    for(var arg of arguments) {
-        
-        if(arg === undefined) {
-            throw 'To define a monitor goal you need a name, a cFun, a value, a monitor name and a dFun.';
-        }
-    }
-    
-    this._goals.push(new MargotMonitorGoal(name, cFun, value, monitor, dFun));
-};
-
-/**
  * Adds a metric goal to the block with the given data.
+ * 
+ * @param {string} name - the name of the goal
+ * @param {MargotCFun} cFun - the comparison function
+ * @param {Number} value - the numeric value of the goal
+ * @param {string} metric - the name of the metric
  * */
 MargotBlock.prototype.addMetricGoal = function(name, cFun, value, metric) {
     
@@ -123,11 +126,16 @@ MargotBlock.prototype.addMetricGoal = function(name, cFun, value, metric) {
         }
     }
     
-    this._goals.push(new MargotMetricGoal(name, cFun, value, metric));
+    this._goals.push(new _MargotMetricGoal(name, cFun, value, metric));
 };
 
 /**
  * Adds a knob goal to the block with the given data.
+ * 
+ * @param {string} name - the name of the goal
+ * @param {MargotCFun} cFun - the comparison function
+ * @param {Number} value - the numeric value of the goal
+ * @param {string} knob - the name of the knob
  * */
 MargotBlock.prototype.addKnobGoal = function(name, cFun, value, knob) {
     
@@ -138,7 +146,7 @@ MargotBlock.prototype.addKnobGoal = function(name, cFun, value, knob) {
         }
     }
     
-    this._goals.push(new MargotKnobGoal(name, cFun, value, knob));
+    this._goals.push(new _MargotKnobGoal(name, cFun, value, knob));
 };
 
 /**
@@ -146,7 +154,7 @@ MargotBlock.prototype.addKnobGoal = function(name, cFun, value, knob) {
  * 
  * A generic goal.
  * */
-function MargotGoal(name, cFun, value) {
+function _MargotGoal(name, cFun, value) {
 	
 	/* TODO: check parameters */
 	
@@ -163,33 +171,13 @@ function MargotGoal(name, cFun, value) {
 /**
  * @constructor
  * 
- * A monitor goal.
- * */
-function MargotMonitorGoal(name, cFun, value, monitor, dFun) {
-	
-	/* TODO: check parameters */
-	
-	this._baseGoal = new MargotGoal(name, cFun, value);
-	this._monitor = monitor;
-	this._dFun = dFun;
-	
-	this._makeCode = function() {
-		
-		var monitorCode = 'monitor="' + this._monitor + '" dFun="' + this._dFun + '"';
-		return this._baseGoal._makeCode(monitorCode);
-	};
-}
-
-/**
- * @constructor
- * 
  * A knob goal.
  * */
-function MargotKnobGoal(name, cFun, value, knob) {
+function _MargotKnobGoal(name, cFun, value, knob) {
 	
 	/* TODO: check parameters */
 	
-	this._baseGoal = new MargotGoal(name, cFun, value);
+	this._baseGoal = new _MargotGoal(name, cFun, value);
 	this._knob = knob;
 	
 	this._makeCode = function() {
@@ -204,11 +192,11 @@ function MargotKnobGoal(name, cFun, value, knob) {
  * 
  * A metric goal.
  * */
-function MargotMetricGoal(name, cFun, value, metric) {
+function _MargotMetricGoal(name, cFun, value, metric) {
 	
 	/* TODO: check parameters */
 	
-	this._baseGoal = new MargotGoal(name, cFun, value);
+	this._baseGoal = new _MargotGoal(name, cFun, value);
 	this._metric = metric;
 	
 	this._makeCode = function() {
@@ -219,18 +207,16 @@ function MargotMetricGoal(name, cFun, value, metric) {
 }
 
 /**
- * Enums for the function definitions of goal in mARGOt.
+ * Comparison functions.
+ * 
+ * @enum
  * */
-var MargotDFun = new Enumeration({
-	AVG: 'AVERAGE',
-	VAR: 'VARIANCE',
-	MAX: 'MAX',
-	MIN: 'MIN'
-});
 var MargotCFun = new Enumeration('LT','LE','GT','GE');
 
 /**
- * Adds a monitor to the block.
+ * Adds a monitor to this block.
+ * 
+ * @param {MargotMonitor} monitor - the monitor to add
  * */
 MargotBlock.prototype.addMonitor = function(monitor) {
     
@@ -239,6 +225,10 @@ MargotBlock.prototype.addMonitor = function(monitor) {
 
 /**
 * Builds an energy monitor, adds it to the list of monitors, and returns it.
+* 
+* @param {string} name - the name of the monitor
+* 
+* @returns {MargotEnergyMonitor} the created energy monitor
 * */
 MargotBlock.prototype.newEnergyMonitor = function(name) {
     var em = new MargotEnergyMonitor(name);
@@ -248,6 +238,10 @@ MargotBlock.prototype.newEnergyMonitor = function(name) {
 
 /**
 * Builds a time monitor, adds it to the list of monitors, and returns it.
+* 
+* @param {string} name - the name of the monitor
+* 
+* @returns {MargotTimeMonitor} the created time monitor
 * */
 MargotBlock.prototype.newTimeMonitor = function(name) {
     var tm = new MargotTimeMonitor(name);
@@ -256,7 +250,11 @@ MargotBlock.prototype.newTimeMonitor = function(name) {
 }
 
 /**
-* Builds a throughput monitor, adds it to the list of monitors, and returns it.
+* Builds throughput monitor, adds it to the list of monitors, and returns it.
+* 
+* @param {string} name - the name of the monitor
+* 
+* @returns {MargotThroughputMonitor} the created throughput monitor
 * */
 MargotBlock.prototype.newThroughputMonitor = function(name, param1, param2) {
     
@@ -276,6 +274,8 @@ MargotBlock.prototype.newThroughputMonitor = function(name, param1, param2) {
 
 /**
  * Adds a state to the list of states.
+ * 
+ * @param {MargotState} state - the state to add
  * */
 MargotBlock.prototype.addState = function (state) {
     
@@ -284,6 +284,10 @@ MargotBlock.prototype.addState = function (state) {
 
 /**
 * Builds a state, adds it to the list of states, and returns it.
+* 
+* @param {string} name - the name of the state to create
+* 
+* @returns {MargotState} the created state
 * */
 MargotBlock.prototype.newState = function(name) {
     var s = new MargotState(name);
@@ -385,7 +389,7 @@ MargotBlock.prototype._makeMetricsCode = function() {
     
     for (var metric of this._metrics) {
     
-        code += _MetricTemplate(metric.name, metric.type, metric.distribution);
+        code += _MetricTemplate(metric.name, metric.type, metric.distribution ? 'yes' : 'no');
     }
     
     return code;

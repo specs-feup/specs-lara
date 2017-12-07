@@ -43,8 +43,8 @@ public enum LaraAntarexApiResource implements LaraResourceProvider {
     MARGOT_CONFIG("margot/config/MargotConfig.lara"),
     MARGOT_CONFIG_BLOCK("margot/config/MargotBlock.lara"),
     MARGOT_CONFIG_STATE("margot/config/MargotState.lara"),
-    MARGOT_DATA_FEATURE("margot/config/MargotDataFeature.lara"),
-    MARGOT_KNOB("margot/config/MargotKnob.lara"),
+    MARGOT_CONFIG_DATA_FEATURE("margot/config/MargotDataFeature.lara"),
+    MARGOT_CONFIG_KNOB("margot/config/MargotKnob.lara"),
 
     MARGOT_CONFIG_MONITOR("margot/config/monitor/MargotMonitor.lara"),
     MARGOT_CONFIG_ENERGY_MONITOR("margot/config/monitor/MargotEnergyMonitor.lara"),
