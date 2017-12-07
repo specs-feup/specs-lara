@@ -109,7 +109,7 @@ MargotDataFeatureGroup.prototype.getFeatures = function() {
  * 
  * @param {string} name - the name of the variable that holds the value of the data feature
  * @param {string} type - the type of the variable that holds the value of the data feature
- * @param {MargotValidity} [validity='-'] - the comparison used to test the validity
+ * @param {MargotValidity} [validity=MargotValidity.NONE] - the comparison used to test the validity
  * */
 MargotDataFeatureGroup.prototype.addFeature = function(name, type, validity) {
 	

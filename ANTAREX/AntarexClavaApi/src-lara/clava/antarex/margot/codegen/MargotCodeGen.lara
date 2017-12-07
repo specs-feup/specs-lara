@@ -252,7 +252,7 @@ MargotCodeGen.prototype.monitorLog = function($joinpoint, startArgs, stopArgs) {
 /**
  * Inserts code to set the value of a goal.
  * 
- * @param {joinpoint} - the reference join point
+ * @param {joinpoint} $joinpoint - the reference join point
  * @param {string} goalName  - the name of the goal
  * @param {string} goalValue - the value to assign to the goal
  * 

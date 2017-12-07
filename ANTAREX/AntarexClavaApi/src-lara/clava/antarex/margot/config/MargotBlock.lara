@@ -47,7 +47,7 @@ MargotBlock.prototype.setDataFeatureDistanceType = function(distanceType) {
  * 
  * @param {string} name - the name of the variable that holds the value of the data feature
  * @param {string} type - the type of the variable that holds the value of the data feature
- * @param {MargotValidity} [validity='-'] - the comparison used to test the validity
+ * @param {MargotValidity} [validity=MargotValidity.NONE] - the comparison used to test the validity
  * */
 MargotBlock.prototype.addDataFeature = function(name, type, validity) {
 	
@@ -80,7 +80,7 @@ MargotBlock.prototype.addKnob = function(name, varName, varType) {
  * 
  * @param {string} name - the name of the metric
  * @param {string} type - the type of the metric
- * @param {boolean} - whether this metric is a distribution
+ * @param {boolean} distribution - whether this metric is a distribution
  * */
 MargotBlock.prototype.addMetric = function(name, type, distribution) {
 
