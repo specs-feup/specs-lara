@@ -84,7 +84,7 @@ MargotConfig.prototype.getCodeGenInfo = function(blockName) {
 		throw 'Could not find a block with name ' + blockName;
 	}
 	
-	var codegen = new Margot(blockName);
+	var codegen = new MargotCodeGen(blockName);
 	
 	// knobs
 	var knobNames = [];

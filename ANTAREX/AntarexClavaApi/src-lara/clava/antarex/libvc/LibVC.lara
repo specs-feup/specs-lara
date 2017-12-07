@@ -1,4 +1,5 @@
-import antarex.libvc.LibVCAspects;
+import antarex.libvc._internal.LibVCAspects;
+
 import clava.Clava;
 import lara.Io;
 

@@ -7,7 +7,7 @@ import antarex.margot.dse.metric.MargotMetric;
  * Each class that extends this needs to define a field _margotMetric with the metric that it intends to measure. This base class already defines the get logic in the function getMargotMetric.
  * 
  * */
-function _MargotMonitor(name) {
+function MargotMonitor(name) {
      
      this._name = name;
      
@@ -32,7 +32,7 @@ var MargotExpose = new Enumeration({
  /**
   * Add a variable to expose in the monitor.
   * */
-_MargotMonitor.prototype.expose = function(varName, what) {
+MargotMonitor.prototype.expose = function(varName, what) {
     
 	this._exposes.push({varName: varName, what: what});
 }
@@ -40,7 +40,7 @@ _MargotMonitor.prototype.expose = function(varName, what) {
 /**
  * Returns the MargotMetric associated with this monitor.
  * */
-_MargotMonitor.prototype.getMargotMetric = function() {
+MargotMonitor.prototype.getMargotMetric = function() {
 	
 	return this._margotMetric;
 }
@@ -52,7 +52,7 @@ _MargotMonitor.prototype.getMargotMetric = function() {
  /**
   * Generates the code for the monitor.
   * */
- _MargotMonitor.prototype._makeCode = function(type, additionalCode) {
+MargotMonitor.prototype._makeCode = function(type, additionalCode) {
     
     var exposesCode = this._makeExposesCode();
     
@@ -62,7 +62,7 @@ _MargotMonitor.prototype.getMargotMetric = function() {
  /**
   * Generates the code for the expose list.
   * */
- _MargotMonitor.prototype._makeExposesCode = function() {
+MargotMonitor.prototype._makeExposesCode = function() {
     
     var code = '';
     

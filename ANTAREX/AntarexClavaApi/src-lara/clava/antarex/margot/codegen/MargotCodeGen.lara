@@ -10,7 +10,7 @@ import clava.Clava;
  * @param {string} block - the name of the block, this is mandatory
  * @param {string} vars - the variables that will be updated, this is an optional list
  * */
-var Margot = function (block) {
+var MargotCodeGen = function (block) {
     
     this._block = block;
     this._vars = arrayFromArgs(arguments, 1);
@@ -29,7 +29,7 @@ var Margot = function (block) {
  * 
  * @param {(string[]|...string)} knobs - the list of variable names
  * */
-Margot.prototype.setKnobs = function(knobs) {
+MargotCodeGen.prototype.setKnobs = function(knobs) {
 
 	this._vars = arrayFromArgs(arguments, 0);
 }
@@ -39,7 +39,7 @@ Margot.prototype.setKnobs = function(knobs) {
  * 
  * @param {(string[]|...string)} features - the list of variable names
  * */
-Margot.prototype.setFeatures = function(features) {
+MargotCodeGen.prototype.setFeatures = function(features) {
 
 	this._features = arrayFromArgs(arguments, 0);
 	
@@ -50,7 +50,7 @@ Margot.prototype.setFeatures = function(features) {
  * 
  * @param {joinpoint} $joinpoint The reference join point
  * */
-Margot.prototype._includeHeader = function($joinpoint) {
+MargotCodeGen.prototype._includeHeader = function($joinpoint) {
 	
 	var includeCode = this._stringsGen.inc();
 	var $parentFile = $joinpoint.ancestor('file');
@@ -62,7 +62,7 @@ Margot.prototype._includeHeader = function($joinpoint) {
  * 
  * This should be called in every API function that inserts code except 'init'.
  * */
-Margot.prototype._checkDefaultInit = function() {
+MargotCodeGen.prototype._checkDefaultInit = function() {
 	
 	if(!this._initDone) {
 		
@@ -73,7 +73,7 @@ Margot.prototype._checkDefaultInit = function() {
 	}
 }
 
-Margot.prototype.update = function($joinpoint) {
+MargotCodeGen.prototype.update = function($joinpoint) {
 	
 	checkJoinPoint($joinpoint, 'update ($joinpoint)');
 	
@@ -97,7 +97,7 @@ Margot.prototype.update = function($joinpoint) {
  * @param {string...} [startArgs] - The arguments to the start monitors call
  * 
  * */
-Margot.prototype.startMonitors = function($joinpoint) {
+MargotCodeGen.prototype.startMonitors = function($joinpoint) {
 	
 	checkJoinPoint($joinpoint, 'startMonitors ($joinpoint)');
 	
@@ -120,7 +120,7 @@ Margot.prototype.startMonitors = function($joinpoint) {
  * @param {string...} args The arguments to the stop monitors call (optional)
  * 
  * */
-Margot.prototype.stopMonitors = function($joinpoint) {
+MargotCodeGen.prototype.stopMonitors = function($joinpoint) {
 	
 	checkJoinPoint($joinpoint, 'stopMonitors ($joinpoint)');
 	
@@ -144,7 +144,7 @@ Margot.prototype.stopMonitors = function($joinpoint) {
  * @param {string...} args The arguments to the start monitor call (optional)
  * 
  * */
-Margot.prototype.startMonitor = function($joinpoint, monitorName) {
+MargotCodeGen.prototype.startMonitor = function($joinpoint, monitorName) {
 	
 	checkJoinPoint($joinpoint, 'startMonitors ($joinpoint)');
 	
@@ -171,7 +171,7 @@ Margot.prototype.startMonitor = function($joinpoint, monitorName) {
  * @param {string...} args The arguments to the stop monitor call (optional)
  * 
  * */
-Margot.prototype.stopMonitor = function($joinpoint, monitorName) {
+MargotCodeGen.prototype.stopMonitor = function($joinpoint, monitorName) {
 	
 	checkJoinPoint($joinpoint, 'stopMonitors ($joinpoint)');
 	
@@ -197,7 +197,7 @@ Margot.prototype.stopMonitor = function($joinpoint, monitorName) {
  * @param {string[]} [startArgs] - The arguments to the start monitors call (optional)
  * @param {string[]} [stopArgs] - The arguments to the stop monitors call (optional)
  * */
-Margot.prototype.monitor = function($joinpoint, startArgs, stopArgs) {
+MargotCodeGen.prototype.monitor = function($joinpoint, startArgs, stopArgs) {
 	
 	checkJoinPoint($joinpoint, 'monitor ($joinpoint)');
 	
@@ -232,7 +232,7 @@ Margot.prototype.monitor = function($joinpoint, startArgs, stopArgs) {
  * 
  * @param {joinpoint} $joinpoint The point in the code after which the code will be inserted
  * */
-Margot.prototype.log = function($joinpoint) {
+MargotCodeGen.prototype.log = function($joinpoint) {
 	
 	checkJoinPoint($joinpoint, 'log ($joinpoint)');
 	
@@ -254,7 +254,7 @@ Margot.prototype.log = function($joinpoint) {
  * @param {string[]} [startArgs] - The arguments to the start monitors call (optional)
  * @param {string[]} [stopArgs] - The arguments to the stop monitors call (optional)
  * */
-Margot.prototype.monitorLog = function($joinpoint, startArgs, stopArgs) {
+MargotCodeGen.prototype.monitorLog = function($joinpoint, startArgs, stopArgs) {
 	
 	checkJoinPoint($joinpoint, 'monitorLog ($joinpoint)');
 	
@@ -283,7 +283,7 @@ Margot.prototype.monitorLog = function($joinpoint, startArgs, stopArgs) {
  * @param {string} goalValue The value to assign to the goal
  * 
  * */
-Margot.prototype.setGoal = function($joinpoint, goalName, goalValue) {
+MargotCodeGen.prototype.setGoal = function($joinpoint, goalName, goalValue) {
 	
 	checkJoinPoint($joinpoint, 'setGoal ($joinpoint)');
 	
@@ -312,7 +312,7 @@ Margot.prototype.setGoal = function($joinpoint, goalName, goalValue) {
  * 
  * @param {joinpoint} $joinpoint - The reference point in the code for the insertion.
  * */
-Margot.prototype.init = function($joinpoint) {
+MargotCodeGen.prototype.init = function($joinpoint) {
 	
 	if(this._initDone) {
 		println("\n[WARN] Initialization called multiple times. Make sure that if 'init' is being called explicitly, it is called before any other function and not called twice.\n");

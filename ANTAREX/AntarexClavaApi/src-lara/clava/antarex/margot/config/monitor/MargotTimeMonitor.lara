@@ -7,15 +7,15 @@ import lara.units.TimeModifier;
 /**
  * This class represents a time monitor.
  * 
- * @extends _MargotMonitor
+ * @extends MargotMonitor
  * */
-function TimeMonitor(name) {
+function MargotTimeMonitor(name) {
     
     // super contructor
-    _MargotMonitor.call(this, name);
+    MargotMonitor.call(this, name);
     
     // save super prototype
-    this._super = _MargotMonitor.prototype;
+    this._super = MargotMonitor.prototype;
     
     // default granularity, can be changed
     this._granularity = MargotTimeMeasure.MICRO;
@@ -24,7 +24,7 @@ function TimeMonitor(name) {
     this._margotMetric = new MargotMetric(MargotMetricName.TIME, new TimeUnit('s', TimeModifier.MICRO));
 }
 // Inheritance
-TimeMonitor.prototype = Object.create(_MargotMonitor.prototype);
+MargotTimeMonitor.prototype = Object.create(MargotMonitor.prototype);
 
 /**
  * Enum that represents the granularity of the time monitor.
@@ -38,7 +38,7 @@ var MargotTimeMeasure = new Enumeration(
 /**
  * Set the granularity to microseconds.
  * */
-TimeMonitor.prototype.useMicro = function() {
+MargotTimeMonitor.prototype.useMicro = function() {
     
     this._granularity = MargotTimeMeasure.MICRO;
     
@@ -49,7 +49,7 @@ TimeMonitor.prototype.useMicro = function() {
 /**
  * Set the granularity to miliseconds.
  * */
-TimeMonitor.prototype.useMilli = function() {
+MargotTimeMonitor.prototype.useMilli = function() {
     
     this._granularity = MargotTimeMeasure.MILLI;
     
@@ -60,7 +60,7 @@ TimeMonitor.prototype.useMilli = function() {
 /**
  * Set the granularity to seconds.
  * */
-TimeMonitor.prototype.useSecond = function() {
+MargotTimeMonitor.prototype.useSecond = function() {
     
     this._granularity = MargotTimeMeasure.SEC;
     
@@ -75,7 +75,7 @@ TimeMonitor.prototype.useSecond = function() {
 /**
  * Makes the code of the time monitor using the base monitor.
  * */
-TimeMonitor.prototype._makeCode = function() {
+MargotTimeMonitor.prototype._makeCode = function() {
     
     var granularityCode = _GranularityTemplate(this._granularity);
         

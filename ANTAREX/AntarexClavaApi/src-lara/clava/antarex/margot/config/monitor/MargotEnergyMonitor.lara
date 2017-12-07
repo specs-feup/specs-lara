@@ -7,15 +7,15 @@ import lara.units.SiModifier;
 /**
  * This class represents an energy monitor.
  * 
- * @extends _MargotMonitor
+ * @extends MargotMonitor
  * */
-function EnergyMonitor(name) {
+function MargotEnergyMonitor(name) {
     
     // super contructor
-    _MargotMonitor.call(this, name);
+    MargotMonitor.call(this, name);
     
     // save super prototype
-    this._super = _MargotMonitor.prototype;
+    this._super = MargotMonitor.prototype;
     
     // default domain, can be changed
     this._domain = MargotEnergyDomain.PACKAGE;
@@ -24,40 +24,40 @@ function EnergyMonitor(name) {
     this._margotMetric = new MargotMetric(MargotMetricName.ENERGY, new SiUnit('J', SiModifier.MICRO));
 }
 // Inheritance
-EnergyMonitor.prototype = Object.create(_MargotMonitor.prototype);
+MargotEnergyMonitor.prototype = Object.create(MargotMonitor.prototype);
 
 /**
  * Sets the domain as PACKAGE.
  * */
-EnergyMonitor.prototype.setPackage = function() {
+MargotEnergyMonitor.prototype.setPackage = function() {
     this._domain = MargotEnergyDomain.PACKAGE;
 }
 
 /**
  * Sets the domain as CORES.
  * */
-EnergyMonitor.prototype.setCores = function() {
+MargotEnergyMonitor.prototype.setCores = function() {
     this._domain = MargotEnergyDomain.CORES;
 }
 
 /**
  * Sets the domain as RAM.
  * */
-EnergyMonitor.prototype.setRam = function() {
+MargotEnergyMonitor.prototype.setRam = function() {
     this._domain = MargotEnergyDomain.RAM;
 }
 
 /**
  * Sets the domain as UNCORES.
  * */
-EnergyMonitor.prototype.setUncores = function() {
+MargotEnergyMonitor.prototype.setUncores = function() {
     this._domain = MargotEnergyDomain.UNCORES;
 }
 
 /**
  * Sets the domain to the one provided.
  * */
-EnergyMonitor.prototype.setDomain = function(domain) {
+MargotEnergyMonitor.prototype.setDomain = function(domain) {
     this._domain = domain;
 }
 
@@ -78,7 +78,7 @@ var MargotEnergyDomain = new Enumeration(
 /**
  * Makes the code of the energy monitor using the base monitor.
  * */
-EnergyMonitor.prototype._makeCode = function() {
+MargotEnergyMonitor.prototype._makeCode = function() {
     
     var domainCode = _DomainTemplate(this._domain);
     return this._super._makeCode.call(this, 'ENERGY', domainCode);

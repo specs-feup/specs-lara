@@ -241,7 +241,7 @@ MargotBlock.prototype.addMonitor = function(monitor) {
 * Builds an energy monitor, adds it to the list of monitors, and returns it.
 * */
 MargotBlock.prototype.newEnergyMonitor = function(name) {
-    var em = new EnergyMonitor(name);
+    var em = new MargotEnergyMonitor(name);
     this._monitors.push(em);
     return em;
 }
@@ -250,7 +250,7 @@ MargotBlock.prototype.newEnergyMonitor = function(name) {
 * Builds a time monitor, adds it to the list of monitors, and returns it.
 * */
 MargotBlock.prototype.newTimeMonitor = function(name) {
-    var tm = new TimeMonitor(name);
+    var tm = new MargotTimeMonitor(name);
     this._monitors.push(tm);
     return tm;
 }
@@ -266,9 +266,9 @@ MargotBlock.prototype.newThroughputMonitor = function(name, param1, param2) {
     var tpm = undefined;
     
 	if(param2 !== undefined) {
-		tpm = new ThroughputMonitor(name, param1, param2);
+		tpm = new MargotThroughputMonitor(name, param1, param2);
     } else {
-		tpm = new ThroughputMonitor(name, param1);
+		tpm = new MargotThroughputMonitor(name, param1);
 	}
     this._monitors.push(tpm);
     return tpm;

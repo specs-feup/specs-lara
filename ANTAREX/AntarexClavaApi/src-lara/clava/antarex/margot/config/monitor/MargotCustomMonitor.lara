@@ -3,15 +3,15 @@ import antarex.margot.config.monitor.MargotMonitor;
 /**
  * This class represents a custom monitor.
  * 
- * @extends _MargotMonitor
+ * @extends MargotMonitor
  * */
-function CustomMonitor(name) {
+function MargotCustomMonitor(name) {
 	
     // super contructor
-    _MargotMonitor.call(this, name);
+    MargotMonitor.call(this, name);
     
     // save super prototype
-    this._super = _MargotMonitor.prototype;
+    this._super = MargotMonitor.prototype;
     
     this._spec = undefined;
     
@@ -20,13 +20,13 @@ function CustomMonitor(name) {
 }
 
 // Inheritance
-CustomMonitor.prototype = Object.create(_MargotMonitor.prototype);
+MargotCustomMonitor.prototype = Object.create(MargotMonitor.prototype);
 
 
 /**
  * Adds a stop parameter to the custom monitor.
  * */
-CustomMonitor.prototype.addStopParam = function(name, value, type) {
+MargotCustomMonitor.prototype.addStopParam = function(name, value, type) {
 
 	var stop = undefined;
 	if(type === undefined) {
