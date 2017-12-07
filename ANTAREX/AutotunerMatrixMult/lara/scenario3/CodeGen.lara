@@ -1,4 +1,4 @@
-import antarex.margot.MargotCodeGen;
+import antarex.margot.codegen.MargotCodeGen;
 
 aspectdef CodeGen
 
