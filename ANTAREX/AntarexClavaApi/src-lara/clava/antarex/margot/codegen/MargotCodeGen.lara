@@ -1,5 +1,5 @@
-import antarex.margot.MargotCodeGenAspects;
-import antarex.margot.MargotStringsGen;
+import antarex.margot.codegen._internal.MargotCodeGenAspects;
+import antarex.margot.codegen._internal.MargotStringsGen;
 
 import clava.Clava;
 

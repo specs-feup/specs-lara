@@ -30,27 +30,26 @@ public enum LaraAntarexApiResource implements LaraResourceProvider {
     LIBVC("libvc/LibVC.lara"),
     LIBVC_ASPECTS("libvc/LibVCAspects.lara"),
 
-    // mARGOt metric
-    MARGOT_METRIC("margot/metric/MargotMetric.lara"),
-
-    // mARGOT DSE
+    // mARGOt DSE
     MARGOT_DSE_INFO("margot/dse/MargotDseInfo.lara"),
+    MARGOT_DSE_METRIC("margot/dse/metric/MargotMetric.lara"),
 
-    // mARGOt code generation
-    MARGOT_CODE_GEN("margot/MargotCodeGen.lara"),
-    MARGOT_CODE_GEN_ASPECTS("margot/MargotCodeGenAspects.lara"),
-    MARGOT_CODE_GEN_STRINGS("margot/MargotStringsGen.lara"),
+    // mARGOt codegen
+    MARGOT_CODE_GEN("margot/codegen/MargotCodeGen.lara"),
+    MARGOT_CODE_GEN_ASPECTS("margot/codegen/_internal/MargotCodeGenAspects.lara"),
+    MARGOT_CODE_GEN_STRINGS("margot/codegen/_internal/MargotStringsGen.lara"),
 
-    // mARGOt configuration
-    MARGOT_CONFIG("margot/MargotConfig.lara"),
-    MARGOT_CONFIG_BLOCK("margot/MargotConfigImports/MargotBlock.lara"),
-    MARGOT_CONFIG_MONITOR("margot/MargotConfigImports/MargotMonitor.lara"),
-    MARGOT_CONFIG_ENERGY_MONITOR("margot/MargotConfigImports/MargotEnergyMonitor.lara"),
-    MARGOT_CONFIG_TIME_MONITOR("margot/MargotConfigImports/MargotTimeMonitor.lara"),
-    MARGOT_CONFIG_THROUGHPUT_MONITOR("margot/MargotConfigImports/MargotThroughputMonitor.lara"),
-    MARGOT_CONFIG_STATE("margot/MargotConfigImports/MargotState.lara"),
-    MARGOT_DATA_FEATURE("margot/MargotConfigImports/MargotDataFeature.lara"),
-    MARGOT_KNOB("margot/MargotConfigImports/MargotKnob.lara");
+    // mARGOt config
+    MARGOT_CONFIG("margot/config/MargotConfig.lara"),
+    MARGOT_CONFIG_BLOCK("margot/config/MargotBlock.lara"),
+    MARGOT_CONFIG_STATE("margot/config/MargotState.lara"),
+    MARGOT_DATA_FEATURE("margot/config/MargotDataFeature.lara"),
+    MARGOT_KNOB("margot/config/MargotKnob.lara"),
+
+    MARGOT_CONFIG_MONITOR("margot/config/monitor/MargotMonitor.lara"),
+    MARGOT_CONFIG_ENERGY_MONITOR("margot/config/monitor/MargotEnergyMonitor.lara"),
+    MARGOT_CONFIG_THROUGHPUT_MONITOR("margot/config/monitor/MargotThroughputMonitor.lara"),
+    MARGOT_CONFIG_TIME_MONITOR("margot/config/monitor/MargotTimeMonitor.lara");
 
     private final String resource;
 

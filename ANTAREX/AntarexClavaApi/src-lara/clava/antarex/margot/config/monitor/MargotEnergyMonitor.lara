@@ -1,6 +1,9 @@
-import antarex.margot.MargotConfigImports.MargotMonitor;
+import antarex.margot.config.monitor.MargotMonitor;
+import antarex.margot.dse.metric.MargotMetric;
+
 import lara.units.SiUnit;
 import lara.units.SiModifier;
+
 /**
  * This class represents an energy monitor.
  * 

@@ -1,12 +1,7 @@
-import antarex.margot.MargotConfigImports.MargotBlock;
-import antarex.margot.MargotConfigImports.MargotState;
-import antarex.margot.MargotConfigImports.MargotMonitor;
-import antarex.margot.MargotConfigImports.MargotEnergyMonitor;
-import antarex.margot.MargotConfigImports.MargotTimeMonitor;
-import antarex.margot.MargotConfigImports.MargotThroughputMonitor;
+import antarex.margot.config.MargotBlock;
 
 import antarex.margot.dse.MargotDseInfo;
-import antarex.margot.MargotCodeGen;
+import antarex.margot.codegen.MargotCodeGen;
 
 
 /**

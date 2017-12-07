@@ -1,4 +1,4 @@
-import antarex.margot.MargotConfigImports.MargotMonitor;
+import antarex.margot.config.monitor.MargotMonitor;
 
 /**
  * This class represents a throughput monitor.

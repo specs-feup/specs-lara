@@ -1,4 +1,4 @@
-import antarex.margot.metric.MargotMetric;
+import antarex.margot.dse.metric.MargotMetric;
 
 /**
  * This class represents the base monitor that is 'implemented' by all monitors.
