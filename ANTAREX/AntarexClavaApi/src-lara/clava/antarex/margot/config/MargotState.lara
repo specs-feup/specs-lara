@@ -111,7 +111,7 @@ MargotState.prototype.maximizeMetric = function(name, coefficient) {
  * @param {string} name - the name of the knob
  * @param {Number} coefficient - the coefficient to use when combining metrics/knobs
  * */
-MargotState.prototype.maximizeMetric = function(name, coefficient) {
+MargotState.prototype.maximizeKnob = function(name, coefficient) {
     
     this._maximizes.push({kind: 'knob', name: name, coefficient: coefficient});
 }
