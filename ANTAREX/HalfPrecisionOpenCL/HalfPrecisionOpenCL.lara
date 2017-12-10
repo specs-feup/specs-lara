@@ -1,0 +1,237 @@
+import clava.Clava;
+import clava.ClavaJoinPoints;
+
+import lara.Io;
+import lara.Numbers;
+import lara.util.SequentialCombinations;
+
+var $halfType = ClavaJoinPoints.builtinType("half");
+
+aspectdef Main
+
+	// The three arguments of the kernel 'syr2k' are arrays
+	var numIndependParams = 3;
+
+	// Generate all combinations
+	var maxVersions = undefined;
+
+	// Fix parameters #4 and #5 of the kernel 'syr2k' to always be half
+	var combinationFilter = [];
+	combinationFilter[3] = 1;
+	combinationFilter[4] = 1;
+
+	call HalfPrecisionOpenCL(numIndependParams, maxVersions, combinationFilter);
+
+end
+
+
+aspectdef HalfPrecisionOpenCL
+	input 
+		numIndependParams,
+		maxVersions = undefined,
+		combinationFilter = []
+	end
+	
+	// Get the list of float and double variables 
+	// declared in the OpenCL kernel (including parameters)
+	call result : OpenCLVariablesToTest;
+	var variablesToTest = result.variablesToTest;
+
+	println("Found " + variablesToTest.length + " variables to test (maximum combinations: " + (Math.pow(2, variablesToTest.length) - 1) + ")");
+	
+	// Generates combinations of variables
+	var sequenceGenerator = new SequentialCombinations(
+    	variablesToTest.length, maxVersions);
+
+	var counter = 0;
+	while(sequenceGenerator.hasNext()) {
+
+		// Get a new combination of variables
+		var combination = sequenceGenerator.next();
+
+		// Number that was used to generate the sequence
+		var lastSeed = sequenceGenerator.getLastSeed();
+
+		// Check if combination passes the filter
+		if(!isCombinationValid(lastSeed, combinationFilter)) {
+			continue;
+		}
+
+		// Save original kernel version
+		Clava.pushAst();
+    
+		// Change the builtin type of the variables
+		for(var index of combination) {
+			var $vardecl = Clava.findJp(variablesToTest[index]);
+			changeTypeToHalf($vardecl);
+		}
+
+		// Add to the OpenCL kernel the pragma that enables half-precision
+		call addHalfPragma();
+
+		// Choose output folder based on the 
+		// number of independent parameters of the kernel
+		var baseFolder = getBaseFolder(lastSeed, numIndependParams);
+		var kernelFolder = "half_version_" + counter;
+		var outputFolder = Io.getPath(baseFolder, kernelFolder);
+
+		// Generate code
+		Clava.writeCode(outputFolder);
+
+		// Discard modified kernel and restore original one
+		Clava.popAst();
+		
+		counter++;
+	}
+
+end
+
+aspectdef addHalfPragma
+
+	select file end
+	apply
+		if(!$file.isOpenCL) {
+			continue;	
+		}
+		
+		$file.insert before "#pragma OPENCL EXTENSION cl_khr_fp16 : enable";
+	end
+
+end
+
+
+function getBaseFolder(lastSeed, numArgs) {
+	var lastSeedBinary = lastSeed.toString(2).split("").reverse().join("");
+
+	var baseFoldername = "sig_";
+	for(var i = 0; i < numArgs; i++) {
+		var value = lastSeedBinary[i] !== undefined ? lastSeedBinary[i] : 0;
+		baseFoldername += value;
+	}
+
+	return Io.mkdir(Clava.getWeavingFolder(), baseFoldername); 
+}
+
+function isCombinationValid(lastSeed, combinationFilter) {
+	var lastSeedBinary = lastSeed.toString(2).split("").reverse().join("");
+
+	for(var i in combinationFilter) {
+		var iValue = defaultValue(lastSeedBinary[i], "0");
+
+		if(iValue !== combinationFilter[i].toString()) {
+			return false;
+		}
+	}
+
+	// Passed all tests
+	return true;
+}
+
+
+/**
+ * Collect all variable declarations that have as base type a float or a double
+ */
+aspectdef OpenCLVariablesToTest
+	output variablesToTest end
+
+
+	variablesToTest = [];
+
+	select file.vardecl end
+	apply
+
+		// Apply only to OpenCL files
+		if(!$file.isOpenCL) {
+			continue;
+		}
+
+		// Check if type has a base builtin type	
+		var $builtinType = getBuiltinType($vardecl.type);
+		if($builtinType === undefined) {
+			continue;
+		}
+
+		// Only collect doubles and floats
+		var builtinTypeCode = $builtinType.code;
+		if(builtinTypeCode !== 'float' && builtinTypeCode !== 'double') {
+			continue;
+		}
+
+		variablesToTest.push($vardecl);
+	end
+
+end
+
+function getBuiltinType($type) {
+	var typeKind = $type.kind;
+
+	if(typeKind === "BuiltinType") {
+		return $type;
+	}
+
+	// Try to unwrap type, looking for a builtin
+	var $unwrappedType = $type.unwrap;
+
+	if($unwrappedType !== undefined) {
+		return getBuiltinType($unwrappedType);
+	}
+
+	return undefined;
+}
+
+function changeTypeToHalf($vardecl) {
+	checkDefined($vardecl);
+
+	// Get the type, do a copy
+	// Type nodes in Clava are shared, before modifying a type you should make a copy
+	var $typeCopy = $vardecl.type.copy();
+
+	// Get the builtin type
+	$builtinType = getBuiltinType($typeCopy);
+
+	// Replace the builtin type with half
+	if($typeCopy === $builtinType) {
+		$typeCopy = $halfType;
+	} else {
+		$builtinType.replaceWith($halfType);
+	}
+
+	// Remove typedefs from the modified type
+	$typeCopy = removeTypedefs($typeCopy);
+	
+	// Set the new type
+	$vardecl.type = $typeCopy;
+	
+	return;
+}
+
+
+function removeTypedefs($type) {
+
+	// Unwrap
+	var unwrappedType = $type.unwrap;
+
+	// If undefined, finish
+	if(unwrappedType === undefined) {
+		return $type;
+	}
+
+	// If current type is a typedef, replace it with unwrapped type
+	if($type.kind === "TypedefType") {
+
+		// If top level
+		if($type.isTopLevel) {
+			return removeTypedefs(unwrappedType);			
+		} 
+		// Otherwise, typedef is in the middle of a chain, replace it
+		$type.exec replaceWith(unwrappedType);
+	}
+
+	// Continue with the unwrapped type
+	removeTypedefs(unwrappedType);
+
+	// Return current type
+	return $type;
+}
+
+
