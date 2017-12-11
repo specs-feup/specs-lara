@@ -12,7 +12,7 @@ function MargotDataFeature(name, type, validity) {
 	
 	this._name = name;
 	this._type = type;
-	this._validity = orDefault(validity, MargotValidity.NONE);
+	this._validity = defaultValue(validity, MargotValidity.NONE);
 }
 
 /**

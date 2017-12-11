@@ -33,7 +33,7 @@ MargotBlock.prototype.setDataFeatureDistanceType = function(distanceType) {
 	
 	if(this._features === undefined) {
 		
-		this._features = orDefault(this._features, new MargotDataFeatureGroup(distanceType));
+		this._features = defaultValue(this._features, new MargotDataFeatureGroup(distanceType));
 	} else {
 		
 		this._features.setDistanceType(distanceType);
@@ -51,7 +51,7 @@ MargotBlock.prototype.setDataFeatureDistanceType = function(distanceType) {
  * */
 MargotBlock.prototype.addDataFeature = function(name, type, validity) {
 	
-	this._features = orDefault(this._features, new MargotDataFeatureGroup(MargotDistanceType.EUCLIDEAN));
+	this._features = defaultValue(this._features, new MargotDataFeatureGroup(MargotDistanceType.EUCLIDEAN));
 	
 	this._features.addFeature(name, type, validity);
 }
@@ -126,7 +126,7 @@ MargotBlock.prototype.addMetricGoal = function(name, cFun, value, metric) {
         }
     }
     
-    this._goals.push(new _MargotMetricGoal(name, cFun, value, metric));
+    this._goals.push(new _MargotGoal(name, cFun, value, _MargotGoalKind.METRIC, metric));
 };
 
 /**
@@ -146,65 +146,45 @@ MargotBlock.prototype.addKnobGoal = function(name, cFun, value, knob) {
         }
     }
     
-    this._goals.push(new _MargotKnobGoal(name, cFun, value, knob));
+    this._goals.push(new _MargotGoal(name, cFun, value, _MargotGoalKind.KNOB, knob));
 };
 
 /**
  * @constructor
  * 
  * A generic goal.
+ * 
+ * @param {string} name - the name of this goal
+ * @param {MargotCFun} cFun - the comparion function of this goal
+ * @param {string} value - the target value
+ * @param {_MargotGoalKind} kind - the kind of goal
+ * @param {string} knobOrMetricName - the name of the knob or metric
  * */
-function _MargotGoal(name, cFun, value) {
+function _MargotGoal(name, cFun, value, kind, knobOrMetricName) {
 	
 	/* TODO: check parameters */
 	
 	this._name = name;
 	this._cFun = cFun;
 	this._value = value;
+	this._kind = kind;
+	this._knobOrMetricName = knobOrMetricName;
 	
-	this._makeCode = function(additionalCode) {
+	this._makeCode = function() {
 		
-		return _GoalTemplate(this._name, this._cFun, this._value, additionalCode);
+		return _GoalTemplate(this._name, this._cFun, this._value, this._kind, this._knobOrMetricName);
 	};
 }
 
 /**
- * @constructor
- * 
- * A knob goal.
+ * The kind of goal.
+ * @enum
  * */
-function _MargotKnobGoal(name, cFun, value, knob) {
-	
-	/* TODO: check parameters */
-	
-	this._baseGoal = new _MargotGoal(name, cFun, value);
-	this._knob = knob;
-	
-	this._makeCode = function() {
-		
-		var monitorCode = 'knob_name="' + this._knob + '"';
-		return this._baseGoal._makeCode(monitorCode);
-	};
-}
+var _MargotGoalKind = {
+	KNOB: 'knob',
+	METRIC: 'metric'
+};
 
-/**
- * @constructor
- * 
- * A metric goal.
- * */
-function _MargotMetricGoal(name, cFun, value, metric) {
-	
-	/* TODO: check parameters */
-	
-	this._baseGoal = new _MargotGoal(name, cFun, value);
-	this._metric = metric;
-	
-	this._makeCode = function() {
-		
-		var monitorCode = 'metric_name="' + this._metric + '"';
-		return this._baseGoal._makeCode(monitorCode);
-	};
-}
 
 /**
  * Comparison functions.
@@ -456,7 +436,7 @@ end
 /**
  * Template used for the generation of the XML code for goals.
  * */
-codedef _GoalTemplate(name, cFun, value, additionalCode) %{
-<goal name="[[name]]" cFun="[[cFun]]" value="[[value]]" [[additionalCode]]/> 
+codedef _GoalTemplate(name, cFun, value, kind, knobOrMetricName) %{
+<goal name="[[name]]" cFun="[[cFun]]" value="[[value]]" [[kind]]_name="[[knobOrMetricName]]"/> 
 }%
 end
