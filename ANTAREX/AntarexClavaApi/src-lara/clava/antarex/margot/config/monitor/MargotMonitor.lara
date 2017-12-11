@@ -1,11 +1,13 @@
 import antarex.margot.dse.metric.MargotMetric;
 
 /**
- * This class represents the base monitor that is 'implemented' by all monitors.
+ * This class represents the base monitor that is 'extended' by all monitors.
  * 
  * 
- * Each class that extends this needs to define a field _margotMetric with the metric that it intends to measure. This base class already defines the get logic in the function getMargotMetric.
+ * Each class that extends this needs to define a field _margotMetric with the metric that it intends to measure. This base class already defines the get logic in the function {@link MargotMonitor.getMargotMetric}.
  * 
+ * @constructor
+ * @param {string} name - the name of this monitor
  * */
 function MargotMonitor(name) {
      
@@ -16,6 +18,7 @@ function MargotMonitor(name) {
  
 /**
 * Enum to represent what can be exposed in monitors.
+* @enum
 * */
 var MargotExpose = new Enumeration({
 	AVG: 'AVERAGE'
@@ -23,6 +26,7 @@ var MargotExpose = new Enumeration({
 
 /**
  * Enum to represent the type of a param.
+ * @enum
  * */
  var MargotParamType = new Enumeration({
 	FIXED: 'fixed',
@@ -31,6 +35,9 @@ var MargotExpose = new Enumeration({
 
  /**
   * Add a variable to expose in the monitor.
+  * 
+  * @param {string} varName - the name of the variable
+  * @param {MargotExpose} what - what is being exposed
   * */
 MargotMonitor.prototype.expose = function(varName, what) {
     
@@ -38,7 +45,9 @@ MargotMonitor.prototype.expose = function(varName, what) {
 }
 
 /**
- * Returns the MargotMetric associated with this monitor.
+ * Returns the metric associated with this monitor.
+ * 
+ * @returns {MargotMetric}
  * */
 MargotMonitor.prototype.getMargotMetric = function() {
 	
@@ -51,6 +60,9 @@ MargotMonitor.prototype.getMargotMetric = function() {
 
  /**
   * Generates the code for the monitor.
+  * 
+  * @param {string} type - the type of the monitor
+  * @param {string} additionalCode - additional code that can be addded by each subclass
   * */
 MargotMonitor.prototype._makeCode = function(type, additionalCode) {
     

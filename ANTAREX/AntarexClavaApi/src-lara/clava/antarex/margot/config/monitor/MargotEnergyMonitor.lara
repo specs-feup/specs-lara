@@ -7,7 +7,12 @@ import lara.units.SiModifier;
 /**
  * This class represents an energy monitor.
  * 
+ * We can define the domain in which the energy is measured.
+ * 
  * @extends MargotMonitor
+ * @constructor
+ * 
+ * @param {string} name - the name of this monitor
  * */
 function MargotEnergyMonitor(name) {
     
@@ -56,6 +61,8 @@ MargotEnergyMonitor.prototype.setUncores = function() {
 
 /**
  * Sets the domain to the one provided.
+ * 
+ * @param {MargotEnergyDomain} domain - the new domain
  * */
 MargotEnergyMonitor.prototype.setDomain = function(domain) {
     this._domain = domain;
@@ -63,6 +70,7 @@ MargotEnergyMonitor.prototype.setDomain = function(domain) {
 
 /**
  * Enum that represents the domain of the time monitor.
+ * @enum
  * */
 var MargotEnergyDomain = new Enumeration(
     {PACKAGE: 'margot::EnergyMonitor::Domain::Package'},
@@ -77,6 +85,8 @@ var MargotEnergyDomain = new Enumeration(
 
 /**
  * Makes the code of the energy monitor using the base monitor.
+ * 
+ * Calls the super function to make the code for the monitor and passes additional code specific to this monitor.
  * */
 MargotEnergyMonitor.prototype._makeCode = function() {
     

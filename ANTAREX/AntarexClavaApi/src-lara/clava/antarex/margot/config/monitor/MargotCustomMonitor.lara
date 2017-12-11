@@ -3,7 +3,11 @@ import antarex.margot.config.monitor.MargotMonitor;
 /**
  * This class represents a custom monitor.
  * 
+ * This class is incomplete and should not be used.
+ * 
  * @extends MargotMonitor
+ * @constructor
+ * @param {string} name - the name of this monitor
  * */
 function MargotCustomMonitor(name) {
 	
@@ -25,6 +29,10 @@ MargotCustomMonitor.prototype = Object.create(MargotMonitor.prototype);
 
 /**
  * Adds a stop parameter to the custom monitor.
+ * 
+ * @param {string} name - the name of the parameter
+ * @param {string} value - the value of the parameter
+ * @param {string} [type] - the C type of the parameter
  * */
 MargotCustomMonitor.prototype.addStopParam = function(name, value, type) {
 
@@ -47,7 +55,10 @@ MargotCustomMonitor.prototype.addStopParam = function(name, value, type) {
  * ****************************************************************************/
 
 /**
- * Templates used for the generation of the XML code for the stop parameters portion of the custom monitor.
+ * Template used for the generation of the XML code for the stop parameters portion of the custom monitor.
+ * 
+ * @param {string} name - the name of the parameter
+ * @param {string} value - the value of the parameter
  * */
 codedef _StopFixedTemplate(name, value) %{
 <stop>    
@@ -58,6 +69,13 @@ codedef _StopFixedTemplate(name, value) %{
 }%
 end
 
+/**
+ * Template used for the generation of the XML code for the stop parameters portion of the custom monitor.
+ * 
+ * @param {string} name - the name of the parameter
+ * @param {string} value - the value of the parameter
+  * @param {string} [type] - the C type of the parameter
+ * */
 codedef _StopLocalTemplate(name, type, value) %{
 <stop>    
 <param name="[[name]]">    

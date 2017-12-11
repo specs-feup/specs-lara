@@ -8,6 +8,9 @@ import lara.units.TimeModifier;
  * This class represents a time monitor.
  * 
  * @extends MargotMonitor
+ * @constructor
+ * 
+ * @param {string} name - the name of this monitor
  * */
 function MargotTimeMonitor(name) {
     
@@ -28,6 +31,7 @@ MargotTimeMonitor.prototype = Object.create(MargotMonitor.prototype);
 
 /**
  * Enum that represents the granularity of the time monitor.
+ * @enum
  * */
 var MargotTimeMeasure = new Enumeration(
     {SEC: 'margot::TimeUnit::SECONDS'},
@@ -36,7 +40,7 @@ var MargotTimeMeasure = new Enumeration(
 );
 
 /**
- * Set the granularity to microseconds.
+ * Sets the granularity to microseconds.
  * */
 MargotTimeMonitor.prototype.useMicro = function() {
     
@@ -47,7 +51,7 @@ MargotTimeMonitor.prototype.useMicro = function() {
 }
 
 /**
- * Set the granularity to miliseconds.
+ * Sets the granularity to milliseconds.
  * */
 MargotTimeMonitor.prototype.useMilli = function() {
     
@@ -58,7 +62,7 @@ MargotTimeMonitor.prototype.useMilli = function() {
 }
 
 /**
- * Set the granularity to seconds.
+ * Sets the granularity to seconds.
  * */
 MargotTimeMonitor.prototype.useSecond = function() {
     
@@ -74,6 +78,8 @@ MargotTimeMonitor.prototype.useSecond = function() {
 
 /**
  * Makes the code of the time monitor using the base monitor.
+ * 
+ * Calls the super function to make the code for the monitor and passes additional code specific to this monitor.
  * */
 MargotTimeMonitor.prototype._makeCode = function() {
     

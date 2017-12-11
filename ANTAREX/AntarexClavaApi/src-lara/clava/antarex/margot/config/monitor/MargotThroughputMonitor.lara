@@ -4,6 +4,9 @@ import antarex.margot.config.monitor.MargotMonitor;
  * This class represents a throughput monitor.
  * 
  * @extends MargotMonitor
+ * @constructor
+ * 
+ * @param {string} name - the name of this monitor
  * */
 function MargotThroughputMonitor(name) {
 	
@@ -43,6 +46,8 @@ MargotThroughputMonitor.prototype = Object.create(MargotMonitor.prototype);
 
 /**
  * Makes the code of the throughput monitor using the base monitor.
+ * 
+ * Calls the super function to make the code for the monitor and passes additional code specific to this monitor.
  * */
 MargotThroughputMonitor.prototype._makeCode = function() {
     
