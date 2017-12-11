@@ -10,7 +10,7 @@ var $halfType = ClavaJoinPoints.builtinType("half");
 aspectdef Main
 
 	// The three arguments of the kernel 'syr2k' are arrays
-	var numIndependParams = 3;
+	var numIndependentParams = 3;
 
 	// Generate all combinations
 	var maxVersions = undefined;
@@ -20,14 +20,14 @@ aspectdef Main
 	combinationFilter[3] = 1;
 	combinationFilter[4] = 1;
 
-	call HalfPrecisionOpenCL(numIndependParams, maxVersions, combinationFilter);
+	call HalfPrecisionOpenCL(numIndependentParams, maxVersions, combinationFilter);
 
 end
 
 
 aspectdef HalfPrecisionOpenCL
 	input 
-		numIndependParams,
+		numIndependentParams,
 		maxVersions = undefined,
 		combinationFilter = []
 	end
@@ -71,7 +71,7 @@ aspectdef HalfPrecisionOpenCL
 
 		// Choose output folder based on the 
 		// number of independent parameters of the kernel
-		var baseFolder = getBaseFolder(lastSeed, numIndependParams);
+		var baseFolder = getBaseFolder(lastSeed, numIndependentParams);
 		var kernelFolder = "half_version_" + counter;
 		var outputFolder = Io.getPath(baseFolder, kernelFolder);
 
