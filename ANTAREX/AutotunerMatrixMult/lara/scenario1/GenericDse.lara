@@ -1,0 +1,52 @@
+import lara.code.Timer;
+import lara.metrics.FileSizeMetric;
+
+import lara.metrics.EnergyMetric;
+import lara.metrics.ExecutionTimeMetric;
+
+import lat.Lat;
+import lat.LatUtils;
+import lat.vars.LatVarSet;
+
+import lara.Io;
+
+
+aspectdef GenericDse
+	input 
+		$scope, 
+		$measure, 
+		dseVars, 
+		metrics, 
+		outputFolder = "./lat_output", 
+		numExec = 10  
+	end
+	
+	output results end
+
+	var lat = new Lat("matrix_mul");
+
+	// For debuging
+	lat.setVerbose(true);
+
+	// Specific to my PC setup
+	if(Platforms.isWindows()) {
+		lat.loadCmaker().cmaker.setGenerator("MinGW Makefiles").setMakeCommand("mingw32-make");
+	}
+
+	// Output folder
+	lat.setOutputFolder(outputFolder);
+
+	// Select portion of code that we will explore
+	lat.setScope($scope);
+	lat.setMeasure($measure);		
+
+
+	lat.addSearchGroup(dseVars);
+
+	lat.setNumTests(numExec);
+
+	lat.setMetrics(metrics);
+
+	results = lat.tune();
+
+end

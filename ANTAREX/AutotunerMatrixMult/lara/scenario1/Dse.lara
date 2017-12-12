@@ -1,0 +1,19 @@
+aspectdef Dse
+	input
+		dseInfo,
+		opListPath
+	end
+
+	// Select portion of code that we will explore
+	select function{"main"}.body.call{"matrix_mult_tiling"} end
+	apply
+		dseInfo.setScope($body);
+		dseInfo.setMeasure($call);		
+	end
+
+	dseInfo.setDseRuns(3);
+	
+//	dseInfo.setCmake(...);
+
+	dseInfo.execute();
+end
