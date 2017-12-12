@@ -61,18 +61,16 @@ MargotConfig.prototype.getDseInfo = function(blockName) {
 	info.setKnobs(knobs);
 	
 	// data features
-	var features = {};
-	for(var feature of block._features.getFeatures()) {
-		features[feature.getName()] = feature;
+	if(block._features !== undefined) {
+		var features = {};
+		for(var feature of block._features.getFeatures()) {
+			features[feature.getName()] = feature;
+		}
+		info.setDataFeatures(features);
 	}
-	info.setDataFeatures(features);
 	
-	// metrics
-	var metrics = [];
-	for(var monitor of block._monitors) {
-		metrics.push(monitor.getMargotMetric());
-	}
-	info.setMargotMetrics(metrics);
+	// monitors
+	info.setMargotMonitors(block._monitors);
 	
 	return info;
 }
@@ -101,11 +99,13 @@ MargotConfig.prototype.getCodeGenInfo = function(blockName) {
 	codegen.setKnobs(knobNames);
 	
 	// features
-	var featureNames = [];
-	for(var feature of block._features.getFeatures()) {
-		featureNames.push(feature.getName());
+	if(block._features !== undefined) {
+		var featureNames = [];
+		for(var feature of block._features.getFeatures()) {
+			featureNames.push(feature.getName());
+		}
+		codegen.setFeatures(featureNames);
 	}
-	codegen.setFeatures(featureNames);
 	
 	return codegen;
 }

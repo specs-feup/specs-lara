@@ -15,7 +15,11 @@ function MargotMonitor(name) {
      
      this._exposes = [];
 }
- 
+
+MargotMonitor.prototype.getName = function() {
+	return this._name;
+}
+
 /**
 * Enum to represent what can be exposed in monitors.
 * @enum
