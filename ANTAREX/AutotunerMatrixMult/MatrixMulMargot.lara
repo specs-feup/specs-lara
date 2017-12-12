@@ -1,6 +1,9 @@
 import lara.code.Timer;
 import lara.metrics.FileSizeMetric;
 
+import lara.metrics.EnergyMetric;
+import lara.metrics.ExecutionTimeMetric;
+
 import lat.Lat;
 import lat.LatUtils;
 import lat.vars.LatVarSet;
@@ -99,6 +102,8 @@ aspectdef MatrixMulDse
 	//lat.setNumTests(10);
 	
 	var results = lat.tune();
+	println("Results:");
+	printObject(results);
 	LatUtils.resultToCsv(results, "./");
 
 	println("Current folder: " + Io.getAbsolutePath("."));
@@ -108,9 +113,53 @@ aspectdef MatrixMulDse
 	Io.writeJson("results_parsed.json", results);
 end
 
+aspectdef MatrixMulGenericDse
+
+	var $scope = undefined;
+	var $measure = undefined;
+
+	// Select portion of code that we will explore
+	select function{"main"}.body.call{"matrix_mult_tiling"} end
+	apply
+		$scope = $body;
+		$measure = $call;		
+	end
+
+	var bs1_test = new LatVarList("BS1", [8]);
+	var bs2_test = new LatVarList("BS2", [8]);
+	
+
+	var n1 = new LatVarList("N", [512, 256]);
+	var n2 = new LatVarList("M", [512, 256]);
+
+	var matrixSizesTest = new LatVarSet(n1, n2);
+
+	var dseVars = [bs1_test, bs2_test, matrixSizesTest];		
+		 
+	var metrics = [new ExecutionTimeMetric()];
+	//metrics.push(new EnergyMetric());
+	
+	var outputFolder = "./lat_output";
+	var numExec = 3;
+
+	call dseResults : GenericDse($scope, $measure, dseVars, metrics, outputFolder, numExec);
+
+	println("Results:");
+	printObject(dseResults.results);
+
+end
 
 aspectdef GenericDse
-	input $scope, $measure, dseVars, metrics  end
+	input 
+		$scope, 
+		$measure, 
+		dseVars, 
+		metrics, 
+		outputFolder = "./lat_output", 
+		numExec = 10  
+	end
+	
+	output results end
 
 	var lat = new Lat("matrix_mul");
 
@@ -123,59 +172,21 @@ aspectdef GenericDse
 	}
 
 	// Output folder
-	lat.setOutputFolder("./lat_output");
+	lat.setOutputFolder(outputFolder);
 
 	// Select portion of code that we will explore
-//	select function{"main"}.body.call{"matrix_mult_tiling"} end
-//	apply
-		lat.setScope($scope);
-		lat.setMeasure($measure);		
-//	end
-/*
-	// Real search
-	var bs1 = new LatVarList("BS1", [8, 16, 32, 64]);
-	var bs2 = new LatVarList("BS2", [8, 16, 32, 64]);
+	lat.setScope($scope);
+	lat.setMeasure($measure);		
 
-	var n = new LatVarList("N", [512, 512, 512, 256, 256, 512, 128, 128, 256, 512]);
-	var m = new LatVarList("M", [512, 512, 256, 256, 256, 512, 128, 256, 256, 512]);
-	var k = new LatVarList("K", [512, 256, 512, 256, 128, 512, 128, 128, 256, 512]);
 
-	var matrixSizes = new LatVarSet(n, m, k);
-
-//	lat.addSearchGroup([bs1, bs2, matrixSizes]);
-
-*/
-/*
-	// Dummy search
-
-	var bs1_test = new LatVarList("BS1", [8]);
-	var bs2_test = new LatVarList("BS2", [8]);
-	
-
-	var n1 = new LatVarList("N", [512, 256]);
-	var n2 = new LatVarList("M", [512, 256]);
-
-	var matrixSizesTest = new LatVarSet(n1, n2);
-
-	lat.addSearchGroup([bs1_test, bs2_test, matrixSizesTest]);
-*/
 	lat.addSearchGroup(dseVars);
 
-	lat.setNumTests(10);
+	lat.setNumTests(numExec);
 
 	lat.setMetrics(metrics);
 
-	return lat.tune();
-/*	
-	var results = lat.tune();
-	LatUtils.resultToCsv(results, "./");
+	results = lat.tune();
 
-	println("Current folder: " + Io.getAbsolutePath("."));
-	//println("Results:");
-	//printObject(results);
-	
-	Io.writeJson("results_parsed.json", results);
-*/
 end
 
 aspectdef MatrixMulMargot

@@ -2,14 +2,6 @@
   <name>LaraI Options</name>
   <values>
     <entry>
-      <string>include</string>
-      <FileList>
-        <fileList>
-          <file>C:\Apps\lara-package-manager\libs\clava-lat\LAT-Lara-Autotuning-Tool</file>
-        </fileList>
-      </FileList>
-    </entry>
-    <entry>
       <string>workspace</string>
       <FileList>
         <fileList>
@@ -18,8 +10,8 @@
       </FileList>
     </entry>
     <entry>
-      <string>debug</string>
-      <boolean>false</boolean>
+      <string>Disable Code Generation</string>
+      <boolean>true</boolean>
     </entry>
     <entry>
       <string>log</string>
@@ -35,16 +27,12 @@
       </FileList>
     </entry>
     <entry>
-      <string>Disable Clava Info</string>
-      <boolean>false</boolean>
-    </entry>
-    <entry>
       <string>Clean intermediate files</string>
       <boolean>true</boolean>
     </entry>
     <entry>
       <string>main</string>
-      <string></string>
+      <string>MatrixMulGenericDse</string>
     </entry>
     <entry>
       <string>argv</string>
@@ -58,24 +46,12 @@
       </OptionalFile>
     </entry>
     <entry>
-      <string>javascript</string>
-      <boolean>false</boolean>
-    </entry>
-    <entry>
-      <string>verbose</string>
-      <org.lara.interpreter.joptions.config.interpreter.VerboseLevel>warnings</org.lara.interpreter.joptions.config.interpreter.VerboseLevel>
-    </entry>
-    <entry>
       <string>output</string>
       <file></file>
     </entry>
     <entry>
       <string>bundle_tags</string>
       <string></string>
-    </entry>
-    <entry>
-      <string>Weaved code foldername</string>
-      <string>weaved_code</string>
     </entry>
     <entry>
       <string>Compiler Flags</string>
@@ -88,6 +64,49 @@
     <entry>
       <string>aspect</string>
       <file>MatrixMulMargot.lara</file>
+    </entry>
+    <entry>
+      <string>stack trace</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>include</string>
+      <FileList>
+        <fileList>
+          <file>C:/Apps/lara-package-manager/libs/clava-lat/LAT-Lara-Autotuning-Tool</file>
+          <file>../../../LAT-Lara-Autotuning-Tool</file>
+        </fileList>
+      </FileList>
+    </entry>
+    <entry>
+      <string>debug</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>Disable Clava Info</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>javascript</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>verbose</string>
+      <org.lara.interpreter.joptions.config.interpreter.VerboseLevel>warnings</org.lara.interpreter.joptions.config.interpreter.VerboseLevel>
+    </entry>
+    <entry>
+      <string>Generate Modified Code Only</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>Weaved code foldername</string>
+      <string>weaved_code</string>
+    </entry>
+    <entry>
+      <string>header includes</string>
+      <FileList>
+        <fileList/>
+      </FileList>
     </entry>
     <entry>
       <string>report</string>
@@ -110,10 +129,6 @@
     <entry>
       <string>C/C++ Standard</string>
       <pt.up.fe.specs.clava.language.Standard>C11</pt.up.fe.specs.clava.language.Standard>
-    </entry>
-    <entry>
-      <string>stack trace</string>
-      <boolean>false</boolean>
     </entry>
   </values>
   <strict>false</strict>
