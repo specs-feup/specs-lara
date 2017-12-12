@@ -1,3 +1,8 @@
+import lara.metrics.ExecutionTimeMetric;
+import lara.metrics.EnergyMetric;
+
+import GenericDse; // TEMP: Create interface in LARA API
+
 /**
  * Class that holds information for the DSE step needed in mARGOt's toolflow. This concerns a single block.
  * 
@@ -21,14 +26,19 @@ function MargotDseInfo(blockName) {
 	 * */
 	this._features = {};
 	/**
-	 * The array of margot metrics
+	 * The array of margot monitors
 	 * */
-	this._metrics = [];
+	this._monitors = [];
 	
 	/**
 	 * The number of DSE runs
 	 * */
 	this._dseRuns = 0;
+	
+	this._scope = undefined;
+	this._measure = undefined;
+	
+	this.monitoToResults = undefined;
 }
 
 /**
@@ -76,21 +86,21 @@ MargotDseInfo.prototype.setDataFeatures = function(dataFeatures) {
 };
 
 /**
- * Returns the metrics to be measured.
+ * Returns the monitors to be measured.
  * */
-MargotDseInfo.prototype.getMargotMetrics = function() {
+MargotDseInfo.prototype.getMargotMonitors = function() {
 	
-	return this._metrics;
+	return this._monitors;
 };
 
 /**
- * Sets the metrics to be measured.
+ * Sets the monitors to be measured.
  * 
- * @param {MargotMetric[]} margotMetrics - the array of metrics to be measured
+ * @param {MargotMonitor[]} margotMonitors - the array of monitors to be measured
  * */
-MargotDseInfo.prototype.setMargotMetrics = function(margotMetrics) {
+MargotDseInfo.prototype.setMargotMonitors = function(margotMonitors) {
 	
-	this._metrics = margotMetrics;
+	this._monitors = margotMonitors;
 };
 
 /**
@@ -110,3 +120,110 @@ MargotDseInfo.prototype.setDseRuns = function(dseRuns) {
 	
 	this._dseRuns = dseRuns;
 };
+
+/**
+ * Sets the scope of the DSE where the variables will be changed (e.g., the body of a function).
+ * 
+ * @param {joinpoint} $scope - the scope join point
+ * */
+MargotDseInfo.prototype.setScope = function ($scope) {
+	
+	this._scope = $scope;
+};
+
+/**
+ * Sets the join point around which the monitors will be measured.
+ * 
+ * @param {joinpoint} $measure - the reference join point
+ * */
+MargotDseInfo.prototype.setMeasure = function ($measure) {
+	
+	this._measure = $measure;
+};
+
+
+MargotDseInfo.prototype.setKnobValueList = function (knobName, values) {
+	
+}
+
+MargotDseInfo.prototype.execute = function () {
+	// check undefined elements
+	
+	var laraMetrics = this._createLaraMetrics();
+
+	// TEMP: Should use generic DSE API
+	var bs1_test = new LatVarList("BS1", [8]);
+	var bs2_test = new LatVarList("BS2", [8, 16]);
+	
+
+	//~ var n1 = new LatVarList("N", [512, 256]);
+	//~ var n2 = new LatVarList("M", [512, 256]);
+
+	//~ var matrixSizesTest = new LatVarSet(n1, n2);
+
+	var dseVars = [bs1_test, bs2_test];		
+
+	//call dseResults : GenericDse(this._scope, this._measure, dseVars, laraMetrics, undefined, this._dseRuns);	
+	
+	//Io.writeJson("./results.json", dseResults.results);
+	var results = Io.readJson("./results.json");
+	//this._createOpList(dseResults.results);
+	println("RESULTS:");
+	printObject(results);
+	//this._createOpList(results);
+	 
+	//printObject(dseResults.results);
+}
+
+
+
+
+MargotDseInfo.prototype._newSingleMetric = function(newMetric, metricsArray, monitorName) {
+	this.monitoToResults[monitorName] = newMetric.getName();
+
+	// Check if metric already exists in the array
+	for(metric of metricsArray) {
+		if(metric.getName() === newMetric.getName()) {
+			return;
+		}
+	}
+	
+	// Metric not found, add it
+	metricsArray.push(newMetric);
+}
+
+MargotDseInfo.prototype._createLaraMetrics = function () {
+
+	var laraMetrics = [];
+	this.monitoToResults = {};
+
+	for(var margotMonitor of this.getMargotMonitors()) {
+		switch(margotMonitor.getMargotMetric().getName()) {
+			case MargotMetricName.TIME:
+				this._newSingleMetric(new ExecutionTimeMetric(), laraMetrics, margotMonitor.getName());
+				break;
+			case MargotMetricName.ENERGY:
+				this._newSingleMetric(new EnergyMetric(), laraMetrics, margotMonitor.getName());
+				break;
+			default:
+				throw "Margot  metric not implemented yet: " + margotMetric.getName();
+		}
+	}
+	
+	return laraMetrics;
+}
+
+MargotDseInfo.prototype._createOpList = function(results) {
+	var opList = "";
+	
+	var numVariants = results.getNumVariants();
+	
+	// What variables we want to examine?
+	
+	for(var i=0; i<numVariants; i++) {
+		
+		// Generate metrics
+		
+	}
+}
+
