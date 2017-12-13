@@ -4,9 +4,15 @@ import lara.metrics.FileSizeMetric;
 import lara.metrics.EnergyMetric;
 import lara.metrics.ExecutionTimeMetric;
 
+import lara.dse.DseValuesList;
+import lara.dse.DseValuesSet;
+import lara.dse.VariableVariant;
+
 import lat.Lat;
 import lat.LatUtils;
+import lat.LatDseLoop;
 import lat.vars.LatVarSet;
+
 
 import lara.Io;
 /*
@@ -146,6 +152,50 @@ aspectdef MatrixMulGenericDse
 
 	println("Results:");
 	printObject(dseResults.results);
+
+end
+
+aspectdef MatrixMulDseLoop
+
+	var $scope = undefined;
+	var $measure = undefined;
+
+	// Select portion of code that we will explore
+	select function{"main"}.body.call{"matrix_mult_tiling"} end
+	apply
+		$scope = $body;
+		$measure = $call;		
+	end
+
+	var bs1_test = new VariableVariant(new DseValuesList(8), "BS1");
+	var bs2_test = new VariableVariant(new DseValuesList(8), "BS2");
+	//var bs1_test = new LatVarList("BS1", [8]);
+	//var bs2_test = new LatVarList("BS2", [8]);
+	
+
+	//var n1 = new LatVarList("N", [512, 256]);
+	//var n2 = new LatVarList("M", [512, 256]);
+	var n1 = new DseValuesList(512, 256);
+	var n2 = new DseValuesList(512, 256);
+
+	//var matrixSizesTest = new LatVarSet(n1, n2);
+	var matrixSizesTest = new VariableVariant(new DseValuesSet(n1, n2), "N", "M");
+
+	//var dseVars = [bs1_test, bs2_test, matrixSizesTest];		
+	var dseVariants = [bs1_test, bs2_test, matrixSizesTest];		
+		 
+	var metrics = [new ExecutionTimeMetric()];
+	//metrics.push(new EnergyMetric());
+	
+	var outputFolder = "./lat_output";
+	var numExec = 3;
+
+	var dseLoop = new LatDseLoop();
+	//call dseResults : GenericDse($scope, $measure, dseVars, metrics, outputFolder, numExec);
+	var results = dseLoop.execute($scope, $measure, dseVariants, metrics, outputFolder, numExec);
+
+	println("Results:");
+	printObject(results);
 
 end
 

@@ -32,7 +32,7 @@
     </entry>
     <entry>
       <string>main</string>
-      <string>MatrixMulGenericDse</string>
+      <string>MatrixMulDseLoop</string>
     </entry>
     <entry>
       <string>argv</string>
@@ -67,14 +67,14 @@
     </entry>
     <entry>
       <string>stack trace</string>
-      <boolean>false</boolean>
+      <boolean>true</boolean>
     </entry>
     <entry>
       <string>include</string>
       <FileList>
         <fileList>
-          <file>C:/Apps/lara-package-manager/libs/clava-lat/LAT-Lara-Autotuning-Tool</file>
-          <file>../../../LAT-Lara-Autotuning-Tool</file>
+          <file>C:\Apps\lara-package-manager\libs\clava-lat\LAT-Lara-Autotuning-Tool</file>
+          <file>..\..\..\LAT-Lara-Autotuning-Tool</file>
         </fileList>
       </FileList>
     </entry>
