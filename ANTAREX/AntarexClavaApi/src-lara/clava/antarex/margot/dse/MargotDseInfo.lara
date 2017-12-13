@@ -1,7 +1,10 @@
 import lara.metrics.ExecutionTimeMetric;
 import lara.metrics.EnergyMetric;
 
-import GenericDse; // TEMP: Create interface in LARA API
+import lara.dse.DseLoop;
+import lara.dse.DseValuesList;
+import lat.LatDseLoop;
+//import GenericDse; // TEMP: Create interface in LARA API
 
 /**
  * Class that holds information for the DSE step needed in mARGOt's toolflow. This concerns a single block.
@@ -39,6 +42,9 @@ function MargotDseInfo(blockName) {
 	this._measure = undefined;
 	
 	this.monitoToResults = undefined;
+	
+	// Using LAT for now
+	this.dseLoop = new LatDseLoop();
 }
 
 /**
@@ -151,9 +157,13 @@ MargotDseInfo.prototype.execute = function () {
 	
 	var laraMetrics = this._createLaraMetrics();
 
+	
+	
 	// TEMP: Should use generic DSE API
-	var bs1_test = new LatVarList("BS1", [8]);
-	var bs2_test = new LatVarList("BS2", [8, 16]);
+	//var bs1_test = new LatVarList("BS1", [8]);
+	//var bs2_test = new LatVarList("BS2", [8, 16]);
+	var bs1_test = new DseValuesList("BS1", 8);
+	var bs2_test = new DseValuesList("BS2", 8, 16);
 	
 
 	//~ var n1 = new LatVarList("N", [512, 256]);
@@ -163,10 +173,13 @@ MargotDseInfo.prototype.execute = function () {
 
 	var dseVars = [bs1_test, bs2_test];		
 
+	var results = this.dseLoop.execute(this._scope, this._measure, dseVars, laraMetrics, undefined, this._dseRuns);
+	//Io.writeJson("./results.json", results);
+	//var results = Io.readJson("./results.json");
 	//call dseResults : GenericDse(this._scope, this._measure, dseVars, laraMetrics, undefined, this._dseRuns);	
 	
-	//Io.writeJson("./results.json", dseResults.results);
-	var results = Io.readJson("./results.json");
+
+	
 	//this._createOpList(dseResults.results);
 	println("RESULTS:");
 	printObject(results);
