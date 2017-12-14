@@ -3,8 +3,12 @@ import lara.metrics.EnergyMetric;
 
 import lara.dse.DseLoop;
 import lara.dse.DseValuesList;
+import lara.dse.VariableVariant;
 import lat.LatDseLoop;
-//import GenericDse; // TEMP: Create interface in LARA API
+
+import antarex.margot.dse.metric.MargotMetric;
+import lara.units.TimeUnit;
+import lara.units.TimeModifier;
 
 /**
  * Class that holds information for the DSE step needed in mARGOt's toolflow. This concerns a single block.
@@ -41,10 +45,20 @@ function MargotDseInfo(blockName) {
 	this._scope = undefined;
 	this._measure = undefined;
 	
-	this.monitoToResults = undefined;
+	this.metricToResults = {};
 	
 	// Using LAT for now
 	this.dseLoop = new LatDseLoop();
+	
+	/**
+	 * The array of {@link VariableVariant} that is used by the DSE engine.
+	 * */
+	this._dseVars = [];
+	
+	/**
+	 * The array of {@link MargotMetric} which tells the DSE what to measure and what unit to write the results as.
+	 * */
+	this._metrics = {};
 }
 
 /**
@@ -147,52 +161,56 @@ MargotDseInfo.prototype.setMeasure = function ($measure) {
 	this._measure = $measure;
 };
 
-
-MargotDseInfo.prototype.setKnobValueList = function (knobName, values) {
+/**
+ * Sets the values a knob can take during the exploration.
+ * 
+ * @param {string} knobName -  the name of the knob
+ * @param {(Object[]|...Object)} values - the values the knob is going to take during DSE
+ * */
+MargotDseInfo.prototype.setKnobValues = function (knobName) {
 	
+	var knob = this._knobs[knobName];
+	checkDefined(knob);
+	
+	var variant = new VariableVariant(knob.getVarName(), arrayFromArgs(arguments, 1));
+	
+	this._dseVars.push(variant);
 }
 
-MargotDseInfo.prototype.execute = function () {
+/**
+ * Adds a metric to the DSE. This is one of the things that will be measured.
+ * 
+ * @param {string} name - the name of the metric
+ * @param {TimeUnit} unit - the unit of the metric
+ * */
+MargotDseInfo.prototype.addTimeMetric = function(name, unit) {
+	
+	var metric = new MargotMetric(MargotMetricName.TIME, unit);
+	
+	this._metrics[name] = metric;
+}
+
+MargotDseInfo.prototype.execute = function (filePath) {
 	// check undefined elements
 	
 	var laraMetrics = this._createLaraMetrics();
 
+	var results = this.dseLoop.execute(this._scope, this._measure, this._dseVars, laraMetrics, undefined, this._dseRuns);
 	
+	var opList = this._createOpList(results);
 	
-	// TEMP: Should use generic DSE API
-	//var bs1_test = new LatVarList("BS1", [8]);
-	//var bs2_test = new LatVarList("BS2", [8, 16]);
-	var bs1_test = new DseValuesList("BS1", 8);
-	var bs2_test = new DseValuesList("BS2", 8, 16);
-	
-
-	//~ var n1 = new LatVarList("N", [512, 256]);
-	//~ var n2 = new LatVarList("M", [512, 256]);
-
-	//~ var matrixSizesTest = new LatVarSet(n1, n2);
-
-	var dseVars = [bs1_test, bs2_test];		
-
-	var results = this.dseLoop.execute(this._scope, this._measure, dseVars, laraMetrics, undefined, this._dseRuns);
-	//Io.writeJson("./results.json", results);
-	//var results = Io.readJson("./results.json");
-	//call dseResults : GenericDse(this._scope, this._measure, dseVars, laraMetrics, undefined, this._dseRuns);	
-	
-
-	
-	//this._createOpList(dseResults.results);
-	println("RESULTS:");
-	printObject(results);
-	//this._createOpList(results);
-	 
-	//printObject(dseResults.results);
+	if(filePath !== undefined) {
+        println('Writing oplist to ' + filePath);
+        Io.writeFile(filePath, opList);
+    }
 }
 
 
 
 
-MargotDseInfo.prototype._newSingleMetric = function(newMetric, metricsArray, monitorName) {
-	this.monitoToResults[monitorName] = newMetric.getName();
+MargotDseInfo.prototype._newSingleMetric = function(newMetric, metricsArray, margotMetricName) {
+	
+	this.metricToResults[margotMetricName] = newMetric.getName();
 
 	// Check if metric already exists in the array
 	for(metric of metricsArray) {
@@ -208,15 +226,16 @@ MargotDseInfo.prototype._newSingleMetric = function(newMetric, metricsArray, mon
 MargotDseInfo.prototype._createLaraMetrics = function () {
 
 	var laraMetrics = [];
-	this.monitoToResults = {};
 
-	for(var margotMonitor of this.getMargotMonitors()) {
-		switch(margotMonitor.getMargotMetric().getName()) {
+	for(var margotMetricName in this._metrics) {
+		
+		var margotMetric = this._metrics[margotMetricName];
+		switch(margotMetric.getName()) {
 			case MargotMetricName.TIME:
-				this._newSingleMetric(new ExecutionTimeMetric(), laraMetrics, margotMonitor.getName());
+				this._newSingleMetric(new ExecutionTimeMetric(), laraMetrics, margotMetricName);
 				break;
 			case MargotMetricName.ENERGY:
-				this._newSingleMetric(new EnergyMetric(), laraMetrics, margotMonitor.getName());
+				this._newSingleMetric(new EnergyMetric(), laraMetrics, margotMetricName);
 				break;
 			default:
 				throw "Margot  metric not implemented yet: " + margotMetric.getName();
@@ -227,16 +246,79 @@ MargotDseInfo.prototype._createLaraMetrics = function () {
 }
 
 MargotDseInfo.prototype._createOpList = function(results) {
+	
 	var opList = "";
 	
 	var numVariants = results.getNumVariants();
 	
-	// What variables we want to examine?
-	
+	opList += '<?xml version="1.0" encoding="UTF-8"?>\n';
+	opList += '<points xmlns="http://www.multicube.eu/" version="1.3" block="' + this._block + '">\n';
 	for(var i=0; i<numVariants; i++) {
+	
+		opList += "<point>\n";
+		opList += "<parameters>\n";
+		for(var knob of this._knobs) {
+			opList += "<parameter ";
+			
+			var knobName = knob.getName();
+			var knobValue = results.getVariantVariableValue(knob.getVarName(), i); 
+			
+			opList += 'name="' + knobName + '" value="' + knobValue + '"/>\n';
+			
+		}		
+		opList += "</parameters>\n";
 		
-		// Generate metrics
-		
+		opList += "<system_metrics>\n";
+
+		for(var margotMetricName in this._metrics) {
+
+			var metricResultsName = this.metricToResults[margotMetricName];	
+			var metricResults = results.getMetricResults(metricResultsName);
+			
+			var executionValues = metricResults.getVariantValues(i);
+			var metricsArray = this._metrics;
+			var convertedExecutionValues = executionValues.map(function(element){ return metricsArray[margotMetricName].convertUnit(element, metricResults.getUnit(), true);});
+			var avg = this._calcAverage(convertedExecutionValues);
+			var stdDev = this._calcStdDev(convertedExecutionValues, avg);
+
+			opList += '<system_metric name="' + margotMetricName + '" value="' + avg + '" standard_dev="' + stdDev +'"/>\n';			
+			
+		}
+		opList += "</system_metrics>\n";
+		opList += "</point>\n";
 	}
+	opList += "</points>\n";
+	
+	
+	return opList;
+}
+
+MargotDseInfo.prototype._calcAverage = function(values) {
+
+	var sum = 0;
+	for( var i = 0; i < values.length; i++ ){
+		sum += parseFloat( values[i]); 
+	}
+
+	return sum/values.length;
+}
+
+MargotDseInfo.prototype._calcStdDev = function(values, average) {
+
+	if(average === undefined) {
+		average = this._calcAverage(values);
+	}
+
+	// Calculate sum of the squares of the differences
+	var sum = 0;
+	for(var value of values) {
+		var diff = average - value;
+		var square = diff * diff;
+		sum += square;
+	}
+	
+	var divided = sum / (values.length - 1);
+	
+	return Math.sqrt(divided);
 }
 

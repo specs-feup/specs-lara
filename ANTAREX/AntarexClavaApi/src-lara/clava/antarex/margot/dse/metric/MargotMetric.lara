@@ -58,6 +58,6 @@ MargotMetric.prototype.getUnitName = function() {
  * @param {string} unit - the unit in which the value is represented
  * 
  * */
-MargotMetric.prototype.convertUnit = function(value, unit) {
-    return this._unit.convert(value, unit);
+MargotMetric.prototype.convertUnit = function(value, unit, unitHasBaseName) {
+    return this._unit.convert(value, unit, unitHasBaseName);
 };
