@@ -3,6 +3,7 @@ import lara.metrics.EnergyMetric;
 
 import lara.dse.DseLoop;
 import lara.dse.DseValuesList;
+import lara.dse.DseValuesSet;
 import lara.dse.VariableVariant;
 import lat.LatDseLoop;
 
@@ -178,6 +179,62 @@ MargotDseInfo.prototype.setKnobValues = function (knobName) {
 }
 
 /**
+ * Sets the values a feature can take during the exploration.
+ * 
+ * @param {string} featureName -  the name of the feature
+ * @param {(Object[]|...Object)} values - the values the feature is going to take during DSE
+ * */
+MargotDseInfo.prototype.setFeatureValues = function (featureName) {
+	
+	// this function treats a data feature the same way as a knob
+	
+	var feature = this._features[featureName];
+	checkDefined(feature);
+	
+	var variant = new VariableVariant(featureName, arrayFromArgs(arguments, 1));
+	
+	this._dseVars.push(variant);
+}
+
+/**
+ * Sets the values that a set of data features can take during the exploration.
+ * 
+ * @param {string[]} featureNames -  the names of the data features
+ * @param {...Object[]} values - the values of the features, there should be as many arrays as there are data features
+ * */
+MargotDseInfo.prototype.setFeatureSetValues = function (featureNames) {
+	
+	var valueArrays = arrayFromArgs(arguments, 1);
+	
+	// check that there are as many value sets as there are features
+	if(featureNames.length !== valueArrays.length) {
+		throw 'You should specify as many arrays of values (' + valueArrays.length + ') as features (' + featureNames.length + ')';
+	}
+	
+	// check that each value set has the same length
+	if(valueArrays.some(function(e){return e.length !== valueArrays[0].length;})) {
+		throw 'All arrays of values should have the same length';
+	}
+	
+	var currentArray = 0;
+	var dseValues = [];
+	for(var featureName of featureNames) {
+		
+		var feature = this._features[featureName];
+		checkDefined(feature);
+		
+		dseValues.push(new DseValuesList(valueArrays[currentArray]));
+		
+		currentArray++;
+	}
+	
+	var variant = new VariableVariant(featureNames, new DseValuesSet(dseValues));
+	
+	this._dseVars.push(variant);
+}
+
+
+/**
  * Adds a metric to the DSE. This is one of the things that will be measured.
  * 
  * @param {string} name - the name of the metric
@@ -256,6 +313,8 @@ MargotDseInfo.prototype._createOpList = function(results) {
 	for(var i=0; i<numVariants; i++) {
 	
 		opList += "<point>\n";
+		
+		// knobs / parameters
 		opList += "<parameters>\n";
 		for(var knob of this._knobs) {
 			opList += "<parameter ";
@@ -268,6 +327,10 @@ MargotDseInfo.prototype._createOpList = function(results) {
 		}		
 		opList += "</parameters>\n";
 		
+		// features		
+		opList += this._buildFeaturesXml(results, i);
+		
+		// metrics
 		opList += "<system_metrics>\n";
 
 		for(var margotMetricName in this._metrics) {
@@ -291,6 +354,22 @@ MargotDseInfo.prototype._createOpList = function(results) {
 	
 	
 	return opList;
+}
+
+MargotDseInfo.prototype._buildFeaturesXml = function(results, index) {
+	
+	var code = "<features>\n";
+		
+	for(var feature of this._features) {
+		
+		var featureName = feature.getName();
+		var featureValue = results.getVariantVariableValue(featureName, index);
+		code += '<feature name="' + featureName + '" value="' + featureValue  + '" />';
+	}
+	
+	code += "</features>\n";
+	
+	return code;
 }
 
 MargotDseInfo.prototype._calcAverage = function(values) {
