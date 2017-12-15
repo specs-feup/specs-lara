@@ -1,4 +1,4 @@
-import antarex.margot.MargotConfig;
+import antarex.margot.config.MargotConfig;
 
 aspectdef XmlConfig
 
@@ -24,7 +24,7 @@ aspectdef XmlConfig
 	matmul.addKnob('block_size_2', 'BS2', 'int');
 
 	/* metrics */
-	matmul.addMetric('exec_time_ms', 'int', MargotDistribution.YES);
+	matmul.addMetric('exec_time_ms', 'int', true);
 
 	/* data features */
 	matmul.addDataFeature('size_n', 'int');
@@ -41,7 +41,7 @@ aspectdef XmlConfig
 	var state = matmul.newState('my_optimization');
 	state.setStarting(true);
 
-	state.minimize('exec_time_ms', 1.0);
+	state.minimizeMetric('exec_time_ms', 1.0);
 	
 	state.subjectTo('exec_time_lower_bound', 3, 30);
 
