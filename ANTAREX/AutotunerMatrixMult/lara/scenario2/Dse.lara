@@ -1,6 +1,4 @@
 import lara.units.TimeUnit;
-import lara.units.EnergyUnit;
-import antarex.margot.config.MargotEnergyDomain;
 
 aspectdef Dse
 	input
@@ -19,7 +17,6 @@ aspectdef Dse
 
 	// add desired metrics
 	dseInfo.addTimeMetric('exec_time_ms', TimeUnit.micro());
-	dseInfo.addEnergyMetric('energy', EnergyUnit.micro(), MargotEnergyDomain.PACKAGE);
 
 	// set the knob values
 	dseInfo.setKnobValues('block_size_1', [8]);
