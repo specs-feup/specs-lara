@@ -171,7 +171,7 @@ MargotDseInfo.prototype.setMeasure = function ($measure) {
 MargotDseInfo.prototype.setKnobValues = function (knobName) {
 	
 	var knob = this._knobs[knobName];
-	checkDefined(knob);
+	checkTrue(knob !== undefined, 'Could not find knob with name "' + knobName + '"', 'setKnobValues');
 	
 	var variant = new VariableVariant(knob.getVarName(), arrayFromArgs(arguments, 1));
 	
@@ -189,7 +189,7 @@ MargotDseInfo.prototype.setFeatureValues = function (featureName) {
 	// this function treats a data feature the same way as a knob
 	
 	var feature = this._features[featureName];
-	checkDefined(feature);
+	checkTrue(feature !== undefined, 'Could not find feature with name "' + featureName + '"', 'setFeatureValues');
 	
 	var variant = new VariableVariant(featureName, arrayFromArgs(arguments, 1));
 	
@@ -221,7 +221,7 @@ MargotDseInfo.prototype.setFeatureSetValues = function (featureNames) {
 	for(var featureName of featureNames) {
 		
 		var feature = this._features[featureName];
-		checkDefined(feature);
+		checkTrue(feature !== undefined, 'Could not find feature with name "' + featureName + '"', 'setFeatureSetValues');
 		
 		dseValues.push(new DseValuesList(valueArrays[currentArray]));
 		
@@ -235,7 +235,7 @@ MargotDseInfo.prototype.setFeatureSetValues = function (featureNames) {
 
 
 /**
- * Adds a metric to the DSE. This is one of the things that will be measured.
+ * Adds a time metric to the DSE. This is one of the measurements to be performed.
  * 
  * @param {string} name - the name of the metric
  * @param {TimeUnit} unit - the unit of the metric
@@ -243,6 +243,22 @@ MargotDseInfo.prototype.setFeatureSetValues = function (featureNames) {
 MargotDseInfo.prototype.addTimeMetric = function(name, unit) {
 	
 	var metric = new MargotMetric(MargotMetricName.TIME, unit);
+	
+	this._metrics[name] = metric;
+}
+
+/**
+ * Adds an energy metric to the DSE. This is one of the measurements to be performed.
+ * 
+ * @param {string} name - the name of this metric
+ * @param {SiUnit} unit the unit of this mertic
+ * @param {MargotEnergyDomain} domain - the domain of the energy measurement
+ * */
+MargotDseInfo.prototype.addEnergyMetric = function(name, unit, domain) {
+	
+	var metric = new MargotMetric(MargotMetricName.ENERGY, unit);
+
+	metric.addInfo('domain', domain);
 	
 	this._metrics[name] = metric;
 }
@@ -266,11 +282,13 @@ MargotDseInfo.prototype.execute = function (filePath) {
 
 
 MargotDseInfo.prototype._newSingleMetric = function(newMetric, metricsArray, margotMetricName) {
+
+
 	
 	this.metricToResults[margotMetricName] = newMetric.getName();
 
 	// Check if metric already exists in the array
-	for(metric of metricsArray) {
+	for(var metric of metricsArray) {
 		if(metric.getName() === newMetric.getName()) {
 			return;
 		}
@@ -283,22 +301,31 @@ MargotDseInfo.prototype._newSingleMetric = function(newMetric, metricsArray, mar
 MargotDseInfo.prototype._createLaraMetrics = function () {
 
 	var laraMetrics = [];
+	var temp = new EnergyMetric();
+
+
 
 	for(var margotMetricName in this._metrics) {
-		
+//		println("Metric name: " + margotMetricName);
 		var margotMetric = this._metrics[margotMetricName];
+	//	println("SWITCH ARG:" + margotMetric.getName());
+	//	println("TIME CASE VALUE:" + MargotMetricName.TIME);
+	//	println("ENERGY CASE VALUE:" + MargotMetricName.ENERGY);
 		switch(margotMetric.getName()) {
 			case MargotMetricName.TIME:
+	//			println("TIME CASE");
 				this._newSingleMetric(new ExecutionTimeMetric(), laraMetrics, margotMetricName);
 				break;
 			case MargotMetricName.ENERGY:
+	//		println("ENERGY CASE");
 				this._newSingleMetric(new EnergyMetric(), laraMetrics, margotMetricName);
 				break;
 			default:
 				throw "Margot  metric not implemented yet: " + margotMetric.getName();
 		}
 	}
-	
+//	println("Lara metrics");
+//	printObject(laraMetrics);
 	return laraMetrics;
 }
 
@@ -333,10 +360,12 @@ MargotDseInfo.prototype._createOpList = function(results) {
 		// metrics
 		opList += "<system_metrics>\n";
 
+	
 		for(var margotMetricName in this._metrics) {
-
 			var metricResultsName = this.metricToResults[margotMetricName];	
 			var metricResults = results.getMetricResults(metricResultsName);
+			
+
 			
 			var executionValues = metricResults.getVariantValues(i);
 			var metricsArray = this._metrics;

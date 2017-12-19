@@ -19,7 +19,16 @@ var MargotMetric = function(name, unit) {
     
     this._name = name;
     this._unit = unit;
+    
+    this._info = {};
 };
+
+/**
+ * Adds arbitrary information to this metric using a <key, value> pair.
+ * */
+MargotMetric.prototype.addInfo = function(key, value) {
+	this._info[key] = value;
+}
 
 /**
  * Returns the name of this metric.

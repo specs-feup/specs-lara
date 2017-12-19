@@ -1,8 +1,10 @@
 import clava.Clava;
 
 import XmlConfig;
-//import Dse;
+import Dse;
 import CodeGen;
+
+var DEBUG = true;
 
 aspectdef TopLevel
 
@@ -15,7 +17,7 @@ aspectdef TopLevel
 
 	// perform the DSE
 	var dseInfo = config.dseInfo;
-//	call Dse(dseInfo, opListPath);
+	call Dse(dseInfo, opListPath);
 
 	// change the original application
 	var codeGenInfo = config.codeGenInfo;

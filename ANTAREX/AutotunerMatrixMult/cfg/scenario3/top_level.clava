@@ -6,6 +6,7 @@
       <FileList>
         <fileList>
           <file>../../src</file>
+          <file>../../../../../specs-c-libs/SpecsRapl/src</file>
         </fileList>
       </FileList>
     </entry>
@@ -72,7 +73,9 @@
     <entry>
       <string>include</string>
       <FileList>
-        <fileList/>
+        <fileList>
+          <file>../../../../../LAT-Lara-Autotuning-Tool</file>
+        </fileList>
       </FileList>
     </entry>
     <entry>
@@ -102,7 +105,9 @@
     <entry>
       <string>header includes</string>
       <FileList>
-        <fileList/>
+        <fileList>
+          <file>../../../../../specs-c-libs/SpecsRapl/include</file>
+        </fileList>
       </FileList>
     </entry>
     <entry>
@@ -111,6 +116,12 @@
         <file></file>
         <used>false</used>
       </OptionalFile>
+    </entry>
+    <entry>
+      <string>external_dependencies</string>
+      <StringList>
+        <stringList/>
+      </StringList>
     </entry>
     <entry>
       <string>Disable Weaving</string>

@@ -49,7 +49,9 @@ public enum LaraAntarexApiResource implements LaraResourceProvider {
     MARGOT_CONFIG_MONITOR("margot/config/monitor/MargotMonitor.lara"),
     MARGOT_CONFIG_ENERGY_MONITOR("margot/config/monitor/MargotEnergyMonitor.lara"),
     MARGOT_CONFIG_THROUGHPUT_MONITOR("margot/config/monitor/MargotThroughputMonitor.lara"),
-    MARGOT_CONFIG_TIME_MONITOR("margot/config/monitor/MargotTimeMonitor.lara");
+    MARGOT_CONFIG_TIME_MONITOR("margot/config/monitor/MargotTimeMonitor.lara"),
+
+    MARGOT_CONFIG_DOMAIN("margot/config/MargotEnergyDomain.lara");
 
     private final String resource;
 

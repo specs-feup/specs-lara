@@ -32,9 +32,9 @@ aspectdef XmlConfig
 	matmul.addMetric('energy', 'float', true);
 
 	/* data features */
-	matmul.addDataFeature('size_n', 'int');
-	matmul.addDataFeature('size_m', 'int');
-	matmul.addDataFeature('size_k', 'int');
+	matmul.addDataFeature('N', 'int');
+	matmul.addDataFeature('M', 'int');
+	matmul.addDataFeature('K', 'int');
 
 	/* runtime */
 	matmul.addRuntimeProvider('exec_time_ms', 'timer', 1);
