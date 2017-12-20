@@ -429,7 +429,7 @@ end
  * Template used for the generation of the XML code for runtime information providers.
  * */
 codedef _RuntimeTemplate(param1, param2, param3) %{
-<metric metric_name="[[param1]]" using="[[param2]]" inertia="[[param3]]"/> 
+<adapt metric_name="[[param1]]" using="[[param2]]" inertia="[[param3]]"/> 
 }%
 end
 
