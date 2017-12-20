@@ -122,6 +122,12 @@ MargotDataFeatureGroup.prototype.addFeature = function(name, type, validity) {
 MargotDataFeatureGroup.prototype._makeCode = function() {
 	
 	var featuresCode = '';
+	
+	if(this._features.length === 0) {
+		
+		return featuresCode;
+	}
+	
 	for(var feature of this._features) {
 		featuresCode += feature._makeCode();
 	}
