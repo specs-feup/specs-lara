@@ -4,7 +4,7 @@ import XmlConfig;
 import Dse;
 import CodeGen;
 
-var DEBUG = true;
+var LARA_DEBUG = true;
 
 aspectdef TopLevel
 
