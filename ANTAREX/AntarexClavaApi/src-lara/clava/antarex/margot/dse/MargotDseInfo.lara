@@ -388,7 +388,7 @@ MargotDseInfo.prototype._createOpList = function(results) {
 MargotDseInfo.prototype._buildFeaturesXml = function(results, index) {
 	
 	// do not generate a 'features' element if we do not have at least a single feature
-	if(this._features.keys().length === 0) {
+	if(Object.keys(this._features).length === 0) {
 		return '';
 	}
 	
