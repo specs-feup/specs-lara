@@ -123,6 +123,7 @@ MargotDataFeatureGroup.prototype._makeCode = function() {
 	
 	var featuresCode = '';
 	
+	// do not generate a 'features' element if we do not have at least a single feature
 	if(this._features.length === 0) {
 		
 		return featuresCode;
