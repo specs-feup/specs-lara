@@ -191,7 +191,7 @@ var _MargotGoalKind = {
  * 
  * @enum
  * */
-var MargotCFun = new Enumeration('LT','LE','GT','GE');
+var MargotCFun = new Enumeration({LT: 'LT', LE: 'LE', GT: 'GT', GE: 'GE'});
 
 /**
  * Adds a monitor to this block.
