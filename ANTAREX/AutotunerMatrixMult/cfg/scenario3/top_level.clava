@@ -5,7 +5,7 @@
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>..\..\src</file>
+          <file>../../src</file>
         </fileList>
       </FileList>
     </entry>
@@ -47,7 +47,7 @@
     </entry>
     <entry>
       <string>output</string>
-      <file>..\..\woven</file>
+      <file>../../woven</file>
     </entry>
     <entry>
       <string>bundle_tags</string>
@@ -63,7 +63,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>..\..\lara\scenario3\TopLevel.lara</file>
+      <file>../../lara/scenario3/TopLevel.lara</file>
     </entry>
     <entry>
       <string>stack trace</string>
