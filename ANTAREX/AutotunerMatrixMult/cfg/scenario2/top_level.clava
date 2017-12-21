@@ -72,9 +72,7 @@
     <entry>
       <string>include</string>
       <FileList>
-        <fileList>
-          <file>../../../../../LAT-Lara-Autotuning-Tool</file>
-        </fileList>
+        <fileList/>
       </FileList>
     </entry>
     <entry>
@@ -113,6 +111,14 @@
         <file></file>
         <used>false</used>
       </OptionalFile>
+    </entry>
+    <entry>
+      <string>external_dependencies</string>
+      <StringList>
+        <stringList>
+          <string>https://github.com/specs-feup/LAT-Lara-Autotuning-Tool.git</string>
+        </stringList>
+      </StringList>
     </entry>
     <entry>
       <string>Disable Weaving</string>
