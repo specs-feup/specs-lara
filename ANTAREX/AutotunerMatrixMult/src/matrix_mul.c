@@ -6,7 +6,9 @@
 #include <math.h>
 #include <stdlib.h>
 
+#ifndef SCENARIO
 #define SCENARIO 1 // 1: one execution; 2: N_EXEC executions with different matrix sizes
+#endif
 
 #define MIN(x, y) (((x) < (y)) ? (x) : (y))
 
