@@ -1,0 +1,150 @@
+import clava.Clava;
+
+import antarex.margot.config.MargotConfig;
+
+aspectdef Main
+
+	var configPath = Clava.getWeavingFolder() + '/matmul.conf';
+	var oplistPath = Clava.getWeavingFolder() + '/oplist.conf';
+	var targetName = 'RunMonteCarloSimulation';
+	var defaultSamples = 10000;
+	var defaultUnpredicatability = 0;
+	var unpredictabilitySamples = 100;
+
+	call config : McConfig(configPath, targetName);
+
+	call McCodegen(targetName, config.codegenInfo, defaultSamples, defaultUnpredicatability,unpredictabilitySamples);
+	
+	println('weaving done');
+end
+
+aspectdef McConfig
+	input
+		configPath,
+		targetName
+	end
+
+	output
+		dseInfo,
+		codegenInfo
+	end
+
+	var config = new MargotConfig();
+	var travel = config.newBlock('travel');
+
+	/* goals */
+	travel.addMetricGoal('my_error_goal', MargotCFun.LE, 0.03, 'error');
+	
+	/* knobs */
+	travel.addKnob('num_samples', 'samples', 'int');
+	
+	/* metrics */
+	travel.addMetric('throughput', 'float', true);
+	travel.addMetric('overhead_data_feature', 'float', true);
+	travel.addMetric('error', 'float', true);
+	travel.addMetric('energy', 'float', true);
+	travel.addMetric('elapsed_time_us', 'float', true);
+	
+	/* data features */
+	travel.addDataFeature('unpredictability', 'float', MargotValidity.GE);
+	
+	/* states */
+	var problem = travel.newState('problem');
+	problem.setStarting(true);
+	problem.setMinimizeCombination(MargotCombination.LINEAR);
+	problem.minimizeKnob('num_samples', 1.0);
+	problem.subjectTo('my_error_goal', 1, 8);
+	
+	config.build(configPath);
+	
+	/* generate the information needed for DSE */
+	dseInfo = config.getDseInfo('travel');
+	
+	/* generate the information needed for the code gen */
+	codegenInfo = config.getCodeGenInfo('travel');
+
+	println('\tconfiguration done');
+end
+
+aspectdef McCodegen
+	input
+		targetName,
+		codegen,
+		defaultSamples,
+		defaultUnpredicatability,
+		unpredictabilitySamples
+	end
+
+	var $target = undefined;
+	var found = 0;
+
+	select stmt.call{targetName} end
+	apply
+		$target = $call;
+		found++;
+	end
+
+	if(found !== 1) {
+		throw 'found ' + found + ' calls to ' + targetName;
+	}
+
+	// add init
+	codegen.init($target);
+
+	// add unpredictability code
+	call AddUnpredictability($target, defaultSamples, defaultUnpredicatability, unpredictabilitySamples);
+
+	// add the rest of mARGOt code
+	codegen.update($target);
+
+	// add conditional code
+	call AddConditionalCode($target, unpredictabilitySamples);
+
+	// TODO: change argument of get_percentiles to match the output of the MC simulation
+
+	println('\tcode generation done');
+end
+
+aspectdef AddUnpredictability
+
+	input
+		$target,
+		defaultSamples,
+		defaultUnpredicatability,
+		unpredictabilitySamples
+	end
+
+	$target.insert before '/* unpredictability code */';
+	$target.insert before 'samples = ' + defaultSamples + ';';
+	$target.insert before 'float unpredictability = ' + defaultUnpredicatability + ';';
+	$target.insert before 'const int number_of_segments = mc.GetSegmentNumber();';
+	$target.insert before 'auto travel_times_feat_new = mc.RunMonteCarloSimulation('+unpredictabilitySamples+', start_day, start_hour, start_minute, false);';
+	$target.insert before 'ResultStats feat_stats(travel_times_feat_new, {});';
+	$target.insert before 'unpredictability = feat_stats.variationCoeff;';
+	$target.insert before '/* unpredictability code */';
+end
+
+
+aspectdef AddConditionalCode
+
+	input
+		$target,
+		unpredictabilitySamples
+	end
+
+	$target.insert before '/* conditional code */';
+
+	$target.insert before 'result_t travel_times_new;';
+	$target.insert before 'if(samples != ' + unpredictabilitySamples + ' ) {';
+
+//	$target.exec setArg(0, 'samples - ' + unpredictabilitySamples);
+
+	$target.insert after '/* conditional code */';	
+	$target.insert after '}';
+	$target.insert after 'travel_times_new = travel_times_feat_new;';
+	$target.insert after '} else {';
+	$target.insert after 'travel_times_new.insert(travel_times_new.end(), travel_times_feat_new.begin(), travel_times_feat_new.end());';
+	$target.insert after 'travel_times_new = run_result;';
+	
+	
+end
