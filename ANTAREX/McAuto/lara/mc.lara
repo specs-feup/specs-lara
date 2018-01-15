@@ -88,7 +88,7 @@ aspectdef McCodegen
 		throw 'found ' + found + ' calls to ' + targetName;
 	}
 
-	// add init
+	// add init (TODO: make init on the provided join point)
 	codegen.init($target);
 
 	// add unpredictability code
@@ -97,10 +97,17 @@ aspectdef McCodegen
 	// add the rest of mARGOt code
 	codegen.update($target);
 
+	// add output code
+	call AddOutputCode($target);
+
 	// add conditional code
 	call AddConditionalCode($target, unpredictabilitySamples);
 
 	// TODO: change argument of get_percentiles to match the output of the MC simulation
+	select stmt.call{'get_percentiles'} end
+	apply
+		$stmt.exec detach();
+	end
 
 	println('\tcode generation done');
 end
@@ -137,7 +144,7 @@ aspectdef AddConditionalCode
 	$target.insert before 'result_t travel_times_new;';
 	$target.insert before 'if(samples != ' + unpredictabilitySamples + ' ) {';
 
-//	$target.exec setArg(0, 'samples - ' + unpredictabilitySamples);
+	$target.exec setArgFromString(0, 'samples - ' + unpredictabilitySamples);
 
 	$target.insert after '/* conditional code */';	
 	$target.insert after '}';
@@ -147,4 +154,18 @@ aspectdef AddConditionalCode
 	$target.insert after 'travel_times_new = run_result;';
 	
 	
+end
+
+
+aspectdef AddOutputCode
+	
+	input
+		$target
+	end
+
+	$target.insert after 'std::cout << "OK" << std::endl;';
+	$target.insert after 'Routing::Data::WriteResultSingle(travel_times_new, outputFile, mc.GetSecondInterval());';
+	$target.insert after 'std::cout << "Writing result..." << std::flush;';
+	$target.insert after 'std::cout << stats << std::endl;';
+	$target.insert after 'ResultStats stats(travel_times_new);';
 end
