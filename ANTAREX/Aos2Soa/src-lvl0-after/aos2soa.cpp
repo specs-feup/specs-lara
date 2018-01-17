@@ -5,10 +5,10 @@
 #include <chrono>
 
 
-long test(std::vector<TestStruct> aos) {
-	std::vector<long> aos_x(aos.size());
-	std::vector<long> aos_y(aos.size());
-	std::vector<long> aos_z(aos.size());
+float test(std::vector<TestStruct> aos) {
+	std::vector<float> aos_x(aos.size());
+	std::vector<float> aos_y(aos.size());
+	std::vector<float> aos_z(aos.size());
 
 	for(std::vector<TestStruct>::iterator it = aos.begin(); it != aos.end(); ++it) {
 		aos_x.push_back((*it).x);
@@ -20,7 +20,7 @@ long test(std::vector<TestStruct> aos) {
 	
 	std::chrono::high_resolution_clock::time_point clava_timing_start_0 = std::chrono::high_resolution_clock::now();
 	
-    long acc = 0;
+    float acc = 0;
 	//for(int i=0; i<aos.size(); i++) {
     for(int i=0; i<aos_x.size(); i++) {
         // Access the field directly from the array

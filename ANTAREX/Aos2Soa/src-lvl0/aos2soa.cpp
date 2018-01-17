@@ -5,12 +5,12 @@
 #include <chrono>
 
 
-long test(std::vector<TestStruct> aos) {
+float test(std::vector<TestStruct> aos) {
 	
 	std::chrono::high_resolution_clock::time_point clava_timing_start_0 = std::chrono::high_resolution_clock::now();
 
 	
-    long acc = 0;
+    float acc = 0;
     for(int i=0; i<aos.size(); i++) {
         // Access the field directly from the array
         acc += aos[i].x;

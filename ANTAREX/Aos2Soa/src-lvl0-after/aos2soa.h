@@ -1,12 +1,17 @@
+#ifndef AOS2SOA_H
+#define AOS2SOA_H
+
 #include "aos2soa-config.h"
 
 #include <vector>
 
 struct TestStruct {
-    long x;
-    long y;
-    long z;
+    float x;
+    float y;
+    float z;
     int padding[PADDING];
 };
 
-long test(std::vector<TestStruct> aos);
+float test(std::vector<TestStruct> aos);
+
+#endif
