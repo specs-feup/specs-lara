@@ -1,6 +1,8 @@
-To compile, use cmake:
+To compile, create a build folder, enter it and use cmake:
 
- cmake -DLVL=0 -DAFTER=OFF
+ mkdir build
+ cd build
+ cmake -DLVL=0 -DAFTER=OFF ..
  
 Options:
 
