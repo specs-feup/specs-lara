@@ -73,7 +73,7 @@ aspectdef LibVersioningCompiler
 	}	
 	createVersion += "}\n);\n";
 
-	var $fcallDeclType = $fcall.decl.functionType;
+	var $fcallDeclType = $fcall.functionType;
 	var typedefName = "signature_" + id;
 
 	// Add typedef of function signature
