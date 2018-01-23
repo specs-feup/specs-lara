@@ -1,0 +1,114 @@
+import clava.ClavaJoinPoints;
+
+aspectdef MemoiApiTest
+
+	println(new Date());
+
+	var p = new MemoiProf('logarithm', 'log', '/home/pedro/Documents/memoi/prof/reports/');
+
+	p.profAll();
+	
+	println('api test done');
+end
+
+/**
+ * Memoization profiler.
+ * 
+ * @constructor
+ * 
+ * @param {string} targetName - the name of the target funtion
+ * @param {string} id - unique ID representing this function
+ * @param {string} reportDir - path to the directory where the report will be saved
+ * */
+function MemoiProf(targetName, id, reportDir) {
+	
+	this._targetName = targetName;
+	this._id = id;
+	this._reportDir = reportDir;
+	this._reportPath = reportDir + '/' + id + '.json';
+	this._wrapperName = targetName + '_memoi_prof';
+	this._monitorName = 'mi_' + id;
+
+	var asp1 = new _MemoiSetup(this._monitorName, this._id);
+	asp1.call();
+}
+
+/**
+ * The C data types the memoization instrumentation library can handle.
+ * 
+ * @enum
+ * */
+var MemoiDataType = new Enumeration('INT', 'DOUBLE', 'FLOAT');
+
+/**
+ * Profiles all calls of the target function.
+ * */
+MemoiProf.prototype.profAll = function() {
+	
+	var asp1 = new _MemoiMakeWrapper(this._targetName, this._wrapperName);
+	asp1.call();
+	var asp2 = new _MemoiInstrumentWrapper(this._wrapperName, this._monitorName);
+	asp2.call();
+}
+
+aspectdef _MemoiSetup
+
+	input
+		monitorName,
+		id
+	end
+
+	select file.function{'main'}.body end
+	apply
+
+		var type = "DOUBLE"; // hack!
+		
+		$body.exec insertBegin(%{[[monitorName]] = memoi_inst_init("[[id]]", [[type]]);}%);
+
+		/* add functions to print and clean up at every return on main */
+		$function.exec insertReturn(%{memoi_inst_to_json([[monitorName]], "[[reportsDir]]/[[report]].json");}%);
+		$function.exec insertReturn(%{[[monitorName]] = memoi_inst_destroy([[monitorName]]);}%);
+
+		$file.exec addInclude('MemoiInstrumenter.h', false);
+	end	
+end
+
+/**
+ * Makes a wrapper for all calls of a function with the provided name.
+ * @aspect
+ * */
+aspectdef _MemoiMakeWrapper
+	input
+		targetName,
+		wrapperName
+	end
+	
+	select stmt.call{targetName} end
+	apply
+		exec wrap(wrapperName);
+	end
+end
+
+/**
+ * Instruments a single wrapper with the calls to the memoization profiling library.
+ * Adds declaration to the monitor.
+ * Also adds the needed header include to the file.
+ * @aspect
+ * */
+aspectdef _MemoiInstrumentWrapper
+	input
+		wrapperName,
+		monitorName
+	end
+	
+	select file.function{wrapperName}.stmt.call end
+	apply
+		var firstParam = $function.params[0].name;
+		insert after 'memoi_inst_inc([[monitorName]], &[[firstParam]], &result);';
+
+		var type = ClavaJoinPoints.typeLiteral('MemoiInstrumenter*');
+		$file.exec addGlobal(monitorName, type, 'NULL');
+		
+		$file.exec addInclude("MemoiInstrumenter.h", false);
+	end
+end
