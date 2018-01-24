@@ -29,7 +29,7 @@ function MemoiProf(targetName, id, reportDir) {
 	this._monitorType = ClavaJoinPoints.typeLiteral('MemoiInstrumenter*');
 	this._dataType = this._findDataType();
 
-	var asp1 = new _MemoiSetup(this._monitorName, this._monitorType, this._id, this._reportPath);
+	var asp1 = new _MemoiSetup(this._monitorName, this._monitorType, this._id, this._reportDir, this._dataType);
 	asp1.call();
 }
 
@@ -122,24 +122,25 @@ aspectdef _MemoiSetup
 		monitorName,
 		monitorType,
 		id,
-		reportPath
+		dir,
+		type
 	end
 
 	select file.function{'main'}.body end
 	apply
-
-		var type = "DOUBLE"; // hack!
-		
 		$body.exec insertBegin(%{[[monitorName]] = memoi_inst_init("[[id]]", [[type]]);}%);
 
 		/* add functions to print and clean up at every return on main */
-		$function.exec insertReturn(%{memoi_inst_to_json([[monitorName]], "[[reportPath]]");}%);
+		$function.exec insertReturn(%{memoi_inst_to_json([[monitorName]], make_report_path("[[dir]]", "[[id]]"));}%);
 		$function.exec insertReturn(%{[[monitorName]] = memoi_inst_destroy([[monitorName]]);}%);
 
 		$file.exec addGlobal(monitorName, monitorType, 'NULL');
 
 		$file.exec addInclude('MemoiInstrumenter.h', false);
 		$file.exec addInclude('stdlib.h', true);
+
+		// insert the functions needed to make the report file path
+		$function.insert before _MemoiReportPath();
 	end	
 end
 
@@ -186,4 +187,57 @@ aspectdef _MemoiInstrumentWrapper
 		$file.exec addInclude("MemoiInstrumenter.h", false);
 		$file.exec addInclude('stdlib.h', true);
 	end
+end
+
+/**
+ * 		Template with the code needed to make the path of the report file with a
+ * timestamp.
+ * 
+ * @codedef
+ * @private
+ * */
+codedef _MemoiReportPath %{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+static const char* timestamp() {
+    
+    size_t length = 16;
+    char* stamp = malloc(length);
+    
+    time_t current_time = time(NULL);
+    struct tm * tm = localtime(&current_time);
+    
+    snprintf(stamp, length, "%d%02d%02d_%02d%02d%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec);
+    
+    return stamp;
+}
+
+static const char* make_report_path(const char* dir, const char* id) {
+    
+    const char * stamp = timestamp();
+    const char * ext = ".json";
+    const char * sep = "/";
+    const char * under = "_";
+    
+    size_t stamp_len = strlen(stamp);
+    size_t ext_len = strlen(ext);
+    size_t sep_len = strlen(sep);
+    size_t under_len = strlen(under);
+    size_t dir_len = strlen(dir);
+    size_t id_len = strlen(id);
+    
+    size_t total_len = stamp_len + ext_len + sep_len + under_len + dir_len + id_len + 1; // 1 is for the \0
+    
+    char * path = malloc(total_len);
+    
+    snprintf(path, total_len, "%s%s%s%s%s%s", dir, sep, stamp, under, id, ext);
+    
+    free((void*)stamp);
+    
+    return path;
+}
+}%
 end

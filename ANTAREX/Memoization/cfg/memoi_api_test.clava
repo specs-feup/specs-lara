@@ -67,7 +67,7 @@
     </entry>
     <entry>
       <string>stack trace</string>
-      <boolean>false</boolean>
+      <boolean>true</boolean>
     </entry>
     <entry>
       <string>include</string>
