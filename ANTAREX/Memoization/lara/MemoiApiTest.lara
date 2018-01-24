@@ -2,60 +2,127 @@ import clava.ClavaJoinPoints;
 
 aspectdef MemoiApiTest
 
-	println(new Date());
-
-	var p = new MemoiProf('logarithm', 'log', '/home/pedro/Documents/memoi/prof/reports/');
+	var p = new MemoiProf('logarithm', 'log', '/home/pedro/Documents/memoi/prof/reports');
 
 	p.profAll();
 	
-	println('api test done');
+	println('report will be generated at: ' + p.getReportDir());
 end
 
 /**
- * Memoization profiler.
+ * 		Library to help instrument applications with the MemoiInst memoization
+ * profiler.
  * 
  * @constructor
  * 
  * @param {string} targetName - the name of the target funtion
  * @param {string} id - unique ID representing this function
- * @param {string} reportDir - path to the directory where the report will be saved
+ * @param {string} reportDir - path to the directory where the report will be saved (does not need trailing /)
  * */
 function MemoiProf(targetName, id, reportDir) {
 	
 	this._targetName = targetName;
 	this._id = id;
 	this._reportDir = reportDir;
-	this._reportPath = reportDir + '/' + id + '.json';
 	this._wrapperName = targetName + '_memoi_prof';
 	this._monitorName = 'mi_' + id;
+	this._monitorType = ClavaJoinPoints.typeLiteral('MemoiInstrumenter*');
+	this._dataType = this._findDataType();
 
-	var asp1 = new _MemoiSetup(this._monitorName, this._id);
+	var asp1 = new _MemoiSetup(this._monitorName, this._monitorType, this._id, this._reportPath);
 	asp1.call();
 }
 
 /**
- * The C data types the memoization instrumentation library can handle.
+ * 		Finds the return data type of the target function. If the type is not
+ * one of the supported types of the profiling library, this function will throw
+ *  an exception.
+ * 
+ * @private
+ * */
+MemoiProf.prototype._findDataType = function() {
+
+	var asp1 = new _MemoiFindType(this._targetName);
+	asp1.call();
+	var foundType = asp1.foundType;
+
+	switch(foundType) {
+		case 'double':
+			return MemoiDataType.DOUBLE;
+		case 'float':
+			return MemoiDataType.FLOAT;
+		case 'int':
+			return MemoiDataType.INT;
+		default:
+			throw 'The return type of target function "' + this._targetName + '" (' + foundType + ') is not supported yet.';
+	}
+	
+}
+
+/**
+ * 		Finds the target function and gets its return type.
+ * 
+ * @aspect
+ * @private
+ * */
+aspectdef _MemoiFindType
+	input
+		targetName
+	end
+	output
+		foundType
+	end
+
+	select function{targetName} end
+	apply
+		foundType = $function.functionType.returnType.code;
+	end
+end
+
+/**
+ * 		The C data types the memoization instrumentation library can handle.
  * 
  * @enum
  * */
-var MemoiDataType = new Enumeration('INT', 'DOUBLE', 'FLOAT');
+var MemoiDataType = new Enumeration({INT: 'INT', DOUBLE: 'DOUBLE', FLOAT: 'FLOAT'});
 
 /**
- * Profiles all calls of the target function.
+ * 		Profiles all calls of the target function. This includes making a single
+ * wrapper for all calls and adding the memoization profiling code inside this
+ * wrapper.
  * */
 MemoiProf.prototype.profAll = function() {
 	
 	var asp1 = new _MemoiMakeWrapper(this._targetName, this._wrapperName);
 	asp1.call();
-	var asp2 = new _MemoiInstrumentWrapper(this._wrapperName, this._monitorName);
+	var asp2 = new _MemoiInstrumentWrapper(this._wrapperName, this._monitorName, this._monitorType);
 	asp2.call();
 }
 
+/**
+ * 		Returns the path to the directory where the reports will be generated.
+ * 
+ * @returns {string} the path to the directory
+ * */
+MemoiProf.prototype.getReportDir = function() {
+	return this._reportDir;
+}
+
+/**
+ * 		Performs the setup needed for the instrumentation with the memoization
+ * profiling library in the main file. This includes declaring and initializing
+ * the monitor, printing the report, and destroying the monitor.
+ * 
+ * @aspect
+ * @private
+ * */
 aspectdef _MemoiSetup
 
 	input
 		monitorName,
-		id
+		monitorType,
+		id,
+		reportPath
 	end
 
 	select file.function{'main'}.body end
@@ -66,16 +133,21 @@ aspectdef _MemoiSetup
 		$body.exec insertBegin(%{[[monitorName]] = memoi_inst_init("[[id]]", [[type]]);}%);
 
 		/* add functions to print and clean up at every return on main */
-		$function.exec insertReturn(%{memoi_inst_to_json([[monitorName]], "[[reportsDir]]/[[report]].json");}%);
+		$function.exec insertReturn(%{memoi_inst_to_json([[monitorName]], "[[reportPath]]");}%);
 		$function.exec insertReturn(%{[[monitorName]] = memoi_inst_destroy([[monitorName]]);}%);
 
+		$file.exec addGlobal(monitorName, monitorType, 'NULL');
+
 		$file.exec addInclude('MemoiInstrumenter.h', false);
+		$file.exec addInclude('stdlib.h', true);
 	end	
 end
 
 /**
- * Makes a wrapper for all calls of a function with the provided name.
+ * 		Makes a wrapper for all calls of a function with the provided name.
+ * 
  * @aspect
+ * @private
  * */
 aspectdef _MemoiMakeWrapper
 	input
@@ -90,15 +162,18 @@ aspectdef _MemoiMakeWrapper
 end
 
 /**
- * Instruments a single wrapper with the calls to the memoization profiling library.
- * Adds declaration to the monitor.
- * Also adds the needed header include to the file.
+ * 		Instruments a single wrapper with the calls to the memoization profiling
+ * library. Adds declaration to the monitor. Also adds the needed header include
+ * to the file.
+ * 
  * @aspect
+ * @private
  * */
 aspectdef _MemoiInstrumentWrapper
 	input
 		wrapperName,
-		monitorName
+		monitorName,
+		monitorType
 	end
 	
 	select file.function{wrapperName}.stmt.call end
@@ -106,9 +181,9 @@ aspectdef _MemoiInstrumentWrapper
 		var firstParam = $function.params[0].name;
 		insert after 'memoi_inst_inc([[monitorName]], &[[firstParam]], &result);';
 
-		var type = ClavaJoinPoints.typeLiteral('MemoiInstrumenter*');
-		$file.exec addGlobal(monitorName, type, 'NULL');
+		$file.exec addGlobal(monitorName, monitorType, 'NULL');
 		
 		$file.exec addInclude("MemoiInstrumenter.h", false);
+		$file.exec addInclude('stdlib.h', true);
 	end
 end
