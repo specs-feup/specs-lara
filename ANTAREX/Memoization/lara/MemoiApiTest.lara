@@ -1,0 +1,243 @@
+import clava.ClavaJoinPoints;
+
+aspectdef MemoiApiTest
+
+	var p = new MemoiProf('logarithm', 'log', '/home/pedro/Documents/memoi/prof/reports');
+
+	p.profAll();
+	
+	println('report will be generated at: ' + p.getReportDir());
+end
+
+/**
+ * 		Library to help instrument applications with the MemoiInst memoization
+ * profiler.
+ * 
+ * @constructor
+ * 
+ * @param {string} targetName - the name of the target funtion
+ * @param {string} id - unique ID representing this function
+ * @param {string} reportDir - path to the directory where the report will be saved (does not need trailing /)
+ * */
+function MemoiProf(targetName, id, reportDir) {
+	
+	this._targetName = targetName;
+	this._id = id;
+	this._reportDir = reportDir;
+	this._wrapperName = targetName + '_memoi_prof';
+	this._monitorName = 'mi_' + id;
+	this._monitorType = ClavaJoinPoints.typeLiteral('MemoiInstrumenter*');
+	this._dataType = this._findDataType();
+
+	var asp1 = new _MemoiSetup(this._monitorName, this._monitorType, this._id, this._reportDir, this._dataType);
+	asp1.call();
+}
+
+/**
+ * 		Finds the return data type of the target function. If the type is not
+ * one of the supported types of the profiling library, this function will throw
+ *  an exception.
+ * 
+ * @private
+ * */
+MemoiProf.prototype._findDataType = function() {
+
+	var asp1 = new _MemoiFindType(this._targetName);
+	asp1.call();
+	var foundType = asp1.foundType;
+
+	switch(foundType) {
+		case 'double':
+			return MemoiDataType.DOUBLE;
+		case 'float':
+			return MemoiDataType.FLOAT;
+		case 'int':
+			return MemoiDataType.INT;
+		default:
+			throw 'The return type of target function "' + this._targetName + '" (' + foundType + ') is not supported yet.';
+	}
+	
+}
+
+/**
+ * 		Finds the target function and gets its return type.
+ * 
+ * @aspect
+ * @private
+ * */
+aspectdef _MemoiFindType
+	input
+		targetName
+	end
+	output
+		foundType
+	end
+
+	select function{targetName} end
+	apply
+		foundType = $function.functionType.returnType.code;
+	end
+end
+
+/**
+ * 		The C data types the memoization instrumentation library can handle.
+ * 
+ * @enum
+ * */
+var MemoiDataType = new Enumeration({INT: 'INT', DOUBLE: 'DOUBLE', FLOAT: 'FLOAT'});
+
+/**
+ * 		Profiles all calls of the target function. This includes making a single
+ * wrapper for all calls and adding the memoization profiling code inside this
+ * wrapper.
+ * */
+MemoiProf.prototype.profAll = function() {
+	
+	var asp1 = new _MemoiMakeWrapper(this._targetName, this._wrapperName);
+	asp1.call();
+	var asp2 = new _MemoiInstrumentWrapper(this._wrapperName, this._monitorName, this._monitorType);
+	asp2.call();
+}
+
+/**
+ * 		Returns the path to the directory where the reports will be generated.
+ * 
+ * @returns {string} the path to the directory
+ * */
+MemoiProf.prototype.getReportDir = function() {
+	return this._reportDir;
+}
+
+/**
+ * 		Performs the setup needed for the instrumentation with the memoization
+ * profiling library in the main file. This includes declaring and initializing
+ * the monitor, printing the report, and destroying the monitor.
+ * 
+ * @aspect
+ * @private
+ * */
+aspectdef _MemoiSetup
+
+	input
+		monitorName,
+		monitorType,
+		id,
+		dir,
+		type
+	end
+
+	select file.function{'main'}.body end
+	apply
+		$body.exec insertBegin(%{[[monitorName]] = memoi_inst_init("[[id]]", [[type]]);}%);
+
+		/* add functions to print and clean up at every return on main */
+		$function.exec insertReturn(%{memoi_inst_to_json([[monitorName]], make_report_path("[[dir]]", "[[id]]"));}%);
+		$function.exec insertReturn(%{[[monitorName]] = memoi_inst_destroy([[monitorName]]);}%);
+
+		$file.exec addGlobal(monitorName, monitorType, 'NULL');
+
+		$file.exec addInclude('MemoiInstrumenter.h', false);
+		$file.exec addInclude('stdlib.h', true);
+
+		// insert the functions needed to make the report file path
+		$function.insert before _MemoiReportPath();
+	end	
+end
+
+/**
+ * 		Makes a wrapper for all calls of a function with the provided name.
+ * 
+ * @aspect
+ * @private
+ * */
+aspectdef _MemoiMakeWrapper
+	input
+		targetName,
+		wrapperName
+	end
+	
+	select stmt.call{targetName} end
+	apply
+		exec wrap(wrapperName);
+	end
+end
+
+/**
+ * 		Instruments a single wrapper with the calls to the memoization profiling
+ * library. Adds declaration to the monitor. Also adds the needed header include
+ * to the file.
+ * 
+ * @aspect
+ * @private
+ * */
+aspectdef _MemoiInstrumentWrapper
+	input
+		wrapperName,
+		monitorName,
+		monitorType
+	end
+	
+	select file.function{wrapperName}.stmt.call end
+	apply
+		var firstParam = $function.params[0].name;
+		insert after 'memoi_inst_inc([[monitorName]], &[[firstParam]], &result);';
+
+		$file.exec addGlobal(monitorName, monitorType, 'NULL');
+		
+		$file.exec addInclude("MemoiInstrumenter.h", false);
+		$file.exec addInclude('stdlib.h', true);
+	end
+end
+
+/**
+ * 		Template with the code needed to make the path of the report file with a
+ * timestamp.
+ * 
+ * @codedef
+ * @private
+ * */
+codedef _MemoiReportPath %{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <time.h>
+
+static const char* timestamp() {
+    
+    size_t length = 16;
+    char* stamp = malloc(length);
+    
+    time_t current_time = time(NULL);
+    struct tm * tm = localtime(&current_time);
+    
+    snprintf(stamp, length, "%d%02d%02d_%02d%02d%02d", tm->tm_year + 1900, tm->tm_mon + 1, tm->tm_mday, tm->tm_hour, tm->tm_min, tm->tm_sec);
+    
+    return stamp;
+}
+
+static const char* make_report_path(const char* dir, const char* id) {
+    
+    const char * stamp = timestamp();
+    const char * ext = ".json";
+    const char * sep = "/";
+    const char * under = "_";
+    
+    size_t stamp_len = strlen(stamp);
+    size_t ext_len = strlen(ext);
+    size_t sep_len = strlen(sep);
+    size_t under_len = strlen(under);
+    size_t dir_len = strlen(dir);
+    size_t id_len = strlen(id);
+    
+    size_t total_len = stamp_len + ext_len + sep_len + under_len + dir_len + id_len + 1; // 1 is for the \0
+    
+    char * path = malloc(total_len);
+    
+    snprintf(path, total_len, "%s%s%s%s%s%s", dir, sep, stamp, under, id, ext);
+    
+    free((void*)stamp);
+    
+    return path;
+}
+}%
+end
