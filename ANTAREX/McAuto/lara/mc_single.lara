@@ -1,0 +1,123 @@
+import clava.Clava;
+
+import antarex.margot.config.MargotConfig;
+
+aspectdef Main
+
+	var configPath = Clava.getWeavingFolder() + '/matmul.conf';
+	var oplistPath = Clava.getWeavingFolder() + '/oplist.conf';
+	var targetName = 'RunMonteCarloSimulation';
+	var unpredictabilitySamples = 100;
+
+    // CONFIG    
+	var config = new MargotConfig();
+	var travel = config.newBlock('travel');
+
+	/* goals */
+	travel.addMetricGoal('my_error_goal', MargotCFun.LE, 0.03, 'error');
+	
+	/* knobs */
+	travel.addKnob('num_samples', 'samples', 'int');
+	
+	/* metrics */
+	travel.addMetric('throughput', 'float', true);
+	travel.addMetric('overhead_data_feature', 'float', true);
+	travel.addMetric('error', 'float', true);
+	travel.addMetric('energy', 'float', true);
+	travel.addMetric('elapsed_time_us', 'float', true);
+	
+	/* data features */
+	travel.addDataFeature('unpredictability', 'float', MargotValidity.GE);
+	
+	/* states */
+	var problem = travel.newState('problem');
+	problem.setStarting(true);
+	problem.setMinimizeCombination(MargotCombination.LINEAR);
+	problem.minimizeKnob('num_samples', 1.0);
+	problem.subjectTo('my_error_goal', 1, 8);
+	
+	config.build(configPath);
+	
+	/* generate the information needed for DSE */
+	dseInfo = config.getDseInfo('travel');
+	
+	/* generate the information needed for the code gen */
+	codegen = config.getCodeGenInfo('travel');
+
+	println('\tconfiguration done');
+
+
+    // CODEGEN
+	var $target = undefined;
+	var found = 0;
+
+	select stmt.call{targetName} end
+	apply
+		$target = $call;
+		found++;
+	end
+
+	if(found !== 1) {
+		throw 'found ' + found + ' calls to ' + targetName;
+	}
+
+	// add mARGOt init (TODO: make init on the provided join point)
+	codegen.init($target);
+
+	// add unpredictability code
+	$target.insert before UnpredictabilityCode(unpredictabilitySamples);
+
+	// add mARGOt update
+	codegen.update($target);
+
+	// add output code
+	$target.insert after OutputCode();
+
+	// add optimized call code
+	$stmt.insert replace OptimizedCall(unpredictabilitySamples);
+
+	// TODO: change argument of get_percentiles to match the output of the MC simulation
+	select stmt.call{'get_percentiles'} end
+	apply
+		$stmt.exec detach();
+	end
+
+	println('\tcode generation done');
+
+    println('weaving done');
+end
+
+codedef UnpredictabilityCode(unpredictabilitySamples) %{
+	/* BEGIN unpredictability extraction code */
+	const int number_of_segments = mc.GetSegmentNumber();
+	auto travel_times_feat_new = mc.RunMonteCarloSimulation([[unpredictabilitySamples]], start_day, start_hour, start_minute, false);
+	ResultStats feat_stats(travel_times_feat_new, {});
+	float unpredictability = feat_stats.variationCoeff;
+	/* END unpredictability extraction code */
+}% end
+
+codedef OptimizedCall(unpredictabilitySamples) %{
+
+	/* BEGIN optimized call */
+	result_t travel_times_new;
+	if(samples != unpredictabilitySamples ) {
+		auto const run_result = mc.RunMonteCarloSimulation(samples - [[unpredictabilitySamples]], startDay, startHour, startMinute, false);
+		travel_times_new = run_result;
+		travel_times_new.insert(travel_times_new.end(), travel_times_feat_new.begin(), travel_times_feat_new.end());
+	} 
+	else {
+		travel_times_new = travel_times_feat_new;
+	}
+	/* END optimized call */
+
+}% end
+
+codedef OutputCode() %{
+	/* BEGIN output code */
+	ResultStats stats(travel_times_new);
+	std::cout << stats << std::endl;
+	std::cout << "Writing result..." << std::flush;
+	Routing::Data::WriteResultSingle(travel_times_new, outputFile, mc.GetSecondInterval());
+	std::cout << "OK" << std::endl;
+	/* END output code */
+}% end
