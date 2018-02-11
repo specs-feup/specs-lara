@@ -20,7 +20,7 @@ import org.lara.interpreter.weaver.utils.LaraResourceProvider;
  *
  */
 public enum LaraAntarexApiResource implements LaraResourceProvider {
-    TEST("Test.lara"),
+    TEST("_Test.lara"),
 
     // MultiVersioning
     MULTI_POINTERS("multi/MultiVersionPointers.lara"),
