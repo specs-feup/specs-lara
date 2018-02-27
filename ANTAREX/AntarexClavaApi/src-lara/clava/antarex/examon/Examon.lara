@@ -3,7 +3,8 @@ import clava.ClavaJoinPoints;
 import antarex.examon.ExamonAspects;
 
 /**
- * Utility class to represent a broker.
+ *	 Utility class to represent a broker. This is meant to be passed to the
+ * initialization of collectors.
  * 
  * @param {string} ip - the IP of the broker
  * @param {number} [port] - the port of the broker is listening to, defaults to 1883
@@ -184,6 +185,25 @@ ExamonCollector.prototype.getvarName = function() {
 };
 
 /**
+ *	 Inserts the include directive with the Examon headers in the parent file of
+ *  the provided join point.
+ * 
+ * @param {joinpoint} $jp - The reference join point
+ * 
+ * @private
+ * */
+ExamonCollector.prototype._includeHeaders = function($jp) {
+	
+	var code1 = "collector/collector.h";
+	var code2 = "collector/sendmsg.hpp";
+	
+	var $parentFile = $jp.ancestor('file');
+	
+	$parentFile.exec addInclude(code1, true);
+	$parentFile.exec addInclude(code2, true);
+}
+
+/**
  * 	Utility method that inserts code after the provided reference join point and
  * guarantees some consistency with the inserts performed by this library.
  * 
@@ -210,10 +230,12 @@ ExamonCollector.prototype.init = function(broker, $jp) {
 	checkJoinPoint($jp, 'ExamonCollector.init($jp)');
 
 	var code1 = this._varName + '.mqtt_topic = "' + this._topic + '";';
-	var code2 = 'collector_init(&' + this._varName + ');';
+	var code2 = 'collector_init(&' + this._varName + ', (char*)"' + broker._ip + '", ' + broker._port + ');';
 	
 	farInsertHelper($jp, code1, this._farMap, this._beforeFarMap, true);
 	farInsertHelper($jp, code2, this._farMap, this._beforeFarMap, true);
+	
+	this._includeHeaders($jp);
 };
 
 /**
@@ -230,6 +252,8 @@ ExamonCollector.prototype.clean = function($jp) {
 	checkJoinPoint($jp, 'ExamonCollector.clean($jp)');
 	
 	farInsertHelper($jp, 'collector_clean(&' + this._varName + ');', this._farMap, this._beforeFarMap, false);
+	
+	this._includeHeaders($jp);
 }
 
 /**
@@ -246,6 +270,8 @@ ExamonCollector.prototype.start = function($jp) {
 	checkJoinPoint($jp, 'ExamonCollector.start($jp)');
 	
 	farInsertHelper($jp, 'collector_start(&' + this._varName + ');', this._farMap, this._beforeFarMap, true);
+	
+	this._includeHeaders($jp);
 };
 
 /**
@@ -262,6 +288,8 @@ ExamonCollector.prototype.end = function($jp) {
 	checkJoinPoint($jp, 'ExamonCollector.end($jp)');
 	
 	farInsertHelper($jp, 'collector_end(&' + this._varName + ');', this._farMap, this._beforeFarMap, false);
+	
+	this._includeHeaders($jp);
 };
 
 /**
@@ -278,6 +306,8 @@ ExamonCollector.prototype.get = function($jp) {
 	checkJoinPoint($jp, 'ExamonCollector.get($jp)');
 	
 	farInsertHelper($jp, 'collector_get(&' + this._varName + ');', this._farMap, this._beforeFarMap, true);
+	
+	this._includeHeaders($jp);
 };
 
 /**
@@ -339,6 +369,8 @@ ExamonCollector.prototype.declStartSec = function($jp) {
 	// insert var in scope
 	farInsertHelper($jp, code, this._farMap, this._beforeFarMap, false);
 
+	this._includeHeaders($jp);
+
 	return declName;
 };
 
@@ -365,6 +397,8 @@ ExamonCollector.prototype.declStartMicroSec = function($jp) {
 	
 	// insert var in scope
 	farInsertHelper($jp, code, this._farMap, this._beforeFarMap, false);
+
+	this._includeHeaders($jp);
 
 	return declName;
 };
@@ -393,6 +427,8 @@ ExamonCollector.prototype.declEndSec = function($jp) {
 	// insert var in scope
 	farInsertHelper($jp, code, this._farMap, this._beforeFarMap, false);
 
+	this._includeHeaders($jp);
+
 	return declName;
 };
 
@@ -420,6 +456,8 @@ ExamonCollector.prototype.declEndMicroSec = function($jp) {
 	// insert var in scope
 	farInsertHelper($jp, code, this._farMap, this._beforeFarMap, false);
 
+	this._includeHeaders($jp);
+	
 	return declName;
 };
 
@@ -446,6 +484,8 @@ ExamonCollector.prototype.declMean = function($jp) {
 	
 	// insert var in scope
 	farInsertHelper($jp, code, this._farMap, this._beforeFarMap, false);
+
+	this._includeHeaders($jp);
 
 	return declName;
 };
