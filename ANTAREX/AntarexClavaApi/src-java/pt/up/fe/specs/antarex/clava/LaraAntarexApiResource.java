@@ -22,6 +22,10 @@ import org.lara.interpreter.weaver.utils.LaraResourceProvider;
 public enum LaraAntarexApiResource implements LaraResourceProvider {
     TEST("_Test.lara"),
 
+    // Examon
+    EXAMON("examon/Examon.lara"),
+    EXAMON_ASPECTS("examon/ExamonAspects.lara"),
+
     // MultiVersioning
     MULTI_POINTERS("multi/MultiVersionPointers.lara"),
     MULTI_POINTERS_ASPECTS("multi/MultiVersionPointersAspects.lara"),
