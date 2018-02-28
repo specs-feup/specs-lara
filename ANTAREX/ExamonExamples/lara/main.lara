@@ -3,33 +3,34 @@ import antarex.examon.Examon;
 aspectdef Main
 
 	var broker = new ExamonBroker('192.168.87.45'); // port defaults to 1883
-
 	var powTopic = "org/antarex/cluster/testcluster/node/antarex.ee.ethz.ch/plugin/pmu_pub/chnl/data/cpu/+/pow_pkg";
 
-	var pow = new ExamonCollector('pow_pkg', powTopic); // declares the collector globally
+	var pow = new ExamonCollector('pow_pkg', powTopic); // declare the collector globally
 
-	select function{'main'}.body.call end
+	// manage the collector on the main function
+	select function{'main'}.body end
 	apply
-		pow.init(broker, $body); // start of the body
-		pow.start($body); // start of the body
+		// start of the body
+		pow.init(broker, $body);
+		pow.start($body);
+
+		// end of the body
+		pow.end($body);
+		pow.clean($body);
+	end
+
+	// get the value and use it in the foo function
+	select function{'foo'}.body.stmt end
+	apply
+		pow.get($stmt);
 		
-		pow.get($call); // after the call
-		
-		name1 = pow.declStartSec($call); // after the call
-		name2 = pow.declStartMicroSec($call); // after the call
-		name3 = pow.declEndSec($call); // after the call
-		name4 = pow.declEndMicroSec($call); // after the call
-		name5 = pow.declMean($call); // after the call
 		var code = 'printf("\\nTstart=%ld.%06ld[s], Tend=%ld.%06ld[s], MeanPowerPkg=%f[W]", ' + 
-					name1 + ', ' +
-					name2 + ', ' +
-					name3 + ', ' +
-					name4 + ', ' +
-					name5 + '*ncpu);';
+					pow.getStartSec() + ', ' +
+					pow.getStartMicroSec() + ', ' +
+					pow.getEndSec() + ', ' +
+					pow.getEndMicroSec() + ', ' +
+					pow.getMean() + '*ncpu);';
 		
-		pow.insertAfter($call, code);
-		
-		pow.end($body); // end of the body
-		pow.clean($body); // end of the body
+		pow.insertAfter($stmt, code);
 	end
 end
