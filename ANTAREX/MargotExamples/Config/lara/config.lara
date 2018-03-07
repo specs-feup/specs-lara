@@ -1,13 +1,16 @@
-import antarex.margot.MargotConfig;
+import antarex.margot.config.MargotConfig;
 
 aspectdef MargotConfigDemo
 
     // make a config and a new block
     var mc = new MargotConfig();
     var mb1 = mc.newBlock('foo');
+
+	/* metrics */
+	mb1.addMetric('exec_time_ms', 'int', true);
     
     // add a goal
-    mb1.addGoal('my_execution_time_goal', 'my_elapsed_time_monitor', MargotDFun.AVERAGE, MargotCFun.LESS_THAN, 600000);
+	mb1.addMetricGoal('exec_time_lower_bound', MargotCFun.LT, 2, 'exec_time_ms');
     
     // add a software knob
     mb1.addKnob('num_trials', 'trials', 'int');
@@ -24,8 +27,8 @@ aspectdef MargotConfigDemo
     // make a new state
     var s = mb1.newState('my_optimization');
     s.setStarting();
-    s.subjectTo('my_execution_time_goal', 'exec_time', 20);
-    s.minimize('error', MargotCombination.LINEAR, 1.0);
+    s.subjectTo('exec_time_lower_bound', 3, 30);
+    s.minimizeMetric('exec_time_ms', 1.0);
     
     // generate the code
     println(mc.build());

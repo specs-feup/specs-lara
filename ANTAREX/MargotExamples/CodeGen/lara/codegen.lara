@@ -1,10 +1,10 @@
-import antarex.margot.MargotCodeGen;
+import antarex.margot.codegen.MargotCodeGen;
 
-aspectdef MargotCodeGen
+aspectdef MargotCodeGenMain
 
 	println("mARGOt code generation library testing");
 
-	var m = new Margot('block1', 'alpha', 'beta');
+	var m = new MargotCodeGen('block1', 'alpha', 'beta');
 
 	select call{'kernel_2mm'} end
 	apply
