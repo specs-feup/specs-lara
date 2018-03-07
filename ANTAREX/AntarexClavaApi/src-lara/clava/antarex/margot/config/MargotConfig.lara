@@ -1,8 +1,5 @@
 import antarex.margot.config.MargotBlock;
 
-import antarex.margot.dse.MargotDseInfo;
-import antarex.margot.codegen.MargotCodeGen;
-
 
 /**
  * This class holds the data needed to generate an XML configuration file for the autotuner.
@@ -37,78 +34,6 @@ MargotConfig.prototype.newBlock = function(blockName) {
     return block;
 }
 
-/**
- * Generates and returns the DSE information for the block with the provided name.
- * 
- * @param {String} blockName - the name of the block for which the DSE info will be returned.
- * 
- * @returns {MargotDseInfo} an object with the DSE information
- * */
-MargotConfig.prototype.getDseInfo = function(blockName) {
-	
-	var block = this._blocks[blockName];
-	if(block === undefined) {
-		throw 'Could not find a block with name ' + blockName;
-	}
-	
-	var info = new MargotDseInfo(blockName);
-	
-	// knobs
-	var knobs = {};
-	for(var knob of block._knobs) {
-		knobs[knob.getName()] = knob;
-	}
-	info.setKnobs(knobs);
-	
-	// data features
-	if(block._features !== undefined) {
-		var features = {};
-		for(var feature of block._features.getFeatures()) {
-			features[feature.getName()] = feature;
-		}
-		info.setDataFeatures(features);
-	}
-	
-	// monitors
-	info.setMargotMonitors(block._monitors);
-	
-	return info;
-}
-
-/**
- * Generates and returns the code generation information needed for block with provided name.
- * 
- * @param {String} blockName - the name of the block for which the code generation infor will be returned
- * 
- * @returns {MargotCodeGen} an object with the code generation information
- * */
-MargotConfig.prototype.getCodeGenInfo = function(blockName) {
-	
-	var block = this._blocks[blockName];
-	if(block === undefined) {
-		throw 'Could not find a block with name ' + blockName;
-	}
-	
-	var codegen = new MargotCodeGen(blockName);
-	
-	// knobs
-	var knobNames = [];
-	for(var knob of block._knobs) {
-		knobNames.push(knob.getVarName()); // code generation needs the names of the code variables
-	}
-	codegen.setKnobs(knobNames);
-	
-	// features
-	if(block._features !== undefined) {
-		var featureNames = [];
-		for(var feature of block._features.getFeatures()) {
-			featureNames.push(feature.getName());
-		}
-		codegen.setFeatures(featureNames);
-	}
-	
-	return codegen;
-}
 
 /*
  * CODE GENERATION

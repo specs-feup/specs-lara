@@ -2,6 +2,7 @@ import antarex.margot.codegen._internal.MargotCodeGenAspects;
 import antarex.margot.codegen._internal.MargotStringsGen;
 
 import clava.Clava;
+import antarex.margot.config.MargotConfig;
 
 /**
  * This class contains the methods to generate and insert the code of the mARGOt interface in a target application.
@@ -26,6 +27,47 @@ var MargotCodeGen = function (block) {
 	);
     
     this._initDone = false;
+};
+
+/**
+ * Generates and returns the code generation instance needed for block with provided name.
+ * 
+ * @param {MargotConfig} config - the configuration from which we get the information
+ * @param {String} blockName - the name of the block for which the code generation infor will be returned
+ * 
+ * @returns {MargotCodeGen} an object with the code generation information
+ * */
+MargotCodeGen.fromConfig = function(config, blockName) {
+	
+	checkDefined(config, 'config', 'MargotCodeGen.fromConfig');
+	checkInstance(config, MargotConfig, 'MargotCodeGen.fromConfig(config)', 'MargotConfig');
+	checkDefined(blockName, 'blockName', 'MargotCodeGen.fromConfig');
+	checkString(blockName);
+	
+	var block = config._blocks[blockName];
+	if(block === undefined) {
+		throw 'Could not find a block with name ' + blockName;
+	}
+	
+	var codegen = new MargotCodeGen(blockName);
+	
+	// knobs
+	var knobNames = [];
+	for(var knob of block._knobs) {
+		knobNames.push(knob.getVarName()); // code generation needs the names of the code variables
+	}
+	codegen.setKnobs(knobNames);
+	
+	// features
+	if(block._features !== undefined) {
+		var featureNames = [];
+		for(var feature of block._features.getFeatures()) {
+			featureNames.push(feature.getName());
+		}
+		codegen.setFeatures(featureNames);
+	}
+	
+	return codegen;
 };
 
 /**

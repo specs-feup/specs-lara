@@ -11,6 +11,8 @@ import antarex.margot.dse.metric.MargotMetric;
 import lara.units.TimeUnit;
 import lara.units.TimeModifier;
 
+import antarex.margot.config.MargotConfig;
+
 /**
  * Class that holds information for the DSE step needed in mARGOt's toolflow. This concerns a single block.
  * 
@@ -61,6 +63,50 @@ function MargotDseInfo(blockName) {
 	 * */
 	this._metrics = {};
 }
+
+/**
+ * Generates and returns the DSE instance for the block with the provided name.
+ * 
+ * @param {MargotConfig} config - the configuration from which we get the information
+ * @param {String} blockName - the name of the block for which the DSE info will be returned.
+ * 
+ * @returns {MargotDseInfo} an object with the DSE information
+ * */
+MargotDseInfo.fromConfig = function(config, blockName) {
+	
+	checkDefined(config, 'config', 'MargotCodeGen.fromConfig');
+	checkInstance(config, MargotConfig, 'MargotCodeGen.fromConfig(config)', 'MargotConfig');
+	checkDefined(blockName, 'blockName', 'MargotCodeGen.fromConfig');
+	checkString(blockName);
+	
+	var block = config._blocks[blockName];
+	if(block === undefined) {
+		throw 'Could not find a block with name ' + blockName;
+	}
+	
+	var info = new MargotDseInfo(blockName);
+	
+	// knobs
+	var knobs = {};
+	for(var knob of block._knobs) {
+		knobs[knob.getName()] = knob;
+	}
+	info.setKnobs(knobs);
+	
+	// data features
+	if(block._features !== undefined) {
+		var features = {};
+		for(var feature of block._features.getFeatures()) {
+			features[feature.getName()] = feature;
+		}
+		info.setDataFeatures(features);
+	}
+	
+	// monitors
+	info.setMargotMonitors(block._monitors);
+	
+	return info;
+};
 
 /**
  * Returns the name of the block.
