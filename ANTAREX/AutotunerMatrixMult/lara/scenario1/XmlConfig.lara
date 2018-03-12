@@ -1,4 +1,6 @@
 import antarex.margot.config.MargotConfig;
+import antarex.margot.dse.MargotDseInfo;
+import antarex.margot.codegen.MargotCodeGen;
 
 aspectdef XmlConfig
 
@@ -43,10 +45,10 @@ aspectdef XmlConfig
 	config.build(configPath);
 
 	/* generate the information needed for DSE */
-	dseInfo = config.getDseInfo('matmul');
+	dseInfo = MargotDseInfo.fromConfig(config, 'matmul');
 
 	/* generate the information needed for the code gen */
-	codeGenInfo = config.getCodeGenInfo('matmul');
+	codeGenInfo = MargotCodeGen.fromConfig(config, 'matmul');
 
 	println('XmlConfig done');
 end

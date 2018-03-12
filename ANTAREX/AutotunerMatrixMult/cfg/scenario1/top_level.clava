@@ -5,7 +5,7 @@
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>..\..\src</file>
+          <file>../../src</file>
         </fileList>
       </FileList>
     </entry>
@@ -47,7 +47,7 @@
     </entry>
     <entry>
       <string>output</string>
-      <file>..\..\woven</file>
+      <file>../../woven</file>
     </entry>
     <entry>
       <string>bundle_tags</string>
@@ -63,7 +63,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>..\..\lara\scenario1\TopLevel.lara</file>
+      <file>../../lara/scenario1/TopLevel.lara</file>
     </entry>
     <entry>
       <string>stack trace</string>
@@ -93,6 +93,10 @@
     </entry>
     <entry>
       <string>Generate Modified Code Only</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>Flatten woven code folder structure</string>
       <boolean>false</boolean>
     </entry>
     <entry>
@@ -134,6 +138,10 @@
     <entry>
       <string>C/C++ Standard</string>
       <pt.up.fe.specs.clava.language.Standard>C99</pt.up.fe.specs.clava.language.Standard>
+    </entry>
+    <entry>
+      <string>restrict mode</string>
+      <boolean>false</boolean>
     </entry>
   </values>
   <strict>false</strict>

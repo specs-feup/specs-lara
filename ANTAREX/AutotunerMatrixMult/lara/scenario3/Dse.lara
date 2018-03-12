@@ -15,21 +15,24 @@ aspectdef Dse
 		dseInfo.setMeasure($call);		
 	end
 
-	dseInfo.setDseRuns(30);
+	dseInfo.setDseRuns(3);
 
 	// add desired metrics
 	dseInfo.addTimeMetric('exec_time_ms', TimeUnit.micro());
 	dseInfo.addEnergyMetric('energy', EnergyUnit.micro(), MargotEnergyDomain.PACKAGE);
 
 	// set the knob values
-	dseInfo.setKnobValues('block_size_1', 8, 16, 32, 64);
-	dseInfo.setKnobValues('block_size_2', 8, 16, 32, 64);
+	dseInfo.setKnobValues('block_size_1', 8);
+	dseInfo.setKnobValues('block_size_2', 8, 16);
 
 	// set the feature values
 	dseInfo.setFeatureSetValues(['N', 'M', 'K'],
-		[512, 512, 512, 256, 256, 128, 128],
-		[512, 512, 256, 256, 256, 128, 256],
-		[512, 256, 512, 256, 128, 128, 128]
+//		[512, 512, 512, 256, 256, 128, 128],
+//		[512, 512, 256, 256, 256, 128, 256],
+//		[512, 256, 512, 256, 128, 128, 128]
+		[512, 512],
+		[512, 512],
+		[512, 256]
 	);
 
 	dseInfo.execute(opListPath);
