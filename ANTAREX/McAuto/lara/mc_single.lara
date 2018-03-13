@@ -1,6 +1,7 @@
 import clava.Clava;
 
 import antarex.margot.config.MargotConfig;
+import antarex.margot.codegen.MargotCodeGen;
 
 aspectdef Main
 
@@ -37,12 +38,10 @@ aspectdef Main
 	problem.subjectTo('my_error_goal', 1, 8);
 	
 	config.build(configPath);
-	
-	/* generate the information needed for DSE */
-	dseInfo = config.getDseInfo('travel');
-	
+		
 	/* generate the information needed for the code gen */
-	codegen = config.getCodeGenInfo('travel');
+	codegen = MargotCodeGen.fromConfig(config, 'travel');
+	//codegen = config.getCodeGenInfo('travel');
 
 	println('\tconfiguration done');
 
