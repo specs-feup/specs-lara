@@ -1,6 +1,7 @@
 import clava.Clava;
 
 import antarex.margot.config.MargotConfig;
+import antarex.margot.codegen.MargotCodeGen;
 
 aspectdef Main
 
@@ -23,7 +24,6 @@ aspectdef McConfig
 	end
 
 	output
-		dseInfo,
 		codegenInfo
 	end
 
@@ -55,11 +55,9 @@ aspectdef McConfig
 	
 	config.build(configPath);
 	
-	/* generate the information needed for DSE */
-	dseInfo = config.getDseInfo('travel');
-	
 	/* generate the information needed for the code gen */
-	codegenInfo = config.getCodeGenInfo('travel');
+	codegenInfo = MargotCodeGen.fromConfig(config, 'travel');
+	//codegenInfo = config.getCodeGenInfo('travel');
 
 	println('\tconfiguration done');
 end
