@@ -14,8 +14,6 @@ aspectdef Dse
 	end
 
 	dseInfo.setDseRuns(3);
-	
-//	dseInfo.setCmake(...);
 
 	// add desired metrics
 	dseInfo.addTimeMetric('exec_time_ms', TimeUnit.micro());

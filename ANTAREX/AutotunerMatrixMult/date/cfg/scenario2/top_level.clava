@@ -96,6 +96,10 @@
       <boolean>false</boolean>
     </entry>
     <entry>
+      <string>Flatten woven code folder structure</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
       <string>Weaved code foldername</string>
       <string>scenario2</string>
     </entry>
@@ -133,7 +137,15 @@
     </entry>
     <entry>
       <string>C/C++ Standard</string>
-      <pt.up.fe.specs.clava.language.Standard>C99</pt.up.fe.specs.clava.language.Standard>
+      <pt.up.fe.specs.clava.language.Standard>CXX11</pt.up.fe.specs.clava.language.Standard>
+    </entry>
+    <entry>
+      <string>Clava Custom Resources</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>restrict mode</string>
+      <boolean>false</boolean>
     </entry>
   </values>
   <strict>false</strict>

@@ -6,8 +6,6 @@ import CodeGen;
 
 aspectdef TopLevel
 
-setDebug(true);
-
 	// setup
 	var configPath = Clava.getWeavingFolder() + '/matmul.xml';
 	var opListPath = Clava.getWeavingFolder() + '/oplist.xml';

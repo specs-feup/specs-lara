@@ -37,7 +37,7 @@ int main() {
   struct random_size_generator_t get_size;
 
   // define the time of execution
-  const auto time_to_execute = std::chrono::seconds(100);
+  const auto time_to_execute = std::chrono::seconds(5);
   const auto stop_time_point = std::chrono::steady_clock::now() + time_to_execute;
 
   // this is the main loop of the application

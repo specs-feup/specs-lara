@@ -22,9 +22,6 @@ void init_matrix(std::vector<T>& A, const int N, const int M, const bool initali
       A[M*i + j] = distribution(generator);
 }
 
-//~ template< typename T >
-//~ void matrix_mult_tiling(const std::vector<T>& A , const std::vector<T>& B, std::vector<T>& C, const int N, const int M, const int K, const int BS1, const int BS2);
-
 struct random_size_generator_t
 {
   static constexpr int number_of_sizes = 3;
