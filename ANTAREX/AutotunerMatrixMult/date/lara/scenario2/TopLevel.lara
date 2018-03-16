@@ -1,0 +1,23 @@
+import clava.Clava;
+
+import XmlConfig;
+import Dse;
+import CodeGen;
+
+aspectdef TopLevel
+
+	// setup
+	var configPath = Clava.getWeavingFolder() + '/matmul.xml';
+	var opListPath = Clava.getWeavingFolder() + '/oplist.xml';
+	
+	// set the configuration and save the xml file
+	call config : XmlConfig(configPath);
+
+	// perform the DSE
+	var dseInfo = config.dseInfo;
+	call Dse(dseInfo, opListPath);
+
+	// change the original application
+	var codeGenInfo = config.codeGenInfo;
+	call CodeGen(codeGenInfo);
+end

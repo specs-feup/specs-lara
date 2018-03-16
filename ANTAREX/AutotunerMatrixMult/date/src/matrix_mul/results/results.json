@@ -1,0 +1,1 @@
+{"name":"matrix_mul_0","variantsVariables":[{"name":"BS1","values":[8,8]},{"name":"BS2","values":[8,16]}],"metricsResults":[{"name":"Execution Time","unit":"ns","variantsValues":[[null,null,null],[null,null,null]]}]}

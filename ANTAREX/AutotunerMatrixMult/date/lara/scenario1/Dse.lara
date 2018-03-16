@@ -1,0 +1,28 @@
+import lara.units.TimeUnit;
+
+aspectdef Dse
+	input
+		dseInfo,
+		opListPath
+	end
+
+	// Select portion of code that we will explore
+	select function{"main"}.body.call{"matrix_mult_tiling"} end
+	apply
+		dseInfo.setScope($body);
+		dseInfo.setMeasure($call);		
+	end
+
+	dseInfo.setDseRuns(3);
+	
+//	dseInfo.setCmake(...);
+
+	// add desired metrics
+	dseInfo.addTimeMetric('exec_time_ms', TimeUnit.micro());
+
+	// set the knob values
+	dseInfo.setKnobValues('block_size_1', [8]);
+	dseInfo.setKnobValues('block_size_2', 8, 16);
+
+	dseInfo.execute(opListPath);
+end
