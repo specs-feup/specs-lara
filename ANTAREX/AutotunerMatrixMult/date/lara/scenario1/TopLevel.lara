@@ -7,8 +7,8 @@ import CodeGen;
 aspectdef TopLevel
 
 	// setup
-	var configPath = Clava.getWeavingFolder() + '/matmul.xml';
-	var opListPath = Clava.getWeavingFolder() + '/oplist.xml';
+	var configPath = Clava.getWeavingFolder() + '/config/adaptation.xml';
+	var opListPath = Clava.getWeavingFolder() + '/dse/oplist.postprocess.conf';
 	
 	// set the configuration and save the xml file
 	call config : XmlConfig(configPath);
