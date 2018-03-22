@@ -1,0 +1,24 @@
+aspectdef ChangePrecision
+
+	input $func, $oldType, $newType end
+
+	/* change type of variable declarations found
+	 *  inside the function */
+	select $func.decl end
+	apply
+		def type = $newType;
+	end
+	condition
+		$decl.type.equals($oldType) 
+	end
+
+	/* do the same with the function parameters ... */
+	/* do the same with the function return type ... */
+
+	/* recursively, do the same on functions that are
+	 * called inside this function */
+	select $func.body.call end	
+	apply
+		call ChangePrecision($call.definition, $oldType, $newType);
+	end
+end

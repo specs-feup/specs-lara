@@ -1,0 +1,45 @@
+import ChangePrecision;
+import clava.ClavaJoinPoints;
+
+/**
+ * @test
+ */
+aspectdef ChangePrecisionTest
+
+	// Prepare inputs
+    var $func = undefined;
+    select function{"foo"} end
+    apply
+        $func = $function;
+    end
+
+    $oldType = ClavaJoinPoints.builtinType("double");
+    $newType = ClavaJoinPoints.builtinType("float");
+    
+	// Select all decls with old type in function "foo" and "bar"
+	var oldDecls = [];
+	select function.decl end
+	apply
+		if($function.name !== "foo" && $function.name !== "bar") {
+			continue;
+		}		
+		
+		oldDecls.push($decl);
+	end
+	condition
+		$decl.type.equals($oldType)
+	end
+	
+	
+	// Call aspect under test
+	call ChangePrecision($func, $oldType, $newType);
+
+	// Test output
+	for(var $oldDecl of oldDecls) {
+		if(!$oldDecl.type.equals($newType)) {
+			throw "Expected type '" + $newType.code + "', got '"+$oldDecl.type.code+"'";
+		}
+	}
+
+	
+end
