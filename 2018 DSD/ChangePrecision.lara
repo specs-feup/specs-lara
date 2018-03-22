@@ -4,12 +4,12 @@ aspectdef ChangePrecision
 
 	/* change type of variable declarations found
 	 *  inside the function */
-	select $func.decl end
+	select $func.body.vardecl end
 	apply
 		def type = $newType;
 	end
 	condition
-		$decl.type.equals($oldType) 
+		$vardecl.type.equals($oldType) 
 	end
 
 	/* do the same with the function parameters ... */

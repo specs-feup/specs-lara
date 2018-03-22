@@ -1,6 +1,6 @@
 double bar(double a) {
-   
-   return a + 1.0;
+   double b = 1.0;
+   return a + b;
 }
 
 

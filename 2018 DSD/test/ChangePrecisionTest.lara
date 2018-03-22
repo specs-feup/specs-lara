@@ -18,16 +18,16 @@ aspectdef ChangePrecisionTest
     
 	// Select all decls with old type in function "foo" and "bar"
 	var oldDecls = [];
-	select function.decl end
+	select function.body.vardecl end
 	apply
 		if($function.name !== "foo" && $function.name !== "bar") {
 			continue;
 		}		
 		
-		oldDecls.push($decl);
+		oldDecls.push($vardecl);
 	end
 	condition
-		$decl.type.equals($oldType)
+		$vardecl.type.equals($oldType)
 	end
 	
 	
