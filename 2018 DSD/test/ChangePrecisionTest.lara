@@ -1,5 +1,6 @@
 import ChangePrecision;
 import clava.ClavaJoinPoints;
+import dsd2018.resources;
 
 /**
  * @test
@@ -40,6 +41,18 @@ aspectdef ChangePrecisionTest
 			throw "Expected type '" + $newType.code + "', got '"+$oldDecl.type.code+"'";
 		}
 	}
+
+	
+	select program end
+	apply
+		var programCode = $program.code;
+		var expectedCode = resources.getString("ChangePrecision.output");
+		
+		if(programCode !== expectedCode) {
+			throw "Program code does not match expected code.\nCurrent output begin:\n"+programCode+"\nCurrent output end\nExpected output begin:\n"+expectedCode+"\nExpected output end";
+		}
+	end
+	
 
 	
 end
