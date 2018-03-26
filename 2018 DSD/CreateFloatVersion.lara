@@ -1,0 +1,55 @@
+import ChangePrecision;
+
+aspectdef CreateFloatVersion
+
+	input $function, suffix, $oldType, $newType end
+
+	/* clone the target functions and the child calls */
+	call cloned : CloneFunction($function, suffix);
+
+	/* change the precision of the cloned functions */
+//	for (var $newFunc of cloned.newFunctions)
+//		call ChangePrecision($newFunc, $oldType, $newType);
+
+end
+
+aspectdef CloneFunction
+
+	input $func, suffix end
+	//output newFunctions = [] end
+	output $clonedFunc end
+
+	/* clone the target function */
+	var newName = $func.name + suffix;
+	$clonedFunc = $func.clone(newName);
+
+	/* recursively, do the same on functions that are
+	 * called inside this function ... */
+	 
+	 /* change function calls to the cloned function */
+	 select stmt.call end
+	 apply
+		def name = newName;
+	 end
+	 condition $func.functionType.equals($call.functionType) end
+	 
+	//newFunctions.push(newName);
+	/* clone the target function */
+	/*
+	select function{$func} end
+	apply
+		exec Clone(newName);
+		newFunctions.push(newName);
+	end
+	*/
+	/* recursively, do the same on functions that are
+	 * called inside this function ... */
+
+	/* change function calls to the cloned function */
+	/*
+	select function{callerFunction}.call{$func} end
+	apply
+		def name = newName;
+	end
+	*/
+end

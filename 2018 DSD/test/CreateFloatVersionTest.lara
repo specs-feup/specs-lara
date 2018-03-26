@@ -1,0 +1,26 @@
+import CreateFloatVersion;
+import clava.ClavaJoinPoints;
+
+/**
+ * @test
+ */
+aspectdef CreateFloatVersionTest
+
+	// Prepare inputs
+    var $func = undefined;
+    select function{"foo"} end
+    apply
+        $func = $function;
+    end
+
+	var $double = ClavaJoinPoints.builtinType('double');
+	var $float = ClavaJoinPoints.builtinType('float');
+
+
+	call CreateFloatVersion($func, "_cloned", $double, $float);
+	
+	select program end
+	apply
+		println("Program: " + $program.code);
+	end
+end
