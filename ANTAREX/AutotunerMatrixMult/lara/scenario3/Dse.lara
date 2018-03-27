@@ -18,7 +18,7 @@ aspectdef Dse
 	dseInfo.setDseRuns(3);
 
 	// add desired metrics
-	dseInfo.addTimeMetric('exec_time_ms', TimeUnit.micro());
+	dseInfo.addTimeMetric('exec_time_us', TimeUnit.micro());
 	dseInfo.addEnergyMetric('energy', EnergyUnit.micro(), MargotEnergyDomain.PACKAGE);
 
 	// set the knob values
