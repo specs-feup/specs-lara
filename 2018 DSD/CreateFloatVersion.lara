@@ -15,7 +15,8 @@ aspectdef CloneFunction
 	output $clonedFunc end
 
 	/* clone the target function with a new name*/
-	$clonedFunc = $func.clone($func.name + suffix);
+	var newName = $func.name + suffix;
+	$func.exec $clonedFunc : clone(newName);
 
 	/* recursively, do the same on functions that are
 	 * called inside this function ... */
