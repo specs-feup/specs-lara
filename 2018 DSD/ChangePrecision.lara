@@ -1,43 +1,19 @@
 aspectdef ChangePrecision
 
 	input $func, $oldType, $newType end
-
-	//select program end
-	//apply println("BEFORE:\n" + $program.code); end
 	
 	/* change type of variable declarations found
 	 *  inside the function and parameters */
-	//select $func.body.vardecl end
 	select $func.decl end
 	apply
-		//println("Changing decl: " + $decl.location);
 		var changedType = changeType($decl.type, $oldType, $newType);
 		def type = changedType;
 	end
-	/*
-	condition
-		//$vardecl.type.equals($oldType) 
-		$decl.type.equals($oldType) 		
-	end
-    */
-	// /* do the same with the function parameters ... */
-	/* do the same with the function return type ... */
-	if($func.functionType.returnType.equals($oldType)) {
-		$func.functionType.def returnType = $newType;
-	}
-	
 
-	/* recursively, do the same on functions that are
-	 * called inside this function */
-	/*
-	select $func.body.call end	
-	apply
-		call ChangePrecision($call.definition, $oldType, $newType);
-	end
-	*/
+	/* do the same with the function return type ... */
+	if($func.functionType.returnType.equals($oldType))
+		$func.functionType.def returnType = $newType;
 	
-	//select program end
-	//apply println("AFTER:\n" + $program.code); end
 end
 
 function changeType($targetType, $oldType, $newType) {
@@ -56,8 +32,6 @@ function changeType($targetType, $oldType, $newType) {
 	
 	/* Apply change to underlying type */
 	var changedUnderlying = changeType(underlyingType, $oldType, $newType);
-	//println("Underlying: " + underlyingType.code);
-	//println("Underlying Changed: " + changedUnderlying.code);
 	
 	/* Update if there are changes */
 	if(!changedUnderlying.equals(underlyingType)) {
@@ -69,7 +43,6 @@ function changeType($targetType, $oldType, $newType) {
 
 
 function getUnderlyingType($type) {
-//println("Join point type:" + $type.joinPointType);
 	if($type.hasSugar) {
 		return $type.desugar;
 	}

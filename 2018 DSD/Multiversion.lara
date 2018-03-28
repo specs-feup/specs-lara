@@ -8,16 +8,9 @@ import ChangePrecision;
 
 aspectdef Multiversion
 	input $func, knobName end
-
-	
-	//select program end
-	//apply println("BEFORE:\n" + $program.code); end
 	
 	call fVersion : CreateFloatVersion($func, "_f");
 	var $floatFunc = fVersion.$clonedFunc;
-	//fVersion.$floatFunc
-	//select program end
-	//apply println("AFTER:\n" + $program.code); end
 	
 	var timer = new Timer();
 	
@@ -34,23 +27,19 @@ aspectdef Multiversion
 			
 		$body.exec addLocal(knobName, ClavaJoinPoints.builtinType('int'), 0);
 
-		// create float declaration for first argument
+		/* create float arg and declaration for first argument */
 		var $floatArg = createFloatArg($call.args[0]);
-		
-		//$floatCall = ClavaJoinPoints.call($floatFunc, [$floatArg, $call.args[1]]);
+		/* Create call based on float version of function */
 		$floatFunc.exec $floatCall : call([$floatArg, $call.args[1]]);
-		//$floatCall = $floatFunc.call([$floatArg, $call.args[1]]);
 		
 		// copy current call
 		$call.exec $callCopy : copy;
 		
-		var $condition = ClavaJoinPoints.exprLiteral("version");
+		var $condition = ClavaJoinPoints.exprLiteral(knobName);
 		call switchJp : CreateSwitch($condition, {0: $callCopy, 1: $floatCall});
-		// test
-		//$call.exec insertAfter($clonedCall);
 				
 		$stmt.exec replaceWith(switchJp.$switch);
-		//$floatFunc.exec $clonedCallCopy : copy;
+
 		timer.time($callCopy, "Original time:");
 		timer.time($floatCall, "Float time:");
 	 end

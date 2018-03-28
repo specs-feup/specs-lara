@@ -4,8 +4,6 @@ import clava.ClavaJoinPoints;
 aspectdef CreateFloatVersion
 	input $function, suffix end
 	output $clonedFunc end
-
-
 	
 	$double = ClavaJoinPoints.builtinType('double');
 	$float = ClavaJoinPoints.builtinType('float');
@@ -13,18 +11,12 @@ aspectdef CreateFloatVersion
 	/* clone the target functions and the child calls */
 	var clonedFuncs = {};
 	call cloned : CloneFunction($function, suffix, clonedFuncs);
-//println("ORIGINAL FUNC BEFORE:" + $function.code);
-	/* change the precision of the cloned function */
-	//println("CHANGING PRECISION OF:" + cloned.$clonedFunc.code);
-	//println("CLONED:");
-	//printObject(cloned.clonedFuncs);
-	for($clonedFunc of clonedFuncs) {
-		call ChangePrecision($clonedFunc, $double, $float);
-	}
 
-//println("ORIGINAL FUNC AFTER:" + $function.code);
-	$clonedFunc = cloned.$clonedFunc;
+	/* change the precision of the cloned function */
+	for($clonedFunc of clonedFuncs)
+		call ChangePrecision($clonedFunc, $double, $float);
 	
+	$clonedFunc = cloned.$clonedFunc;	
 end
 
 aspectdef CloneFunction
@@ -32,36 +24,28 @@ aspectdef CloneFunction
 	output $clonedFunc end
 
 	/* clone the target function with a new name*/
-	var newName = $func.name + suffix;
-	$func.exec $clonedFunc : clone(newName);
-	clonedFuncs[$clonedFunc.id] = $clonedFunc;
-	originalIds[$func.id] = 0;
+	$clonedFunc = cloneFunc($func, suffix, clonedFuncs, originalIds);
 
 	/* recursively, do the same on functions that are
 	 * called inside the cloned function ... */
 	 select $clonedFunc.body.call end
 	 apply
 		/* Clone if not cloned yet */
-		if(originalIds[$call.definition.id] !== undefined) {
+		if(originalIds[$call.definition.id] !== undefined)
 			continue;
-		}
 		
 		call clones : CloneFunction($call.definition, suffix, clonedFuncs, originalIds);
 		/* change function calls to the cloned function */
 		$call.def name = clones.$clonedFunc.name;
-		/*
-		for(var clonedId in clones.clonedFuncs) {
-			clonedFuncs[clonedId] = clones.clonedFuncs[clonedId];
-		}
-		*/
 	 end
 	 
-	 /* change function calls to the cloned function */
-	 /*
-	 select stmt.call end
-	 apply
-		def name = newName;
-	 end
-	 condition $func.functionType.equals($call.functionType) end
-	 */
 end
+
+function cloneFunc($func, suffix, clonedFuncs, originalIds) {
+	var newName = $func.name + suffix;
+	$func.exec $clonedFunc : clone(newName);
+	clonedFuncs[$clonedFunc.id] = $clonedFunc;
+	originalIds[$func.id] = 0;
+	
+	return $clonedFunc;
+}
