@@ -1,1 +1,1 @@
--p $BASE/src/test1.cpp
+-p $BASE/src/test1.cpp -std c++11

@@ -1,28 +1,31 @@
-double bar(double a) {
-   double b = 1.0;
-   return a + b;
+#define NUM_ATOMS 1000
+
+
+double Distance2(double a[3], double b[3])
+{
+  return (a[0] - b[0]) * (a[0] - b[0]) +
+         (a[1] - b[1]) * (a[1] - b[1]) +
+         (a[2] - b[2]) * (a[2] - b[2]);
 }
 
+double SumOfInternalDistances(double atoms[][3], int numAtoms)
+{
+  int i, j;
 
-double foo(double* atoms, int numAtoms) {
-   double a = 0;
-   #pragma omp parallel for
-   for(int i = 0; i < 1000; i++) {
-      a += bar(a);
-      #pragma omp parallel for
-      for(int j = 0; j < 1000; j++) {
-         a += bar(a);
-      }
-   }
-   
-   return a;
+  double total_dist = 0.0;
+
+  for (int i = 0; i < numAtoms; i++) {
+    for (int j = i; j < numAtoms; j++) {
+      total_dist += Distance2(atoms[i], atoms[j]);
+    }
+  }
+  return total_dist;
 }
 
 
 int main() {
 	
-	int numAtoms = 1000;
-	double atoms[numAtoms];		
+	double atoms[NUM_ATOMS][3];		
 	
-   foo(atoms, numAtoms);
+	SumOfInternalDistances(atoms, NUM_ATOMS);
 }

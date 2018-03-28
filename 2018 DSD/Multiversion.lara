@@ -1,12 +1,23 @@
 import CreateFloatVersion;
 import lara.code.Timer;
+import clava.ClavaJoinPoints;
+import ChangePrecision;
+
+ var $double = ClavaJoinPoints.builtinType("double");
+ var $float = ClavaJoinPoints.builtinType("float");
 
 aspectdef Multiversion
 	input $func, knobName end
+
+	
+	//select program end
+	//apply println("BEFORE:\n" + $program.code); end
 	
 	call fVersion : CreateFloatVersion($func, "_f");
 	var $floatFunc = fVersion.$clonedFunc;
 	//fVersion.$floatFunc
+	//select program end
+	//apply println("AFTER:\n" + $program.code); end
 	
 	var timer = new Timer();
 	
@@ -22,10 +33,10 @@ aspectdef Multiversion
 			continue;
 			
 		$body.exec addLocal(knobName, ClavaJoinPoints.builtinType('int'), 0);
-			
-		// create call for float function 
-		$call.args[0].exec $floatArg : copy;
-		$floatArg.def name = $call.args[0].name + "_f";
+
+		// create float declaration for first argument
+		var $floatArg = createFloatArg($call.args[0]);
+		
 		//$floatCall = ClavaJoinPoints.call($floatFunc, [$floatArg, $call.args[1]]);
 		$floatFunc.exec $floatCall : call([$floatArg, $call.args[1]]);
 		//$floatCall = $floatFunc.call([$floatArg, $call.args[1]]);
@@ -69,4 +80,23 @@ aspectdef CreateSwitch
 	$switch = ClavaJoinPoints.switchStmt($condition, cases);
 	
 end
+
+function createFloatArg($varref) {
+	if($varref.joinPointType !== "varref") {
+		throw "createFloatArg: input must be a 'varref' join point";
+	}
+
+	
+	// create varref for float function 
+	$varref.exec $floatArg : copy;
+	$floatArg.def name = $varref.name + "_f";
+
+	// create varredecl
+	var $vardeclFloat = ClavaJoinPoints.varDeclNoInit($varref.name + "_f", changeType($varref.type, $double, $float));
+	
+	// Insert after original declaration
+	$varref.declaration.insertAfter($vardeclFloat);
+	
+	return $floatArg;
+}
 

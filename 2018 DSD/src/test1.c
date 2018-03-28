@@ -1,3 +1,5 @@
+#define NUM_ATOMS 1000
+
 double bar(double a) {
    double b = 1.0;
    return a + b;
@@ -21,8 +23,7 @@ double foo(double* atoms, int numAtoms) {
 
 int main() {
 	
-	int numAtoms = 1000;
-	double atoms[numAtoms];		
+	double atoms[NUM_ATOMS];		
 	
-   foo(atoms, numAtoms);
+	foo(atoms, NUM_ATOMS);
 }

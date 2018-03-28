@@ -18,12 +18,14 @@ aspectdef CreateFloatVersionTest
 */
 
 	call CreateFloatVersion($func, "_cloned");
-	
-	// If rebuild is successful, it means there are no syntax errors in the generated code
-	Clava.rebuild();
-	
+
 	select program end
 	apply
 		println("Program: " + $program.code);
 	end
+	
+	// If rebuild is successful, it means there are no syntax errors in the generated code
+	Clava.rebuild();
+	
+
 end

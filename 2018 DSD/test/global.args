@@ -1,4 +1,4 @@
--b 2 -std c99
+-b 2
 
 # Enable this option if you do not want to automatically generate the modified code ('woven_code' folder)
 #-ncg

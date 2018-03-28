@@ -18,11 +18,11 @@ aspectdef ChangePrecisionTest
     $oldType = ClavaJoinPoints.builtinType("double");
     $newType = ClavaJoinPoints.builtinType("float");
     
-	// Select all decls with old type in function "foo" and "bar"
+	// Select all decls with old type in function "foo"
 	var oldDecls = [];
 	select function.body.vardecl end
 	apply
-		if($function.name !== "foo" && $function.name !== "bar") {
+		if($function.name !== "foo") {
 			continue;
 		}		
 		
@@ -36,6 +36,9 @@ aspectdef ChangePrecisionTest
 	// Call aspect under test
 	call ChangePrecision($func, $oldType, $newType);
 
+	select program end
+	apply println($program.code); end
+	
 	// Test output
 	for(var $oldDecl of oldDecls) {
 		if(!$oldDecl.type.equals($newType)) {

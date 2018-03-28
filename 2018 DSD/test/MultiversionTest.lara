@@ -8,7 +8,7 @@ aspectdef MultiversionTest
 
 	// Prepare inputs
     var $func = undefined;
-    select function{"foo"} end
+    select function{"SumOfInternalDistances"} end
     apply
         $func = $function;
     end
@@ -22,7 +22,7 @@ aspectdef MultiversionTest
 	end
 
 	// If rebuild is successful, it means there are no syntax errors in the generated code
-	//Clava.rebuild();
+	Clava.rebuild();
 
 	
 end
