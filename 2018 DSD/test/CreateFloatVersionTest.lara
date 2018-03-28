@@ -12,12 +12,15 @@ aspectdef CreateFloatVersionTest
     apply
         $func = $function;
     end
-
+/*
 	var $double = ClavaJoinPoints.builtinType('double');
 	var $float = ClavaJoinPoints.builtinType('float');
+*/
 
-
-	call CreateFloatVersion($func, "_cloned", $double, $float);
+	call CreateFloatVersion($func, "_cloned");
+	
+	// If rebuild is successful, it means there are no syntax errors in the generated code
+	Clava.rebuild();
 	
 	select program end
 	apply

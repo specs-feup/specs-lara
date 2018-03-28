@@ -1,13 +1,20 @@
 import ChangePrecision;
+import clava.ClavaJoinPoints;
 
 aspectdef CreateFloatVersion
-	input $function, suffix, $oldType, $newType end
+	input $function, suffix end
+	output $clonedFunc end
 
+	$double = ClavaJoinPoints.builtinType('double');
+	$float = ClavaJoinPoints.builtinType('float');
+	
 	/* clone the target functions and the child calls */
 	call cloned : CloneFunction($function, suffix);
 
 	/* change the precision of the cloned function */
-	call ChangePrecision(cloned.$clonedFunc, $oldType, $newType);
+	call ChangePrecision(cloned.$clonedFunc, $double, $float);
+	
+	$clonedFunc = cloned.$clonedFunc;
 end
 
 aspectdef CloneFunction
@@ -22,9 +29,11 @@ aspectdef CloneFunction
 	 * called inside this function ... */
 	 
 	 /* change function calls to the cloned function */
+	 /*
 	 select stmt.call end
 	 apply
 		def name = newName;
 	 end
 	 condition $func.functionType.equals($call.functionType) end
+	 */
 end

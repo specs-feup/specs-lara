@@ -1,0 +1,72 @@
+import CreateFloatVersion;
+import lara.code.Timer;
+
+aspectdef Multiversion
+	input $func, knobName end
+	
+	call fVersion : CreateFloatVersion($func, "_f");
+	var $floatFunc = fVersion.$clonedFunc;
+	//fVersion.$floatFunc
+	
+	var timer = new Timer();
+	
+	 // Identify call by name...
+	 select function.body.stmt.call{$func.name} end
+	 apply
+	 
+		if(!$call.isStmtCall)
+			continue;
+		
+		// ... and by type signature
+		if(!$func.functionType.equals($call.functionType))
+			continue;
+			
+		$body.exec addLocal(knobName, ClavaJoinPoints.builtinType('int'), 0);
+			
+		// create call for float function 
+		$call.args[0].exec $floatArg : copy;
+		$floatArg.def name = $call.args[0].name + "_f";
+		//$floatCall = ClavaJoinPoints.call($floatFunc, [$floatArg, $call.args[1]]);
+		$floatFunc.exec $floatCall : call([$floatArg, $call.args[1]]);
+		//$floatCall = $floatFunc.call([$floatArg, $call.args[1]]);
+		
+		// copy current call
+		$call.exec $callCopy : copy;
+		
+		var $condition = ClavaJoinPoints.exprLiteral("version");
+		call switchJp : CreateSwitch($condition, {0: $callCopy, 1: $floatCall});
+		// test
+		//$call.exec insertAfter($clonedCall);
+				
+		$stmt.exec replaceWith(switchJp.$switch);
+		//$floatFunc.exec $clonedCallCopy : copy;
+		timer.time($callCopy, "Original time:");
+		timer.time($floatCall, "Float time:");
+	 end
+
+	
+end
+
+
+aspectdef CreateSwitch
+	input
+		$condition, switchCases
+	end
+
+	output
+		$switch
+	end
+	
+	println("Switch Cases:");
+	printObject(switchCases);
+	
+	var cases = [];
+	for(key in switchCases) {
+		cases.push(ClavaJoinPoints.exprLiteral(key));
+		cases.push(switchCases[key]);
+	}
+	
+	$switch = ClavaJoinPoints.switchStmt($condition, cases);
+	
+end
+

@@ -1,0 +1,28 @@
+import Multiversion;
+//import clava.ClavaJoinPoints;
+
+/**
+ * @test
+ */
+aspectdef MultiversionTest
+
+	// Prepare inputs
+    var $func = undefined;
+    select function{"foo"} end
+    apply
+        $func = $function;
+    end
+
+	call Multiversion($func, "version");
+	
+	
+	select program end
+	apply
+		println("Program: " + $program.code);
+	end
+
+	// If rebuild is successful, it means there are no syntax errors in the generated code
+	//Clava.rebuild();
+
+	
+end
