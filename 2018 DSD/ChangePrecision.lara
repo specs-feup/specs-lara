@@ -11,8 +11,11 @@ aspectdef ChangePrecision
 	end
 
 	/* do the same with the function return type ... */
-	if($func.functionType.returnType.equals($oldType))
-		$func.functionType.def returnType = $newType;
+	var $returnType = $func.functionType.returnType;
+	var $changedReturnType = changeType($returnType, $oldType, $newType);
+	$func.functionType.def returnType = $changedReturnType;
+//	if($func.functionType.returnType.equals($oldType))
+//		$func.functionType.def returnType = $newType;
 	
 end
 

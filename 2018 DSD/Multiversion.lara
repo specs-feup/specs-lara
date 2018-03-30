@@ -30,10 +30,12 @@ aspectdef Multiversion
 		/* create float arg and declaration for first argument */
 		var $floatArg = createFloatArg($call.args[0]);
 		/* Create call based on float version of function */
-		$floatFunc.exec $floatCall : call([$floatArg, $call.args[1]]);
+		$floatFunc.exec $floatCall : newCall([$floatArg, $call.args[1]]);
 		
 		// copy current call
-		$call.exec $callCopy : copy;
+		$call.exec $callCopy : copy();
+		//$call.exec $callCopy : copy;
+		//$callCopy = $call.copy();
 		
 		var $condition = ClavaJoinPoints.exprLiteral(knobName);
 		call switchJp : CreateSwitch($condition, {0: $callCopy, 1: $floatCall});
@@ -77,7 +79,7 @@ function createFloatArg($varref) {
 
 	
 	// create varref for float function 
-	$varref.exec $floatArg : copy;
+	$varref.exec $floatArg : copy();
 	$floatArg.def name = $varref.name + "_f";
 
 	// create varredecl
