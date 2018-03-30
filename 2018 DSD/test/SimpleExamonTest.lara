@@ -22,4 +22,6 @@ aspectdef SimpleExamonTest
 	end
 
 	call SimpleExamon(name, ip, topic, $manageFunction, $targetStmt);
+
+    println(Clava.getProgram().code);
 end

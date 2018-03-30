@@ -23,6 +23,4 @@ aspectdef SimpleLibVCTest
 	call SimpleLibVC(name, $target, options);
 	
 	println(Clava.getProgram().code);
-	
-	Clava.rebuild();
 end
