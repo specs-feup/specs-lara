@@ -2,12 +2,21 @@ import antarex.libvc._internal.LibVCAspects;
 
 import clava.Clava;
 import lara.Io;
+import lara.Compilation;
 
 function LibVC ($func, compilerSetup, name) {
 	
 	checkDefined($func, '$func', 'LibVC');
 	checkJoinPointType($func, 'function', 'LibVC ($func)');
 	checkTrue($func.hasDefinition, '$func should be a function definition', 'LibVC');
+	
+	
+	// Adds LibVC include
+	Compilation.addExtraIncludeFromGit("https://github.com/skeru/libVersioningCompiler.git", "include/");
+	
+	// Adds LibVC source
+	Compilation.addExtraSourceFromGit("https://github.com/skeru/libVersioningCompiler.git", "lib/");
+
 	
 	/* TODO: make name if undefined */
 	this._name = name;
