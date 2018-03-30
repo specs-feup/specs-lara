@@ -6,16 +6,13 @@ aspectdef SimpleLibVC
 		name, $target, options
 	end
 
+	var $function = $target.definition;
+	var lvc = new LibVC($function, {logFile:"./log.txt"}, name);
+
 	var lvcOptions = new LibVCOptions();
 	for (var opt of options) {
 		lvcOptions.addOptionLiteral(opt.name, opt.value, opt.value);
 	}
-
-	/* instantiate the LibVC object */
-	var $function = $target.definition;
-	var lvc = new LibVC($function, {logFile:"./log.txt"}, name);
-
-	/* set the options defined before */
 	lvc.setOptions(lvcOptions);
 
 	lvc.setErrorStrategyExit();
