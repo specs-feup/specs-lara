@@ -566,7 +566,7 @@ LibVC.prototype.replaceCall = function($joinpoint) {
 	
 	if(Weaver.isJoinPoint($joinpoint, 'call')) {
 	
-		$call.exec setName(this._symbolName);
+		$joinpoint.exec setName(this._symbolName);
 		
 	} else if(Weaver.isJoinPoint($joinpoint, 'tag')) {
 		

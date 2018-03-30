@@ -32,7 +32,7 @@ public enum LaraAntarexApiResource implements LaraResourceProvider {
 
     // LIBVC
     LIBVC("libvc/LibVC.lara"),
-    LIBVC_ASPECTS("libvc/LibVCAspects.lara"),
+    LIBVC_ASPECTS("libvc/_internal/LibVCAspects.lara"),
 
     // mARGOt DSE
     MARGOT_DSE_INFO("margot/dse/MargotDseInfo.lara"),

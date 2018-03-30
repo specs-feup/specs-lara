@@ -23,7 +23,6 @@ aspectdef LowLevelExample1
 //	lvc.setLogErrorsInConsole(false);
 	
 //	lvc.setErrorStrategy(LibVC.ErrorHandle.RETURN, -1);
-//	lvc.setErrorStrategy(LibVC.ErrorHandle.RETURN, -1);
 //	lvc.setErrorStrategyReturn(-1);
 	lvc.setErrorStrategyExit();
 

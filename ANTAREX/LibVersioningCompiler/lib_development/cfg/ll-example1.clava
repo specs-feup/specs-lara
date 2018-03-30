@@ -2,12 +2,6 @@
   <name>LaraI Options</name>
   <values>
     <entry>
-      <string>include</string>
-      <FileList>
-        <fileList/>
-      </FileList>
-    </entry>
-    <entry>
       <string>workspace</string>
       <FileList>
         <fileList>
@@ -16,7 +10,7 @@
       </FileList>
     </entry>
     <entry>
-      <string>debug</string>
+      <string>Disable Code Generation</string>
       <boolean>false</boolean>
     </entry>
     <entry>
@@ -31,10 +25,6 @@
       <FileList>
         <fileList/>
       </FileList>
-    </entry>
-    <entry>
-      <string>Disable Clava Info</string>
-      <boolean>true</boolean>
     </entry>
     <entry>
       <string>Clean intermediate files</string>
@@ -56,20 +46,12 @@
       </OptionalFile>
     </entry>
     <entry>
-      <string>javascript</string>
-      <boolean>false</boolean>
-    </entry>
-    <entry>
-      <string>verbose</string>
-      <org.lara.interpreter.joptions.config.interpreter.VerboseLevel>errors</org.lara.interpreter.joptions.config.interpreter.VerboseLevel>
-    </entry>
-    <entry>
       <string>output</string>
       <file>../woven</file>
     </entry>
     <entry>
-      <string>Weaved code foldername</string>
-      <string>ll-example1</string>
+      <string>bundle_tags</string>
+      <string></string>
     </entry>
     <entry>
       <string>Compiler Flags</string>
@@ -84,11 +66,61 @@
       <file>../lara/ll-example1.lara</file>
     </entry>
     <entry>
+      <string>stack trace</string>
+      <boolean>true</boolean>
+    </entry>
+    <entry>
+      <string>include</string>
+      <FileList>
+        <fileList/>
+      </FileList>
+    </entry>
+    <entry>
+      <string>debug</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>Disable Clava Info</string>
+      <boolean>true</boolean>
+    </entry>
+    <entry>
+      <string>javascript</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>verbose</string>
+      <org.lara.interpreter.joptions.config.interpreter.VerboseLevel>errors</org.lara.interpreter.joptions.config.interpreter.VerboseLevel>
+    </entry>
+    <entry>
+      <string>Generate Modified Code Only</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>Flatten woven code folder structure</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>Weaved code foldername</string>
+      <string>ll-example1</string>
+    </entry>
+    <entry>
+      <string>header includes</string>
+      <FileList>
+        <fileList/>
+      </FileList>
+    </entry>
+    <entry>
       <string>report</string>
       <OptionalFile>
         <file></file>
         <used>false</used>
       </OptionalFile>
+    </entry>
+    <entry>
+      <string>external_dependencies</string>
+      <StringList>
+        <stringList/>
+      </StringList>
     </entry>
     <entry>
       <string>Disable Weaving</string>
@@ -106,7 +138,11 @@
       <pt.up.fe.specs.clava.language.Standard>CXX11</pt.up.fe.specs.clava.language.Standard>
     </entry>
     <entry>
-      <string>stack trace</string>
+      <string>Clava Custom Resources</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>restrict mode</string>
       <boolean>false</boolean>
     </entry>
   </values>
