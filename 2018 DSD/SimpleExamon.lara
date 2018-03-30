@@ -1,0 +1,34 @@
+import antarex.examon.Examon;
+
+aspectdef SimpleExamon
+
+	input
+		name, ip, topic, $manageFunction, $targetStmt
+	end
+
+	var broker = new ExamonBroker('192.168.87.45');
+
+	var exa = new ExamonCollector(name, topic);
+
+	// manage the collector on the target function
+	select $manageFunction.body end
+	apply
+		exa.init(broker, $body);
+		exa.start($body);
+
+		exa.end($body);
+		exa.clean($body);
+	end
+
+	// get the value and use it in the target stmt
+	exa.get($targetStmt);
+		
+	var code = 'printf("\\nTstart=%ld.%06ld[s], Tend=%ld.%06ld[s], data=%f", ' + 
+				exa.getStartSec() + ', ' +
+				exa.getStartMicroSec() + ', ' +
+				exa.getEndSec() + ', ' +
+				exa.getEndMicroSec() + ', ' +
+				exa.getMean() + ');';
+	
+	exa.insertAfter($targetStmt, code);
+end

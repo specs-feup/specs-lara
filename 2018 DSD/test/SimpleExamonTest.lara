@@ -1,0 +1,25 @@
+import SimpleExamon;
+
+/**
+ * @test
+ */
+aspectdef SimpleExamonTest
+
+	var name = 'pow_pkg';
+	var ip = '192.168.87.45';
+	var topic = 'org/antarex/cluster/testcluster/node/antarex.ee.ethz.ch/plugin/pmu_pub/chnl/data/cpu/+/pow_pkg';
+
+	var $manageFunction = undefined;
+	select function{'main'} end
+	apply
+		$manageFunction = $function;
+	end
+
+	var $targetStmt = undefined;
+	select stmt.call{'Distance2'} end
+	apply
+		$targetStmt = $stmt;
+	end
+
+	call SimpleExamon(name, ip, topic, $manageFunction, $targetStmt);
+end
