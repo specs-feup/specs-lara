@@ -1,0 +1,23 @@
+import SimpleLibVC;
+
+/**
+ *  @test
+ */
+aspectdef SimpleLibVCTest
+
+	var name = 'simple';
+	var funcName = 'SumOfInternalDistances';
+
+	var $target = undefined;
+	select stmt.call{funcName} end
+	apply
+		$target = $call;
+	end
+
+	var options = [
+		{name: '-O', value: '3', tag: 'opt_level'},
+		{name: '--std=', value: 'c++11', tag: 'standard'}
+	];
+
+	call SimpleLibVC(name, $target, options);
+end
