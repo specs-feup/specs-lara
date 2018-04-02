@@ -1,0 +1,2 @@
+-p $BASE/src/gemm.cl -of HalfPrecisionOpenCLTest -std c11
+

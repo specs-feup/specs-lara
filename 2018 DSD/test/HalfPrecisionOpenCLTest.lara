@@ -1,0 +1,18 @@
+import HalfPrecisionOpenCL;
+
+/**
+ * @test
+ */
+aspectdef HalfPrecisionOpenCLTest
+	
+	//var numIndependParams = 5;
+
+	var combinationFilter = [];
+	var maxVersions = undefined;
+	//combinationFilter[3] = 1;
+	//combinationFilter[4] = 1;
+
+	//call HalfPrecisionOpenCL(numIndependParams, combinationFilter);
+	call HalfPrecisionOpenCL(combinationFilter, maxVersions);
+	
+end

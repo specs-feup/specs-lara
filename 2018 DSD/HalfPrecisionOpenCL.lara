@@ -1,0 +1,282 @@
+import clava.Clava;
+import clava.ClavaJoinPoints;
+
+import lara.Io;
+import lara.Numbers;
+import lara.util.SequentialCombinations;
+
+var $halfType = ClavaJoinPoints.builtinType("half");
+
+
+aspectdef HalfPrecisionOpenCL
+	input 
+		combinationFilter,
+		maxVersions = undefined
+	end
+	
+	// Get the list of float and double variables declared in the OpenCL kernel
+	// (including parameters)
+	call result : OpenCLVariablesToTest;
+	var variablesToTest = result.variablesToTest;
+	// Sequence generator
+	var sequenceGenerator = new SequentialCombinations(
+		variablesToTest.length, maxVersions);
+	var counter = 0;
+	while(sequenceGenerator.hasNext()) {
+		Clava.pushAst(); // Save current AST
+		
+		// Get a new combination of variables
+		var combination = sequenceGenerator.next();
+		var lastSeed = sequenceGenerator.getLastSeed();
+		if(!isCombinationValid(lastSeed, combinationFilter))
+			continue;	
+		// Change the builtin type of the variables
+		for(var index of combination) {
+			var $vardecl = Clava.findJp(variablesToTest[index]);
+			changeTypeToHalf($vardecl);
+		}
+		// Add the pragma that enables half-precision
+		call addHalfPragma();
+		// Create output folder		
+		var outputFolder = createFolder(lastSeed, variablesToTest.length, counter);
+		
+		Clava.writeCode(outputFolder); // Generate code
+		Clava.popAst(); // Restore previous AST tree
+		counter++; // Increase counter
+	}
+end
+
+
+function createFolder(lastSeed, numIndependParams, counter) {
+	return Io.getPath(getBaseFolder(lastSeed, numIndependParams), "half_version_" + counter);
+}
+
+//		var lastSeedBinary = lastSeed.toString(2).split("").reverse().join("");
+//var baseOutputFolder = Io.mkdir(Clava.getWeavingFolder(), "sig_" + lastSeedBinary[0] + (lastSeedBinary[1] === undefined ? 0 : lastSeedBinary[1])); 
+		//var outputFolder = Io.getPath(baseOutputFolder, "half_version_" + counter);
+		//var outputFolder = Io.getPath(Clava.getWeavingFolder(), "half_version_" + counter);
+
+
+aspectdef addHalfPragma
+
+	select file end
+	apply
+		if(!$file.isOpenCL) {
+			continue;	
+		}
+		
+		$file.insert before "#pragma OPENCL EXTENSION cl_khr_fp16 : enable";
+	end
+
+end
+
+
+function getBaseFolder(lastSeed, numArgs) {
+	var lastSeedBinary = lastSeed.toString(2).split("").reverse().join("");
+
+	var baseFoldername = "sig_";
+	for(var i = 0; i < numArgs; i++) {
+		var value = lastSeedBinary[i] !== undefined ? lastSeedBinary[i] : 0;
+		baseFoldername += value;
+	}
+
+	return Io.mkdir(Clava.getWeavingFolder(), baseFoldername); 
+}
+
+function isCombinationValid(lastSeed, combinationFilter) {
+	var lastSeedBinary = lastSeed.toString(2).split("").reverse().join("");
+
+//	println("COMBINATION FILTER:" + combinationFilter);
+//	println("LAST SEED:" + lastSeed);
+//	println("BINARY:" + lastSeedBinary);
+
+	for(var i in combinationFilter) {
+//		println("i:" + i);
+		var iValue = defaultValue(lastSeedBinary[i], "0");
+//		println("iValue:" + iValue);
+//		println("comb i:" + combinationFilter[i].toString());
+		if(iValue !== combinationFilter[i].toString()) {
+//			println("DIFF:" + iValue !== combinationFilter[i]);
+			return false;
+		}
+	}
+
+/*
+	for(var i=0; i<combination.length; i++) {
+		var expectedValue = combinationFilter[i];
+		
+		if(expectedValue === undefined) {
+			continue;
+		}
+
+		if(expectedValue !== combination[i]) {
+			return false;
+		}
+	}
+*/
+	// Pass all tests
+	return true;
+}
+
+
+/**
+ * Collect all variable declarations that have as base type a float or a double
+ */
+aspectdef OpenCLVariablesToTest
+	output variablesToTest end
+
+
+	variablesToTest = [];
+
+	select file.vardecl end
+	apply
+
+		// Apply only to OpenCL files
+		if(!$file.isOpenCL) {
+			continue;
+		}
+
+//		// Discard vardecls with typedefs, change typedefs instead
+//		if(unwrapType($vardecl.type, "TypedefType") !== undefined) {
+//			continue;
+//		}
+
+		// Check if type has a base builtin type	
+		var $builtinType = getBuiltinType($vardecl.type);
+		if($builtinType === undefined) {
+			continue;
+		}
+
+		// Only collect doubles and floats
+		var builtinTypeCode = $builtinType.code;
+		if(builtinTypeCode !== 'float' && builtinTypeCode !== 'double') {
+			continue;
+		}
+
+		variablesToTest.push($vardecl);
+	end
+	
+	println("Found " + variablesToTest.length + " variables to test (maximum combinations: " + (Math.pow(2, variablesToTest.length) - 1) + ")");
+
+end
+
+// Move to ClavaLaraApi
+/*
+function unwrapType($type, typeKind) {
+	checkDefined($type);
+	checkString(typeKind);
+	
+	var typeKind = $type.kind;
+
+	if(typeKind === typeKind) {
+		return $type;
+	}
+
+	// Try to unwrap type, looking for a builtin
+	var $unwrappedType = $type.unwrap;
+
+	if($unwrappedType !== undefined) {
+		return getBuiltinType($unwrappedType);
+	}
+
+	return undefined;
+}
+*/
+
+function getBuiltinType($type) {
+	var typeKind = $type.kind;
+
+	if(typeKind === "BuiltinType") {
+		return $type;
+	}
+
+	// Try to unwrap type, looking for a builtin
+	var $unwrappedType = $type.unwrap;
+
+	if($unwrappedType !== undefined) {
+		return getBuiltinType($unwrappedType);
+	}
+
+	return undefined;
+}
+
+function changeTypeToHalf($vardecl) {
+	checkDefined($vardecl);
+
+	// Get the type, do a copy
+	// Type nodes in Clava are shared, before modifying a type
+	// you should make a copy
+	var $typeCopy = $vardecl.type.copy();
+
+	// Get the builtin type
+	$builtinType = getBuiltinType($typeCopy);
+
+	// Replace the builtin type with half
+	if($typeCopy === $builtinType) {
+		$typeCopy = $halfType;
+	} else {
+		$builtinType.replaceWith($halfType);
+	}
+
+	// Remove typedefs from the modified type
+	//println("TYPE BEFORE:" + $typeCopy.ast);
+	$typeCopy = removeTypedefs($typeCopy);
+	//println("TYPE AFTER:" + $typeCopy.ast);
+	
+	// Set the new type
+	$vardecl.type = $typeCopy;
+	
+	return;
+}
+
+
+function removeTypedefs($type) {
+	//var $currentType = $type;
+
+	// Unwrap
+	var unwrappedType = $type.unwrap;
+
+	// If undefined, finish
+	if(unwrappedType === undefined) {
+		return $type;
+	}
+
+	// If current type is a typedef, replace it with unwrapped type
+	if($type.kind === "TypedefType") {
+
+		// If top level
+		if($type.isTopLevel) {
+			return removeTypedefs(unwrappedType);			
+		} 
+		// Otherwise, typedef is in the middle of a chain, replace it
+		$type.exec replaceWith(unwrappedType);
+	}
+
+	// Continue with the unwrapped type
+	removeTypedefs(unwrappedType);
+
+	// Return current type
+	return $type;
+}
+
+/*
+function toIndexesArray(number) {
+	checkNumber(number, "toIndexesArray");
+
+	// Convert number to binary string
+	var binaryString = number.toString(2);
+
+	var indexesArray = [];
+	var numBits = binaryString.length;
+	for(var i=0; i<numBits; i++) {
+		if(binaryString[i] === "0") {
+			continue;
+		}
+
+		indexesArray.push((numBits-i)-1);
+	}
+
+	return indexesArray.reverse();
+}
+*/
+
