@@ -1,1 +1,1 @@
--p $BASE/src/test1.cpp -std c++11 -of SimpleExamonTest
+-p $BASE/src/test1.c -of SimpleExamonTest
