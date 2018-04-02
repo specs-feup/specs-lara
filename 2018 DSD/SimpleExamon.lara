@@ -6,7 +6,7 @@ aspectdef SimpleExamon
 		name, ip, topic, $manageFunction, $targetStmt
 	end
 
-	var broker = new ExamonBroker('192.168.87.45');
+	var broker = new ExamonBroker(ip);
 
 	var exa = new ExamonCollector(name, topic);
 
