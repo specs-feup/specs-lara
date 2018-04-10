@@ -1,1 +1,1 @@
--p $BASE/src/test1.c -of SimpleLibVCTest
+-p $BASE/src/test1.c -of SimpleLibVCTest -e metrics/SimpleLibVCTest.json

@@ -1,1 +1,1 @@
--p $BASE/src/test1.c
+-p $BASE/src/test1.c -of MultiVersionTest -e metrics/MultiversionTest.json
