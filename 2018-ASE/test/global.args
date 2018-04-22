@@ -1,1 +1,1 @@
--b 2 -s -o $BASE/woven_code -std c99
+-b 2 -s -o $BASE/woven_code -std c99 -p $BASE/src/matrix_mul.c

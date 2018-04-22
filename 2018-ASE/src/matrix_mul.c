@@ -7,12 +7,13 @@
 #include <stdlib.h>
 
 /*
-	matrix multiplication with loop tiling
+	matrix multiplication
 */
-void matrix_mult_tiling(const double* A , const double* B, double* C, const int N, const int M, const int K) {
+void matrix_mult(const double* A , const double* B, double* C, const int N, const int M, const int K) {
 
    for(int i=0; i<N; i++) {
        for(int j=0; j<K; j++) {
+           //C[i][j] = 0;
            C[K*i + j] = 0;
        }
     }
@@ -20,6 +21,7 @@ void matrix_mult_tiling(const double* A , const double* B, double* C, const int 
     for(int i=0; i<N; i++) {
         for(int l=0; l< M; l++) {
             for(int j=0; j< K; j++) {
+                //C[i][j] += A[i][l]*B[l][j];
                 C[K*i + j] += A[M*i+l]*B[K*l+j];
             }
         }
@@ -30,17 +32,24 @@ void matrix_mult_tiling(const double* A , const double* B, double* C, const int 
  * Set an N by M matrix A to random values
  */
 void init_matrix(double *A, const int N, const int M) {
-	for (int i = 0; i < N; ++i)
-		for (int j = 0; j < M; ++j) 
-	       A[M*i + j] = ((double) rand()) / (double) RAND_MAX; 
+	for (int i = 0; i < N; ++i) {
+		for (int j = 0; j < M; ++j) {
+	       //A[i][j] = ((double) rand()) / (double) RAND_MAX; 
+	       A[M*i + j] = ((double) rand()) / (double) RAND_MAX; 			
+		}
+	}
 }
 
 void printMatrixResult(double *A, const int N, const int K) {
 	double acc = 0.0;
 	
-	for (int i = 0; i < N; ++i)
-		for (int j = 0; j < K; ++j) 
+	for (int i = 0; i < N; ++i) {
+		for (int j = 0; j < K; ++j) {
+			//acc += A[i][j];
 			acc += A[K*i + j];
+		}
+	}
+		
 		
 
 	printf("Result acc: %f", acc);
@@ -57,6 +66,9 @@ int main() {
 	int M=256;
 	int K=512;
 	
+	//double A[N][M];
+	//double B[M][K];
+	//double C[N][K];
 	double* A = (double *) malloc(N*M*sizeof(double)); 
 	double* B = (double *) malloc(M*K*sizeof(double));
 	double* C = (double *) malloc(N*K*sizeof(double));
@@ -66,7 +78,7 @@ int main() {
 	init_matrix(B, M, K);
 	
 	// do: C = A*B
-	matrix_mult_tiling(A, B, C, N, M, K);
+	matrix_mult(A, B, C, N, M, K);
 	
 	printMatrixResult(C, N, K);
 }
