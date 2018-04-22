@@ -1,0 +1,25 @@
+{ 1. Analysis }
+   application knowledge
+       (3) gprof
+       (3) structure
+   extra-functional requirements analysis
+       (DONE) measuring energy and time
+       (2) LAT
+       (3) HalfPrecisionOpenCL (DSD)
+
+{ 2. Developement }
+   (2) auto parallelization
+   (1) loop transformations (tiling)
+   (DONE) change precision (DSD)
+   (DONE) create float version (DSD)
+   (2) multiversion (DSD)
+   (DROPPED) [libvc (DSD)]
+   (DROPPED) [memoization (DSD)]
+   (DROPPED) [examon (DSD)]
+   [developement of custom strategy]
+   
+{ 3. Autotuner Integration }
+   (1) knob exposition
+   (2) DSE
+   (1) API insertion
+   (1) generation of production configuration
