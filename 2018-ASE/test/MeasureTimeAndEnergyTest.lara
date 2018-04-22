@@ -1,0 +1,16 @@
+import MeasureTimeAndEnergy;
+import clava.Clava;
+
+/**
+ * @test
+ */
+aspectdef MeasureTimeAndEnergyTest
+
+	select stmt.call{"matrix_mult_tiling"} end
+	apply
+		call MeasureTimeAndEnergy($call);
+	end
+	
+	Clava.rebuild();
+	
+end

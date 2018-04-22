@@ -1,0 +1,73 @@
+/*
+	Simple matrix multiplication example.
+*/
+
+#include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+
+/*
+	matrix multiplication with loop tiling
+*/
+void matrix_mult_tiling(const double* A , const double* B, double* C, const int N, const int M, const int K) {
+
+   for(int i=0; i<N; i++) {
+       for(int j=0; j<K; j++) {
+           C[K*i + j] = 0;
+       }
+    }
+
+    for(int i=0; i<N; i++) {
+        for(int l=0; l< M; l++) {
+            for(int j=0; j< K; j++) {
+                C[K*i + j] += A[M*i+l]*B[K*l+j];
+            }
+        }
+    }
+}
+
+/*
+ * Set an N by M matrix A to random values
+ */
+void init_matrix(double *A, const int N, const int M) {
+	for (int i = 0; i < N; ++i)
+		for (int j = 0; j < M; ++j) 
+	       A[M*i + j] = ((double) rand()) / (double) RAND_MAX; 
+}
+
+void printMatrixResult(double *A, const int N, const int K) {
+	double acc = 0.0;
+	
+	for (int i = 0; i < N; ++i)
+		for (int j = 0; j < K; ++j) 
+			acc += A[K*i + j];
+		
+
+	printf("Result acc: %f", acc);
+}
+
+
+
+int main() {
+	
+	// To make results repeatable
+	srand(0);
+	
+	int N=512; 
+	int M=256;
+	int K=512;
+	
+	double* A = (double *) malloc(N*M*sizeof(double)); 
+	double* B = (double *) malloc(M*K*sizeof(double));
+	double* C = (double *) malloc(N*K*sizeof(double));
+		
+	// initialize matrices
+	init_matrix(A, N, M);
+	init_matrix(B, M, K);
+	
+	// do: C = A*B
+	matrix_mult_tiling(A, B, C, N, M, K);
+	
+	printMatrixResult(C, N, K);
+}
+
