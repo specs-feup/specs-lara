@@ -79,7 +79,26 @@ function changeType($targetType, $oldType, $newType) {
 	
 	/* Update if there are changes */
 	if(!changedUnderlying.equals(underlyingType)) {
-		underlyingType.replaceWith(changedUnderlying);
+		// Copy target type
+		$targetTypeCopy = $targetType.copy();
+	
+		// TODO: Replace with a $targetTypeCopy.find(underlyingType) attribute?
+	
+		var underlyingTypeCopy = undefined;
+		for(var $descendant of $targetTypeCopy.descendants) {
+			if($descendant.equals(underlyingType)) {
+				underlyingTypeCopy = $descendant;
+				break;
+			}
+		}
+	
+		if(underlyingTypeCopy === undefined) {
+			throw "Could not find corresponding underlying type";
+		}
+		
+		underlyingTypeCopy.replaceWith(changedUnderlying);
+		$targetType = $targetTypeCopy;
+		//underlyingType.replaceWith(changedUnderlying);
 	}
 	
 	return $targetType;

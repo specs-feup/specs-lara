@@ -6,76 +6,22 @@ import clava.Clava;
  * @test
  */
 aspectdef ChangePrecisionTest
-/*
-	// Prepare inputs
-    var $func = undefined;
-    select function{"main"} end
-    apply
-        $func = $function;
-    end
-*/
+
     $oldType = ClavaJoinPoints.builtinType("double");
     $newType = ClavaJoinPoints.builtinType("float");
-    /*
-	// Select all decls with old type in function
-	var oldDecls = [];
-	select function.body.vardecl end
-	apply
-		if($function.name !== "main") {
-			continue;
-		}		
-		
-		oldDecls.push($vardecl);
-	end
-	condition
-		$vardecl.type.equals($oldType)
-	end
-	*/
-	/*
-	select program end
-	apply
-		println("AST BEFORE:" + $program.ast);
-	end
-	*/
+
 	// Call aspect under test
 	select function end
 	apply
 		call ChangePrecision($function, $oldType, $newType);
 	end
 	
-	/*
-	select program end
-	apply
-		println("AST AFTER:" + $program.ast);
-	end
-	*/
 	
 	select program end
 	apply println($program.code); end
-	/*
-	// Test output
-	for(var $oldDecl of oldDecls) {
-		if(!$oldDecl.type.equals($newType)) {
-			throw "Expected type '" + $newType.code + "', got '"+$oldDecl.type.code+"'";
-		}
-	}
-	*/
 
 	
 	// If rebuild is successful, it means there are no syntax errors in the generated code
 	Clava.rebuild();
-	
-	/*
-	select program end
-	apply
-		var programCode = $program.code;
-		var expectedCode = resources.getString("ChangePrecision.output");
-		
-		if(programCode !== expectedCode) {
-			throw "Program code does not match expected code.\nCurrent output begin:\n"+programCode+"\nCurrent output end\nExpected output begin:\n"+expectedCode+"\nExpected output end";
-		}
-	end
-	*/
-
 	
 end
