@@ -1,0 +1,24 @@
+import CreateFloatVersion;
+import clava.ClavaJoinPoints;
+
+/**
+ * @test
+ */
+aspectdef CreateFloatVersionTest
+
+
+    select function{"test_matrix_mul"} end
+    apply	
+		//println("Function AST BEFORE: " + $function.ast);
+		call CreateFloatVersion($function, "_cloned");
+		//println("Function AST AFTER: " + $function.ast);
+    end
+
+
+
+	
+	// If rebuild is successful, it means there are no syntax errors in the generated code
+	Clava.rebuild();
+	
+
+end
