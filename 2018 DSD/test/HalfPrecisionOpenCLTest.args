@@ -1,2 +1,2 @@
--p $BASE/src/gemm.cl -of HalfPrecisionOpenCLTest
+-p $BASE/src/gemm.cl -of HalfPrecisionOpenCLTest -e metrics/HalfPrecisionOpenCLTest.json
 

@@ -11,6 +11,8 @@
 # Ignore automatically created results
 *.csv
 *.xlsx
+**/metrics/*
+*.json
 
 # Do not include data inputs in the repository,
 # they should be provided in a separate file

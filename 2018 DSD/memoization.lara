@@ -1,0 +1,32 @@
+aspectdef Memoize_Method_overloading_ARGS
+input 
+  aClass,     // Name of a class
+  aMethod,    // Name of a method of the class aClass
+  pType,      // Name of the selected type
+  nbArgs,     // he number of parameters of the method
+  fileToLoad, // filename for init of the table, or 'none'
+  FullOffLine,// yes for a fully offline strategy
+  FileToSave, // filemane to save the table, or 'none'
+  Replace,    // Always replace in case of collisions
+  approx,  // Number of bits to delete for approximation.
+  tsize       // Size of the internal table.
+end
+// Control on the parameters of the aspect: nbArgs in [1,3]
+   ...
+// Searching the method.
+var MethodToMemoize, found=false; 
+select class{aClass}.method{aMethod} end  
+apply
+ if (! found) {
+   found = isTheSelectedMethod($method, nbArgs, pType);
+   if (found) MethodToMemoize=$method;
+ }
+end
+if (!found) 
+ { /* message to the user */}
+else {
+ GenCode_CPP_Memoization(aClass, aMethod, pType, nbArgs, 
+ fileToLoad, FullOffLine, FileToSave, Replace, approx, tsize);
+ call CPP_UpdateCallMemoization(aClass, aMethod, pType, nbArgs);
+}
+end	
