@@ -40,7 +40,7 @@ void init_matrix(double *A, const int N, const int M) {
 	}
 }
 
-void printMatrixResult(double *A, const int N, const int K) {
+void print_matrix_result(double *A, const int N, const int K) {
 	double acc = 0.0;
 	
 	for (int i = 0; i < N; ++i) {
@@ -55,13 +55,9 @@ void printMatrixResult(double *A, const int N, const int K) {
 	printf("Result acc: %f", acc);
 }
 
-
-
-int main() {
 	
-	// To make results repeatable
-	srand(0);
 	
+void test_matrix_mul() {	
 	int N=512; 
 	int M=256;
 	int K=512;
@@ -80,6 +76,14 @@ int main() {
 	// do: C = A*B
 	matrix_mult(A, B, C, N, M, K);
 	
-	printMatrixResult(C, N, K);
+	print_matrix_result(C, N, K);
+	
 }
 
+int main() {
+	
+	// To make results repeatable
+	srand(0);
+
+	test_matrix_mul();	
+}	
