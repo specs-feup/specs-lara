@@ -7,24 +7,12 @@ aspectdef ChangePrecision
 	select $func.decl end
 	apply
 		changeJpType($decl, $oldType, $newType);
-//		var changedType = changeType($decl.type, $oldType, $newType);
-//		def type = changedType;
 		
 		// If decl has initialization, change types in initialization expression
 		if($decl.hasInit) {
 			$initExpr = $decl.init;
-//			var initChangedType = changeType($initExpr.type, $oldType, $newType);
-//			$initExpr.def type = initChangedType;			
 
-			//println("INIT EXPR:" + $initExpr.ast);
-
-			for(var $descendantExpr of $initExpr.descendantsAndSelf("expression")) {
-				//println("Descendat: " + $descendantExpr.code);
-				//println("Descendat type before:" + $descendantExpr.type.code);
-				//var $exprChangedType = changeType($descendantExpr.type, $oldType, $newType);
-				//$descendantExpr.def type = $exprChangedType;
-				//println("Descendat type after:" + $descendantExpr.type.code);				
-				
+			for(var $descendantExpr of $initExpr.descendantsAndSelf("expression")) {				
 				changeJpType($descendantExpr, $oldType, $newType);
 			}
 		}
@@ -36,8 +24,6 @@ aspectdef ChangePrecision
 	var $returnType = $func.functionType.returnType;
 	var $changedReturnType = changeType($returnType, $oldType, $newType);
 	$func.functionType.def returnType = $changedReturnType;
-//	if($func.functionType.returnType.equals($oldType))
-//		$func.functionType.def returnType = $newType;
 	
 end
 
@@ -69,6 +55,7 @@ function changeType($targetType, $oldType, $newType) {
 	
 	/* Get underlying type*/
 	var underlyingType = getUnderlyingType($targetType);
+	
 	/* If no underlying type, just return type*/
 	if(underlyingType === undefined) {
 		return $targetType;

@@ -46,14 +46,12 @@ aspectdef CloneFunction
 			continue;
 		
 		call clones : CloneFunction($call.definition, suffix, clonedFuncs, originalIds);
-		/* change function calls to the cloned function */
-		//$call.def name = clones.$clonedFunc.name;
 	 end
 	 
 end
 
 function cloneFunc($func, suffix, clonedFuncs, originalIds) {
-	//var newName = $func.name + suffix;
+
 	var newName = buildClonedFunctionName($func.name, suffix);
 	$func.exec $clonedFunc : clone(newName);
 	clonedFuncs[$clonedFunc.id] = $clonedFunc;

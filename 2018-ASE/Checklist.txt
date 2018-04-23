@@ -12,7 +12,7 @@
    (1) loop transformations (tiling)
    (DONE) change precision (DSD)
    (DONE) create float version (DSD)
-   (2) multiversion (DSD)
+   (DONE) multiversion (DSD)
    (DROPPED) [libvc (DSD)]
    (DROPPED) [memoization (DSD)]
    (DROPPED) [examon (DSD)]

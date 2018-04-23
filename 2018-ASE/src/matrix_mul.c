@@ -52,7 +52,7 @@ void print_matrix_result(double *A, const int N, const int K) {
 		
 		
 
-	printf("Result acc: %f", acc);
+	printf("Result acc: %f\n", acc);
 }
 
 	

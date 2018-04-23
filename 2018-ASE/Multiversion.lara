@@ -23,39 +23,25 @@ aspectdef Multiversion
 	var $floatFunc = fVersion.$clonedFunc;
 	
 	var timer = new Timer();
+
+	/* Create call based on float version of function */
+	$floatFunc.exec $floatCall : newCall([]);
+	//$floatCall = $floatFunc.newCall([]);
+
+	// copy current call
+	$call.exec $callCopy : copy();
+	//$callCopy = $call.copy();
 	
-	 // Identify call by name...
-//	 select function.body.stmt.call{$func.name} end
-//	 apply
-	 
-		//if(!$call.isStmtCall)
-		//	continue;
-		
-		// ... and by type signature
-		//if(!$func.functionType.equals($call.functionType))
-		//	continue;
+	var $condition = ClavaJoinPoints.exprLiteral(knobName);
+	call switchJp : CreateSwitch($condition, {0: $callCopy, 1: $floatCall});
 			
-		//$body.exec addLocal(knobName, ClavaJoinPoints.builtinType('int'), 0);
+	// Get stmt of the call
+	var $stmt = $call.ancestor("statement");
+			
+	$stmt.exec replaceWith(switchJp.$switch);
 
-
-		/* Create call based on float version of function */
-		$floatCall = $floatFunc.newCall([]);	
-
-		// copy current call
-		$callCopy = $call.copy();	
-		
-		var $condition = ClavaJoinPoints.exprLiteral(knobName);
-		call switchJp : CreateSwitch($condition, {0: $callCopy, 1: $floatCall});
-				
-		// Get stmt of the call
-		var $stmt = $call.ancestor("statement");
-				
-		$stmt.exec replaceWith(switchJp.$switch);
-
-		timer.time($callCopy, "Original time:");
-		timer.time($floatCall, "Float time:");
-//	 end
-
+	timer.time($callCopy, "Original time:");
+	timer.time($floatCall, "Float time:");
 	
 end
 
@@ -68,10 +54,7 @@ aspectdef CreateSwitch
 	output
 		$switch
 	end
-	
-	println("Switch Cases:");
-	printObject(switchCases);
-	
+		
 	var cases = [];
 	for(key in switchCases) {
 		cases.push(ClavaJoinPoints.exprLiteral(key));
@@ -81,23 +64,4 @@ aspectdef CreateSwitch
 	$switch = ClavaJoinPoints.switchStmt($condition, cases);
 	
 end
-/*
-function createFloatArg($varref) {
-	if($varref.joinPointType !== "varref") {
-		throw "createFloatArg: input must be a 'varref' join point";
-	}
 
-	
-	// create varref for float function 
-	$varref.exec $floatArg : copy();
-	$floatArg.def name = $varref.name + "_f";
-
-	// create varredecl
-	var $vardeclFloat = ClavaJoinPoints.varDeclNoInit($varref.name + "_f", changeType($varref.type, $double, $float));
-	
-	// Insert after original declaration
-	$varref.declaration.insertAfter($vardeclFloat);
-	
-	return $floatArg;
-}
-*/
