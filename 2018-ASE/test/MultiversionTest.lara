@@ -1,0 +1,29 @@
+import Multiversion;
+import clava.ClavaJoinPoints;
+
+/**
+ * @test
+ */
+aspectdef MultiversionTest
+
+    select function{"main"}.body.call{"test_matrix_mul"} end
+    apply
+		// Add knob
+		var $knobDecl = $body.addLocal("version", ClavaJoinPoints.builtinType('int'), 0);
+		//ClavaJoinPoints.varDeclNoInit(knobName, ClavaJoinPoints.builtinType("int"));
+		call Multiversion($call, $knobDecl.name);
+    end
+	
+	
+	/*
+	select program end
+	apply
+		println("Program: " + $program.code);
+	end
+	*/
+	
+	// If rebuild is successful, it means there are no syntax errors in the generated code
+	Clava.rebuild();
+
+	
+end
