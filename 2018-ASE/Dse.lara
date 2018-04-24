@@ -1,0 +1,54 @@
+import lat.Lat;
+
+aspectdef Dse
+
+	input $call, latVars end
+
+	$function = $call.definition;
+	if($function === undefined) {
+		println("Could not find definition of call@" + $call.location);
+		return;
+	}
+
+
+	
+	var lat = new Lat("explorer");
+	
+	lat.setVerbose(true).loadCmaker().cmaker.setGenerator("MinGW Makefiles").setMakeCommand("mingw32-make");
+	// lat.setVerbose(true).loadCmaker().cmaker.setMakeCommand("nmake");
+
+	//println("BODY:\n" + $function.body.code);
+	
+	lat.setScope($function.body);
+	lat.setMeasure($call); 
+/*	
+	select function end
+	apply
+		if($function.name == "BlockedMatrixMultiply"){
+			lat.setScope($function.body);
+			break;
+		}
+	end
+*/
+/*
+	select marker end
+	apply
+		if($marker.id == "bmmMeasure"){
+			println($marker.code);
+			lat.setMeasure($marker.contents); 
+			break;
+		}
+	end
+	*/
+	/*
+	var bs1 = new LatVarRange("BS1", LatConst.L1_CACHE_LINESIZE, 16 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
+	var bs2 = new LatVarRange("BS2", LatConst.L1_CACHE_LINESIZE, 16 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
+
+	lat.setVariables([blk_k, blk_j, blk_i]);
+	*/
+	lat.addSearchGroup(latVars);
+	
+	lat.tune();
+
+end
+

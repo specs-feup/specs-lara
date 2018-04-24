@@ -1,0 +1,51 @@
+import Dse;
+import lat.LatConst;
+import clava.Clava;
+
+
+/**
+ * @test
+ */
+aspectdef DseTest
+
+	var $refLoop = undefined;
+
+	// find the reference loop
+	select function{'matrix_mult'}.loop end
+	apply
+		$refLoop = $loop;
+	end
+	condition $loop.controlVar == 'i' end
+
+	// find the loops to be tiled
+	select function{'matrix_mult'}.body.loop end
+	apply
+		var $intType = ClavaJoinPoints.builtinType('int');
+		
+		if($loop.controlVar == 'l') {
+			$body.exec $bs1Decl : addLocal('BS1', $intType, "128");
+			$loop.exec tile($bs1Decl.name, $refLoop, false);
+		} else if($loop.controlVar == 'j') {
+			$body.exec $bs2Decl : addLocal('BS2', $intType, "128");
+			$loop.exec tile($bs2Decl.name, $refLoop, false);		
+		}
+	end
+
+	Clava.rebuild();
+	
+
+	//var bs1 = new LatVarRange("BS1", LatConst.L1_CACHE_LINESIZE, 2 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
+	//var bs2 = new LatVarRange("BS2", LatConst.L1_CACHE_LINESIZE, 2 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
+
+	var bs1 = new LatVarRange("BS1", LatConst.L1_CACHE_LINESIZE, 2 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
+	var bs2 = new LatVarRange("BS2", LatConst.L1_CACHE_LINESIZE, 2 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
+	
+	var latVars = [bs1, bs2];
+	
+	select function{"test_matrix_mul"}.call{"matrix_mult"} end
+	apply
+		call Dse($call, latVars);
+	end
+
+end
+
