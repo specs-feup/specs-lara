@@ -11,10 +11,10 @@
 */
 void matrix_mult(const double* A , const double* B, double* C, const int N, const int M, const int K) {
 
-   for(int i=0; i<N; i++) {
-       for(int j=0; j<K; j++) {
+   for(int ii=0; ii<N; ii++) {
+       for(int jj=0; jj<K; jj++) {
            //C[i][j] = 0;
-           C[K*i + j] = 0;
+           C[K*ii + jj] = 0;
        }
     }
 
