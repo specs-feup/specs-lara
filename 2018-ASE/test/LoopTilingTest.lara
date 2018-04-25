@@ -21,10 +21,10 @@ aspectdef LoopTilingTest
 		
 		if($loop.controlVar == 'l') {
 			$body.exec $bs1Decl : addLocal('BS1', $intType, "128");
-			$loop.exec tile($bs1Decl.name, $refLoop);
+			$loop.exec tile($bs1Decl.name, $refLoop, false);
 		} else if($loop.controlVar == 'j') {
 			$body.exec $bs2Decl : addLocal('BS2', $intType, "128");
-			$loop.exec tile($bs2Decl.name, $refLoop);		
+			$loop.exec tile($bs2Decl.name, $refLoop, false);		
 		}
 	end
 	
