@@ -1,0 +1,30 @@
+import clava.Clava;
+
+import auto.XmlConfig;
+import auto.Dse;
+import auto.CodeGen;
+
+aspectdef AutotunerTopLevel
+
+	input
+		$targetCall,
+		$targetFunc,
+		configName,
+		opListName
+	end
+
+	// setup
+	var configPath = Clava.getWeavingFolder() + configName;
+	var opListPath = Clava.getWeavingFolder() + opListName;
+	
+	// set the configuration and save the xml file
+	call config : XmlConfig(configPath, $targetFunc);
+
+	// perform the DSE
+	var dseInfo = config.dseInfo;
+	call Dse(dseInfo, opListPath, $targetCall, $targetFunc);
+
+	// change the original application
+	var codeGenInfo = config.codeGenInfo;
+	call CodeGen(codeGenInfo);
+end

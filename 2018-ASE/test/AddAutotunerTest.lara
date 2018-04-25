@@ -1,0 +1,14 @@
+import AutotunerTopLevel;
+
+
+/**
+ * @test
+ */
+aspectdef AddAutotunerTest
+
+	var funcName = 'matrix_mul';
+	var configName = '';
+	var opListName = '';
+
+	call AutotunerTopLevel(funcName, configName, opListName);
+end
