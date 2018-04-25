@@ -1,0 +1,102 @@
+
+ 
+
+ // print infos of a type (x)
+ function printType(x) {
+     println('-------------------------------------------');
+     println(' code = ' + x.code);
+     println(' astName = ' + x.astName);
+     println(' name= ' + x.name);
+
+     println(' id : ' + x.id);
+     println(' root : ' + x.root);
+     println(' astId : ' + x.astId);
+     println(' kind  : ' + x.kind);
+     println(' elementType  : ' + x.elementType);
+     println(' arraySize : ' + x.arraySize);
+     println(' isPointer : ' + x.isPointer);
+     println(' hasSugar : ' + x.hasSugar);
+     println(' desugar : ' + x.desugar);
+     println(' constant : ' + x.constant);
+     println('-------------------------------------------');
+ }
+
+ function printAttributes(x) {
+     var attr = x.attributes;
+     for (var u of attr) {
+         println(' Print Type Attr = ' + u);
+     }
+ }
+
+ function addArrayUni(tab, val) {
+     if (tab.indexOf(val) < 0) tab.push(val);
+ }
+
+function printMethodsOf($class) {
+  methods = $class.methods;
+  for (var amethod of methods)
+	          println(" method name = " + amethod.name);
+}
+
+// ----------------USEFUL ???? 
+function checkvarref( $ast)
+{
+   var $jpt = $ast.joinPointType;
+   println (" $jpt  = " +  $jpt + " code = " + $ast.code);
+   
+   if ($jpt === 'vardecl') {
+     /* if ($ast.hasInit)
+          {
+          	println(" $ast.hasInit !!! = "  + $ast.init.code);
+             return checkvarref($ast.init);
+             } */
+      return true;
+   }
+   
+   // reference to this
+   if (( $jpt  === 'expression' ) && ( $ast.code === 'this')) { 
+      TRACE(" Reference THIS !!!");
+      return false;
+      }
+      
+   if ($jpt === 'varref') {
+     var $decl = $ast.vardecl;
+     if ($decl.isParam) return true;  // parameter of the function.
+     var $inFunction = $decl.ancestor("function");
+     println( " $inFunction = " + $inFunction);
+     if ($inFunction !== undefined)  return true; // local to the function.
+     b = isConstantDeclaration($decl);
+     TRACE ( " the symbol " + $ast.name + " is not declared in the fucntion " + " type = " + $decl.type.code + " Is a constant = " + b);
+ 	return b;
+     }
+     
+   if ( $jpt === 'memberAccess') 
+    {
+     if (checkMemberAccessObject($ast)) return true;
+     var $decl = $ast.vardecl;
+     if ($decl === undefined)
+      {
+         ERROR (" The declaration of " + $ast.code + " is not defined !!!");
+         return false;
+       }
+     NYI( " checkvarref : memberAccess declaration != undefined");
+     return false;
+     }
+    if ( $jpt === 'call') vstart = 1; else  vstart = 0;
+    for (var i=vstart; i<$ast.astNumChildren; i++)
+	 {
+	    var achild =  $ast.astChild(i);
+	    if (!checkvarref(achild)) return false;
+	 }
+return true;
+}
+
+function checkMemberAccessObject($MemberAccessObject)
+{
+ var $ast = $MemberAccessObject.base;
+ var $jpt = $ast.joinPointType;
+ if ( $jpt === 'memberAccess') return checkMemberAccessObject($ast);
+ return checkvarref($ast);
+}
+
+
