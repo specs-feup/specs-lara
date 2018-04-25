@@ -14,8 +14,8 @@ aspectdef AutotunerTopLevel
 	end
 
 	// setup
-	var configPath = Clava.getWeavingFolder() + configName;
-	var opListPath = Clava.getWeavingFolder() + opListName;
+	var configPath = Clava.getWeavingFolder() + '/' + configName;
+	var opListPath = Clava.getWeavingFolder() + '/' + opListName;
 	
 	// set the configuration and save the xml file
 	call config : XmlConfig(configPath, $targetFunc);
@@ -26,5 +26,5 @@ aspectdef AutotunerTopLevel
 
 	// change the original application
 	var codeGenInfo = config.codeGenInfo;
-	call CodeGen(codeGenInfo);
+	call CodeGen(codeGenInfo, $targetFunc);
 end

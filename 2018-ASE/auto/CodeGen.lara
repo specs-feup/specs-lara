@@ -6,16 +6,10 @@ aspectdef CodeGen
 		codeGenInfo,
 		$targetFunc
 	end
-	
-	select function{'main'}.body end
-	apply
-		codeGenInfo.init($body);
-	end	
 
-	select $targetFunc.loop end
+	select $targetFunc.body.loop end
 	apply
 		codeGenInfo.update($loop);
-		codeGenInfo.monitorLog($loop);
 	end
 	condition $loop.controlVar == 'ii' end
 	

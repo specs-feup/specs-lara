@@ -1,14 +1,32 @@
 import AutotunerTopLevel;
-
+import LoopTiling;
 
 /**
  * @test
  */
 aspectdef AddAutotunerTest
 
-	var funcName = 'matrix_mul';
-	var configName = '';
-	var opListName = '';
+	var funcName = 'matrix_mult';
+	var configName = 'matrix_mult.conf';
+	var opListName = 'oplist.conf';
 
-	call AutotunerTopLevel(funcName, configName, opListName);
+	// tile the application first
+	tileVars = {'l': 'BS1', 'j': 'BS2'};
+
+        // find the top-level loop
+        select function{'matrix_mult'}.loop end
+        apply
+                call LoopTiling($loop, tileVars);
+        end
+        condition $loop.controlVar == 'i' end
+
+        Clava.rebuild();
+ 
+
+	// integrate the autotuner framework
+	select call{funcName} end
+	apply
+		call AutotunerTopLevel($call, $call.definition, configName, opListName);
+	end
+
 end
