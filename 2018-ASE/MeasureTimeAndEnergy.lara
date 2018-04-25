@@ -2,12 +2,12 @@ import lara.code.Timer;
 import lara.code.Energy;
 
 aspectdef MeasureTimeAndEnergy
-	input $call end
+	input $call, prefix = "" end
 
-	var timer = new Timer();
 	var energy = new Energy();
-	
-	timer.time($call, "Execution time:");
-	energy.measure($call, "Energy:");
-	
+	var timer = new Timer();
+
+	energy.measure($call, prefix + "energy:");	
+	timer.time($call, prefix + "execution time:");
+
 end

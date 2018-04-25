@@ -1,4 +1,5 @@
 import CreateFloatVersion;
+import MeasureTimeAndEnergy;
 import lara.code.Timer;
 import clava.ClavaJoinPoints;
 
@@ -40,8 +41,10 @@ aspectdef Multiversion
 			
 	$stmt.exec replaceWith(switchJp.$switch);
 
-	timer.time($callCopy, "Original time:");
-	timer.time($floatCall, "Float time:");
+	call MeasureTimeAndEnergy($callCopy, "double ");
+	call MeasureTimeAndEnergy($floatCall, "float ");
+//	timer.time($callCopy, "Original time:");
+//	timer.time($floatCall, "Float time:");
 	
 end
 

@@ -6,7 +6,7 @@ import clava.Clava;
  */
 aspectdef MeasureTimeAndEnergyTest
 
-	select stmt.call{"matrix_mult_tiling"} end
+	select stmt.call{"matrix_mult"} end
 	apply
 		call MeasureTimeAndEnergy($call);
 	end
