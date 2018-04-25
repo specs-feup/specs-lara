@@ -12,40 +12,20 @@ aspectdef Dse
 
 
 	
-	var lat = new Lat("explorer");
+	var lat = new Lat("dse");
 	
-	lat.setVerbose(true).loadCmaker().cmaker.setGenerator("MinGW Makefiles").setMakeCommand("mingw32-make");
-	// lat.setVerbose(true).loadCmaker().cmaker.setMakeCommand("nmake");
-
-	//println("BODY:\n" + $function.body.code);
+	// Setup Lat, get CMaker
+	var cmaker = lat.setVerbose(true).loadCmaker().cmaker;
 	
+	if(Platforms.isWindows()) {
+		cmaker.setGenerator("MinGW Makefiles").setMakeCommand("mingw32-make");
+		//cmaker.setMakeCommand("nmake");
+	}
+	
+		
 	lat.setScope($function.body);
 	lat.setMeasure($call); 
-/*	
-	select function end
-	apply
-		if($function.name == "BlockedMatrixMultiply"){
-			lat.setScope($function.body);
-			break;
-		}
-	end
-*/
-/*
-	select marker end
-	apply
-		if($marker.id == "bmmMeasure"){
-			println($marker.code);
-			lat.setMeasure($marker.contents); 
-			break;
-		}
-	end
-	*/
-	/*
-	var bs1 = new LatVarRange("BS1", LatConst.L1_CACHE_LINESIZE, 16 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
-	var bs2 = new LatVarRange("BS2", LatConst.L1_CACHE_LINESIZE, 16 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
 
-	lat.setVariables([blk_k, blk_j, blk_i]);
-	*/
 	lat.addSearchGroup(latVars);
 	
 	lat.tune();
