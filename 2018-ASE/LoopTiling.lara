@@ -1,0 +1,61 @@
+import clava.ClavaJoinPoints;
+
+
+aspectdef LoopTiling
+	input
+		$topLevelLoop,
+		tileVars = {},// Maps control vars to tile variable names
+		//tileExpressions = {},// Maps control vars to tile expression strings
+		ternaryIf = false
+	end
+	
+	// Get function body
+	$fBody = $topLevelLoop.ancestor('function').body;
+
+	// Int type for tile variables
+	var $intType = ClavaJoinPoints.builtinType('int');
+
+	for(var $loop of $topLevelLoop.descendantsAndSelf('loop')) {
+		var tileVar = tileVars[$loop.controlVar];
+		if(tileVar === undefined) {
+			continue;
+		}
+
+		// Create tile variable
+		$fBody.exec addLocal(tileVar, $intType, '64');
+/*		
+		var tileExpr = tileExpressions[$loop.controlVar];
+		if(tileExpr === undefined) {
+			continue;
+		}
+*/		
+		$loop.exec tile(tileVar, $topLevelLoop, ternaryIf);
+	}
+
+	/*
+	var $refLoop = undefined;
+
+	// find the reference loop
+	select function{'matrix_mult'}.loop end
+	apply
+		$refLoop = $loop;
+	end
+	condition $loop.controlVar == 'i' end
+*/
+/*
+	// find the loops to be tiled
+	select function{'matrix_mult'}.body.loop end
+	apply
+		var $intType = ClavaJoinPoints.builtinType('int');
+		
+		if($loop.controlVar == 'l') {
+			$body.exec $bs1Decl : addLocal('BS1', $intType, "128");
+			$loop.exec tile($bs1Decl.name, $refLoop);
+		} else if($loop.controlVar == 'j') {
+			$body.exec $bs2Decl : addLocal('BS2', $intType, "128");
+			$loop.exec tile($bs2Decl.name, $refLoop);		
+		}
+	end
+*/	
+
+end
