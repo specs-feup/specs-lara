@@ -1,13 +1,19 @@
 import lara.code.Timer;
 import lara.code.Energy;
+import lara.Platforms;
 
 aspectdef MeasureTimeAndEnergy
 	input $call, prefix = "" end
 
-	var energy = new Energy();
+	
 	var timer = new Timer();
-
-	energy.measure($call, prefix + "energy:");	
 	timer.time($call, prefix + "execution time:");
+	
+	if(!Platforms.isWindows()) {
+		energy.measure($call, prefix + "energy:");	
+		var energy = new Energy();
+	} else {
+		println("Energy measuring is not supported for Windows");
+	}
 
 end
