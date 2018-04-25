@@ -1,10 +1,46 @@
 import clava.ClavaJoinPoints;
+import LoopTiling;
 
 /**
  * @test
  */
 aspectdef LoopTilingTest
 
+	var $topLeveloop = undefined;
+
+	// find the reference loop
+	select function{'matrix_mult'}.loop end
+	apply
+		$topLeveloop = $loop;
+	end
+	condition $loop.controlVar == 'i' end
+
+	/*
+	$multBody = undefined;
+	select function{'matrix_mult'}.body end
+	apply
+		$multBody = $body;
+		break;
+	end
+*/
+
+	tileVars = {'l': 'BS1', 'j': 'BS2'};
+	
+	
+	//var $intType = ClavaJoinPoints.builtinType('int');
+	/*
+	// Create control vars -> tile expr map
+	tileExprs = {};
+
+	$multBody.exec $bs1Decl : addLocal('BS1', $intType, "128");
+	tileExprs['l'] = $bs1Decl.name;
+	$multBody.exec $bs2Decl : addLocal('BS2', $intType, "128");
+	tileExprs['j'] = $bs2Decl.name;
+	*/
+	call LoopTiling($topLeveloop, tileVars);
+
+	
+/*
 	var $refLoop = undefined;
 
 	// find the reference loop
@@ -27,6 +63,6 @@ aspectdef LoopTilingTest
 			$loop.exec tile($bs2Decl.name, $refLoop, false);		
 		}
 	end
-	
+*/	
 	Clava.rebuild();
 end
