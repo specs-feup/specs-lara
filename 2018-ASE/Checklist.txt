@@ -4,12 +4,12 @@
        (3) structure
    extra-functional requirements analysis
        (DONE) measuring energy and time
-       (2) LAT
+       (DONE) LAT
        (3) HalfPrecisionOpenCL (DSD)
 
 { 2. Developement }
    (2) auto parallelization
-   (1) loop transformations (tiling)
+   (DONE) loop transformations (tiling)
    (DONE) change precision (DSD)
    (DONE) create float version (DSD)
    (DONE) multiversion (DSD)

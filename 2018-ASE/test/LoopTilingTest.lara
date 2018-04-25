@@ -6,63 +6,14 @@ import LoopTiling;
  */
 aspectdef LoopTilingTest
 
-	var $topLeveloop = undefined;
-
-	// find the reference loop
-	select function{'matrix_mult'}.loop end
-	apply
-		$topLeveloop = $loop;
-	end
-	condition $loop.controlVar == 'i' end
-
-	/*
-	$multBody = undefined;
-	select function{'matrix_mult'}.body end
-	apply
-		$multBody = $body;
-		break;
-	end
-*/
-
 	tileVars = {'l': 'BS1', 'j': 'BS2'};
-	
-	
-	//var $intType = ClavaJoinPoints.builtinType('int');
-	/*
-	// Create control vars -> tile expr map
-	tileExprs = {};
 
-	$multBody.exec $bs1Decl : addLocal('BS1', $intType, "128");
-	tileExprs['l'] = $bs1Decl.name;
-	$multBody.exec $bs2Decl : addLocal('BS2', $intType, "128");
-	tileExprs['j'] = $bs2Decl.name;
-	*/
-	call LoopTiling($topLeveloop, tileVars);
-
-	
-/*
-	var $refLoop = undefined;
-
-	// find the reference loop
+	// find the top-level loop
 	select function{'matrix_mult'}.loop end
 	apply
-		$refLoop = $loop;
+		call LoopTiling($loop, tileVars);
 	end
 	condition $loop.controlVar == 'i' end
 
-	// find the loops to be tiled
-	select function{'matrix_mult'}.body.loop end
-	apply
-		var $intType = ClavaJoinPoints.builtinType('int');
-		
-		if($loop.controlVar == 'l') {
-			$body.exec $bs1Decl : addLocal('BS1', $intType, "128");
-			$loop.exec tile($bs1Decl.name, $refLoop);
-		} else if($loop.controlVar == 'j') {
-			$body.exec $bs2Decl : addLocal('BS2', $intType, "128");
-			$loop.exec tile($bs2Decl.name, $refLoop);		
-		}
-	end
-*/	
 	Clava.rebuild();
 end
