@@ -1,0 +1,52 @@
+import clava.ClavaJoinPoints;
+import lara.util.IdGenerator;
+
+aspectdef SpecializeCallPointers
+
+	input 
+		$call,
+		sizes
+	end 
+
+
+	if($call.definition === undefined) {
+		println("Could not find definition of call");
+		return;
+	}
+
+	var suffix = IdGenerator.next("_call_specialization_");
+
+	// Create clone of function being called
+	$call.definition.exec $clonedFunction : clone($call.name + suffix);
+
+	// Change call
+	$call.def name = $clonedFunction.name;
+	
+	var $args = $call.args;
+	var $params = $clonedFunction.params;
+
+	for(var i=0; i<$args.length; i++) {
+		var $arg = $args[i];
+	
+		if(!$arg.type.instanceOf("pointerType")) {
+			continue;
+		}
+
+		if($arg.type.pointerLevels != 1) {
+			continue;
+		}
+
+		var arraySize = sizes[$arg.code];
+		if(arraySize === undefined) {
+			//println("Could not find array size for argument " + $arg.code);
+			continue;
+		}
+
+		// Build constant array type
+		$arrayArgType = ClavaJoinPoints.constArrayType($arg.type.pointee, arraySize);
+		// Set parameter type of cloned function
+		$params[i].def type = $arrayArgType;
+
+	}
+
+end
