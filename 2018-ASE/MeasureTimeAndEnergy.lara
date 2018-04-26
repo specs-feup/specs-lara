@@ -4,16 +4,14 @@ import lara.Platforms;
 
 aspectdef MeasureTimeAndEnergy
 	input $call, prefix = "" end
-
-	
-	var timer = new Timer();
-	timer.time($call, prefix + "execution time:");
 	
 	if(!Platforms.isWindows()) {
-		energy.measure($call, prefix + "energy:");	
 		var energy = new Energy();
+		energy.measure($call, prefix + "energy:");	
 	} else {
 		println("Energy measuring is not supported for Windows");
 	}
+	
+	(new Timer()).time($call, prefix + "execution time:");
 
 end
