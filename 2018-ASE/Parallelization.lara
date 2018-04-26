@@ -1,12 +1,12 @@
-//import LoopTiling;
-//import SpecializeCallPointers;
-import Parallelization;
+import LoopTiling;
+import SpecializeCallPointers;
+
 
 /**
  * @test
  */
-aspectdef ParallelizationTest
-/*
+aspectdef Parallelization
+
 	tileVars = {'l': 'BS1', 'j': 'BS2'};
 
 	// find the top-level loop
@@ -27,7 +27,6 @@ aspectdef ParallelizationTest
 	apply
 		call SpecializeCallPointers($call, sizes);
 	end	
-*/
-	call Parallelization();
+	
 
 end
