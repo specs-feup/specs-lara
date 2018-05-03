@@ -1,0 +1,60 @@
+import LoopTiling;
+import SpecializeCallPointers;
+import Dse;
+import lat.LatVarRange;
+import lat.vars.LatVarOmpThreads;
+
+aspectdef Parallelization
+
+	tileVars = {'l': 'BS1', 'j': 'BS2'};
+
+	// Apply loop-tiling to top-level loop
+	select function{'matrix_mult'}.loop end
+	apply
+		call LoopTiling($loop, tileVars);
+	end
+	condition $loop.controlVar == 'i' end
+
+
+	// Autopar needs constant array types
+	// to detect array reduction
+	var N = 512;
+	var M = 256;
+	var K = 512;
+	
+	var sizes = {"A" : N*M, "B": M*K, "C" : N*K};
+
+	var specializedCallName = undefined;
+	select function{"test_matrix_mul"}.call{"matrix_mult"} end
+	apply
+		call SpecializeCallPointers($call, sizes);
+		specializedCallName = $call.name;
+	end	
+
+	
+	// Run Autopar
+	// ...
+
+	// Create variables for the DSE
+	var l1CacheLineSize = 64;
+	
+	var bs1 = new LatVarRange("BS1", l1CacheLineSize, 2 * l1CacheLineSize, l1CacheLineSize);
+	var bs2 = new LatVarRange("BS2", l1CacheLineSize, 2 * l1CacheLineSize, l1CacheLineSize);
+	var numThreadsRange = new LatVarRange("", 1, 16, 1, pow2);
+	var numThreads = new LatVarOmpThreads(numThreadsRange);
+	
+	var latVars = [bs1, bs2, numThreads];
+	
+	//select function{"test_matrix_mul"}.call{"matrix_mult"} end
+	println("Specialzied called name: " + specializedCallName);
+	select function{"test_matrix_mul"}.call{specializedCallName} end
+	apply
+		println("DSE");
+		call Dse($call, latVars);
+	end
+
+end
+
+function pow2(x){
+	return Math.pow(x, 2);
+}

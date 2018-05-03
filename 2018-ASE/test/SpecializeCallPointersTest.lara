@@ -1,0 +1,19 @@
+import SpecializeCallPointers;
+
+/**
+ * @test
+ */
+aspectdef SpecializeCallPointersTest
+	
+	var N = 512;
+	var M = 256;
+	var K = 512;
+	
+	var sizes = {"A" : N*M, "B": M*K, "C" : N*K};
+
+	select function{"test_matrix_mul"}.call{"matrix_mult"} end
+	apply
+		call SpecializeCallPointers($call, sizes);
+	end
+	
+end

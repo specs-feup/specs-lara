@@ -1,0 +1,33 @@
+//import LoopTiling;
+//import SpecializeCallPointers;
+import Parallelization;
+
+/**
+ * @test
+ */
+aspectdef ParallelizationTest
+/*
+	tileVars = {'l': 'BS1', 'j': 'BS2'};
+
+	// find the top-level loop
+	select function{'matrix_mult'}.loop end
+	apply
+		call LoopTiling($loop, tileVars);
+	end
+	condition $loop.controlVar == 'i' end
+
+
+	var N = 512;
+	var M = 256;
+	var K = 512;
+	
+	var sizes = {"A" : N*M, "B": M*K, "C" : N*K};
+
+	select function{"test_matrix_mul"}.call{"matrix_mult"} end
+	apply
+		call SpecializeCallPointers($call, sizes);
+	end	
+*/
+	call Parallelization();
+
+end

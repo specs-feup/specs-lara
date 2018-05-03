@@ -1,0 +1,17 @@
+import antarex.margot.codegen.MargotCodeGen;
+
+aspectdef CodeGen
+
+	input
+		codeGenInfo,
+		$targetFunc
+	end
+
+	select $targetFunc.body.loop end
+	apply
+		codeGenInfo.update($loop);
+	end
+	condition $loop.controlVar == 'ii' end
+	
+	println('CodeGen done');
+end

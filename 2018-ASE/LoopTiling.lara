@@ -1,0 +1,29 @@
+import clava.ClavaJoinPoints;
+
+
+aspectdef LoopTiling
+	input
+		$topLevelLoop,
+		tileVars = {},// Maps control vars to tile variable names
+		ternaryIf = false
+	end
+	
+	// Get function body
+	$fBody = $topLevelLoop.ancestor('function').body;
+
+	// Int type for tile variables
+	var $intType = ClavaJoinPoints.builtinType('int');
+
+	for(var $loop of $topLevelLoop.descendantsAndSelf('loop')) {
+		var tileVar = tileVars[$loop.controlVar];
+		if(tileVar === undefined) {
+			continue;
+		}
+
+		// Create tile variable
+		$fBody.exec addLocal(tileVar, $intType, '64');
+
+		$loop.exec tile(tileVar, $topLevelLoop, ternaryIf);
+	}
+
+end

@@ -1,0 +1,34 @@
+import lat.Lat;
+
+aspectdef Dse
+
+	input $call, latVars end
+
+	$function = $call.definition;
+	if($function === undefined) {
+		println("Could not find definition of call@" + $call.location);
+		return;
+	}
+
+
+	
+	var lat = new Lat("dse");
+	
+	// Setup Lat, get CMaker
+	var cmaker = lat.setVerbose(true).loadCmaker().cmaker;
+	
+	if(Platforms.isWindows()) {
+		cmaker.setGenerator("MinGW Makefiles").setMakeCommand("mingw32-make");
+		//cmaker.setMakeCommand("nmake");
+	}
+	
+		
+	lat.setScope($function.body);
+	lat.setMeasure($call); 
+
+	lat.addSearchGroup(latVars);
+	
+	lat.tune();
+
+end
+
