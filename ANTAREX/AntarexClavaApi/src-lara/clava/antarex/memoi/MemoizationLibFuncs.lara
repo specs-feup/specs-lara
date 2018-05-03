@@ -209,7 +209,7 @@ function getFuncWrapperName(func){
 
 /**
   * @param {jointpoint $file} vfile.
-  * @parma {array of string} ExposedVariables.
+  * @param {array of string} ExposedVariables.
   * It generates in the file (vfile) the exposed variables of ExposedVariables. 
   * The variables that can be modified at run time (margot or other tool).
   * */
