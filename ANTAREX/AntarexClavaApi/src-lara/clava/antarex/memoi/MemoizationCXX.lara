@@ -207,29 +207,16 @@ aspectdef CPP_UpdateCallMemoization
 
   select call{aMethod} end
      apply
-       // XXXXXXXXXXXXXXXXX 
         if ($call.isMemberAccess) {
-         if ($call.definition !== undefined) // not a reference to a _wrapper
-          { 
-           if ($call.declaration.location === locationOfTheselectedMethod )
+         // println("MemberAccess is = " + $call.code + "   $call.definition=" + $call.definition + " --- Call declaration:" + $call.declaration);
+	 // not a reference to a _wrapper
+         if ($call.definition !== undefined)
+       	  { 
+	    println("Call definition:" + $call.definition.location);
+            if ($call.declaration.location === locationOfTheselectedMethod )
                          exec setName(getFuncWrapperName(aMethod));
          }
         } 
-     /*   println(">>>>>>>>>>>>>>>>>>>>>>>>>>  CPP_UpdateCallMemoization : WAITING UPORTO MAIL");
-         if($call.isMemberAccess) {
-           println("MemberAccess is = " + $call.code );
-           if ($call.definition !== undefined) {
-              println("Call definition:" + $call.definition.location);
-              println($call.definition.code);
-           }
-            if ($call.declaration !== undefined) {
-               println("Call declaration:" + $call.declaration.location);
-               println($call.declaration.code);
-            }
-            println("MemberAccess END");
-        }
-   println(" <<<<<<<<<<<<<<<<  CPP_UpdateCallMemoization : WAITING UPORTO MAIL");
-                */
      end
 end
 
