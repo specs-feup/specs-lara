@@ -2,8 +2,11 @@
 aspectdef GetFunctions
 	output
 		notDeclared = [],
-		functions = new LaraObject()
+		functions
 	end
+		
+		functions = new LaraObject();		
+		
 		var DEBUG = false;
 		var apis = new  LaraObject();
 		//Select all functions of the application.
