@@ -1,0 +1,13 @@
+import clava.opencl.KernelReplacer;
+
+//	This aspect can be included in a library, imported and
+// called by a user, since it needs no configuration/parameterization
+aspectdef KernelReplacerAutoExample
+
+	// look for pragma
+	select tag end
+	apply
+		println('found');
+		println($tag.code);
+	end
+end

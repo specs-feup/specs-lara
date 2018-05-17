@@ -1,0 +1,24 @@
+import clava.opencl.KernelReplacer;
+
+aspectdef KernelReplacerExample
+
+	var kernelCodePath = '/home/pedro/Documents/repositories/specs-lara/ANTAREX/OpenCLExamples/src/cl/gemm.cl';
+	
+	var bufferSizes = {
+		A: "N*M*sizeof(double)",
+		B: "M*K*sizeof(double)",
+		C: "N*K*sizeof(double)"
+	};
+
+	select stmt.call{'matrix_mult'} end
+	apply
+		var kernel = new KernelReplacer($call,
+			"mat_mul_kernel", kernelCodePath,
+			bufferSizes,
+			[1, 64], ['N', 'K']);
+			
+		kernel.setOutput('C');
+		
+		kernel.replaceCall();
+	end
+end
