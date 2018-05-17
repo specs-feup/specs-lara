@@ -73,7 +73,7 @@ void test_matrix_mul() {
 	init_matrix(A, N, M);
 	init_matrix(B, M, K);
 	
-#pragma clava tag config
+	#pragma clava opencl_call matrix_opencl.json
 	matrix_mult(A, B, C, N, M, K);
 	
 	print_matrix_result(C, N, K);

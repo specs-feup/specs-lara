@@ -1,13 +1,32 @@
 import clava.opencl.KernelReplacer;
 
+import lara.Io;
+import lara.Strings;
+
+
 //	This aspect can be included in a library, imported and
 // called by a user, since it needs no configuration/parameterization
 aspectdef KernelReplacerAutoExample
 
 	// look for pragma
-	select tag end
+	select file.pragma{"clava"} end
 	apply
-		println('found');
-		println($tag.code);
+	
+		if(!$pragma.content.startsWith("opencl_call")) {
+			continue;
+		}
+
+		var configFilename = Strings.extractValue("opencl_call", $pragma.content).trim(); 		
+		var configFile = Io.getPath($file.path, configFilename);
+		
+		if(!Io.isFile(configFile)) {
+			println("Expected to find the config file '"+configFilename+"' in the folder '"+$file.path+"'");
+			continue;
+		}
+		
+		var config = Io.readJson(configFile);
+	
+		println("OpenCL Configuration:");
+		printObject(config);
 	end
 end
