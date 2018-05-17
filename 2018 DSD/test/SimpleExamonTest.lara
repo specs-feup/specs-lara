@@ -24,4 +24,7 @@ aspectdef SimpleExamonTest
 	call SimpleExamon(name, ip, topic, $manageFunction, $targetStmt);
 
     println(Clava.getProgram().code);
+	
+	// If rebuild is successful, it means there are no syntax errors in the generated code
+	Clava.rebuild();
 end

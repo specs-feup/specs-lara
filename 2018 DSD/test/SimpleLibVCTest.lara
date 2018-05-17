@@ -23,4 +23,7 @@ aspectdef SimpleLibVCTest
 	call SimpleLibVC(name, $target, options);
 	
 	println(Clava.getProgram().code);
+
+	// If rebuild is successful, it means there are no syntax errors in the generated code
+	Clava.rebuild();	
 end
