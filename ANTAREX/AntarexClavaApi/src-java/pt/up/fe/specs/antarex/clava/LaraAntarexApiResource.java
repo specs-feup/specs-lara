@@ -22,9 +22,6 @@ import org.lara.interpreter.weaver.utils.LaraResourceProvider;
 public enum LaraAntarexApiResource implements LaraResourceProvider {
     TEST("_Test.lara"),
 
-    // OpenCL
-    KERNEL_REPLACER("opencl/KernelReplacer.lara"),
-
     // Examon
     EXAMON("examon/Examon.lara"),
     EXAMON_ASPECTS("examon/ExamonAspects.lara"),
