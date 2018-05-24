@@ -1,0 +1,20 @@
+{
+  "kernelFile": "/home/pedro/Documents/repositories/specs-lara/ANTAREX/OpenCLExamples/src/cl/gemm.cl",
+  "kernelName": "mat_mul_kernel",
+  "bufferSizes": {
+    "A": "N*M*sizeof(double)",
+    "B": "M*K*sizeof(double)",
+    "C": "N*K*sizeof(double)"
+  },
+  "localSize": [
+    1,
+    64
+  ],
+  "iterNumbers": [
+    "N",
+    "K"
+  ],
+  "outputBuffers": [
+    "C"
+  ]
+}
