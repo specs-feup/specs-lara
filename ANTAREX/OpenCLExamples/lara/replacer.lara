@@ -2,7 +2,8 @@ import clava.opencl.KernelReplacer;
 
 aspectdef KernelReplacerExample
 
-	var kernelCodePath = '/home/pedro/Documents/repositories/specs-lara/ANTAREX/OpenCLExamples/src/cl/gemm.cl';
+	// path relative to the file where the target call is
+	var kernelCodePath = '../cl/gemm.cl';
 	
 	var bufferSizes = {
 		A: "N*M*sizeof(double)",
