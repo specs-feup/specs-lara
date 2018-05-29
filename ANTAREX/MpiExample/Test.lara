@@ -1,0 +1,29 @@
+import clava.ClavaCode;
+import clava.mpi.MpiScatterGatherLoop;
+
+aspectdef Test
+
+	select program end
+	apply
+		//println("AST:" + $program.ast);
+	end
+
+	select pragma{"clava"} end
+	apply
+		var $loop = $pragma.target;
+		if(!$loop.instanceOf('loop')) {
+			println("Expected a join point loop, but it was '"+$loop.joinPointType+"'");
+			continue;
+		}
+
+		if(!ClavaCode.isExecutedOnce($loop)) {			
+			println("Could not determine if loop is executed only once");
+			continue;
+		}
+		
+		var scatterGather = new MpiScatterGatherLoop($loop);
+		scatterGather.addInput("a");
+		scatterGather.addInput("b");		
+	end
+
+end
