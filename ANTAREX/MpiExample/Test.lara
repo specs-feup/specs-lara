@@ -1,5 +1,6 @@
 import clava.ClavaCode;
 import clava.mpi.MpiScatterGatherLoop;
+import clava.mpi.MpiAccessPattern;
 
 aspectdef Test
 
@@ -22,8 +23,11 @@ aspectdef Test
 		}
 		
 		var scatterGather = new MpiScatterGatherLoop($loop);
-		scatterGather.addInput("a");
-		scatterGather.addInput("b");		
+		scatterGather.addInput("a", MpiAccessPattern.ITERATION_VARIABLE);
+		scatterGather.addInput("b", MpiAccessPattern.ITERATION_VARIABLE);
+		scatterGather.addOutput("c", MpiAccessPattern.ITERATION_VARIABLE);		
+		scatterGather.execute();
+		
 	end
 
 end
