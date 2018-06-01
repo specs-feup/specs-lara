@@ -14,7 +14,7 @@ void foo(double a[N], double b[N], double c[N]) {
 	
 }
 
-int main(int argc, char **argv) {
+int main() {
 		
 	double a[N], b[N], c[N];
 	

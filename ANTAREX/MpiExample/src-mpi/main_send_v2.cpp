@@ -65,9 +65,10 @@ void foo(double a[N], double b[N], double c[N]) {
 		MPI_Send(&b[(numWorkers-1)*clava_mpi_num_iter], clava_mpi_num_iter_last, MPI_DOUBLE, numWorkers,1, MPI_COMM_WORLD);
 	
 	
-		// receive output c - elements: iteration_space
+		
 		MPI_Status status;
-	
+		
+		// receive output c - elements: iteration_space
 		for(int i=0; i<numWorkers-1; i++) {
 			MPI_Recv(&c[i*clava_mpi_num_iter], clava_mpi_num_iter, MPI_DOUBLE, i + 1, 1, MPI_COMM_WORLD, &status);
 		}
