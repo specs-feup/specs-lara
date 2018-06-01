@@ -2,21 +2,10 @@ import clava.ClavaCode;
 import clava.mpi.MpiScatterGatherLoop;
 import clava.mpi.patterns.MpiAccessPatterns;
 
-aspectdef Test
+aspectdef MpiScatterGather
 
-	select program end
+	select function{"foo"}.loop end
 	apply
-		//println("AST:" + $program.ast);
-	end
-
-	select pragma{"clava"} end
-	apply
-		var $loop = $pragma.target;
-		if(!$loop.instanceOf('loop')) {
-			println("Expected a join point loop, but it was '"+$loop.joinPointType+"'");
-			continue;
-		}
-
 		if(!ClavaCode.isExecutedOnce($loop)) {			
 			println("Could not determine if loop is executed only once");
 			continue;
@@ -27,7 +16,7 @@ aspectdef Test
 		scatterGather.addInput("b", MpiAccessPatterns.ITERATION_VARIABLE);
 		scatterGather.addOutput("c", MpiAccessPatterns.ITERATION_VARIABLE);		
 		scatterGather.execute();
-		
 	end
 
 end
+

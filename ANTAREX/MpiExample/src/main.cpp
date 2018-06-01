@@ -6,7 +6,6 @@ void foo(double a[N], double b[N], double c[N]) {
 	
 	{
 		// Loop to parallelize
-		#pragma clava mpi_scather_gather <additional parameters...>
 		for(int i=0; i<N; i++) {
 			c[i] = a[i] + b[i];
 		}
