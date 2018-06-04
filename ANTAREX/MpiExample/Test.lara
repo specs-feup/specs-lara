@@ -6,6 +6,11 @@ aspectdef MpiScatterGather
 
 	select function{"foo"}.loop end
 	apply
+		// OpenMP pragma creation using ClavaJoinPoints
+    		var $omp = ClavaJoinPoints.omp("parallel for");
+		$omp.exec setPrivate(["a"]);
+		$loop.insertBefore($omp);
+	
 		if(!ClavaCode.isExecutedOnce($loop)) {			
 			println("Could not determine if loop is executed only once");
 			continue;

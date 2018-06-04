@@ -2,12 +2,10 @@
 #include <stdlib.h>
 
 void foo(double* a, double* b, double* c, int numElems) {
-	
 		// Loop to parallelize
 		for(int i=0; i<numElems; i++) {
 			c[i] = a[i] + b[i];
 		}
-	
 }
 
 int main() {
