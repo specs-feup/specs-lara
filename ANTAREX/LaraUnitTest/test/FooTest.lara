@@ -1,0 +1,21 @@
+import Foo;
+
+/**
+ * @test
+ */
+aspectdef FooTestAspect
+
+	call Foo();
+	println("FooTestAspect");
+	
+end
+
+/**
+ * @test
+ */
+function FooTestFunction() {
+
+	println("FooTestFunction");
+}
+
+

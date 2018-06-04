@@ -1,0 +1,25 @@
+import Foo;
+
+/**
+ * An aspect test that calls Foo.
+ *
+ * @test
+ */
+aspectdef TestFoo
+
+	call Foo();
+	
+end
+
+/**
+ * A function test that will fail.
+ *
+ * @test
+ */
+function TestFail() {
+
+	throw "This test will fail";
+
+}
+
+

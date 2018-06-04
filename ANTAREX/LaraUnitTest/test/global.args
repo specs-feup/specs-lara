@@ -1,0 +1,2 @@
+# Common flags
+-p $BASE/src -b 2 -nci

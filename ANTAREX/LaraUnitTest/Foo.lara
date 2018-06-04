@@ -1,0 +1,17 @@
+aspectdef Foo
+
+	select function.loop end
+	apply
+		println("Loop:" + $loop.kind);
+	end
+
+
+end
+
+
+aspectdef FooFail
+
+	var a = {};
+	var willFail = a.b.c;
+
+end

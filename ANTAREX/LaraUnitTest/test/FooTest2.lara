@@ -1,0 +1,39 @@
+import Foo;
+
+/**
+ * @test
+ */
+function FooTest2() {
+
+	println("FooTest2");
+	throw "Example of failed test";
+}
+
+
+function NotATest() {
+	println("NotATest");
+}
+
+
+/**
+ * @test
+ */
+function FooTest2_2() {
+	println("FooTest2_2");
+}
+
+
+/**
+ * @test
+ */
+function FooTest2_fail2() {
+	var a = {};
+	var willFail = a.b.c;
+}
+
+/**
+ * @test
+ */
+function FooTest2_fail3() {
+	call FooFail();
+}
