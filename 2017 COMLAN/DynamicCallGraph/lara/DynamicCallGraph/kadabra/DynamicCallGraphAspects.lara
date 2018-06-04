@@ -114,9 +114,14 @@ codedef graphvizConnections(graphVar, id, caller, callee) %{
  */
 aspectdef GetClasses
 	output
-		apis = new LaraObject(),
-		classes = new LaraObject()
+//		apis = new LaraObject(),
+//		classes = new LaraObject()
+		apis,
+		classes	
 	end
+	
+	apis = new LaraObject();
+	classes = new LaraObject();
 	
 	//Select all methods inside classes
 	select class.method end
