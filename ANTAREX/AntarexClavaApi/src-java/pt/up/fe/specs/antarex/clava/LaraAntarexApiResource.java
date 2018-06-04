@@ -26,17 +26,9 @@ public enum LaraAntarexApiResource implements LaraResourceProvider {
     EXAMON("examon/Examon.lara"),
     EXAMON_ASPECTS("examon/ExamonAspects.lara"),
 
-    // MultiVersioning
-    MULTI_POINTERS("multi/MultiVersionPointers.lara"),
-    MULTI_POINTERS_ASPECTS("multi/MultiVersionPointersAspects.lara"),
-
     // LIBVC
     LIBVC("libvc/LibVC.lara"),
     LIBVC_ASPECTS("libvc/_internal/LibVCAspects.lara"),
-
-    // mARGOt DSE
-    MARGOT_DSE_INFO("margot/dse/MargotDseInfo.lara"),
-    MARGOT_DSE_METRIC("margot/dse/metric/MargotMetric.lara"),
 
     // mARGOt codegen
     MARGOT_CODE_GEN("margot/codegen/MargotCodeGen.lara"),
@@ -44,18 +36,40 @@ public enum LaraAntarexApiResource implements LaraResourceProvider {
     MARGOT_CODE_GEN_STRINGS("margot/codegen/_internal/MargotStringsGen.lara"),
 
     // mARGOt config
-    MARGOT_CONFIG("margot/config/MargotConfig.lara"),
     MARGOT_CONFIG_BLOCK("margot/config/MargotBlock.lara"),
-    MARGOT_CONFIG_STATE("margot/config/MargotState.lara"),
+    MARGOT_CONFIG("margot/config/MargotConfig.lara"),
     MARGOT_CONFIG_DATA_FEATURE("margot/config/MargotDataFeature.lara"),
+    MARGOT_CONFIG_DOMAIN("margot/config/MargotEnergyDomain.lara"),
     MARGOT_CONFIG_KNOB("margot/config/MargotKnob.lara"),
+    MARGOT_CONFIG_STATE("margot/config/MargotState.lara"),
 
-    MARGOT_CONFIG_MONITOR("margot/config/monitor/MargotMonitor.lara"),
+    MARGOT_CONFIG_CUSTOM_MONITOR("margot/config/monitor/MargotCustomMonitor.lara"),
     MARGOT_CONFIG_ENERGY_MONITOR("margot/config/monitor/MargotEnergyMonitor.lara"),
+    MARGOT_CONFIG_MONITOR("margot/config/monitor/MargotMonitor.lara"),
     MARGOT_CONFIG_THROUGHPUT_MONITOR("margot/config/monitor/MargotThroughputMonitor.lara"),
     MARGOT_CONFIG_TIME_MONITOR("margot/config/monitor/MargotTimeMonitor.lara"),
 
-    MARGOT_CONFIG_DOMAIN("margot/config/MargotEnergyDomain.lara");
+    // mARGOt DSE
+    MARGOT_DSE_INFO("margot/dse/MargotDseInfo.lara"),
+    MARGOT_DSE_METRIC("margot/dse/metric/MargotMetric.lara"),
+
+    // Memoi
+    MEMOIZATION("memoi/Memoization.lara"),
+    MEMOIZATION_AUTO_ASPECTS("memoi/MemoizationAutoAspects.lara"),
+    MEMOIZATION_AUTO_FUNCS("memoi/MemoizationAutoFuncs.lara"),
+    MEMOIZATION_C("memoi/MemoizationC.lara"),
+    MEMOIZATION_CXX("memoi/MemoizationCXX.lara"),
+    MEMOIZATION_LIB_FUNCS("memoi/MemoizationLibFuncs.lara"),
+    MEMOIZATION_MATH("memoi/MemoizationMath.lara"),
+
+    // MultiVersioning
+    MULTI_POINTERS("multi/MultiVersionPointers.lara"),
+    MULTI_POINTERS_ASPECTS("multi/MultiVersionPointersAspects.lara"),
+
+    // Utils
+    MESSAGES("utils/messages.lara"),
+    MISC_ASPECTS("utils/miscAspects.lara"),
+    MISC_FUNCS("utils/miscFuncs.lara");
 
     private final String resource;
 

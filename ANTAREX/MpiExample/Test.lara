@@ -1,0 +1,22 @@
+import clava.ClavaCode;
+import clava.mpi.MpiScatterGatherLoop;
+import clava.mpi.patterns.MpiAccessPatterns;
+
+aspectdef MpiScatterGather
+
+	select function{"foo"}.loop end
+	apply
+		if(!ClavaCode.isExecutedOnce($loop)) {			
+			println("Could not determine if loop is executed only once");
+			continue;
+		}
+		
+		var scatterGather = new MpiScatterGatherLoop($loop);
+		scatterGather.addInput("a", MpiAccessPatterns.ITERATION_VARIABLE);
+		scatterGather.addInput("b", MpiAccessPatterns.ITERATION_VARIABLE);
+		scatterGather.addOutput("c", MpiAccessPatterns.ITERATION_VARIABLE);		
+		scatterGather.execute();
+	end
+
+end
+

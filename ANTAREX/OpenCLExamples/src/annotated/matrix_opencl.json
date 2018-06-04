@@ -1,5 +1,5 @@
 {
-  "kernelFile": "/home/pedro/Documents/repositories/specs-lara/ANTAREX/OpenCLExamples/src/cl/gemm.cl",
+  "kernelFile": "../cl/gemm.cl",
   "kernelName": "mat_mul_kernel",
   "bufferSizes": {
     "A": "N*M*sizeof(double)",
