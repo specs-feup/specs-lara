@@ -1,0 +1,169 @@
+import lara.Io;
+import clava.Clava;
+import clava.ClavaJoinPoints;
+import lara.Strings;
+import antarex.utils.messages;
+import antarex.precision.rewTypesFunc;
+ 
+/**
+   Visit the application (variables, prototypes, typedefs, class)
+   and substitute the type (oldType) by an othe one (newType).
+   oldType and newType are jointpoints.
+*/
+aspectdef rewType
+ input
+ oldType,
+ newType
+end
+ call rewTypeVars( oldType, newType);
+ call rewTypePrototypes(oldType, newType);
+ call rewTypedefs(oldType, newType);
+ call rewTypeClass(oldType, newType);
+ call rewCasts(oldType, newType);
+ call rewNewExpr(oldType, newType);
+ // To be completed ...
+end
+
+/**  Replace oldType by newType in the typedefs */
+aspectdef rewTypedefs
+ input
+  oldType,
+  newType
+ end
+   TRACE_BEGIN_OP(" >>> rewTypedefs " + oldType.code + " to " + newType.code);
+   select typedefDecl end
+    apply
+        if ( ! isDeclareddDontModify( $typedefDecl.name )) {
+          var $ptype = $typedefDecl.type;
+          TRACE(" === typedefDecl code pre = " + $ptype.code) ;
+          var $ntype = getNewType(  $ptype, oldType, newType);
+          if ( $ptype !== $ntype) $typedefDecl.type = $ntype;
+          TRACE(" === typedefDecl code post = " +  $ntype.code);
+        }
+    end
+end
+
+
+/** Replace oldType by newType in the fields of the classes of the application. */
+ aspectdef rewTypeClass
+ input 
+   oldType,
+   newType
+ end
+ TRACE_BEGIN_OP(" >>> changTypeClass " + oldType.code + " to " + newType.code);
+ select class end  
+ apply
+  var decls = $class.fields;
+  for (var adecl of decls) {
+    $ntype  = getNewType( adecl.type, oldType, newType);
+    TRACE("  rewTypeClass returns " + $ntype.code);
+    adecl.type = $ntype;
+  }
+ end
+ 
+ TRACE_BEGIN_OP(" >>> changType Struct " + oldType.code + " to " + newType.code);
+ select struct end  
+ apply
+  var decls = $struct.fields;
+  for (var adecl of decls) {
+    adecl.type = getNewType( adecl.type, oldType, newType);
+  }
+ end
+
+end
+
+/**  Replace oldType by newType in the prototype of a function (fname). */
+aspectdef rewTypePrototype
+input
+ fname,
+ oldType,
+ newType
+end
+// replacing the return type. For the parameters, they are elements of vardecl.
+ select function{fname} end
+  apply
+    var tf = $function.type;
+    if ( tf.astIsInstance("FunctionProtoType"))
+     {
+      var tt = tf.returnType;
+      var xx = getNewType( tt, oldType, newType);
+      if ( ! xx.astIsInstance("NullType")) $function.type.returnType = xx;
+     }
+    else 
+    {
+      var xx = getNewType( tf, oldType, newType);
+      if ( ! xx.astIsInstance("NullType")) $function.type = xx;
+    }
+end
+
+end
+
+/** Replace oldType by newType in the functions. */
+aspectdef rewTypePrototypes
+input
+ oldType,
+ newType
+end
+
+   select function end
+   apply
+     if ($function.name != "main")
+      {
+        TRACE( " rewTypePrototype for " + $function.name);
+        call rewTypePrototype($function.name, oldType, newType);
+        }
+end	
+end
+
+
+/** Replace oldType by newType in the variable declaration, 
+    including the parameters of the functions. */
+aspectdef rewTypeVars
+input
+	oldType,
+	newType
+end
+
+select vardecl end
+apply
+	TRACE(" variable = " + $vardecl.name );
+	checkDefined($vardecl);
+	var vardeclType = $vardecl.type;
+	$ntype = getNewType(vardeclType, oldType, newType);
+	$vardecl.setType($ntype);
+	TRACE(" ---- end variable ");
+end 
+end
+
+/** Replace oldType by newType for the 'cast' operations*/
+aspectdef rewCasts
+input
+	oldType,
+	newType
+end
+
+select file.function.expr end
+   apply
+	 if ( $expr.joinpointType === 'cast') {
+	 	TRACE( "    A CAST expression = " + $expr.code + ' astName =' + $expr.astName  + ' type = ' + $expr.type.code);
+	 	TRACE( " joinpointType = "  + $expr.joinpointType);
+	 	var vtype = $expr.type;
+	 	// getNewType(vtype, oldType, newType); // It should be used.
+	    if (vtype.code === oldType.code) $expr.setType(newType);
+	 }
+	 end
+end
+
+/** Replace oldType by newType for the 'new' operations*/
+aspectdef rewNewExpr
+input
+	oldType,
+	newType
+end
+select newExpr end
+    apply
+        var vtype = $newExpr.type;
+        getNewType(vtype, oldType, newType);
+    end
+end
+
