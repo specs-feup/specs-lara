@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.3)
+project(cmake_hdf5)
+
+find_package(HDF5 COMPONENTS "CXX" REQUIRED)
+if(HDF5_FOUND)
+    include_directories(${HDF5_INCLUDE_DIRS})
+endif()
+
+add_executable(cmake_hdf5_test
+	main.cpp
+	ShortcutPosition.h
+	../lara-generated/CompType.cpp
+	../lara-generated/CompType.h)
+
+target_include_directories(cmake_hdf5_test PUBLIC ${CMAKE_SOURCE_DIR} ${CMAKE_SOURCE_DIR}/../lara-generated)
+target_link_libraries(cmake_hdf5_test ${HDF5_LIBRARIES} ${HDF5_CXX_LIBRARIES})
