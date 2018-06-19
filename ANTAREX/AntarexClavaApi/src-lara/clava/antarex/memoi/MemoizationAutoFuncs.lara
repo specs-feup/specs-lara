@@ -152,8 +152,10 @@ function StatementReferencesLocalsOrConstants($statement, $function) {
 	    }
 	 return true;
 	 
-	 case 'CompoundStmt': 
+     case 'CompoundStmt': 
      case 'ForStmt':
+     case 'WhileStmt':
+     case 'CXXForRangeStmt':  //  for(auto edgeId : Pred[w]) {  }
 	   for ( var i = 0; i < $statement.astNumChildren; i++) {
 	      var $e = $statement.astChild(i);
 	      TRACE( $astname + ", child [ " + i + ' ] = ' + $e.astName);
@@ -162,7 +164,8 @@ function StatementReferencesLocalsOrConstants($statement, $function) {
 	   return true;
 	   
      case 'WrapperStmt': // comment.
-    	return true;
+     case 'CXXOperatorCallExpr':
+ 	return true;
     		
      default:
 	  NYI(" StatementReferencesLocalsOrConstants:: " + $astname);
