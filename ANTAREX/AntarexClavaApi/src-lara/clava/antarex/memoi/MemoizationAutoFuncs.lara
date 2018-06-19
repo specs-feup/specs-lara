@@ -234,7 +234,11 @@ function exprReferencesLocalsOrConstants($expr, $function) {
 	       TRACE("  case vardecl = " + $expr.code);
            if ( $expr.init === undefined ) return true;
            return exprReferencesLocalsOrConstants($expr.init, $function);
-	       
+	   
+            case 'deleteExpr':
+	    case 'newExpr':
+	       return false;
+
 	    default:
 	       NYI(" exprReferencesLocalsOrConstants::" + ", joinPointType = " + $jpt + ", code = " + $expr.code);
 	}
