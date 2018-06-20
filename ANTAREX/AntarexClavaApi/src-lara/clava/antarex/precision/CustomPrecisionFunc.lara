@@ -15,6 +15,14 @@ var DATATYPE='_INRIA_DATATYPE_'; // prefix of the generated type.
 var CPT_DATATYPE= 0; // counter of generated types
 var CPT_IOWithFormat=0;// counter of IO instructions with format (C code)
 
+var CPT_CSTE= 0; // counter of generated constant.
+/** 
+    An element extractedConstants[value]=SYMBOL, SYMBOL is a created new symbol
+    and where value is a string code of the constant.
+    */ 
+var extractedConstants={};
+
+
 /** @return the new symbol for a math function.
   For example getNewNameFunc('sin') returns  sin_INRIA_DATATYPE_1 where _INRIA_DATATYPE_1 is the 
   current symbol of the 'extracted' type. 
@@ -26,6 +34,17 @@ function getNewNameFunc(name)
 */
 function getPrecisionPrefix() {
   return FILENAME_PRECISION_PREFIX;
+}
+
+
+function  genConstants( $vf, bval){
+   var v;
+   for(var key in extractedConstants) {
+       var symb = extractedConstants[key];
+       if (bval) v = key;  else v = toBeFixed( key );
+       $vf.exec insertBefore%{#define [[symb]] [[v]] }%;
+   }
+  $vf.exec insertBefore%{/* Extracted constants */}%;
 }
 
 /**
@@ -44,12 +63,21 @@ function genCodePrecisionDefsOriginalVersion() {
        targetVers = key;  
        $vf.exec insertBefore%{#define [[newName]] [[targetVers]] }%;
    }
-  $vf.exec insertBefore%{/* Referenced Math functions */}%;
+
+   for(var key of predefinedFuncsReferenced) {
+      var newName = getNewNameFunc(key);
+      $vf.exec insertBefore%{#define [[newName]] [[key]] }%;
+   }
+
+
+  $vf.exec insertBefore%{/* Referenced functions */}%;
   for(var key in statementsWithFormatOriVersion) {
     v = statementsWithFormatOriVersion[key];
     $vf.exec insertBefore%{#define [[key]] [[v]] }%;
   }
   $vf.exec insertBefore%{/* IO with format */}%;
+  genConstants( $vf, true);
+
   $vf.exec insertBefore%{#define [[getDataType()]] [[srcType]]}%; 
   $vf.exec insertBefore%{// Original ([[srcType]]) Version. )
    }%;
@@ -68,16 +96,24 @@ function genCodePrecisionDefsTemplate() {
    $vf.exec insertBefore%{}%;
    for(var key of mathLibReferenced) {
       var newName = getNewNameFunc(key);
-       targetVers = '_TO_BE_FIXED ( ' + key + ')';
+       targetVers = toBeFixed(key); 
        $vf.exec insertBefore%{#define [[newName]] [[targetVers]] }%;
    }
-  $vf.exec insertBefore%{/* Referenced Math functions */}%;
+
+   for(var key of predefinedFuncsReferenced) {
+      var newName = getNewNameFunc(key);
+      targetVers = toBeFixed(key); 
+      $vf.exec insertBefore%{#define [[newName]] [[targetVers]] }%;
+   }
+
+  $vf.exec insertBefore%{/* Referenced functions */}%;
   for(var key in statementsWithFormatOriVersion) {
     v = statementsWithFormatOriVersion[key];
-    v = '_TO_BE_FIXED ( '+ v +  ')';
+    v = toBeFixed(v);
     $vf.exec insertBefore%{#define [[key]] [[v]] }%;
   }
   $vf.exec insertBefore%{/* IO with format */}%;
+  genConstants( $vf, false);
   $vf.exec insertBefore%{#define [[getDataType()]] '_TO_BE_FIXED'}%; 
   $vf.exec insertBefore%{// Template Version ( IT MUST BE UPDATED )
   }%;
@@ -102,7 +138,16 @@ function genCodePrecisionDefsAsked(vtype) {
        targetVers = getOtherMathFunc(key, vtype);
        $vf.exec insertBefore%{#define [[newName]] [[targetVers]] }%;
    }
-  $vf.exec insertBefore%{/* Referenced Math functions */}%;
+
+
+   for(var key of predefinedFuncsReferenced) {
+     
+      var newName = getNewNameFunc(key);
+      if (key ==='stod') targetVers='stof'; else if (key ==='stof') targetVers='stod'; else targetVers= toBeFixed(key); 
+      $vf.exec insertBefore%{#define [[newName]] [[targetVers]] }%;
+   }
+
+  $vf.exec insertBefore%{/* Referenced functions */}%;
   
   for(var key in statementsWithFormatOriVersion) {
     v = statementsWithFormatOriVersion[key];
@@ -110,7 +155,7 @@ function genCodePrecisionDefsAsked(vtype) {
     $vf.exec insertBefore%{#define [[key]] [[v]] }%;
   }
   $vf.exec insertBefore%{/* IO with format */}%;
-  
+  genConstants( $vf, true);
   $vf.exec insertBefore%{#define [[getDataType()]] [[vtype]]}%; 
   $vf.exec insertBefore%{// [[vtype]] Version.
   }%;
@@ -137,7 +182,7 @@ function getNextIOFormat()
  }
 
 /** 
-   @return true if the strring vstr contains the visin string, false otherwise.
+   @return true if the string vstr contains the visin string, false otherwise.
    */
 function isIn(vstr, visin) 
  { 
@@ -189,4 +234,38 @@ function mkJointPointType(atype) {
     if ( predefinedTypes.indexOf(atype) > -1)
   	return ClavaJoinPoints.builtinType(atype);
     return ClavaJoinPoints.typeLiteral(atype);
+}
+
+
+function dclConstantDoubleFloat($expr) {
+ if ($expr.astName !== 'CXXDefaultArgExpr') {
+   var code=$expr.code;
+   if ( /[-+]?[0-9]*\.[0-9]+([eE][-+]?[0-9]+)?/.test(code))
+    {
+      println( "  +++++  Detected Double/Float constant  = " + code);
+      var $symb = getExtractedConstantsSymbol(code);
+      if ($symb === undefined) {
+         $symb = getNewSymbolForExtractedConstant();
+         extractedConstants[code] = $symb;
+      }
+     $expr.insert replace ($symb);
+   }
+  }
+}
+
+/**
+  @return a new symbol for the constant parametrization.
+*/
+function getNewSymbolForExtractedConstant() 
+ { 
+   CPT_CSTE ++;
+   return '_INRIA_CSTE_' + CPT_CSTE;
+ }
+
+function getExtractedConstantsSymbol (val) {
+ return extractedConstants[val];
+}
+
+function toBeFixed(key) {
+  return '_TO_BE_FIXED ( ' + key + ')';
 }
