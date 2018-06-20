@@ -1,0 +1,7 @@
+aspectdef Synt
+
+	select stmt.call{'print'} end
+	apply
+		insert before 'a += 41;';
+	end
+end
