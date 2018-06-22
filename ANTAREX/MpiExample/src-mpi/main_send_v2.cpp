@@ -72,9 +72,7 @@ void foo(double a[N], double b[N], double c[N]) {
 		for(int i=0; i<numWorkers-1; i++) {
 			MPI_Recv(&c[i*clava_mpi_num_iter], clava_mpi_num_iter, MPI_DOUBLE, i + 1, 1, MPI_COMM_WORLD, &status);
 		}
-		MPI_Recv(&c[(numWorkers-1)*clava_mpi_num_iter], clava_mpi_num_iter_last, MPI_DOUBLE, numWorkers, 1, MPI_COMM_WORLD, &status);
-		
-		MPI_Finalize();
+		MPI_Recv(&c[(numWorkers-1)*clava_mpi_num_iter], clava_mpi_num_iter_last, MPI_DOUBLE, numWorkers, 1, MPI_COMM_WORLD, &status);		
 	}
 	
 }
@@ -115,7 +113,8 @@ int main(int argc, char **argv) {
 
 	printf("Result: %f\n", acc);
 
-
+    MPI_Finalize();
+	
     return 0;
     
 }
