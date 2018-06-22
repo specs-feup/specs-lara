@@ -86,6 +86,7 @@ int main(int argc, char **argv) {
 
     if(numWorkers == 0) {
         std::cerr << "This program does not support working with a single process." << std::endl;
+	MPI_Finalize();
         return 1;
     }
 
