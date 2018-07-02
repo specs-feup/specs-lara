@@ -66,6 +66,12 @@ public enum LaraAntarexApiResource implements LaraResourceProvider {
     MULTI_POINTERS("multi/MultiVersionPointers.lara"),
     MULTI_POINTERS_ASPECTS("multi/MultiVersionPointersAspects.lara"),
 
+    // Precision
+    CUSTOM_PRECISION("precision/CustomPrecision.lara"),
+    CUSTOM_PRECISION_FUNC("precision/CustomPrecisionFunc.lara"),
+    REW_TYPES("precision/rewTypes.lara"),
+    REW_TYPES_FUNC("precision/rewTypesFunc.lara"),
+
     // Utils
     MESSAGES("utils/messages.lara"),
     MISC_ASPECTS("utils/miscAspects.lara"),
