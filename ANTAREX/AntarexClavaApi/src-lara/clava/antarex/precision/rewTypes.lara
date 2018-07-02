@@ -7,8 +7,8 @@ import antarex.precision.rewTypesFunc;
  
 /**
    Visit the application (variables, prototypes, typedefs, class)
-   and substitute the type (oldType) by an othe one (newType).
-   oldType and newType are jointpoints.
+   and substitute the type (oldType) by another one (newType).
+   oldType and newType are join points.
 */
 aspectdef rewType
  input

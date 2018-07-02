@@ -110,7 +110,7 @@ end
 
     At the end, the global associative table statementsWithFormatOriVersion constains elements such that
     statementsWithFormatOriVersion[_INRIA_IO_FORMAT_XX] = FORMAT, where _INRIA_IO_FORMAT_XX is a new symbol
-    and FORMAT is a format that references flot/double codification (%f, %lf,...)
+    and FORMAT is a format that references float/double codification (%f, %lf,...)
      
     Restiction to double/float types.
     */
@@ -196,7 +196,7 @@ aspectdef renameFunctions
 end
 
 /** Replace the calls to pname by nname, @return in referenced the value 'true' if 
-    pname is referenced in the application, 'false' otheerwise.
+    pname is referenced in the application, 'false' otherwise.
     */
 aspectdef renameFuncNames
 input
@@ -217,7 +217,7 @@ end
 end
 
 /**
-  Add to each file (source, headers except the added files) the declaration of the iclude that defines the 
+  Add to each file (source, headers except the added files) the declaration of the include that defines the 
   typed parameters.
 */
 aspectdef addDeclarations
@@ -233,7 +233,7 @@ aspectdef addDeclarations
 end
 
 /** 
-  Global Initialization of the component: it must be called once at the begining 
+  Global Initialization of the component: it must be called once at the beginning 
   of a type precision session.
 */
 aspectdef CustomPrecision_Initialize

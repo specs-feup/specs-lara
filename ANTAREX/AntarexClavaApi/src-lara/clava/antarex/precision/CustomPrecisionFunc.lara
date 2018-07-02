@@ -120,7 +120,7 @@ function genCodePrecisionDefsTemplate() {
  }
 
 /**
-  Generate the file INRIA_PRECISION_DEFS_[vtype].h, vtype restrited to float or double,
+  Generate the file INRIA_PRECISION_DEFS_[vtype].h, vtype restricted to float or double,
   with vtype-typed definitions for the created symbols.
 */
 
