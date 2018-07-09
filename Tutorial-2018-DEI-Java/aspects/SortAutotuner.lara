@@ -1,0 +1,55 @@
+import kadabra.adapt.Specializer;
+import kadabra.adapt.Autotuner;
+import kadabra.Utils;
+aspectdef Main
+	var knob = new FloatRange(0, 10, 0.1, 0);
+	println(knob.type);
+end
+
+//aspectdef Main
+//	select method.loop{type===LoopType.FOR} end
+//	apply
+//		println($method.name+"->"+$loop.rank+"->"+$loop.type);
+//	end
+////	select class.method.call{"sort"} end
+////	apply
+////		println($call.test);
+////		$call.def test = -200;
+////		println($call.test);
+////		$call.def test = $class;
+////		println($call.test);
+////	end 
+//end
+aspectdef TuneIt
+	select class.method.call{"sort"}.arg{0} end
+	apply
+		call extracted: PrepareCall($method,$call,$class);
+		call builder: BuildAutotuner(extracted);
+		var autotuner = builder.autotuner.newInstance(extracted.$field, $class, 5,10);
+		autotuner.updateAndMeasure($arg+".length", $call);
+	end
+	
+	select class.method{"main"}.lastStmt end
+	apply
+		insert after %{
+			System.out.println("-= EXPLORATION REPORT =-");
+			System.out.println([[autotuner.$tuner]]);
+		}%;
+	end
+end
+
+aspectdef BuildAutotuner
+	input extracted end
+	output autotuner end
+	var builder = new AutotunerBuilder("SortTuner", "Integer", extracted.$interface.qualifiedName, "Long");
+	builder.setMeasurer(Measurer.avgTime());
+	
+	builder.default = new SimpleAlgorithm(extracted.defaultMethod,"original");
+	select class{package~="algorithms.*"} end
+	apply
+		builder.addAlgorithm($class.qualifiedName+"::sort", $class.name);
+	end
+	
+	autotuner = builder.generate('tuner');
+end
+

@@ -1,0 +1,51 @@
+import lara.code.Timer;
+aspectdef Measurements
+	call AddFields();
+	call ExchangeCounter();
+	call TimeSort();
+end
+
+aspectdef AddFields
+	select class{"Quicksort"} end
+	apply
+		$class.exec newField(["public", "static"], "int", "exchangeCount");
+	end
+	select class{"SortApplication"} end
+	apply
+		$class.exec newField(["private", "static"], "int", "sortStarted");
+		$class.exec newField(["private", "static"], "int", "sortEnded");
+	end
+end
+
+aspectdef ExchangeCounter
+	
+	select call{"sort"} end
+	apply
+		insert before "Quicksort.exchangeCount = 0;";
+	end
+	select call{"quicksort"} end
+	apply
+		insert before "exchangeCount++;";
+	end
+end
+
+aspectdef TimeSort
+	select class.call{"sort"} end
+	apply
+		var timer = new Timer();
+		timer.time($call);
+		$call.insert after%{
+			System.out.print("Sort of " + values.length +  " elements made " + Quicksort.exchangeCount + " calls to exchange()"+
+	    			" and took ");
+		}%;
+	end
+//	insert before%{
+//			sortStarted = (int) (new java.util.Date().getTime());
+//		}%;
+//		insert after%{
+//			sortEnded = (int) (new java.util.Date().getTime());
+//			System.out.println("Sort of " + values.length + 
+//	    			" elements took " + ((sortEnded - sortStarted)/1000f) + 
+//	    			"s and made " + Quicksort.exchangeCount + " calls to exchange()");
+//		}%;
+end

@@ -1,0 +1,61 @@
+import LoopTiling;
+aspectdef Main
+	call TestTileSizes();
+//	call TestTileSizes([2,4,8]);
+end
+
+aspectdef TestTileSizes
+	input values =[8,16,32,64,128,256,512],numRuns = 5 end
+	
+	//first interchange loops j and k and apply loop tiling in j
+	call tile: InterchangeAndTiling();
+	
+	select class.call{"mult"} end
+	apply
+		//add fields to control the selection of versions and the measurements
+		$class.exec newField(["private", "static"], "int", "numRuns",0);
+		$class.exec newField(["private", "static"], "int", "current",0);
+		$class.exec newField(["private", "static"], "int[]", "versions", "{"+values+"}");
+		$class.exec newField(["private", "static"], "long[]", "measures", "new long["+values.length+"]");
+		$call.insert before%{
+			//start timer
+			long timer = System.nanoTime();
+		}%;
+		$call.insert after%{
+			//if still in test mode
+			if(current < versions.length){
+				timer = System.nanoTime()-timer;
+				System.out.println("[LARA] Measuring run #"+numRuns": "+pt.up.fe.specs.util.SpecsStrings.parseTime(timer));
+				//update time of current version 
+				measures[current]+=timer;
+				numRuns++;
+				//if number of runs is reached
+				if(numRuns == [[numRuns]]){
+					//get average time
+					measures[current] = measures[current] / numRuns;
+					numRuns = 0;
+					current++; //next version
+					//if no more versions to test
+					if(current >= versions.length){
+						//print report
+						System.out.println("[LARA] Results:");
+						for(int k = 0; k< measures.length;k++){
+							System.out.println("\t"+versions[k]+": "+pt.up.fe.specs.util.SpecsStrings.parseTime(measures[k]));
+						}
+						int minLocation = 0;
+						//select minimum
+						for(int k = 1; k< measures.length;k++){
+							minLocation = measures[minLocation] > measures[k] ? k : minLocation;
+						}
+						//and use the best version until the end of the execution
+	                        	matrix.MMult.tileJ = versions[minLocation];
+	                        	System.out.println("[LARA] Using best: " + matrix.MMult.tileJ);
+					}else{ //update tile size
+						[[tile.$field.staticAccess]] = versions[current];
+						System.out.println("[LARA] Changing to: "+versions[current]);
+					}
+				}
+			}
+		}%;
+	end
+end

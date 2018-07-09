@@ -1,0 +1,38 @@
+/**
+ * Prints a static call graph based on the structure of the code.
+ * It takes into account all possible function calls. This is
+ * printed to the command line in dot format.
+ */
+aspectdef StaticCallGraph
+
+	var call_graph = {};
+	//1. Select all methods (caller) and the calls (callee) inside
+	select class.method.call end
+	apply
+		
+		//2. Create caller->callee tuples
+		var key = $method.name +"->"+$call.name;
+		//increment (or create) the tuple <method,call>
+		if(call_graph[key] == undefined){
+			call_graph[key] = 1; //one ocurrence of the tuple
+		}else{
+			call_graph[key]++;
+		}
+	end
+	
+	//3. Create a graph, in dot format, with the tuples
+	printGraph(call_graph);
+end
+
+/**
+ * Print the gathered information to the console in dot format
+ */
+function printGraph(call_graph){
+	println('digraph static_call_graph {\n');
+	//Foreach key 'k'
+	for (var k in call_graph) {
+		println('\t' + k + ' [label="' + call_graph[k] + '"];');
+	}
+	println('}');
+}
+

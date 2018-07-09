@@ -1,0 +1,11 @@
+aspectdef Main
+	//1. Select calls to methods starting with "set"
+	select call{name~="set.*"} end
+	apply
+		//2. Insert code after that prints the access to that method
+		insert after %{
+			logger.Logger.i("Update: "+[[$call.target]]);
+		}%;
+	end
+	condition $call.targetType.isSubtypeOf("geometry.Shape") end
+end

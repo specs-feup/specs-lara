@@ -1,0 +1,46 @@
+import kadabra.adapt.Specializer;
+import kadabra.adapt.Autotuner;
+import kadabra.monitor.Timer;
+
+aspectdef main
+	select app.class.method.call{"sort"}.arg end
+	apply
+
+		//1. Extract call to sort of Quicksort into a field
+		call extracted: PrepareCall($method, $call, $class);
+		
+		//2. Generate an autotuner
+		call builder: BuildAutotuner(extracted);
+		var autotuner = builder.autotuner.newInstance(extracted.$field, $class, 5,10);
+
+		//3. Inject code to update the new field and measure the sort execution
+		autotuner.updateAndMeasure($arg+".length", $call);
+		call ReportOnMain(autotuner);
+	end
+end
+
+
+aspectdef BuildAutotuner
+	input extractionInfo end	
+	output autotuner end
+	var builder = new AutotunerBuilder("FindBestSorter", "Integer", extractionInfo.$interface.qualifiedName, "Long");
+	builder.setMeasurer(Measurer.avgTime());
+	
+	select class{package~="algorithms.*"} end
+	apply
+		builder.addAlgorithm($class.qualifiedName+"::sort", $class.name);
+	end	
+	autotuner = builder.generate('tuner');
+end
+
+aspectdef ReportOnMain
+	input autotuner end
+	select method{"main"} end
+	apply
+		var reportCode = %{
+			System.out.println("-= SORT EXPLORATION REPORT =-");
+			System.out.println([[autotuner.$tuner]]);
+		}%;
+		call BeforeExit($method, reportCode);
+	end
+end

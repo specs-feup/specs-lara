@@ -1,0 +1,4 @@
+import imp0_2;
+aspectdef Imp0_1
+	call Imp0_2();
+end

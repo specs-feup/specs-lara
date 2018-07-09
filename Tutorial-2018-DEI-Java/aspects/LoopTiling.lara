@@ -1,0 +1,31 @@
+aspectdef MultTiling
+	call InterchangeAndTiling();
+	call Measure();
+end
+
+aspectdef InterchangeAndTiling
+	input block_size=32 end
+	output $field end
+	select class.method{"mult"}
+		.$li=loop{controlVar=="i"}
+		.$lj=loop{controlVar=="j"}
+		.$lk=loop{controlVar=="k"}
+	end
+	apply
+		$lj.exec interchange($lk);
+		$lj.exec $field: tile("tileJ", block_size, true, $li);
+	end
+end
+
+aspectdef Measure
+	select call{"mult"} end
+	apply
+		insert before%{
+			long timer = System.nanoTime();
+		}%;
+		insert after%{
+			timer = System.nanoTime()-timer;
+			System.out.println("Time: "+pt.up.fe.specs.util.SpecsStrings.parseTime(timer));
+		}%;
+	end
+end
