@@ -1,0 +1,24 @@
+aspectdef CallerAndCallee
+
+	input
+		funcName = 'quicksort'
+	end
+
+	println('Functions that call ' + funcName);
+	//1. Select all methods that contains function calls
+	select class.method.call end
+	apply
+		//2. Print the name of the caller
+		println('\t'+$method.name);
+	end
+	condition $call.name == funcName end
+
+
+	println('Functions that are called by ' + funcName);
+	//3. Select the calls inside the target method
+	select class.method{name == funcName}.call end
+	apply
+		//4. Print the name of the called methods
+		println('\t'+$call.name);
+	end
+end

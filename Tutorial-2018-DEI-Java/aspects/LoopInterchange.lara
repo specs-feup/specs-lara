@@ -1,0 +1,23 @@
+import lara.code.Timer;
+aspectdef LoopInterchangeMeasure
+	call LoopInterchange();
+	call Measure();
+end
+
+aspectdef LoopInterchange
+	//1. Select nested loops to interchange
+	select class.method{"mult"}.$l1=loop{controlVar=="j"}.$l2=loop{controlVar=="k"} end
+	apply
+		//2. Apply "interchange" transformation
+		$l1.exec interchange($l2);
+	end
+end
+
+aspectdef Measure
+	select call{"mult"} end
+	apply
+		//3. Add execution time monitor
+		var timer = new Timer();
+		timer.time($call,"Time: ");
+	end
+end

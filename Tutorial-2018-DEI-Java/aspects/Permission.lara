@@ -1,0 +1,87 @@
+aspectdef Main
+	call Auth();
+	//3. Add code to verify user permissions before calls to setters
+	call Permission();
+end
+
+aspectdef Auth
+	//1. Extend class Person with username, password and admin status	
+	call ExtendPerson();
+	//2. Add Auth class to control the list of persons, the login method, and the current user
+	call AddAuth();
+end
+
+aspectdef ExtendPerson
+	select class{"Person"} end
+	apply
+		exec newField(["private"], "String", "username");
+		exec newField(["private"], "String", "password");
+		exec newField(["private"], "boolean", "admin");
+		exec insertCode %{
+			public String getUsername() {
+				return username;
+			}
+			
+			public boolean passwordMatches(String password) {
+				return password.equals(this.password);
+			}
+		
+			public boolean isAdmin() {
+				return admin;
+			}
+		
+			public void setAdmin(boolean admin) {
+				this.admin = admin;
+			}
+		
+			public Person(String name, int age, String username, String password, boolean admin) {
+				this(name, age);
+				this.username = username;
+				this.password = password;
+				this.admin = admin;
+			}
+		}%;
+	end
+end
+
+aspectdef AddAuth
+	select app end
+	apply
+		exec $auth: newClass("auth.Auth");
+		$auth.exec newField(["public", "static"], "person.Person", "currentUser");
+		$auth.exec insertMethod %{
+			public static boolean login(String username, String password) {
+				java.util.List<Person> people = Person.getPeople();
+				for (Person person : people) {
+					if (person.passwordMatches(password) && username.equals(person.getUsername())) {
+						currentUser = person;
+						return true;				
+					}			
+				}
+				return false;
+			}
+		}%;
+	end
+end
+
+aspectdef Permission
+
+	select call{name~="set.*"} end
+	apply
+		insert before%{
+			if (Auth.currentUser == null || (!Auth.currentUser.isAdmin() && Auth.currentUser != [[$call.target]]))
+				throw new NotAuthorizedException();
+		}%;
+	end
+	condition $call.targetType == "person.Person" && $call.name != "setAdmin" end
+
+	select call{"setAdmin"} end
+	apply
+		insert before%{
+			if (Auth.currentUser == null || !Auth.currentUser.isAdmin())
+				throw new NotAuthorizedException();
+		}%;
+	end
+	condition $call.targetType == "person.Person" end
+end
+

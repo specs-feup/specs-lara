@@ -1,0 +1,94 @@
+aspectdef Main
+	call ObserverPattern("geometry.Shape", "screen.Screen");
+end
+aspectdef ObserverPattern
+	input subject, observer end
+	//1. Add Subject and Observer interfaces
+	call interfaces: AddInterfaces();
+	//2. Extend target classes with these interfaces and methods implementations
+	call ExtendClasses(interfaces, subject, observer);
+	//3. Add code to notify observers when shape changes
+	call MonitorChanges(subject);
+end
+
+aspectdef AddInterfaces
+	output $sub, $obs end
+	select app end
+	apply
+		exec $sub: newInterface("observer.Subject");
+		exec $obs: newInterface("observer.Observer");
+		$sub.exec insertCode %{
+			public void addObserver(Observer observer);
+      		public void removeObserver(Observer observer);
+		}%;
+
+		$obs.exec insertCode %{
+			public void notifyOfChange(Subject subject);
+		}%;
+		
+	end
+end
+
+aspectdef ExtendClasses
+	input interfaces, subject, observer end
+	select class{superClass == subject} end
+	apply
+		println("Adding interface to "+$class.name);
+		exec addImplement(interfaces.$sub);
+		exec newField(["private"], 
+			"java.util.List<observer.Observer>", 
+			"observers", 
+			" new java.util.LinkedList<Observer>()");
+		exec insertCode%{
+			   public void addObserver(Observer observer) {
+			      this.observers.add(observer);
+			   }
+			
+			   public void removeObserver(Observer observer) {
+			      this.observers.remove(observer);
+			   }
+			
+			   public synchronized void notifyObservers() {
+					for (Observer observer : observers)
+					       observer.notifyOfChange(this);
+			   }
+		}%;
+
+	end
+
+	select class{qualifiedName == observer} end
+	apply
+		println("Adding interface to "+$class.name);
+		exec addImplement(interfaces.$obs);
+
+		exec insertCode%{
+			public void notifyOfChange(observer.Subject subject) {
+				this.draw();
+			}}%;
+	end
+end
+
+aspectdef MonitorChanges
+	input subject end
+	select call{name~="set.*"} end
+	apply
+		insert after%{
+			[[$call.target]].notifyObservers();
+		}%;
+	end
+	condition $call.targetType.isSubtypeOf(subject) end
+
+	select call{"addShape"}.arg{0} end
+	apply
+		insert after %{
+			[[$arg]].addObserver([[$call.target]]);
+		}%;
+	end
+
+	select call{"removeShape"}.arg{0} end
+	apply
+		insert after %{
+			[[$arg]].removeObserver([[$call.target]]);
+		}%;
+	end
+end

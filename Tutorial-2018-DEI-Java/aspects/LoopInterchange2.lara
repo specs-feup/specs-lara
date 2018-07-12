@@ -1,0 +1,64 @@
+import kadabra.adapt.Specializer;
+import lara.code.Timer;
+aspectdef Main
+	call clones: CloneAndInterchange();
+	call MeasureVersions(clones.methods);
+end
+
+aspectdef CloneAndInterchange
+	output methods = [] end
+	select class.method{"mult"} end
+	apply
+		exec $mCloneJIK: clone("mult_jik");
+			call LoopInterchange($mCloneJIK, "i", "j");
+		methods.push($mCloneJIK);
+		exec $mCloneKJI: clone("mult_kji");
+			call LoopInterchange($mCloneKJI, "i", "k");
+		methods.push($mCloneKJI);
+		exec $mCloneIKJ: clone("mult_ikj");
+			call LoopInterchange($mCloneIKJ, "j", "k");
+		methods.push($mCloneIKJ);
+		exec $mCloneJKI: clone("mult_jki");
+			call LoopInterchange($mCloneJKI, "i", "k");
+			call LoopInterchange($mCloneJKI, "k", "j");
+		methods.push($mCloneJKI);
+		exec $mCloneKIJ: clone("mult_kij");
+			call LoopInterchange($mCloneKIJ, "i", "j");
+			call LoopInterchange($mCloneKIJ, "j", "k");
+		methods.push($mCloneKIJ);
+	end
+end
+
+aspectdef LoopInterchange
+	input multMethod, controlVar1, controlVar2 end
+	select multMethod.body.$l1=loop{controlVar==controlVar1}.$l2=loop{controlVar==controlVar2} end
+	apply
+		$l1.interchange($l2);
+	end
+end
+
+aspectdef MeasureVersions
+	input methods end
+	select call{"mult"} end
+	apply
+		call args: GetArgs($call);
+		var timer = new Timer();
+		for(var m of methods){
+
+			exec $mCall: insertAfter %{
+				[[m.declarator]].[[m.name]]([[args.values]]);
+			}%;
+			timer.time($mCall, m.name+": ");
+		}
+		timer.time($call, "Original: ");
+	end
+end
+
+aspectdef GetArgs
+	input $call end
+	output values = [] end
+	select $call.arg end
+	apply
+		values.push($arg);
+	end
+end

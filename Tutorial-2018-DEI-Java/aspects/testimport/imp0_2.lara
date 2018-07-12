@@ -1,0 +1,4 @@
+import imp0_1;
+aspectdef Imp0_2
+	println("Hi");
+end
