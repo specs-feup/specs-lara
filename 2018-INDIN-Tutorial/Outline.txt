@@ -1,0 +1,19 @@
+- Introdução a AOP
+- LARA
+- Clava
+
+- Static Profiling
+ -> Call Graph
+ -> Static Report
+
+- Code Insertion (APIs)
+ -> Logging
+ -> Measurements (Time, Energy)
+
+- Code Optimization (MatrixMul)
+ -> CMaker
+ -> Profiling (Gprof)
+ -> LoopTiling
+ -> Convert double to float
+ -> Autopar
+ -> LAT
