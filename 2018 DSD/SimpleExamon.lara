@@ -1,4 +1,5 @@
 import antarex.examon.Examon;
+import lara.code.Logger;
 
 aspectdef SimpleExamon
 
@@ -23,6 +24,24 @@ aspectdef SimpleExamon
 	// get the value and use it in the target stmt
 	exa.get($targetStmt);
 		
+	// get the scope of the target stmt
+	//var $stmtScope = $targetStmt.ancestor("scope");
+	var $lastScopeStmt = $targetStmt.ancestor("scope").lastStmt;
+	
+	// Create printf for time and data
+	var logger = new Logger();
+	/*
+	logger.ln().text("Tstart=").long(exa.getStartSec()).text(".")
+		.long(exa.getStartMicroSec()).text("[s], Tend=")
+		.long(exa.getEndSec()).text(".").long(exa.getEndMicroSec())
+		.text("[s], data=").double(exa.getMean());
+    */
+	logger.ln().text("Time=").double(getTimeExpr(exa))
+		.text("[s], data=").double(exa.getMean()).ln();
+	// Add printf after last stmt			
+	logger.log($lastScopeStmt);
+	
+	/*
 	var code = 'printf("\\nTstart=%ld.%06ld[s], Tend=%ld.%06ld[s], data=%f", ' + 
 				exa.getStartSec() + ', ' +
 				exa.getStartMicroSec() + ', ' +
@@ -30,5 +49,19 @@ aspectdef SimpleExamon
 				exa.getEndMicroSec() + ', ' +
 				exa.getMean() + ');';
 	
-	exa.insertAfter($targetStmt, code);
+	//exa.insertAfter($targetStmt, code);
+	//$stmtScope.exec insertEnd(code);
+	$lastScopeStmt.insert after code;
+	*/
 end
+
+
+function getTimeExpr(examonCollector) {
+	return TIME_DURATION(examonCollector.getStartSec(), examonCollector.getStartMicroSec(), examonCollector.getEndSec(), examonCollector.getEndMicroSec());
+}
+  
+codedef TIME_DURATION(sStart, usStart, sEnd, usEnd) %{
+(([[sEnd]] + ((double) [[usEnd]] / 1000000)) - ([[sStart]] + ((double) [[usStart]] / 1000000)))
+}% end
+//double clava_timing_duration_0 = ((clava_timing_end_0.tv_sec + ((double) clava_timing_end_0.tv_nsec / 1000000000)) - (clava_timing_start_0.tv_sec + ((double) clava_timing_start_0.tv_nsec / 1000000000))) * (1000);
+
