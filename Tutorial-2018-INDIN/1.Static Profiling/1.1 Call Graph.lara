@@ -1,0 +1,23 @@
+aspectdef StaticCallGraph
+
+
+	// Utility object that counts tuples
+	var callGraph = new LaraObject();
+
+	// Collect information 
+	select function.call end
+	apply
+		callGraph.inc($function.signature, $call.signature);
+	end
+
+
+	// Create graph in dot format (Graphviz)
+	// and print it to the console
+	println('digraph static_call_graph {\n');
+	for (f in callGraph) {
+		for (c in callGraph[f]) {		
+			println('\t"' + f + '"->"' + c + '" [label="' + callGraph[f][c] + '"];');
+		}
+	}
+	println('}');
+end
