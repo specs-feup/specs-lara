@@ -4,6 +4,8 @@ project (synt)
 
 find_package(Clava REQUIRED)
 
-add_executable(synt src/main.c src/print.c src/print.h)
+set(SOURCES src/main.c src/print.c src/print.h)
+
+add_executable(synt "${SOURCES}")
 
 clava_weave(synt "lara/Synt.lara")
