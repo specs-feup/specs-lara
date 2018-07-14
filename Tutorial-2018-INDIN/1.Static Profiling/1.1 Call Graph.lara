@@ -1,6 +1,5 @@
 aspectdef StaticCallGraph
 
-
 	// Utility object that counts tuples
 	var callGraph = new LaraObject();
 
