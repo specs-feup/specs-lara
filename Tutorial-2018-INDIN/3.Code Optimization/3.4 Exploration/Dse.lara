@@ -1,0 +1,65 @@
+import LoopTiling;
+import lat.Lat;
+import lat.LatConst;
+import clava.Clava;
+
+
+aspectdef DseMain
+
+	tileVars = {'l': 'BS1', 'j': 'BS2'};
+
+	// find the top-level loop
+	select function{'matrix_mult'}.pragma{'loop1'}.target end
+	apply
+		call LoopTiling($target, tileVars);
+	end
+	
+
+	//var bs1 = new LatVarRange("BS1", LatConst.L1_CACHE_LINESIZE, 16 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
+	//var bs2 = new LatVarRange("BS2", LatConst.L1_CACHE_LINESIZE, 16 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
+
+	var bs1 = new LatVarRange("BS1", LatConst.L1_CACHE_LINESIZE, 2 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
+	var bs2 = new LatVarRange("BS2", LatConst.L1_CACHE_LINESIZE, 2 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
+	
+	var latVars = [bs1, bs2];
+	
+	select function{"test_matrix_mul"}.call{"matrix_mult"} end
+	apply
+		call Dse($call, latVars);
+	end
+
+
+end
+
+
+aspectdef Dse
+
+	input $call, latVars end
+
+	$function = $call.definition;
+	if($function === undefined) {
+		println("Could not find definition of call@" + $call.location);
+		return;
+	}
+
+
+	
+	var lat = new Lat("dse");
+	
+	// Setup Lat, get CMaker
+	var cmaker = lat.setVerbose(true).loadCmaker().cmaker;
+	
+	if(Platforms.isWindows()) {
+		cmaker.setGenerator("MinGW Makefiles").setMakeCommand("mingw32-make");
+	}
+	
+		
+	lat.setScope($function.body);
+	lat.setMeasure($call); 
+
+	lat.addSearchGroup(latVars);
+	
+	lat.tune();
+
+end
+
