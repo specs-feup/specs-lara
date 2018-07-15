@@ -17,7 +17,7 @@ void matrix_mult(const double* A , const double* B, double* C, const int N, cons
        }
     }
 
-	#pragma lara marker loop1
+	#pragma loop1
     for(int i=0; i<N; i++) {
         for(int l=0; l< M; l++) {
             for(int j=0; j< K; j++) {
