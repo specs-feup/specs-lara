@@ -9,11 +9,11 @@
 /*
 	matrix multiplication
 */
-void matrix_mult(const double* A , const double* B, double* C, const int N, const int M, const int K) {
+void matrix_mult(double** A , double** B, double** C, const int N, const int M, const int K) {
 
    for(int i=0; i<N; i++) {
        for(int j=0; j<K; j++) {
-           C[K*i + j] = 0;
+           C[i][j] = 0;
        }
     }
 
@@ -21,8 +21,7 @@ void matrix_mult(const double* A , const double* B, double* C, const int N, cons
     for(int i=0; i<N; i++) {
         for(int l=0; l< M; l++) {
             for(int j=0; j< K; j++) {
-                //C[i][j] += A[i][l]*B[l][j];
-                C[K*i + j] += A[M*i+l]*B[K*l+j];
+				C[i][j] += A[i][l]*B[l][j];
             }
         }
     }
@@ -31,41 +30,59 @@ void matrix_mult(const double* A , const double* B, double* C, const int N, cons
 /*
  * Set an N by M matrix A to random values
  */
-void init_matrix(double *A, const int N, const int M) {
+void init_matrix(double** A, const int N, const int M) {
+	
 	for (int i = 0; i < N; ++i) {
 		for (int j = 0; j < M; ++j) {
-	       //A[i][j] = ((double) rand()) / (double) RAND_MAX; 
-	       A[M*i + j] = ((double) rand()) / (double) RAND_MAX; 			
+			
+			A[i][j] = ((double) rand()) / (double) RAND_MAX;	
 		}
 	}
 }
 
-void print_matrix_result(double *A, const int N, const int K) {
+void print_matrix_result(double** A, const int N, const int K) {
+	
 	double acc = 0.0;
 	
 	for (int i = 0; i < N; ++i) {
 		for (int j = 0; j < K; ++j) {
-			//acc += A[i][j];
-			acc += A[K*i + j];
+			
+			acc += A[i][j];
 		}
 	}
 		
-		
-
 	printf("Result acc: %f\n", acc);
 }
 
+double** alloc_matrix(const int N, const int M) {
+	
+	double* AI = malloc(N*M*sizeof(*AI));
+	double** A = malloc(N*sizeof(*A));
+	
+	for(int i = 0; i < N; i++) {
+		A[i] = &(AI[i * M]);
+	}
+	
+	return A;
+}
+
+void free_matrix(double** A) {
+	
+	free(A[0]);
+	free(A);
+}
 	
 	
 void test_matrix_mul() {	
+	
 	int N=2048; 
 	int M=1024;
 	int K=2048;
 	
-	double* A = (double *) malloc(N*M*sizeof(double)); 
-	double* B = (double *) malloc(M*K*sizeof(double));
-	double* C = (double *) malloc(N*K*sizeof(double));
-		
+	double** A = alloc_matrix(N, M);
+	double** B = alloc_matrix(M, K);
+	double** C = alloc_matrix(N, K);
+			
 	// initialize matrices
 	init_matrix(A, N, M);
 	init_matrix(B, M, K);
@@ -74,7 +91,11 @@ void test_matrix_mul() {
 	matrix_mult(A, B, C, N, M, K);
 	
 	print_matrix_result(C, N, K);
-	
+		
+	// free
+	free_matrix(C);
+	free_matrix(B);
+	free_matrix(A);
 }
 
 int main() {
