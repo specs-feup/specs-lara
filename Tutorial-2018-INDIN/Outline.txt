@@ -4,16 +4,34 @@
 
 - Static Profiling
  -> Call Graph
- -> Static Report
+ -> Static Report (introduz documentação de language specification)
 
 - Code Insertion (APIs)
- -> Logging
- -> Measurements (Time, Energy)
+ -> Logging with inserts and with API (introduz imports; introduz API e Clava Doc)
+ -> Measurements (Time, Energy; introduz inserções serem feitas próximas do nó)
 
 - Code Optimization (MatrixMul)
- -> CMaker
  -> Profiling (Gprof)
- -> LoopTiling
+ -> Loop Tiling
+ -> Parallelization with OpenMP
+ -> LAT (explore tiling and #threads, measure time)
+
+ 
+------
+
+- Clava Framework
+ -> Linux installer
+ -> CMake integration
+ -> Unit Testing
+ -> Documentation Generator 
+
+ 
+(previous)
+
+- Code Optimization (MatrixMul)
+ -> Profiling (Gprof)
+ -> LoopTiling (parameterize aspects)
  -> Convert double to float
  -> Autopar
  -> LAT
+ -> CMaker
