@@ -24,6 +24,12 @@ aspectdef AutoPar
 		call LoopTiling($target, tileVars);
 	end
 
+	// Print modified code
+	select program end
+	apply
+		println($program.code);
+	end
+
     var $loops = [];
     select function{"matrix_mult"}.loop end
 	apply

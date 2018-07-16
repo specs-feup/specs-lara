@@ -4,12 +4,20 @@
 
 - Static Profiling
  -> Call Graph
- -> Static Report (introduz documentação de language specification)
+   > Introduce: apply as a loop
+ -> Static Report 
+   > Introduce: Documentation of language specification
 
 - Code Insertion (APIs)
- -> Logging with inserts and with API (introduz imports; introduz API e Clava Doc)
- -> Measurements (Time, Energy; introduz inserções serem feitas próximas do nó)
-
+ -> Logging with inserts
+   > Introduce: actions (addInclude); insert of literal code; codedef; option to verify syntax
+   > Upsides: extremely versatile, can insert any code you want
+   > Downsides: cumbersome (\n); error prone (code might have errors); 
+ -> Logging with API 
+   > Introduce: imports; API e Clava Doc
+ -> Measurements (Time, Energy)
+   > Introduce: inserts are done closest to the node
+   
 - Code Optimization (MatrixMul)
  -> Profiling (Gprof)
  -> Loop Tiling

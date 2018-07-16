@@ -1,66 +1,18 @@
-import lara.code.Logger;
-
 aspectdef LoggingWithInserts
 
 	// Log every time a loop is executed
-	select loop end
+	select file.function.loop end
 	apply
-		$loop insert before 'printf("Starting loop ' + $loop.location + '\n")';
+		$file.exec addInclude("stdio.h", true);
+		$loop.insert before 'printf("Starting loop in function ' + $function.signature + ' at line ' + $loop.line + '\\n");';
 	end
 
 	// Log every time a function is executed
 	select function.body end
 	apply
-		$body insert before 'printf("Entering function ' + $function.signature + '\n")';
-	end
-
-end
-
-aspectdef LoggingWithApi
-
-	// Create logger
-	var logger = new Logger();
-	
-	// Log every time a function is executed
-	select function.body end
-	apply
-		// Logging with inserts:
-		//$body insert before 'printf("Entering function ' + $function.signature + '\n")';
-		
-		// Logging with logger:
-		logger.text("Entering function " + $function.signature).ln().log($body, true);
-	end
-	
-	// Print the value of built-in floating or unsigned variables
-	// in the function 'foo', everytime they are written during execution.
-	select function{"foo"}.varref end
-	apply
-		if($varref.use === "read") {
-			continue;
-		}
-
-		var $type = $varref.type;
-
-		if(!$type.instanceOf("builtinType")) {
-			continue;
-		}
-
-		var isFloat = $type.isFloat;
-		var isUnsignedInt = $type.isUnsigned;
-
-		if(!isFloat && !isUnsignedInt) {
-			continue;
-		}
-
-		logger.text("Variable '"+$varref.name+"' written:");
-		if(isFloat) {
-			logger.double($varref.name);
-		}
-		if(isUnsignedInt) {
-			logger.int($varref.name);
-		}
-
-		logger.ln().log($varref);
+		//$body.insert before 'printf("Entering function ' + $function.signature + '\\n")';
+		$file.exec addInclude("stdio.h", true);
+		$body.insert before printFunction($function.signature);
 	end
 	
 	// Print the modified program code
@@ -68,4 +20,10 @@ aspectdef LoggingWithApi
 	apply
 		println($program.code);
 	end
+
 end
+
+codedef printFunction(functionSig)
+%{
+printf("Entering function [[functionSig]]\n");
+}% end

@@ -9,9 +9,6 @@ aspectdef LoggingWithApi
 	// Log every time a function is executed
 	select function.body end
 	apply
-		// Logging with inserts:
-		//$body insert before 'printf("Entering function ' + $function.signature + '\n")';
-		
 		// Logging with logger:
 		logger.text("Entering function " + $function.signature).ln().log($body, true);
 	end
