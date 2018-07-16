@@ -5,38 +5,24 @@ import clava.Clava;
 
 
 aspectdef AutoPar
-	/*
-	var $loopToParallelize = undefined;
-	select function{'matrix_mult'}.pragma{"loop1"}.target end
-	apply
-			$loopToParallelize = $target;
-			break;
-	end
 
-	Parallelize.forLoops([$loopToParallelize]);
-	*/
-
+	// Define the variables for tiling
 	tileVars = {'l': 'BS1', 'j': 'BS2'};
 
-	// find the top-level loop
+	// Find the top-level loop
 	select function{'matrix_mult'}.pragma{"loop1"}.target end
 	apply
 		call LoopTiling($target, tileVars);
 	end
 
-	// Print modified code
-	select program end
-	apply
-		println($program.code);
-	end
+	tileVars = {'l': 'BS1', 'j': 'BS2'};
 
-    var $loops = [];
-    select function{"matrix_mult"}.loop end
-	apply
-        $loops.push($loop);
-	end
 
-    Parallelize.forLoops($loops);
+	// Parallelize loop annotated with pragma
+    select function{"matrix_mult"}.pragma.target end
+	apply
+		Parallelize.forLoops([$target]);
+	end
 
 
 	
