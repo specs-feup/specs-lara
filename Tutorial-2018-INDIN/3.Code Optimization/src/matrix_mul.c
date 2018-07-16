@@ -19,8 +19,8 @@ void matrix_mult(const int N, const int M, const int K, double A[N][M], double B
 
 	#pragma loop1
     for(int i=0; i<N; i++) {
-        for(int l=0; l< M; l++) {
-            for(int j=0; j< K; j++) {
+		for(int j=0; j< K; j++) {
+			for(int l=0; l< M; l++) {
 				C[i][j] += A[i][l]*B[l][j];
             }
         }
