@@ -1,0 +1,19 @@
+digraph static_call_graph {
+
+	"print_path(NODE *,int)"->"print_path(NODE *,int)" [label="1"];
+	"print_path(NODE *,int)"->"<printf>" [label="1"];
+	"print_path(NODE *,int)"->"<fflush>" [label="1"];
+	"enqueue(int,int,int)"->"<malloc>" [label="1"];
+	"enqueue(int,int,int)"->"<fprintf>" [label="1"];
+	"enqueue(int,int,int)"->"<exit>" [label="1"];
+	"dequeue(int *,int *,int *)"->"<free>" [label="1"];
+	"dijkstra(int,int)"->"<printf>" [label="4"];
+	"dijkstra(int,int)"->"enqueue(int,int,int)" [label="2"];
+	"dijkstra(int,int)"->"qcount()" [label="1"];
+	"dijkstra(int,int)"->"dequeue(int *,int *,int *)" [label="1"];
+	"dijkstra(int,int)"->"print_path(NODE *,int)" [label="1"];
+	"main(int,char * [])"->"<fprintf>" [label="2"];
+	"main(int,char * [])"->"<fopen>" [label="1"];
+	"main(int,char * [])"->"<fscanf>" [label="1"];
+	"main(int,char * [])"->"dijkstra(int,int)" [label="1"];
+}

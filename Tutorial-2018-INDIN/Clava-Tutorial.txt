@@ -1,0 +1,119 @@
+Cover
+
+AOP
+
+LARA [slides from previous presentation]
+
+Clava
+
+Examples Outline
+
+
+1.1) Call Graph
+	Build a static call graph from the application source
+	Superset of the dynamic call graph
+	Edges indicate how many times a call appears in the code
+	
+	Strategy:
+		Select all methods (caller) and the calls inside (callee)
+		Make <caller, callee> tuples
+		Generate a graph, in dot format, with the tuples
+	
+	[cg.dot.svg]
+
+
+1.2) Static Report
+	Generate a report about the application
+		Number of files, functions and calls
+		Number and types of loops
+		Caller<->Callee information
+		
+	Strategy:
+		Select files,functions and calls to count
+		Select loops and query their type
+		Get <caller, callee> tuples
+		Print reports [using JS]
+	
+	[explain how this could be extended and segue into the specs docs]
+
+
+2.1) Logging with Inserts
+	Log certain execution events
+		Start of loops
+		Entering functions
+	
+	Strategy:
+		Select loops and their parent file
+		Insert logging code before loop
+		Add header include at the start of the file
+		Select functions and their parent file
+		Insert logging code at the start of the function body
+		Add header include at the start of the file
+
+	[present the first use of actions, insert and addInclude]
+	[present and explain codedef]
+
+Code Insertion in Clava/LARA
+	insert injects literal code into the application
+	Upsides: extremely versatile, can insert any code you want
+	Downsides: cumbersome (\n), error prone (code might have errors)
+	How to mitigate:
+		codedef
+		option to verify syntax
+		[segue into APIs]
+
+
+2.2) Logging with APIs
+	Log certain execution events (a more complex example) [explain that the first part is the same]
+	Make use of Clava APIs
+	
+	Strategy:
+		Same as before for functions
+		Look for writes to variables inside a specific function
+		Filter variables based on type
+		Log when the writing happens using the Logger API
+	
+	[explain imports (user and Clava)]
+	[introduce Clava APIs (explain the idea is to declare your intentions, not to specify how to do them: multi-lang and multi-implementation)]
+	[introduce and show Clava Doc]
+
+
+
+2.3) Measurements
+	Collect metrics on certain events or around pieces of code
+	Measure execution time and energy consumption
+	
+	Strategy:
+		Capture loops inside a specific function
+		Call APIs to measure around the selected loops
+		
+	[API allows us to abstract from target language, show C and C++ generated code]
+	[show that rapl header was included automatically and explain the API that performs this]
+	[mention the extreme multi-lang case where this exact aspect can be used in Java (got to Kadabra)]
+
+
+3.2) Loop Tiling
+	Improve execution performance with source code transformations [why source code? DSE and tuning]
+	Perform loop tiling on a matrix multiplication code
+
+	Strategy:
+		Define what loops are going to be tiled and the tiling names [explain why the names are important: DSE and tuning]
+		Add local tiling variables to the function containing the loop
+		Tile the loops using the Clava tile action
+	
+	[this is the first time showing aspects calling other aspects, elaborate on this as the second aspect can be seen as a reusable library]
+
+
+3.3)
+
+3.4) AutoPar
+	Improve execution performance with OpenMP
+	Free the user from analysis
+
+	Strategy:
+		Select target loop based on pragma [explain why this is important (show also the original code)]
+		Call AutoPar API to parallelize the target loop
+	
+	[stress that analysis is performed automatically and the library decides what and how to parallelize]
+
+Conclusions
