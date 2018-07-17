@@ -61,9 +61,11 @@ void test_matrix_mul() {
 	int M=1024;
 	int K=2048;
 	*/
+	
 	int N = 1024;
-    int M = 512;
-    int K = 512;
+	int M = 512;
+	int K = 512;
+	
 	
 	// allocate matrices
 	double (*A)[M] = malloc(sizeof(double[N][M]));
