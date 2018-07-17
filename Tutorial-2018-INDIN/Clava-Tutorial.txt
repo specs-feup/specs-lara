@@ -92,21 +92,7 @@ Code Insertion in Clava/LARA
 	[mention the extreme multi-lang case where this exact aspect can be used in Java (got to Kadabra)]
 
 
-3.2) Loop Tiling
-	Improve execution performance with source code transformations [why source code? DSE and tuning]
-	Perform loop tiling on a matrix multiplication code
-
-	Strategy:
-		Define what loops are going to be tiled and the tiling names [explain why the names are important: DSE and tuning]
-		Add local tiling variables to the function containing the loop
-		Tile the loops using the Clava tile action
-	
-	[this is the first time showing aspects calling other aspects, elaborate on this as the second aspect can be seen as a reusable library]
-
-
-3.3)
-
-3.4) AutoPar
+3.2) AutoPar
 	Improve execution performance with OpenMP
 	Free the user from analysis
 
@@ -115,5 +101,36 @@ Code Insertion in Clava/LARA
 		Call AutoPar API to parallelize the target loop
 	
 	[stress that analysis is performed automatically and the library decides what and how to parallelize]
+
+
+3.3) Exploration
+	Perform a design space exploration on an OpenMP application
+	This can be the output of AutoPar
+	Automatically explore the number of threads (could explore other parameters)
+	
+	Strategy:
+		Import and use LAT to define a variable range for the thread exploration
+		Configure compilation options (in this case, activate OpenMP) [explain the cmaker library]
+		Define the scope where LAT will perform changes
+		Define the scope where LAT will collect metrics
+		Start the exploration
+		
+	[take some time to explain LAT: what it does automatically and in what cases it can be used]
+	[segue into a more complex exploration that cannot be performed with LAT]
+
+
+3.4) Loop Interchange Exploration
+	Apply loop interchange to a matrix multiplication kernel
+	Automatically explore what the best permutation is
+	Use some more Clava APIs
+	
+	Strategy:
+		Generate all possible interchange permutations and for each:
+			Apply interchange
+			Add code to measure execution time
+			Compile and execute the application
+			Save the results
+		Print the results
+		
 
 Conclusions
