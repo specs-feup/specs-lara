@@ -62,7 +62,7 @@ void test_matrix_mul() {
 	int K=2048;
 	*/
 	int N = 1024;
-    int M = 1024;
+    int M = 512;
     int K = 512;
 	
 	// allocate matrices

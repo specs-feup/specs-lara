@@ -1,35 +1,22 @@
-import LoopTiling;
 import lat.Lat;
-import lat.LatConst;
+import lat.vars.LatVarOmpThreads;
 import clava.Clava;
 
 
-aspectdef DseMain
+aspectdef Exploration
 
-	// Loop tiling
-	tileVars = {'l': 'BS1', 'j': 'BS2'};
-
-	select function{'matrix_mult'}.pragma{'loop1'}.target end
-	apply
-		call LoopTiling($target, tileVars);
-	end
 	
-	// Auto parallelize
-    var $loops = [];
-    select function{"matrix_mult"}.loop end
-	apply
-        $loops.push($loop);
-	end
-
-    Parallelize.forLoops($loops);
 	
 	//var bs1 = new LatVarRange("BS1", LatConst.L1_CACHE_LINESIZE, 16 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
 	//var bs2 = new LatVarRange("BS2", LatConst.L1_CACHE_LINESIZE, 16 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
 
-	var bs1 = new LatVarRange("BS1", LatConst.L1_CACHE_LINESIZE, 2 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
-	var bs2 = new LatVarRange("BS2", LatConst.L1_CACHE_LINESIZE, 2 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
-	
-	var latVars = [bs1, bs2];
+	//var bs1 = new LatVarRange("BS1", LatConst.L1_CACHE_LINESIZE, 2 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
+	//var bs2 = new LatVarRange("BS2", LatConst.L1_CACHE_LINESIZE, 2 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
+	//var latVars = [bs1, bs2];
+
+	var threadRange = new LatVarRange("dummy", 1, 5, 1);
+	var ompThreads = new LatVarOmpThreads(threadRange);
+	var latVars = [ompThreads];
 	
 	select function{"test_matrix_mul"}.call{"matrix_mult"} end
 	apply
@@ -51,11 +38,11 @@ aspectdef Dse
 	}
 
 
-	
 	var lat = new Lat("dse");
 	
 	// Setup Lat, get CMaker
 	var cmaker = lat.setVerbose(true).loadCmaker().cmaker;
+	cmaker.addFlags("-fopenmp");
 	
 	if(Platforms.isWindows()) {
 		cmaker.setGenerator("MinGW Makefiles").setMakeCommand("mingw32-make");
