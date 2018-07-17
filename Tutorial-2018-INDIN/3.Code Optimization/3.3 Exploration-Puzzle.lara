@@ -8,9 +8,7 @@ aspectdef Exploration
 	var latVars = [];
 
 	// Create a LatVar that explores the number of threads
-	var threadRange = new LatVarRange("dummy", 1, 5, 1);
-	var ompThreads = new LatVarOmpThreads(threadRange);
-	latVars.push(ompThreads);
+
 	
 	
 	// Explore threads around call

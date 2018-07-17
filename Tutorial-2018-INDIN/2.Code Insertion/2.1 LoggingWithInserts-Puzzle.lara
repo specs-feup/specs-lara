@@ -1,0 +1,22 @@
+aspectdef LoggingWithInserts
+
+	// Log every time a loop is executed
+
+	
+	
+	// Log every time a function is executed with codedefs
+
+	
+	
+	// Print the modified program code
+	select program end
+	apply
+		println($program.code);
+	end
+
+end
+
+codedef printFunction(functionSig)
+%{
+printf("Entering function [[functionSig]]\n");
+}% end

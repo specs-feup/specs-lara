@@ -8,9 +8,8 @@ aspectdef LoggingWithInserts
 	end
 
 	// Log every time a function is executed
-	select function.body end
+	select file.function.body end
 	apply
-		//$body.insert before 'printf("Entering function ' + $function.signature + '\\n")';
 		$file.exec addInclude("stdio.h", true);
 		$body.insert before printFunction($function.signature);
 	end

@@ -4,13 +4,6 @@ import lara.code.Logger;
 aspectdef LoggingWithApi
 
 	// Log every time a function is executed with a Logger
-	var logger = new Logger();
-		
-	select function.body end
-	apply
-		// Logging with logger:
-		logger.text("Entering function " + $function.signature).ln().log($body, true);
-	end
 
 
 	
