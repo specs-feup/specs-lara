@@ -2,6 +2,9 @@ Cover
 
 AOP
 
+ -> Define concerns orthogonally to the source code
+ -> 
+ 
 LARA [slides from previous presentation]
 
 Clava

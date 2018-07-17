@@ -11,8 +11,15 @@ aspectdef LoopInterchange
 
 	var controlVars = ["i", "j", "l"];
 	var executionResults = {};
-
 	var timeMetric = new ExecutionTimeMetric();
+	
+	
+	println("Testing original code");
+	Clava.pushAst();
+	call testCode("original", timeMetric, executionResults);	
+	Clava.popAst();
+	
+
 	
 	var combs = new Combinations(controlVars, 2);
 	while(combs.hasNext()) {
@@ -29,12 +36,6 @@ aspectdef LoopInterchange
 		Clava.popAst();
 	}
 
-	println("Testing original code");
-
-	Clava.pushAst();
-	call testCode("original", timeMetric, executionResults);
-	Clava.popAst();
-	
 	
 	// Print results
 	println("\n-- Results --");
@@ -56,11 +57,17 @@ end
 
 aspectdef testCode
 	input id, metric, results end
-	call Measure(metric);
+	
+	select function{'matrix_mult'}.pragma{"loop1"}.target end
+	apply
+		metric.instrument($target);
+	end
+	
+
 	var executor = compileAndExecute(id);
 	results[id] = metric.report(executor);	
-end
 
+end
 
 
 aspectdef Interchange
@@ -87,15 +94,6 @@ function getLoop($start, index) {
 	return undefined;
 }
 
-aspectdef Measure
-	input metric end
-
-	select function{'matrix_mult'}.pragma{"loop1"}.target end
-	apply
-		metric.instrument($target);
-	end
-
-end
 
 
 function compileAndExecute(id) {

@@ -3,7 +3,7 @@ import lara.code.Logger;
 
 aspectdef LoggingWithApi
 
-	// Log every time a function is executed with a Logger
+	// Log every time a function is executed with a Logger	
 	var logger = new Logger();
 		
 	select function.body end

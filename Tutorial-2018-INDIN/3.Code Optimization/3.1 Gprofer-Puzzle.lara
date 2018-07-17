@@ -1,0 +1,28 @@
+import clava.gprofer.Gprofer;
+
+aspectdef GproferLauncher
+
+	// Use Gprofer to profile the current program
+	
+	
+
+	// Print all the names of the functions ranked by exec time %
+	println(' === hotspots === ');
+	println(gprofer.getHotspotNames());
+	println('\n\n');
+
+	// Get the function where we spend the most time
+	$hotspot = gprofer.getHotspot(0);
+
+	// Get some data about this hotspot
+	println(' === hotspot data === ');
+	println('exec time %: ' + gprofer.getPercentage($hotspot));
+	println('#calls: ' + gprofer.getCalls($hotspot));
+	println('self seconds: ' + gprofer.getSelfSeconds($hotspot));
+	println('\n\n');
+
+	println(' === hotspot code === ');
+	println($hotspot.code);
+	println('\n\n');
+
+end

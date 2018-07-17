@@ -5,7 +5,11 @@ aspectdef LoggingWithInserts
 	
 	
 	// Log every time a function is executed with codedefs
-
+	select file.function.body end
+	apply
+		$file.exec addInclude("stdio.h", true);
+		$body.insert before printFunction($function.signature);
+	end
 	
 	
 	// Print the modified program code
