@@ -7,8 +7,9 @@ import clava.Clava;
 aspectdef AutoPar
 
 	// Define the variables for tiling
-	tileVars = {'l': 'BS1', 'j': 'BS2'};
-
+	//tileVars = {'l': 'BS1', 'j': 'BS2'};
+	tileVars = {'i': 'BS3', 'l': 'BS1'};	
+	
 	// Find the top-level loop
 	select function{'matrix_mult'}.pragma{"loop1"}.target end
 	apply

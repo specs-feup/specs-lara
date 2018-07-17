@@ -6,15 +6,23 @@ import clava.Clava;
 
 aspectdef DseMain
 
+	// Loop tiling
 	tileVars = {'l': 'BS1', 'j': 'BS2'};
 
-	// find the top-level loop
 	select function{'matrix_mult'}.pragma{'loop1'}.target end
 	apply
 		call LoopTiling($target, tileVars);
 	end
 	
+	// Auto parallelize
+    var $loops = [];
+    select function{"matrix_mult"}.loop end
+	apply
+        $loops.push($loop);
+	end
 
+    Parallelize.forLoops($loops);
+	
 	//var bs1 = new LatVarRange("BS1", LatConst.L1_CACHE_LINESIZE, 16 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
 	//var bs2 = new LatVarRange("BS2", LatConst.L1_CACHE_LINESIZE, 16 * LatConst.L1_CACHE_LINESIZE, LatConst.L1_CACHE_LINESIZE / 2);
 

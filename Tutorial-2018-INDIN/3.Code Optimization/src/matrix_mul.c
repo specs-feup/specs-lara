@@ -56,10 +56,14 @@ void print_matrix_result(const int N, const int K, double A[N][K]) {
 	
 	
 void test_matrix_mul() {	
-	
+	/*
 	int N=2048; 
 	int M=1024;
 	int K=2048;
+	*/
+	int N = 1024;
+    int M = 1024;
+    int K = 512;
 	
 	// allocate matrices
 	double (*A)[M] = malloc(sizeof(double[N][M]));
