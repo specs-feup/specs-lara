@@ -3,7 +3,7 @@ import clava.Clava;
 
 import lara.Platforms;
 import lara.cmake.CMaker;
-import lara.code.Timer;
+import lara.metrics.ExecutionTimeMetric;
 import lara.util.Combinations;
 import lara.util.ProcessExecutor;
 
@@ -11,6 +11,8 @@ aspectdef LoopInterchange
 
 	var controlVars = ["i", "j", "l"];
 	var executionResults = {};
+
+	var timeMetric = new ExecutionTimeMetric();
 	
 	var combs = new Combinations(controlVars, 2);
 	while(combs.hasNext()) {
@@ -18,29 +20,48 @@ aspectdef LoopInterchange
 
 		// Get next combination
 		var interchangePair = combs.next();
+		
 		println("Testing interchange " + interchangePair);
-
 		call Interchange(interchangePair[0], interchangePair[1]);
-		
-		call MeasureTime();
 
-		var id = "interchange_" + interchangePair;
-		var executor = compileAndExecute(id);
-		executionResults[id] = executor.getConsoleOutput();
-		
+		call testCode("interchange_" + interchangePair, timeMetric, executionResults);
+
 		Clava.popAst();
 	}
 
 	println("Testing original code");
-	call MeasureTime();
-	var id = "original";
-	var executor = compileAndExecute(id);
-	executionResults[id] = executor.getConsoleOutput();	
+
+	Clava.pushAst();
+	call testCode("original", timeMetric, executionResults);
+	Clava.popAst();
 	
-	println("Results:");
-	printObject(executionResults);
+	
+	// Print results
+	println("\n-- Results --");
+	for(var interchange in executionResults) {
+		var result = executionResults[interchange];
+		var value = result["value"];
+		if(value === undefined) {
+			value = "timeout";
+		} else {
+			value += result["unit"];
+		}		
+		
+		println(interchange + ": " + value);
+	}
 		
 end
+
+
+
+aspectdef testCode
+	input id, metric, results end
+	call Measure(metric);
+	var executor = compileAndExecute(id);
+	results[id] = metric.report(executor);	
+end
+
+
 
 aspectdef Interchange
 	input firstVar, secondVar end
@@ -51,9 +72,7 @@ aspectdef Interchange
 		var $firstLoop = getLoop($target, firstVar);
 		var $secondLoop = getLoop($target, secondVar);
 
-		$firstLoop.interchange($secondLoop);
-
-		//println("LOOP INTERCHANGED:" + $target.code);
+		$firstLoop.interchange($secondLoop);		
 	end
 
 end
@@ -68,14 +87,12 @@ function getLoop($start, index) {
 	return undefined;
 }
 
-aspectdef MeasureTime
-
-	var timer = new Timer();
+aspectdef Measure
+	input metric end
 
 	select function{'matrix_mult'}.pragma{"loop1"}.target end
 	apply
-		timer.time($target);
-		//println("FUNCTION:\n" + $function.code);
+		metric.instrument($target);
 	end
 
 end
