@@ -67,33 +67,8 @@ aspectdef testCode
 	var executor = compileAndExecute(id);
 	results[id] = metric.report(executor);	
 
-end
-
-
-aspectdef Interchange
-	input firstVar, secondVar end
-
-	// Find the top-level loop
-	select function{'matrix_mult'}.pragma{"loop1"}.target end
-	apply
-		var $firstLoop = getLoop($target, firstVar);
-		var $secondLoop = getLoop($target, secondVar);
-
-		$firstLoop.interchange($secondLoop);		
-	end
 
 end
-
-function getLoop($start, index) {
-	for(var $loop of $start.descendantsAndSelf("loop")) {
-		if($loop.controlVar === index) {
-			return $loop;
-		}
-	}
-	
-	return undefined;
-}
-
 
 
 function compileAndExecute(id) {
@@ -110,3 +85,34 @@ function compileAndExecute(id) {
 
 	return executor;
 }
+
+
+aspectdef Interchange
+	input firstVar, secondVar end
+
+	// Find the top-level loop
+	select function{'matrix_mult'}.pragma{"loop1"}.target end
+	apply
+		var $firstLoop = getLoop($target, firstVar);
+		var $secondLoop = getLoop($target, secondVar);
+
+		$firstLoop.interchange($secondLoop);		
+	end
+
+end
+
+
+
+
+function getLoop($start, index) {
+	for(var $loop of $start.descendantsAndSelf("loop")) {
+		if($loop.controlVar === index) {
+			return $loop;
+		}
+	}
+	
+	return undefined;
+}
+
+
+
