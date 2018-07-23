@@ -1,0 +1,18 @@
+import clava.gprofer.Gprofer;
+import clava.Clava;
+
+aspectdef SimpleGprofer
+
+	var workingDir = Clava.getBaseFolder() + '/..';
+
+	var gprofer = new Gprofer();
+	gprofer
+		.setRuns(3)
+		.setWorkingDir(workingDir, false)
+		.setCheckReturn(false)
+		.profile();
+
+	println(gprofer.getHotspot().code);
+	
+	println('SimpleGprofer done');
+end
