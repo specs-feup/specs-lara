@@ -7,12 +7,15 @@ aspectdef SimpleGprofer
 
 	var gprofer = new Gprofer();
 	gprofer
-		.setRuns(3)
+		.setRuns(1)
 		.setWorkingDir(workingDir, false)
 		.setCheckReturn(false)
 		.profile();
 
-	println(gprofer.getHotspot().code);
+	var $hs = gprofer.getHotspot();
+	println($hs.code);
+
+	println(gprofer.getPercentage($hs));
 	
 	println('SimpleGprofer done');
 end
