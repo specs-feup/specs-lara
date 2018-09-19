@@ -44,22 +44,33 @@ function getNewType($vardeclType, oldType, newType) {
 
     if ( $vardeclType.astIsInstance("ElaboratedType"))        {
         // std::vector<double>  for example.
-        TRACE("  ====> ElaboratedType pre = " +  $vardeclType.code );
-        var $child= $vardeclType.astChild(0);
-        TRACE("  \t ----- ElaboratedType::$child = " +  $child.code );
+        TRACE("  ====> ElaboratedType pre = " +  $vardeclType.code 
+        	+ " Desugar = " + $vardeclType.desugar.code);
+        var $child= $vardeclType.desugar;
         var $ntype = getNewType($child, oldType, newType);
-        TRACE("  \t ----- ElaboratedType::$child = " +  $child.code );
-        $child.setType($ntype); // $child.exec replaceWith($ntype);
+        if ( $ntype !==  $child) $child.setType($ntype); 
         TRACE("  <==== ElaboratedType post " + $vardeclType.code);
         return $vardeclType;
     }
 
     if ( $vardeclType.astIsInstance("LValueReferenceType")) {
         // TYPE & 
+        //   unqualifiedDesugaredType and pointeeTypeAsWritten fields
         TRACE(" LValueReferenceType pre = " + $vardeclType.code);
-        var $child= $vardeclType.astChild(0);
+        var $child= $vardeclType.getValue("pointeeTypeAsWritten");
         var $ntype = getNewType($child, oldType, newType);
-        $child.exec replaceWith($ntype);
+        if ( $ntype !==  $child) $vardeclType.setValue("pointeeTypeAsWritten", $ntype);
+        TRACE(" LValueReferenceType post = " + $vardeclType.code);
+        return $vardeclType; 
+    }
+
+     if ( $vardeclType.astIsInstance("RValueReferenceType")) {
+        // TYPE &&
+        //   unqualifiedDesugaredType and pointeeTypeAsWritten fields
+        TRACE(" LValueReferenceType pre = " + $vardeclType.code);
+        var $child= $vardeclType.getValue("pointeeTypeAsWritten");
+        var $ntype = getNewType($child, oldType, newType);
+        if ( $ntype !==  $child) $vardeclType.setValue("pointeeTypeAsWritten", $ntype);
         TRACE(" LValueReferenceType post = " + $vardeclType.code);
         return $vardeclType; 
     }
@@ -67,12 +78,10 @@ function getNewType($vardeclType, oldType, newType) {
     if ( $vardeclType.astIsInstance("QualType")) {
         // TYPE const
         TRACE(" +++> QualType pre = " + $vardeclType.code);
-        var $child= $vardeclType.astChild(0);
-        TRACE(" LValueReferenceType pre = " + $child.code);
+	    var $child= $vardeclType.getValue("unqualifiedType");
         var $ntype = getNewType($child, oldType, newType);
-        $vret = setNewType($vardeclType, $child, $ntype);
-        TRACE(" <+++ QualType post = " + $vret.code);
-        return $vret;
+        if ($ntype !== $child) $vardeclType.setValue("unqualifiedType", $ntype);
+        return $vardeclType;
     }
 
 
@@ -109,11 +118,27 @@ function getNewType($vardeclType, oldType, newType) {
         return $vardeclType;
     }
 
+    if ($vardeclType.astIsInstance("PointerType")) {
+    	TRACE( " PointerType " + $vardeclType.code);
+    	var $child= $vardeclType.getValue("pointeeType");
+        var $ntype = getNewType($child, oldType, newType);
+        if ($ntype !== $child) $vardeclType.setValue("pointeeType", $ntype);
+        return $vardeclType;
+    }
+
+     if ( $vardeclType.astIsInstance("ArrayType")) {
+         TRACE(" ArrayType element type  = " + $vardeclType.elementType.code);
+         TRACE(" ArrayType array size  = " + $vardeclType.arraySize);
+          var $child= $vardeclType.getValue("elementType");
+          var $ntype = getNewType($child, oldType, newType);
+          if ($ntype !== $child) $vardeclType.setValue("elementType", $ntype);
+          return $vardeclType; 
+    	}
+
     if ( $vardeclType.astIsInstance("IncompleteArrayType") 
-         || $vardeclType.astIsInstance("PointerType")
-         || $vardeclType.astIsInstance("ConstantArrayType") 
-         || $vardeclType.astIsInstance("ArrayType")
-         || $vardeclType.astIsInstance("DecayedType")) {
+         || $vardeclType.astIsInstance("ConstantArrayType")
+         || $vardeclType.astIsInstance("DecayedType")
+         ) {
         var $unwrappedType = $vardeclType.unwrap;
         if($unwrappedType !== undefined) {
             TRACE(" unwrappedType = " + $unwrappedType.code);
@@ -125,9 +150,11 @@ function getNewType($vardeclType, oldType, newType) {
     }
 
     if ($vardeclType.astIsInstance("TypedefType")) {
+        return  $vardeclType;
+       // xxxx typedef n'est pas visit������ i������i.
         var $ntype;
         var $unwrappedType = $vardeclType.unwrap;
-        TRACE(" °°°> TypedefType  pre = " + $vardeclType.code);
+        TRACE(" ������������������> TypedefType  pre = " + $vardeclType.code);
         if($unwrappedType === undefined) 
             $ntype = $vardeclType;
         else {
@@ -136,14 +163,14 @@ function getNewType($vardeclType, oldType, newType) {
             TRACE("\t TypedefType unwrappedType replaced by = " + $ntype.code);
             if ( $ntype === undefined ) $ntype = $vardeclType;
         }
-        TRACE(" °°°> TypedefType  post = " + $ntype.code);
+        TRACE(" ������������������> TypedefType  post = " + $ntype.code);
         return $ntype;
     }
 
    // if ($vardeclType.astIsInstance("tagType")) return $vardeclType; // LB: Removed 18 April 2018.
     if ($vardeclType.astIsInstance("TemplateTypeParmType")) return $vardeclType;
     if ($vardeclType.astIsInstance("RecordType")) return $vardeclType;
-    NYI(" getNewType:: Type not yet analyzed = " + typeKind);
+    NYI(" getNewType:: Type not yet analyzed = " + typeKind + ' code = ' + $vardeclType.code);
     return $vardeclType; 
 }
 

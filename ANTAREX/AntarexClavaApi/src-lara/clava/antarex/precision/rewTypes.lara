@@ -33,40 +33,44 @@ aspectdef rewTypedefs
    TRACE_BEGIN_OP(" >>> rewTypedefs " + oldType.code + " to " + newType.code);
    select typedefDecl end
     apply
-        if ( ! isDeclareddDontModify( $typedefDecl.name )) {
-          var $ptype = $typedefDecl.type;
-          TRACE(" === typedefDecl code pre = " + $ptype.code) ;
-          var $ntype = getNewType(  $ptype, oldType, newType);
-          if ( $ptype !== $ntype) $typedefDecl.type = $ntype;
-          TRACE(" === typedefDecl code post = " +  $ntype.code);
+       if ( ! isDeclareddDontModify( $typedefDecl.name )) {
+	     var $ptype = $typedefDecl.getValue("underlyingType");
+         TRACE(" === typedefDecl code pre = " + $ptype.code) ;
+		 var $ntype = getNewType( $ptype, oldType, newType);
+     	 if ( $ptype !== $ntype) $typedefDecl.setValue("underlyingType", $ntype);
+     	 TRACE(" === typedefDecl code post = " +  $ntype.code);
         }
     end
 end
 
 
-/** Replace oldType by newType in the fields of the classes of the application. */
+/** Replace oldType by newType in the fields of the classes 
+	and structures of the application. */
  aspectdef rewTypeClass
  input 
    oldType,
    newType
  end
- TRACE_BEGIN_OP(" >>> changTypeClass " + oldType.code + " to " + newType.code);
+ TRACE_BEGIN_OP(" >>> rewType for Classes " + oldType.code + " to " + newType.code);
  select class end  
  apply
   var decls = $class.fields;
   for (var adecl of decls) {
-    $ntype  = getNewType( adecl.type, oldType, newType);
+    var $tt = adecl.type;
+    $ntype  = getNewType( $tt, oldType, newType);
     TRACE("  rewTypeClass returns " + $ntype.code);
-    adecl.type = $ntype;
+    if ($ntype !== $tt) adecl.setType($ntype);  // adecl.type = $ntype;
   }
  end
  
- TRACE_BEGIN_OP(" >>> changType Struct " + oldType.code + " to " + newType.code);
+ TRACE_BEGIN_OP(" >>> rewType for Structures " + oldType.code + " to " + newType.code);
  select struct end  
  apply
   var decls = $struct.fields;
   for (var adecl of decls) {
-    adecl.type = getNewType( adecl.type, oldType, newType);
+  	var $tt = adecl.type;
+    var $ntype = getNewType( $tt, oldType, newType);
+    if ($ntype !== $tt) adecl.setType($ntype); 
   }
  end
 
@@ -83,18 +87,10 @@ end
  select function{fname} end
   apply
     var tf = $function.type;
-    if ( tf.astIsInstance("FunctionProtoType"))
-     {
-      var tt = tf.returnType;
-      var xx = getNewType( tt, oldType, newType);
-      if ( ! xx.astIsInstance("NullType")) $function.type.returnType = xx;
-     }
-    else 
-    {
-      var xx = getNewType( tf, oldType, newType);
-      if ( ! xx.astIsInstance("NullType")) $function.type = xx;
-    }
-end
+    if (tf.astIsInstance("FunctionProtoType")) tf = tf.returnType;
+	var $xx = getNewType( tf, oldType, newType);
+	if ($xx !== tf) $function.setType($xx); 
+  end
 
 end
 
@@ -104,7 +100,7 @@ input
  oldType,
  newType
 end
-
+   TRACE_BEGIN_OP(" >>> rewType for Prototype " + oldType.code + " to " + newType.code);
    select function end
    apply
      if ($function.name != "main")
@@ -129,9 +125,9 @@ apply
 	TRACE(" variable = " + $vardecl.name );
 	checkDefined($vardecl);
 	var vardeclType = $vardecl.type;
-	$ntype = getNewType(vardeclType, oldType, newType);
+	var $ntype = getNewType(vardeclType, oldType, newType);
 	$vardecl.setType($ntype);
-	TRACE(" ---- end variable ");
+	TRACE(" --End variable ");
 end 
 end
 
@@ -141,15 +137,15 @@ input
 	oldType,
 	newType
 end
-
+ 
 select file.function.expr end
    apply
 	 if ( $expr.joinpointType === 'cast') {
-	 	TRACE( "    A CAST expression = " + $expr.code + ' astName =' + $expr.astName  + ' type = ' + $expr.type.code);
-	 	TRACE( " joinpointType = "  + $expr.joinpointType);
-	 	var vtype = $expr.type;
-	 	// getNewType(vtype, oldType, newType); // It should be used.
-	    if (vtype.code === oldType.code) $expr.setType(newType);
+	 	TRACE( " CAST expression = " + $expr.code );
+	 	var $vtype = $expr.type;
+	 	var $ntype = getNewType($vtype, oldType, newType);
+	    if ($vtype !== $ntype) $expr.setType($ntype);
+	    TRACE( " --End CAST expression = " + $expr.code );
 	 }
 	 end
 end
@@ -162,8 +158,11 @@ input
 end
 select newExpr end
     apply
-        var vtype = $newExpr.type;
-        getNewType(vtype, oldType, newType);
+    	TRACE(" New Expr " + $newExpr.code);
+        var vtype = $newExpr.type.unwrap;  // for new t; $newExpr.type is a pointer on the type t
+        var $ntype = getNewType(vtype, oldType, newType);
+        $newExpr.setType($ntype);
+        TRACE(" --End New Expr " + $newExpr.code);
     end
 end
 

@@ -242,7 +242,7 @@ function dclConstantDoubleFloat($expr) {
    var code=$expr.code;
    if ( /[-+]?[0-9]*\.[0-9]+([eE][-+]?[0-9]+)?/.test(code))
     {
-      println( "  +++++  Detected Double/Float constant  = " + code);
+      TRACE( "  +++++  Detected Double/Float constant  = " + code);
       var $symb = getExtractedConstantsSymbol(code);
       if ($symb === undefined) {
          $symb = getNewSymbolForExtractedConstant();
