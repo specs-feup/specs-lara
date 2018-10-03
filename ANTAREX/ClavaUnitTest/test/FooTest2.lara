@@ -24,7 +24,7 @@ function FooTest2_2() {
 
 
 /**
- * @test
+ * 
  */
 function FooTest2_fail2() {
 	var a = {};
@@ -32,7 +32,7 @@ function FooTest2_fail2() {
 }
 
 /**
- * @test
+ * 
  */
 function FooTest2_fail3() {
 	call FooFail();
