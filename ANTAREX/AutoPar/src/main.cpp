@@ -3,7 +3,7 @@
 double bar() {
     return 1.0;
 }
-// Hello
+
 double foo() {
     double a = 0;
     
