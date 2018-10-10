@@ -1,0 +1,3 @@
+double bar();
+
+double foo();
