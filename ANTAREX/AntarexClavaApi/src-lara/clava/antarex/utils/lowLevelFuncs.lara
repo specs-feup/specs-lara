@@ -1,0 +1,128 @@
+
+
+/**
+  @return the function, the method or undefined of a statement ($stmt).
+*/
+function getFunctionOrMethod($stmt){
+    var $obj = $stmt.ancestor("function");
+    if ($obj === undefined) $obj = $stmt.ancestor("method");
+    return $obj;
+}
+
+/**
+  @return true if $vFunction is a method, false otherwise.
+*/
+function isaMethod($vFunction)
+{ 
+  return ($vFunction.astName === "CXXMethodDecl");
+}
+
+
+/**
+  @return true if $vFunction is a function, false otherwise.
+*/
+function isaFunction($vFunction)
+{ 
+  return ($vFunction.astName === "FunctionDecl");
+}
+
+/**
+ @return the name of the class of a method (m)
+*/
+function getClassNameMethod(m)
+ {
+  return  m.record.name; 
+ }
+
+/**
+ @return true if a declaration ($vardecl) is a global one, false otherwise.
+*/
+function isGlobalVariable($vardecl) {
+    if ($vardecl.isParam) return false;
+    return ( $vardecl.astParent.astParent.astName === "TranslationUnit");  // global ?
+   }
+   
+/**
+  @return true if a statement ($vstmt) is a declaration of a constant, false otherwise.
+*/
+function isAConstantDecl($vstmt)
+{
+  if ($vstmt.astName !== 'VarDecl') return false;
+  $vardeclType = $vstmt.type;
+  return $vardeclType.astIsInstance("QualType");
+}
+
+/**
+  Renames a function or a method ($fm) by name.
+*/
+function renameFunctionMethod($fm, name)
+{
+ if (isaFunction($fm))
+ 	$fm.setName(name); 
+ else {  
+  var x = $fm.record.name; 
+  $fm.setValue('qualifiedName', x + "::" + name);
+  $fm.setValue('declName', name);
+  }
+}
+
+/**
+  @return the code of the returned type of a function/method ($target).
+*/
+function getStrReturnType($target)
+{
+   return $target.functionType.returnType.code;
+}
+
+/**
+ @return a string (delc1,...decln) where decli is the i-th formal parameter a function/method ($target).
+*/
+function getStrParams($target)
+{
+  var $params = $target.params;
+  var codeParams = '(';
+  var first=true;
+  for (var i = 0; i < $params.length; i++) {
+    if (!first) codeParams = codeParams + ','; 
+    first = false;
+    codeParams = codeParams  + $params[i].code; 
+  }
+  codeParams = codeParams  + ')';
+  return codeParams;
+ }
+
+/**
+ @return a string (p1,...pn) where the pi is a name of 
+	the i-th parameter of a function ($target).
+*/
+function getStrNameParams($target) {
+  var $params = $target.params;
+  var codeParams = '(';
+  var first=true;
+  for (var i = 0; i < $params.length; i++) {
+    if (!first) codeParams = codeParams + ','; 
+    first = false;
+    codeParams = codeParams  + $params[i].name; 
+  }
+  codeParams = codeParams  + ')';
+  return codeParams;
+ }
+
+/**
+	@return a call $name(p1,...pn) where the pi is a name of 
+	the i-th parameter of a function ($function).
+*/
+function mkCallToRenamed($function, $name)  {
+	return $name + getStrNameParams($function);
+}
+
+	
+	
+/** Debugging */
+function printChildrenOf($statement){
+  for ( var i = 0; i < $statement.astNumChildren; i++)
+  	 println(" Child " + i +  $statement.astChild(i).code);
+}
+
+
+
