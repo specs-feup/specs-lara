@@ -1,0 +1,19 @@
+import clava.autopar.Parallelize;
+
+
+aspectdef OmpParallelization
+
+	// Parallelize loop annotated with pragma
+    select function{"matrix_mult"}.pragma.target end
+	apply
+		Parallelize.forLoops([$target]);
+	end
+
+
+	
+	// Print modified code
+	select function{'matrix_mult'} end
+	apply
+		println($function.code);
+	end
+end
