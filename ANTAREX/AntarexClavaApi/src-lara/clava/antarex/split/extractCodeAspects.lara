@@ -3,13 +3,15 @@
     - that (2) isolate function/method in a new file.
     
  * To apply (1) the statement to extract must be annotated by the pragma named  EXTRACT
- * To apply (2) the function/method to isolate must be annotated by the pragma named ISOLATE
+ * To apply (2) the function/method to isolate must be annotated by the pragma named ISOLATE NB
+    where NB is the number of copies of the function/method, but with a new name, will be 
+    generated in separated files. The original function/method is then transformed as a selector of version.
  * Example of a session:
     // initialize
      call extractIsolate_initialize();
      
-     call extractCode();  // (1)
-     call isolateFunctionsMethods(); //  (2)
+     call extractCode();  // for application of (1)
+     call isolateFunctionsMethods(); // for application of (2)
      
      // Finalyze
      call extractIsolate_finalize();   
