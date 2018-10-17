@@ -9,7 +9,7 @@ function LibVC ($func, compilerSetup, name) {
 	checkDefined($func, '$func', 'LibVC');
 	checkJoinPointType($func, 'function', 'LibVC ($func)');
 	checkTrue($func.hasDefinition, '$func should be a function definition', 'LibVC');
-	
+	checkDefined($func.ancestor('file'), "$func.ancestor('file')", 'LibVC');
 	
 	// Adds LibVC include
 	Compilation.addExtraIncludeFromGit("https://github.com/skeru/libVersioningCompiler.git", "include/");
