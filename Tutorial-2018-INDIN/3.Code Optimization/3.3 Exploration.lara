@@ -46,11 +46,10 @@ aspectdef Dse
 	
 		
 	lat.setScope($function.body);
-	lat.setMeasure($call); 
+	lat.setMeasure($call);
 
 	lat.addSearchGroup(latVars);
 	
 	lat.tune();
-
 end
 

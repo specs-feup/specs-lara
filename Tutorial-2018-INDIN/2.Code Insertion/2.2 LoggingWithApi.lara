@@ -1,6 +1,5 @@
 import lara.code.Logger;
 
-
 aspectdef LoggingWithApi
 
 	// Log every time a function is executed with a Logger	
