@@ -1,0 +1,217 @@
+/**
+  @return the set of the declarations of the variables referenced in a statement ($statement) 
+  but not declared in it (ie external references to the statement).
+*/
+function getExternalDeclsOf($statement) {
+  var $varDecls = [];
+  var $externDecls = [];
+  var $stmt = getStmtToVisitForExternalDecls($statement);
+  getRefVarsInStmt($stmt, $varDecls);
+  for (var $f of $varDecls)  {
+	if (isOutsideDeclaration($f, $statement))
+		insertInUsingLocation($externDecls, $f); // unicity.
+  }
+  return $externDecls;
+ }
+
+
+/**
+   @return true if a declaration ($aDecl) is not local to a statement ($statement), false otherwise.
+*/
+function isOutsideDeclaration($aDecl, $statement) {
+  if ( $aDecl.astName === 'ParmVarDecl') return false; // Added Oct 16 LBesnard
+  var $father = $aDecl.astParent;
+  TRACE(" +++  $aDecl = " + $aDecl.code + " astName = " + $aDecl.astName);
+  var idStatement = $statement.astId;
+  do {
+      TRACE("    ----  parent = " + $father.astId + " $statementId= " + $statement.astId );
+      if ($father.astId === idStatement ) return false;
+      if ($father.astName === 'FunctionDecl') return true;
+      if ($father.astName === 'TranslationUnit') return true;
+      $father = $father.astParent;
+     } while (true);
+  return false;
+}
+
+/**
+   @return the statement to visit for analyzing the declarations.
+*/
+function getStmtToVisitForExternalDecls($statement)
+{ 
+ var $astname = $statement.astName;
+ switch ($astname) { 
+     case 'NullDecl':
+     case 'NullStmt':
+     case 'ExprStmt':
+     case 'ReturnStmt':
+     case 'VarDecl':
+	 case 'DeclStmt':
+	 case 'IfStmt':
+     case 'CompoundStmt':   // {  } 
+     case 'WrapperStmt': // comment.
+        return $statement;
+        
+     case 'ForStmt':
+     case 'WhileStmt':
+     case 'CXXForRangeStmt':  //  for(auto edgeId : Pred[w]) {  }
+	  return $statement.astChild(3);
+
+     case 'CXXOperatorCallExpr':
+     	NYI("getStmtToVisitForExternalDecls,  CXXOperatorCallExpr detected, code = " +  $statement.code);
+ 	 break;
+    		
+     default:
+	  NYI(" getStmtToVisitForExternalDecls, astname = " + $astname);
+     }
+   return $statement;
+ }
+
+
+/**     
+   Return  (in $refVars) the set of symbols (variables, constants, objects) referenced in a statement ($statement).
+  */
+function getRefVarsInStmt($statement, $refVars) {
+   var $astname = $statement.astName;
+   switch ($astname) { 
+     case 'NullStmt':
+      case 'NullDecl':
+     break;
+     
+     case 'ExprStmt':
+     case 'ReturnStmt':
+	  getRefVarsInExpr($statement.astChild(0), $refVars);
+	  break;
+	  
+    case 'VarDecl':
+	for ( var i = 0; i < $statement.astNumChildren; i++)
+	    {
+	       var $e = $statement.astChild(i);
+	       TRACE( $astname + ", Decl [ " + i + " ] = " + $e.code + ", joinpointType =" + $e.astName);
+	    }
+	       
+    break;
+    
+	case 'DeclStmt':
+	    for ( var i = 0; i < $statement.astNumChildren; i++)
+	    {
+	       var $e = $statement.astChild(i);
+	       TRACE( $astname + ", Decl [ " + i + " ] = " + $e.code + ", joinpointType =" + $e.joinpointType);
+	       getRefVarsInExpr($e, $refVars);
+	    }
+	break;
+	
+	 case 'IfStmt':
+	 var $e = $statement.cond ;
+	  TRACE( " if  cond = " + $e.code);
+  	  getRefVarsInExpr($e, $refVars);
+      for ( var i = 2; i < $statement.astNumChildren; i++) {
+	      var $e = $statement.astChild(i);
+	      TRACE( $astname + ", child [ " + i + ' ] = ' + $e.astName + ' ' + $e.code);
+	      getRefVarsInStmt($e, $refVars);
+	   }
+
+	  break;
+	  
+     case 'CompoundStmt':   // {  } 
+     case 'ForStmt':
+     case 'WhileStmt':
+     case 'CXXForRangeStmt':  //  for(auto edgeId : Pred[w]) {  }
+	   for ( var i = 0; i < $statement.astNumChildren; i++) {
+	      var $e = $statement.astChild(i);
+	      TRACE( $astname + ", child [ " + i + ' ] = ' + $e.astName);
+	      getRefVarsInStmt($e, $refVars);
+	   }
+	 break;
+	   
+     case 'WrapperStmt': // comment.
+     break;
+     
+     case 'CXXOperatorCallExpr':
+     	NYI("getRefVarsInStmt,  CXXOperatorCallExpr detected, code = " +  $statement.code);
+ 	 break;
+    		
+     default:
+	  NYI(" getRefVarsInStmt, astname = " + $astname);
+     }
+}
+
+/**     
+   Return  (in $refVars) the set of symbols (variables, constants, objects) referenced 
+   in an expression ($expr).
+  */
+function getRefVarsInExpr($expr, $refVars) {
+	var $jpt = $expr.joinPointType;
+	TRACE(" getRefVarsInExpr = " + $expr.code + "; joinPointType = " + $jpt);
+	switch ($jpt) {
+       case 'binaryOp':	
+		  var $e1 = $expr.left;
+		  TRACE (" binaryOp e1 joinPointType = " + $e1.joinPointType );
+	      getRefVarsInExpr($e1, $refVars);
+	      var $e2 = $expr.right;
+	      TRACE (" binaryOp e2 joinPointType = " + $e2.joinPointType );
+	      getRefVarsInExpr($e2, $refVars);
+          break;
+       case 'unaryOp': 
+	      var $e1 = $expr.operand;
+		  TRACE(" unaryOp operand  joinPointType = " + $e1.joinPointType );
+	      getRefVarsInExpr($e1, $refVars);
+	    break;
+	 
+	   case 'arrayAccess':
+	   case 'expression':
+          for (var i = 0; i < $expr.astNumChildren; i++){
+            	getRefVarsInExpr($expr.astChild(i), $refVars); 
+          }
+          break;
+	      
+	   case 'call':
+	      for (var i = 1; i < $expr.astNumChildren; i++) {
+             getRefVarsInExpr($expr.astChild(i), $refVars); 
+          }
+          break;
+
+	   case  'varref':
+		  var $decl = $expr.vardecl;
+		   insertInUsingLocation($refVars, $decl);
+          break;
+
+          
+        case 'memberCall':  //  obj.m
+           var $e = $expr.base;
+           TRACE("  case memberCall " + $e.code);
+           if ( $e.code !== 'this')  getRefVarsInExpr($e , $refVars); 
+           break;
+                       
+	    case 'memberAccess':  //  obj-> m
+           var $e = $expr.base;
+           TRACE( "   case memberAccess. base = " + $e.code);
+           if ( $e.code !== 'this')  getRefVarsInExpr($e , $refVars); 
+	     break;
+	     
+	    case 'vardecl':
+	       var $e = $expr.init;
+	       TRACE("  case vardecl = " + $expr.code);
+           if ( $e !== undefined )  getRefVarsInExpr($e , $refVars);
+	    break;
+	    
+        case 'deleteExpr':
+	    case 'newExpr':
+	    break;
+
+	    default:
+	       NYI(" getRefVarsInExpr::" + ", joinPointType = " + $jpt + ", code = " + $expr.code);
+	}
+}
+
+/**
+ Insert a statement ($stmt) in an array (tabDecl) using the location ofthe objects to
+ ensure the unicity in tabDecl.
+*/
+function insertInUsingLocation(tabDecl, $stmt)
+{
+  for (var f of tabDecl)
+   if (f.location ===  $stmt.location)  return;
+   TRACE ( " push = " + $stmt.code); 
+   tabDecl.push($stmt);
+}
+

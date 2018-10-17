@@ -1,0 +1,126 @@
+/* This package defines, for C, C++ languages, the aspects 
+    - that (1) extract fragment of code into a new function or method (C, C++ languages), in separated file.
+    - that (2) isolate function/method in a new file.
+    
+ * To apply (1) the statement to extract must be annotated by the pragma named  EXTRACT
+ * To apply (2) the function/method to isolate must be annotated by the pragma named ISOLATE
+ * Example of a session:
+    // initialize
+     call extractIsolate_initialize();
+     
+     call extractCode();  // (1)
+     call isolateFunctionsMethods(); //  (2)
+     
+     // Finalyze
+     call extractIsolate_finalize();   
+    end
+  * */
+  
+import antarex.utils.messages;
+import antarex.utils.mangling;
+import antarex.utils.lowLevelFuncs;
+import antarex.utils.sysfile;
+import antarex.split.splitDeclarations;
+import antarex.split.extractCodeFuncs;
+
+
+/**
+ Extract the code annotated with the prama called "EXTRACT_CODE".
+ The selected code becomes the body of a new function/method generated in a new file.
+ Then the user may play with several compiled versions of this code, or modified algorithm.
+*/
+aspectdef extractCode
+ var $externDecls;
+ var found=false;
+ // First step.
+ select pragma end
+  apply
+    if (isBeginIsolateCodePragma($pragma)) {
+      found = true;
+      var $target = $pragma.target;
+      mkNewExtractedCodeIdentifier();
+      $externDecls = getExternalDeclsOf($target);
+      substituteSymbols($externDecls);
+      declNewSymbolsAsGlobals($externDecls);
+      keepInitDeclarations($externDecls);
+      cleanCode($externDecls);
+    }
+ end
+ if (!found) {
+  MESSAGE("", "No pragma EXTRACT_CODE found !!!", "");
+  return;
+ }
+ Clava.rebuild();
+ // Second step.
+ select pragma end
+  apply
+    if (isBeginIsolateCodePragma($pragma)) {
+      var $target = $pragma.target;
+      var $name = declareNewIsolateCodeFunctionOrMethod($target);
+      replaceCodeByCall( $target, $name, "()");
+	  $pragma.detach(); // The pragma is removed.
+    }
+    end
+end
+
+/**
+  Initialize the components of the code extraction.
+*/
+aspectdef extractIsolate_initialize
+
+end
+
+/**
+  Finalize the components of the code extraction.
+*/
+aspectdef extractIsolate_finalize
+
+end
+
+/**
+  For a function/method annotated with the pragma 
+      #pragma ISOLATE NB  
+  It produces NB versions of the function/method, copy of the original but with a new name.
+  The original one becomes the selector of the version to use.
+*/
+aspectdef isolateFunctionsMethods
+ var $externDecls;
+
+ select pragma end
+  apply
+    if (isBeginIsolatePragma($pragma)) {
+      var $target = $pragma.target;
+      var ok =  isaMethod($target) || isaFunction($target);
+      
+      if (!ok) 
+      	ERROR( " *** Unwaited pragma for: " + $target.code + " ( not a function or method !!!)");
+      else {
+        if (! $target.hasDefinition)
+      	  ERROR("pragma ISOLATE, assigned to " + $target.code + " must be applied on function or method definition, not on declaration");
+        else {
+          if (isaFunction($target)) {
+          	if ($target.storageClass === 'static') {
+          		  WARNING(" the function " + $target.name + " becomes external");
+          		  $target.setValue('storageClass', 'NONE');
+          		}
+          }
+          var $body=$target.body;
+          var nbversions = $pragma.content;
+          if (nbversions === "") nbversions= "1";
+          var n = parseInt(nbversions);
+          if ( n < 0) 
+            ERROR("Bad value for the " + $ISOLATE_PRAGMA + " pragma");
+          else {
+            var tabNewFuncs = genIsolateCodeVersions($target, n);
+            genSelectorCode($target, tabNewFuncs);
+            genDeclCreatedObjects($target, tabNewFuncs);
+            $pragma.detach();
+          }
+        }
+      }
+    }
+ end
+  
+end
+
+
