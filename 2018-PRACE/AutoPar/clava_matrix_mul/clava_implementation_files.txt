@@ -1,1 +1,0 @@
-/home/pedro/Documents/repositories/specs-lara/2018-PRACE/AutoPar/clava_matrix_mul/src/matrix_mul.c
