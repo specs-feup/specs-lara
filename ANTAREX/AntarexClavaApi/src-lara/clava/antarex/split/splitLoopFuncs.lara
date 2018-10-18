@@ -13,9 +13,9 @@ function satisfiesSplitLoopsCriteria(aloop) {
   var $begin = aloop.astChild(0);
   var $end = aloop.astChild(1);
   var $step = aloop.astChild(2);
-	println( " Begin = " + $begin.code + ' astname = ' + $begin.astName);  
-	println( " End = " + $end.code + ' astname = ' + $end.astName);  
-	println( " Step = " + $step.code+ ' astname = ' + $step.astName);  
+	// println( " Begin = " + $begin.code + ' astname = ' + $begin.astName);  
+	// println( " End = " + $end.code + ' astname = ' + $end.astName);  
+	// println( " Step = " + $step.code+ ' astname = ' + $step.astName);  
   var lbound = aloop.initValue;
   if (lbound === undefined) return false;
   var ubound = aloop.endValue;
@@ -39,9 +39,9 @@ function satisfiesSplitLoopsCriteria(aloop) {
 /**
   * Mangling
   **/
-function getMangleNameOf($ident)
+function getSplitLoopMangleNameOf($vclass, $ident)
 {
- return SplitLoopMangledName("", $ident, "int", 2, "void");
+ return SplitLoopMangledName($vclass, $ident, "int", 2, "void");
 }
 
 /** 
@@ -75,7 +75,9 @@ function SplitLoopMangledName(className, fmName, typeName, nbparams, typeres) {
 function genLoaderLib($vFunction, $nbLibs)
 {
     var $currentFunction = mkNewFile(getCurrentLoadLibrary()+'.h', "");
-    var symbol = '"'+ getMangleNameOf($CURRENT_ID_SPLITTEDLOOP) +'"';
+    if (isaMethod($vFunction)) thisObj = "void * This,"; else thisObj ="";
+    
+    var symbol = '"'+ getSplitLoopMangleNameOf(getStrClassOf($vFunction), $CURRENT_ID_SPLITTEDLOOP) +'"';
     if (isaMethod($vFunction)) thisObj = "void * This,"; else thisObj ="";
     $currentFunction.insert before %{ 
     void * handle = dlopen(aLib, RTLD_LAZY);
@@ -240,11 +242,12 @@ function replaceLoop( $loop, $nbLoops){
       $loop.insert before prefix + tloop_took + " = " + prefixChrono + 
                             "duration_cast<" + prefixChrono + "microseconds>(" + tloop_end + '-' + tloop_begin + ").count();";
       $loop.insert before cpt+ "[" + vindex + "] = " + cpt +"["+ vindex + "] + " + tloop_took +";";
-      $loop.insert before 'LB_TRACE(cout << " MODE_LEARNING SPLIT " << ' + vindex + ' << " took " << ' + tloop_took+ ' << " microseconds to run." << endl;);';
+      $loop.insert before 'LB_TRACE(cout << " MODE_LEARNING SPLIT " << ' + vindex + ' << " took " << ' + 
+      	                   tloop_took+ ' << " ms to run." << endl;);';
         
       lbound = i_ubound;
    }
-   $loop.setInitValue(i_ubound);  // finalize the number of iterations
+   // $loop.setInitValue(i_ubound);  // finalize the number of iterations : replaced by line 270
  
    $loop.insert after "} "; 
    if (vop === Relation.LE) vmax=vmax +'+1'; else if (vop === Relation.GE) vmax=vmax +'-1';
@@ -264,6 +267,9 @@ function replaceLoop( $loop, $nbLoops){
    $loop.insert after vLearning + '=0;';
    
    AddGlobalDecls($loop, nbLibs+1);
+    
+   // finalyzing the original loop.
+   $loop.replaceWith($CURRENT_ID_SPLITTEDLOOP+ "(" + i_ubound +',' + vmax + ");");
 }
 
 /**
