@@ -9,7 +9,7 @@ class A2 {
 public: 
 
  float x;
- int y;
+ double y;
 };
 
 struct A3 {
