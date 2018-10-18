@@ -1,0 +1,10 @@
+aspectdef C
+	input from end
+	
+	var message = "C";
+	if(from !== undefined) {
+		message += " from " + from;
+	}
+	println(message);
+end
+
