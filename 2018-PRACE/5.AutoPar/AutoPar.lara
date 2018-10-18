@@ -1,6 +1,5 @@
 import clava.autopar.Parallelize;
 
-
 aspectdef OmpParallelization
 
 	// Parallelize loop annotated with pragma
@@ -9,8 +8,6 @@ aspectdef OmpParallelization
 		Parallelize.forLoops([$target]);
 	end
 
-
-	
 	// Print modified code
 	select function{'matrix_mult'} end
 	apply

@@ -1,0 +1,28 @@
+aspectdef LoggingWithInserts
+
+	// Log every time a loop is executed
+	select file.function.loop end
+	apply
+		$file.exec addInclude("stdio.h", true);
+		$loop.insert before "printf(\"Starting loop in function [[$function.signature]] at line [[$loop.line]]\\n\");";
+	end
+
+	// Log every time a function is executed
+	select file.function.body end
+	apply
+		$file.exec addInclude("stdio.h", true);
+		$body.insert before printFunction($function.signature);
+	end
+	
+	// Print the modified program code
+	select program end
+	apply
+		println($program.code);
+	end
+
+end
+
+codedef printFunction(functionSig)
+%{
+printf("Entering function [[functionSig]]\n");
+}% end

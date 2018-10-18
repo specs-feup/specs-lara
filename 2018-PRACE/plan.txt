@@ -1,20 +1,7 @@
-Call Graph (1.1)
-	- working	
+Call Graph
 	- needs better C++ input
-
-Logging (2.1 / 2.2)
-	- working with inserts
-	- working with API
-	- needs to unify examples
-	
-Measurements (2.3)
-	- working
-
-Grpofer (3.1)
-	- working
-
-AutoPar (3.2)
-	- working manually
-
-Exploration (3.3)
-	- working
+Logging
+Measurements
+Gprofer
+AutoPar
+Exploration
