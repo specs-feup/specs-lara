@@ -1,0 +1,9 @@
+aspectdef Test
+	input input1 end
+
+	select stmt.call end
+	apply
+		$call.insert before %{printf("Inserted Hello [[input1]]\n");}%;
+	end
+
+end
