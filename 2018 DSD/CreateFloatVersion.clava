@@ -4,9 +4,7 @@
     <entry>
       <string>workspace</string>
       <FileList>
-        <fileList>
-          <file>..\src\ll-example1\before</file>
-        </fileList>
+        <fileList/>
       </FileList>
     </entry>
     <entry>
@@ -47,11 +45,7 @@
     </entry>
     <entry>
       <string>output</string>
-      <file>..\woven</file>
-    </entry>
-    <entry>
-      <string>platformIncludes</string>
-      <boolean>false</boolean>
+      <file></file>
     </entry>
     <entry>
       <string>bundle_tags</string>
@@ -67,11 +61,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>..\lara\ll-example1.lara</file>
-    </entry>
-    <entry>
-      <string>parsingNumThreads</string>
-      <int>1</int>
+      <file>CreateFloatVersion.lara</file>
     </entry>
     <entry>
       <string>stack trace</string>
@@ -89,10 +79,6 @@
     </entry>
     <entry>
       <string>Disable Clava Info</string>
-      <boolean>true</boolean>
-    </entry>
-    <entry>
-      <string>Generate CMake Integration Helper Files</string>
       <boolean>false</boolean>
     </entry>
     <entry>
@@ -101,11 +87,7 @@
     </entry>
     <entry>
       <string>verbose</string>
-      <org.lara.interpreter.joptions.config.interpreter.VerboseLevel>errors</org.lara.interpreter.joptions.config.interpreter.VerboseLevel>
-    </entry>
-    <entry>
-      <string>Disable Remote Dependencies</string>
-      <boolean>false</boolean>
+      <org.lara.interpreter.joptions.config.interpreter.VerboseLevel>warnings</org.lara.interpreter.joptions.config.interpreter.VerboseLevel>
     </entry>
     <entry>
       <string>Generate Modified Code Only</string>
@@ -116,19 +98,13 @@
       <boolean>false</boolean>
     </entry>
     <entry>
-      <string>parallelParsing</string>
-      <boolean>false</boolean>
-    </entry>
-    <entry>
       <string>Weaved code foldername</string>
-      <string>ll-example1</string>
+      <string>woven_code</string>
     </entry>
     <entry>
       <string>header includes</string>
       <FileList>
-        <fileList>
-          <file>..\src\ll-example1\before</file>
-        </fileList>
+        <fileList/>
       </FileList>
     </entry>
     <entry>
@@ -151,13 +127,13 @@
     <entry>
       <string>metrics</string>
       <OptionalFile>
-        <file>..\metrics\2mm.json</file>
+        <file>metrics.json</file>
         <used>false</used>
       </OptionalFile>
     </entry>
     <entry>
       <string>C/C++ Standard</string>
-      <pt.up.fe.specs.clava.language.Standard>CXX11</pt.up.fe.specs.clava.language.Standard>
+      <pt.up.fe.specs.clava.language.Standard>C99</pt.up.fe.specs.clava.language.Standard>
     </entry>
     <entry>
       <string>Clava Custom Resources</string>

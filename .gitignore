@@ -1,13 +1,17 @@
 # Ignore build folders
 **/build-*/*
 **/build/*
+**/cmake-build*/*
 **/CMakeFiles/*
+
+
 
 # Ignore weaved code folders
 **/weaved_code/*
 **/woven/*
 **/woven_code/*
 **/generated/*
+**/output/*
 
 # Ignore automatically created results
 *.csv
@@ -19,18 +23,20 @@
 # they should be provided in a separate file
 **/data/*
 
-# Ignore class files and eclipse-related files
+# Ignore class files and IDE-related files
 *.class
 *.project
 *.classpath
+**/.idea/*
 
-
+# Misc
 mweaver.aspectdata
 mweaver_typeDef.txt
 a.exe
 ranges_foobar*
 **/matlab-handwritten/*
-
+debug
+debug_
 
 
 

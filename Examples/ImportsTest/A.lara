@@ -1,0 +1,9 @@
+import B;
+import C;
+
+aspectdef A
+	println("A");
+	call B("A");
+	call C("A");
+end
+

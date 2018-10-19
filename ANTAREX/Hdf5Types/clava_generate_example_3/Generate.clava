@@ -5,7 +5,7 @@
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>..\src\ll-example1\before</file>
+          <file>include\test_lib.h</file>
         </fileList>
       </FileList>
     </entry>
@@ -47,7 +47,7 @@
     </entry>
     <entry>
       <string>output</string>
-      <file>..\woven</file>
+      <file></file>
     </entry>
     <entry>
       <string>platformIncludes</string>
@@ -67,7 +67,7 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>..\lara\ll-example1.lara</file>
+      <file>Generate.lara</file>
     </entry>
     <entry>
       <string>parsingNumThreads</string>
@@ -93,7 +93,7 @@
     </entry>
     <entry>
       <string>Generate CMake Integration Helper Files</string>
-      <boolean>false</boolean>
+      <boolean>true</boolean>
     </entry>
     <entry>
       <string>javascript</string>
@@ -121,13 +121,13 @@
     </entry>
     <entry>
       <string>Weaved code foldername</string>
-      <string>ll-example1</string>
+      <string>config_test</string>
     </entry>
     <entry>
       <string>header includes</string>
       <FileList>
         <fileList>
-          <file>..\src\ll-example1\before</file>
+          <file>include</file>
         </fileList>
       </FileList>
     </entry>

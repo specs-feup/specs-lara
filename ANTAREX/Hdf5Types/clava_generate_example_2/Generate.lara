@@ -1,0 +1,22 @@
+import clava.ClavaJoinPoints;
+
+aspectdef Generate
+
+	input a, b end
+	
+	var $file = ClavaJoinPoints.file("clava_generated.cpp", "clava_generated");
+
+	//println("A: " + a);
+	//println("B: " + b);	
+	//println("B: " + b);	
+	
+	$file.insert after "// Whatever " + a + " " + b;
+	
+	select record end
+	apply
+			$file.insert after "// " + $record.name;
+	end
+
+	$file.write(".");
+	
+end

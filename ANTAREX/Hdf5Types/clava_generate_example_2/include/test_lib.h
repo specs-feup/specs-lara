@@ -8,7 +8,7 @@ public:
 class A2 {
 public: 
 
- float x;
+ int x;
  double y;
 };
 

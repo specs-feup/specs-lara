@@ -1,5 +1,7 @@
 class A {
- int anInt;
+
+
+ long anInt;
 
 public: 
  float aFloat;
@@ -8,7 +10,7 @@ public:
 class A2 {
 public: 
 
- float x;
+ int x;
  double y;
 };
 
