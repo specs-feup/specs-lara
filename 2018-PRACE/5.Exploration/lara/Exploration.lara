@@ -2,10 +2,7 @@ import lat.Lat;
 import lat.vars.LatVarOmpThreads;
 import clava.Clava;
 
-
-
 aspectdef Exploration
-
 
 	var latVars = [];
 
@@ -14,14 +11,11 @@ aspectdef Exploration
 	var ompThreads = new LatVarOmpThreads(threadRange);
 	latVars.push(ompThreads);
 	
-	
 	// Explore threads around call
 	select function{"test_matrix_mul"}.call{"matrix_mult"} end
 	apply
 		call Dse($call, latVars);
 	end
-
-
 end
 
 
@@ -35,7 +29,6 @@ aspectdef Dse
 		return;
 	}
 
-
 	var lat = new Lat("dse");
 	
 	// Setup Lat, get CMaker
@@ -46,7 +39,6 @@ aspectdef Dse
 		cmaker.setGenerator("MinGW Makefiles").setMakeCommand("mingw32-make");
 	}
 	
-		
 	lat.setScope($function.body);
 	lat.setMeasure($call);
 

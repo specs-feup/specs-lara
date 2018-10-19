@@ -1,17 +1,12 @@
-import lara.code.Timer;
 import lara.code.Energy;
 
-aspectdef Logging
+aspectdef EnergySolution
 
-	
-	// Measure execution time and energy consumption of the loop
-	var timer = new Timer();
 	var energy = new Energy();
 
 	select function{"foo"}.loop end
 	apply
 		energy.measure($loop);
-		timer.time($loop);
 	end
 
 	// Print the modified program code

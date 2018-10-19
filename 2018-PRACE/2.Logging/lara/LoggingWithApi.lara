@@ -15,16 +15,7 @@ aspectdef LoggingWithApi
 			.ln()
 			.log($loop, true);
 	end
-	
-	// Log every time a function is executed with a Logger	
-	select function.body end
-	apply
-		logger
-			.text("Entering function ")
-			.text($function.signature)
-			.ln()
-			.log($body, true);
-	end
+
 	
 	// Print the modified program code
 	select program end
