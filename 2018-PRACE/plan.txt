@@ -1,4 +1,0 @@
-Exploration
-	- explain the exploration aspect and how it comes after AutoPar
-	- ask to make  CMakeLists that calls both aspects in succession
-	- correct the lack of flags after the error and explain the need for repo

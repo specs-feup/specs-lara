@@ -1,0 +1,23 @@
+import clava.Clava;
+
+import XmlConfig;
+import Dse;
+import CodeGen;
+
+aspectdef TopLevel
+
+	// setup
+	var configPath = Clava.getWeavingFolder() + '/../config/adaptation.conf';
+	var opListPath = Clava.getWeavingFolder() + '/../config/oplist.conf';
+	
+	// set the configuration and save the xml file
+	var config = call XmlConfig(configPath);
+
+	// perform the DSE
+	var dseInfo = config.dseInfo;
+	call Dse(dseInfo, opListPath);
+
+	// change the original application
+	var codeGenInfo = config.codeGenInfo;
+	call CodeGen(codeGenInfo);
+end

@@ -1,0 +1,39 @@
+import lara.units.TimeUnit;
+import lara.units.EnergyUnit;
+import antarex.margot.config.MargotEnergyDomain;
+
+aspectdef Dse
+	input
+		dseInfo,
+		opListPath
+	end
+
+	// Select portion of code that we will explore
+	select function{"main"}.body.call{"matrix_mult_tiling"} end
+	apply
+		dseInfo.setScope($body);
+		dseInfo.setMeasure($call);		
+	end
+
+	dseInfo.setDseRuns(1);
+
+	// add desired metrics
+	dseInfo.addTimeMetric('exec_time_ms', TimeUnit.micro());
+	dseInfo.addEnergyMetric('energy', EnergyUnit.micro(), MargotEnergyDomain.PACKAGE);
+
+	// set the knob values
+	dseInfo.setKnobValues('block_size_1', 8);
+	dseInfo.setKnobValues('block_size_2', 8, 16);
+
+	// set the feature values
+	dseInfo.setFeatureSetValues(['N', 'M', 'K'],
+//		[512, 512, 512, 256, 256, 128, 128],
+//		[512, 512, 256, 256, 256, 128, 256],
+//		[512, 256, 512, 256, 128, 128, 128]
+		[512, 512],
+		[512, 512],
+		[512, 256]
+	);
+
+	dseInfo.execute(opListPath);
+end
