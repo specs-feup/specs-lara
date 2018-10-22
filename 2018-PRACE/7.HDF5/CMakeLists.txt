@@ -2,7 +2,8 @@ cmake_minimum_required(VERSION 2.8.12)
 project(HDF5 CXX)
 
 # Required if CMake plugin is not installed
-set(Clava_DIR "C:/Users/JoaoBispo/Desktop/shared/repositories-programming/clava/CMake")
+# Download CMake plugin from: https://github.com/specs-feup/clava/tree/master/CMake
+#set(Clava_DIR "<FOLDER WITH CLAVA CMAKE PLUGIN>")
 
 add_library(h5ex_headers Data.h)
 
