@@ -15,7 +15,7 @@ aspectdef Dse
 		dseInfo.setMeasure($call);		
 	end
 
-	dseInfo.setDseRuns(1);
+	dseInfo.setDseRuns(3);
 
 	// add desired metrics
 	dseInfo.addTimeMetric('exec_time_ms', TimeUnit.micro());
