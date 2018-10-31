@@ -1,0 +1,16 @@
+aspectdef LoggingWithInserts
+
+	// Log every time a loop is executed
+	select file.function.loop end
+	apply
+		$file.exec addInclude("iostream", true);
+		$loop.insert before %{std::cout << "Starting loop in function [[$function.signature]] at line [[$loop.line]]" << std::endl;}%;
+	end
+
+	
+	// Print the modified program code
+	select program end
+	apply
+		println($program.code);
+	end
+end
