@@ -1,0 +1,4 @@
+1) weave
+2) copy scripts to the 'woven' directory
+3) run script build_scenario.sh to build the application with mARGOt support
+4) the resulting binary is build/mm
