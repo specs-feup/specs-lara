@@ -1,0 +1,49 @@
+import lat.Lat;
+import lat.vars.LatVarOmpThreads;
+import clava.Clava;
+
+aspectdef Exploration
+
+	var latVars = [];
+
+	// Create a LatVar that explores the number of threads
+	var threadRange = new LatVarRange("dummy", 1, 5, 1);
+	var ompThreads = new LatVarOmpThreads(threadRange);
+	latVars.push(ompThreads);
+	
+	// Explore threads around call
+	select function{"test_matrix_mul"}.call{"matrix_mult"} end
+	apply
+		call Dse($call, latVars);
+	end
+end
+
+
+aspectdef Dse
+
+	input $call, latVars end
+
+	$function = $call.definition;
+	if($function === undefined) {
+		println("Could not find definition of call@" + $call.location);
+		return;
+	}
+
+	var lat = new Lat("dse");
+	
+	// Setup Lat, get CMaker
+	var cmaker = lat.setVerbose(true).loadCmaker().cmaker;
+	cmaker.addFlags("-fopenmp");
+	
+	if(Platforms.isWindows()) {
+		cmaker.setGenerator("MinGW Makefiles").setMakeCommand("mingw32-make");
+	}
+	
+	lat.setScope($function.body);
+	lat.setMeasure($call);
+
+	lat.addSearchGroup(latVars);
+	
+	lat.tune();
+end
+

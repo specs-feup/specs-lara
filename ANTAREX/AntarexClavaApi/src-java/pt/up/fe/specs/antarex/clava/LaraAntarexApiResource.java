@@ -72,6 +72,13 @@ public enum LaraAntarexApiResource implements LaraResourceProvider {
     REW_TYPES("precision/rewTypes.lara"),
     REW_TYPES_FUNC("precision/rewTypesFunc.lara"),
 
+    // Split
+    EXTRACT_CODE_ASPECTS("split/extractCodeAspects.lara"),
+    EXTRACT_CODE_FUNCS("split/extractCodeFuncs.lara"),
+    SPLIT_DECLARATIONS("split/splitDeclarations.lara"),
+    SPLIT_LOOP_ASPECTS("split/splitLoopAspects.lara"),
+    SPLIT_LOOP_FUNCS("split/splitLoopFuncs.lara"),
+
     // Utils
     MESSAGES("utils/messages.lara"),
     MISC_ASPECTS("utils/miscAspects.lara"),

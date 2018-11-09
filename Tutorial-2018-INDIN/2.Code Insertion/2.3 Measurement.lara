@@ -14,8 +14,6 @@ aspectdef Logging
 		timer.time($loop);
 	end
 
-
-	
 	// Print the modified program code
 	select program end
 	apply

@@ -1,0 +1,22 @@
+/**
+ * @test
+ */
+aspectdef StrategyCustomPrecision
+
+	// Insert timing and energy measuring around 
+	// call to matrix multiplication
+	select stmt.call{"matrix_mult"} end
+	apply
+		call MeasureTimeAndEnergy($call);
+	end
+	
+	// Create float version of matrix mult and add switch
+    select function{"main"}.body.call{"test_matrix_mul"} end
+    apply
+		// Add knob
+		var $knobDecl = $body.addLocal("version", ClavaJoinPoints.builtinType('int'), 0);
+		//ClavaJoinPoints.varDeclNoInit(knobName, ClavaJoinPoints.builtinType("int"));
+		call Multiversion($call, $knobDecl.name);
+    end
+
+end

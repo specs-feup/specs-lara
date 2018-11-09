@@ -4,7 +4,7 @@ aspectdef LoggingWithInserts
 	select file.function.loop end
 	apply
 		$file.exec addInclude("stdio.h", true);
-		$loop.insert before 'printf("Starting loop in function ' + $function.signature + ' at line ' + $loop.line + '\\n");';
+		$loop.insert before "printf(\"Starting loop in function [[$function.signature]] at line [[$loop.line]]\\n\");";
 	end
 
 	// Log every time a function is executed

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.5)
 project(autopar_test)
 
 # If Clava CMake plugin is not installed (e.g., sudo clava-update), the path to the plugin

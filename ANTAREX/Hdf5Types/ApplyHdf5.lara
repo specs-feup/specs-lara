@@ -1,0 +1,9 @@
+import clava.ClavaJoinPoints;
+
+aspectdef ApplyHdf5
+
+	println("HELLO");
+	var $file = ClavaJoinPoints.file("test.h");
+	$file.write(".");
+
+end

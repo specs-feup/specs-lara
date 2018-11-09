@@ -1,0 +1,14 @@
+import C;
+
+aspectdef B
+	input from end
+	
+	var message = "B";
+	if(from !== undefined) {
+		message += " from " + from;
+	}
+	println(message);
+
+	call C("B");
+end
+

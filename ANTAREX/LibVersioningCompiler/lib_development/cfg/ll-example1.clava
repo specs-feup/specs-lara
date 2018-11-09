@@ -5,7 +5,7 @@
       <string>workspace</string>
       <FileList>
         <fileList>
-          <file>../src/ll-example1/before</file>
+          <file>..\src\ll-example1\before</file>
         </fileList>
       </FileList>
     </entry>
@@ -47,7 +47,11 @@
     </entry>
     <entry>
       <string>output</string>
-      <file>../woven</file>
+      <file>..\woven</file>
+    </entry>
+    <entry>
+      <string>platformIncludes</string>
+      <boolean>false</boolean>
     </entry>
     <entry>
       <string>bundle_tags</string>
@@ -63,7 +67,11 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>../lara/ll-example1.lara</file>
+      <file>..\lara\ll-example1.lara</file>
+    </entry>
+    <entry>
+      <string>parsingNumThreads</string>
+      <int>1</int>
     </entry>
     <entry>
       <string>stack trace</string>
@@ -84,12 +92,20 @@
       <boolean>true</boolean>
     </entry>
     <entry>
+      <string>Generate CMake Integration Helper Files</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
       <string>javascript</string>
       <boolean>false</boolean>
     </entry>
     <entry>
       <string>verbose</string>
       <org.lara.interpreter.joptions.config.interpreter.VerboseLevel>errors</org.lara.interpreter.joptions.config.interpreter.VerboseLevel>
+    </entry>
+    <entry>
+      <string>Disable Remote Dependencies</string>
+      <boolean>false</boolean>
     </entry>
     <entry>
       <string>Generate Modified Code Only</string>
@@ -100,13 +116,19 @@
       <boolean>false</boolean>
     </entry>
     <entry>
+      <string>parallelParsing</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
       <string>Weaved code foldername</string>
       <string>ll-example1</string>
     </entry>
     <entry>
       <string>header includes</string>
       <FileList>
-        <fileList/>
+        <fileList>
+          <file>..\src\ll-example1\before</file>
+        </fileList>
       </FileList>
     </entry>
     <entry>
@@ -129,7 +151,7 @@
     <entry>
       <string>metrics</string>
       <OptionalFile>
-        <file>../metrics/2mm.json</file>
+        <file>..\metrics\2mm.json</file>
         <used>false</used>
       </OptionalFile>
     </entry>

@@ -1,0 +1,4 @@
+-b 2 -s
+
+# Enable this option if you do not want to automatically generate the modified code ('woven_code' folder)
+#-ncg
