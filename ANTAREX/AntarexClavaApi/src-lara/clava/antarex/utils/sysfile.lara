@@ -1,0 +1,21 @@
+
+
+/**
+   Declare a new file in Clava, $fp/$name ($fp : file path, $name: the name of the file). 
+*/
+function mkNewFile($name, $fp)
+{
+     var nf = AstFactory.file($name, $fp);
+     Clava.addFile(nf);
+     return nf;
+}
+
+/**
+  @return the name of the file of a library built from libname.
+  os DEPENDENT:
+    -for linux: lib<libname>.so
+*/
+function getOSLibName(libname)
+{
+ return 'lib' + libname +'.so';
+}

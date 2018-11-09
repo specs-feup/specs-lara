@@ -14,6 +14,7 @@ var $SPLIT_NEW_ID = "FOO";
 function isfilteredDeclaration($decl) {
    if ($decl.getValue("hasGlobalStorage")) return true;
    if ($decl.getValue("isCXXClassMember")) return true;
+  // if (isAConstantDecl($decl)) return  true;
    return false;
 }
 
@@ -61,9 +62,25 @@ function declNewSymbolsAsGlobals($Decls)
 	  TRACE_HERE(" declaration = " + $f.code + " at " + $f.location);
       var $currentFunction = getFunctionOrMethod($f);
       $currentFunction.insertBefore(removeInitDecl($f.copy()));
+     // $currentFunction.insert before ";";
 	 }
   }
   TRACE_HERE( "  " + op + " END");
+}
+
+function initMustBeKept($f)
+{
+  if ( isAConstantDecl($f)) return false; 
+  if ( $f.astName !== 'VarDecl') return false;
+  if ( $f.isInsideLoopHeader) return false;
+  if ( ! $f.hasInit) return false;
+  /* if ( $f.getValue("initStyle").name() === "CALL_INIT") {
+     var $vinit = $f.init;
+     var $jpt = $vinit.joinPointType;
+     println( " ------- init.joinPointType = " + $jpt);
+     if ( $vinit.joinPointType === 'varref') return false;  // ref to a class
+  } */
+  return true;
 }
 
 /**
@@ -81,18 +98,15 @@ function keepInitDeclarations($Decls)
   
   TRACE_HERE( "  " + op + " BEGIN");
     for (var $f of $Decls)  {
-	  if ( ! isfilteredDeclaration($f)) {
+     println(" Declaration = " + $f.code + " at " + $f.location );
+	  if ( ! isfilteredDeclaration($f))
+	   if (initMustBeKept($f))
+	     {
+	      println( " init is kept " );
 		  TRACE_HERE(" Declaration = " + $f.code + " at " + $f.location);
-          if ($f.astName === 'VarDecl')  
- 	       if ( ! $f.isInsideLoopHeader) 
- 	          { 
- 	           if ($f.hasInit)
- 	             { 
-  		          var $father = $f.astParent;  // DeclStmt 
-  		          $father.insert before $f.name + ' = ' + $f.init.code + ';';
-  		         }
-  		      }
-  		      else;
+ 	      var $vinit = $f.init;
+  		  var $father = $f.astParent;  // DeclStmt 
+  		  $father.insert before $f.name + ' = ' + $vinit.code + ';';
 		 }
     }
     TRACE_HERE( "  " + op + " END");
@@ -107,7 +121,7 @@ function cleanCode($Decls)
     TRACE_HERE( "  cleanCode BEGIN");
     for (var $f of $Decls)  {
 	  if (! isfilteredDeclaration($f)) {
-       var $DeclStmt = $f.astParent; //DeclStmt
+       var $DeclStmt = $f.astParent; 
          if ( ! $f.isInsideLoopHeader)
          	{
          	  if ($DeclStmt.astNumChildren === 1) $DeclStmt.detach(); else $f.detach();
@@ -131,9 +145,11 @@ function cleanCode($Decls)
   Remove the initial value assigned to a declaration.
 */
 function removeInitDecl($vdecl) {
+ if (isAConstantDecl($vdecl)) return  $vdecl;
  if ($vdecl.astName === 'VarDecl')  
- 	if ($vdecl.hasInit)
+ 	if ($vdecl.hasInit) 
   		$vdecl.init.detach();
+  	 
   return $vdecl;
 }
 
@@ -159,7 +175,7 @@ function ImportIncludes($aStmt, $afile)
     for (var x = 0; x <  $currentFile.astNumChildren ; x++) {
 	  var $stmt =  $currentFile.astChild(x);
 	  if ($stmt.astId === id) break; 
-	  if ($stmt.astName === "IncludeDecl") {
+	  if (($stmt.astName === "IncludeDecl") || ($stmt.astName === "TypeAliasDecl") ) {
 	    TRACE(" ImportIncludes, Include = " + $stmt.code);
  	    Includes.push($stmt);
 	  }
@@ -168,7 +184,9 @@ function ImportIncludes($aStmt, $afile)
 	     var ch = $stmt.astChild(0);
 		 if (ch.astName === "UsingDirectiveDecl") 
 		 	Includes.push($stmt);
+		 
 	 	 }
+	 	  
    }
    // Adding declaration in the original file.
    for (f= Includes.length; f >0; f--) {
@@ -189,11 +207,12 @@ function ImportIncludes($aStmt, $afile)
    the string to use for the definition of the new method (ie C::nfunc, where C is the 
    name of the class of $FunctionOrMethod).
  */
-function declareNewMethod( $FunctionOrMethod, nfunc, inter)
+function declareNewMethod($FunctionOrMethod, nfunc, inter)
 {
     if (! isaMethod($FunctionOrMethod)) return nfunc;
     var $vdecl = $FunctionOrMethod.declarationJp;
     $vdecl.insert before inter + ';';
+    addModifiedFiles($vdecl);
     // def for the definition of the method.
     return $FunctionOrMethod.record.name + "::" + nfunc;
 }
@@ -202,23 +221,41 @@ function declareNewMethod( $FunctionOrMethod, nfunc, inter)
 /**
  Import in a file ($splittedfile) the declaration of the external references of a statement ( $st).
  These declarations are attributed "extern" in the $splittedfile file.
+ The declaration imported by the file of ($st) are filtered (they are assumed known via includes).
 */
 function ImportDeclarations($st, $splittedfile)
 {
     var $vcode;
-    tabDecl = getExternalDeclsOf($st);
+    var $referencedFunctions=[];
+    tabDecl = getExternalDeclsOf($st, $referencedFunctions);
+    var stFile = getFileOf($st);
     // Declare same declarations as externals (without initial value) in the new file.
    	for (f in tabDecl) { 
    	  var $elem = tabDecl[f];
    	  // But may introduce a conflict, if it exsists an another global 
    	  // variable with the same name in the application.
-   	  if ($elem.storageClass === 'static') $elem.setValue('storageClass', 'NONE');  
-      var $vstmt = $elem.copy(); // a varDecl
-      if (isAConstantDecl($vstmt)) 
-        $vcode =  $vstmt.code + ';';
-      else
-       	$vcode = "extern " + removeInitDecl($vstmt).code + ';';
-      $splittedfile.insertBegin($vcode);
+   	   if (getFileOf($elem).filepath === stFile.filepath) {
+   	     if ($elem.storageClass === 'static') $elem.setValue('storageClass', 'NONE');  
+         var $vstmt = $elem.copy(); // a varDecl
+         if (isAConstantDecl($vstmt)) 
+           $vcode =  $vstmt.code + ';';
+         else
+       	  $vcode = "extern " + removeInitDecl($vstmt).code + ';';
+         $splittedfile.insertBegin($vcode);
+      }
+    }
+
+    for (refFunc of $referencedFunctions) { 
+      var vfile = getFileOf(refFunc);
+      if ( vfile !== undefined )
+	    if ( vfile.filepath === stFile.filepath) {
+	      if (refFunc.isInline)
+	       $splittedfile.insertBegin(refFunc.code);
+	       else {
+              var code = "extern " + refFunc.declaration(true) + ';';
+              $splittedfile.insertBegin(code);
+	       }
+	    }
     }
 }
 

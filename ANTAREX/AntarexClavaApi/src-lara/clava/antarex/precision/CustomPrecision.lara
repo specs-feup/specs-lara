@@ -47,7 +47,7 @@ end
     A type such that MYTYPE defined by
        typedef double MYTYPE;
     may be preserved by calling
-         TypeParametrisationExcept('double', ['MYTYPE']). In this case the typedef is not modified.
+         CustomPrecisionForExcept('double', ['MYTYPE']). In this case the typedef is not modified.
          
 	Note:  genParametersFor aspect can be called for float/double types to have definitions of the symbols.
 	@see CustomPrecisionFor may be used when there is no type to preserve.
@@ -72,10 +72,10 @@ end
 aspectdef ExtractDoubleFloatConstants
   select expr end
   apply
-    var $jpt = $expr.joinPointType;
-    if (($jpt  === 'expression') && ($expr.astNumChildren === 0))
-      {
-       dclConstantDoubleFloat($expr);
+    if (! $expr.astIsInstance("NullExpr")) {
+      var $jpt = $expr.joinPointType;
+      if (($jpt  === 'expression') && ($expr.astNumChildren === 0))
+        dclConstantDoubleFloat($expr);
       }
   end
 end

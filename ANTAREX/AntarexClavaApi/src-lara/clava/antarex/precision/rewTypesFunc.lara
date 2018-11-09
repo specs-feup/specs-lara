@@ -28,7 +28,8 @@ function isDeclareddDontModify(nametype)
   in a type expression ($vardeclType).
 */
 function getNewType($vardeclType, oldType, newType) {
-    if (isDeclareddDontModify($vardeclType.code)) return $vardeclType;
+     if ($vardeclType.astIsInstance("AutoType")) return $vardeclType;
+     if (isDeclareddDontModify($vardeclType.code)) return $vardeclType;
     if ( $vardeclType  === oldType ) return newType;
     if ( $vardeclType.code === oldType.code ) return newType;
     if (ClavaJoinPoints.equals($vardeclType, oldType)) return newType;
@@ -39,7 +40,7 @@ function getNewType($vardeclType, oldType, newType) {
     if ($vardeclType.astIsInstance("BuiltinType")) return $vardeclType;
     if ($vardeclType.astIsInstance("FunctionProtoType")) return $vardeclType;
     if ($vardeclType.astIsInstance("NullType")) return $vardeclType;
-    if ($vardeclType.astIsInstance("AutoType")) return $vardeclType;
+  //  if ($vardeclType.astIsInstance("AutoType")) return $vardeclType;
     if ($vardeclType.astIsInstance("LiteralType")) return $vardeclType;
 
     if ( $vardeclType.astIsInstance("ElaboratedType"))        {
@@ -66,8 +67,9 @@ function getNewType($vardeclType, oldType, newType) {
 
      if ( $vardeclType.astIsInstance("RValueReferenceType")) {
         // TYPE &&
-        //   unqualifiedDesugaredType and pointeeTypeAsWritten fields
-        TRACE(" LValueReferenceType pre = " + $vardeclType.code);
+        //  unqualifiedDesugaredType and pointeeTypeAsWritten fields
+        TRACE(" RValueReferenceType pre = " + $vardeclType.code);
+        // TRACE(" RValueReferenceType pre keys = " + $vardeclType.keys);
         var $child= $vardeclType.getValue("pointeeTypeAsWritten");
         var $ntype = getNewType($child, oldType, newType);
         if ( $ntype !==  $child) $vardeclType.setValue("pointeeTypeAsWritten", $ntype);
@@ -109,7 +111,7 @@ function getNewType($vardeclType, oldType, newType) {
         for (var x of Children)
             {
                 TRACE(" SubstTemplateTypeParmType Child = " + x.code + " kind = " + x.kind);
-                var $ntype = getNewType(x, oldType, newType);
+                var $ntype = getNe$expr.typewType(x, oldType, newType);
                 x.exec replaceWith($ntype); // or  x.setType($ntype); ?
                 TRACE( " SubstTemplateTypeParmType Child replaced by = " + x.code + 
                        ", but ntype code is = " + $ntype.code);
@@ -154,7 +156,7 @@ function getNewType($vardeclType, oldType, newType) {
        // xxxx typedef n'est pas visit������ i������i.
         var $ntype;
         var $unwrappedType = $vardeclType.unwrap;
-        TRACE(" ������������������> TypedefType  pre = " + $vardeclType.code);
+        TRACE("  TypedefType  pre = " + $vardeclType.code);
         if($unwrappedType === undefined) 
             $ntype = $vardeclType;
         else {
@@ -163,7 +165,7 @@ function getNewType($vardeclType, oldType, newType) {
             TRACE("\t TypedefType unwrappedType replaced by = " + $ntype.code);
             if ( $ntype === undefined ) $ntype = $vardeclType;
         }
-        TRACE(" ������������������> TypedefType  post = " + $ntype.code);
+        TRACE("  TypedefType  post = " + $ntype.code);
         return $ntype;
     }
 

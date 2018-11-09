@@ -1,5 +1,39 @@
+var _INRIA_MODFIED_FILES_=[];
+var _INRIA_CURRENT_FILE_;
+
+function addModifiedFiles($target){
+   insertElem(_INRIA_MODFIED_FILES_, getFileOf($target));
+}
+
+function getModifiedFiles() {
+  return _INRIA_MODFIED_FILES_;
+}
+
+function resetModifiedFiles() {
+  if (_INRIA_MODFIED_FILES_.length !== 0 ) _INRIA_MODFIED_FILES_.clear();
+}
+
+function setCurrentFile($target)
+{
+ if ($target !== undefined) 
+  _INRIA_CURRENT_FILE_= getFileOf($target);
+  else
+  _INRIA_CURRENT_FILE_=undefined;
+}
+
+function getCurrentFile( ) {
+ return  _INRIA_CURRENT_FILE_;
+}
+
+// ----------------------------------------   
 
 
+/**
+  @return the file of an ast object.
+*/
+function getFileOf($vtree){
+    return $vtree.ancestor("file");
+}
 /**
   @return the function, the method or undefined of a statement ($stmt).
 */
@@ -116,8 +150,14 @@ function mkCallToRenamed($function, $name)  {
 	return $name + getStrNameParams($function);
 }
 
-	
-	
+/**
+  @return the name of the class of a method, empty string for a function.
+*/	
+function getStrClassOf($fm) {
+  if (isaFunction($fm)) return "";
+  return getClassNameMethod($fm);
+}
+
 /** Debugging */
 function printChildrenOf($statement){
   for ( var i = 0; i < $statement.astNumChildren; i++)
@@ -125,4 +165,21 @@ function printChildrenOf($statement){
 }
 
 
+/**
+ Insert a element ($velem) in an array (tabDecl). It ensures the unicity of element in varray.
+*/
+function insertElem(varray, velem)
+{
+  for (var f of varray)
+   if (f  ===  velem)  return;
+  varray.push(velem);
+}
+
+function rebuildFiles(varray)
+{
+  for (var afile of varray) { 
+  	println( " **** rebuild = " + afile.filepath);
+  	afile.rebuild();
+  }	
+}
 

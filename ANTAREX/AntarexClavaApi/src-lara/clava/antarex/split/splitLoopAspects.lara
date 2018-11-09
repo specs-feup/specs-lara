@@ -149,8 +149,9 @@ aspectdef splitLoop_Declarations
   select loop end
   apply
     var vpragma = getSplipLoopPragma($loop);
+    var $FunctionDecls = [];
     if (vpragma !== undefined) 
-       $externDecls = getExternalDeclsOf /*getAllExternalDeclsForStmt*/($loop);
+       $externDecls = getExternalDeclsOf($loop, $FunctionDecls );
   end
   substituteSymbols($externDecls);
   declNewSymbolsAsGlobals($externDecls);

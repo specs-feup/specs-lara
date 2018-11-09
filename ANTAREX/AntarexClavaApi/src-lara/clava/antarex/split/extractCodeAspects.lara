@@ -24,45 +24,59 @@ import antarex.utils.lowLevelFuncs;
 import antarex.utils.sysfile;
 import antarex.split.splitDeclarations;
 import antarex.split.extractCodeFuncs;
-
+// var modifiedFiles=[];
 
 /**
- Extract the code annotated with the prama called "EXTRACT_CODE".
+ Extract the code annotated with the prama called "EXTRACT".
  The selected code becomes the body of a new function/method generated in a new file.
  Then the user may play with several compiled versions of this code, or modified algorithm.
 */
 aspectdef extractCode
  var $externDecls;
  var found=false;
+ resetModifiedFiles();
+ 
  // First step.
  select pragma end
   apply
     if (isBeginIsolateCodePragma($pragma)) {
+      var $refFuncs = [ ];
       found = true;
       var $target = $pragma.target;
+      setCurrentFile($target);
       mkNewExtractedCodeIdentifier();
-      $externDecls = getExternalDeclsOf($target);
+      $externDecls = getExternalDeclsOf($target, $refFuncs);
       substituteSymbols($externDecls);
       declNewSymbolsAsGlobals($externDecls);
       keepInitDeclarations($externDecls);
       cleanCode($externDecls);
+      $target.insert before "#pragma " + $TMP_PRAGMA +" " + getCurrentExtractedCodeIdentifier();
+      addModifiedFiles($target);
     }
  end
  if (!found) {
   MESSAGE("", "No pragma EXTRACT_CODE found !!!", "");
   return;
  }
+  //rebuildFiles(getModifiedFiles());
  Clava.rebuild();
  // Second step.
  select pragma end
   apply
     if (isBeginIsolateCodePragma($pragma)) {
       var $target = $pragma.target;
-      var $name = declareNewIsolateCodeFunctionOrMethod($target);
-      replaceCodeByCall( $target, $name, "()");
+      var $name = getAssociatedName($target);
+      declareNewIsolateCodeFunctionOrMethod($target, $name);
+      var $params = getEffectiveParameters($target);
+      replaceCodeByCall( $target, $name, $params);
 	  $pragma.detach(); // The pragma is removed.
     }
     end
+    // third step, cleaning: the temporary pragma is removed.
+  select pragma end
+  apply
+    if ($pragma.name === $TMP_PRAGMA) $pragma.detach();
+  end
 end
 
 /**

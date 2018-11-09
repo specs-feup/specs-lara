@@ -1,7 +1,7 @@
 
 /* This package defines the memoizing functions/methods for C, C++ language. 
   * Restrictions:
-  *  - function/method with n input arguments (n in [1,3]) and one returned value.
+  *  - function/method with n input arguments (n in [1,4]) and one returned value.
   *  - the type of the input arguments and the returned value are equal and restricted to int, float, double.
   * 
   * @example
@@ -28,7 +28,9 @@
   * */
   
 import antarex.utils.messages;
-import antarex.utils.miscAspects;
+import antarex.utils.mangling;
+import antarex.utils.lowLevelFuncs;
+import antarex.utils.sysfile;
 import antarex.memoi.MemoizationC;
 import antarex.memoi.MemoizationMath;
 import antarex.memoi.MemoizationCXX;

@@ -2,17 +2,19 @@
   @return the set of the declarations of the variables referenced in a statement ($statement) 
   but not declared in it (ie external references to the statement).
 */
-function getExternalDeclsOf($statement) {
+function getExternalDeclsOf($statement, $FunctionDecls ) {
   var $varDecls = [];
   var $externDecls = [];
   var $stmt = getStmtToVisitForExternalDecls($statement);
-  getRefVarsInStmt($stmt, $varDecls);
+  getRefVarsInStmt($stmt, $varDecls, $FunctionDecls);
   for (var $f of $varDecls)  {
-	if (isOutsideDeclaration($f, $statement))
-		insertInUsingLocation($externDecls, $f); // unicity.
+	if (isOutsideDeclaration($f, $statement)) {
+	   insertInUsingLocation($externDecls, $f); // unicity.
+	   TRACE(" isOutsideDeclaration location  = " + $f.code + ', '  + $f.location);
+    }
   }
-  return $externDecls;
- }
+ return $externDecls; 
+}
 
 
 /**
@@ -70,16 +72,17 @@ function getStmtToVisitForExternalDecls($statement)
 /**     
    Return  (in $refVars) the set of symbols (variables, constants, objects) referenced in a statement ($statement).
   */
-function getRefVarsInStmt($statement, $refVars) {
+function getRefVarsInStmt($statement, $refVars, $FunctionRefs) {
    var $astname = $statement.astName;
    switch ($astname) { 
      case 'NullStmt':
+     case 'BreakStmt':
       case 'NullDecl':
      break;
      
      case 'ExprStmt':
      case 'ReturnStmt':
-	  getRefVarsInExpr($statement.astChild(0), $refVars);
+	  getRefVarsInExpr($statement.astChild(0), $refVars,$FunctionRefs );
 	  break;
 	  
     case 'VarDecl':
@@ -96,18 +99,20 @@ function getRefVarsInStmt($statement, $refVars) {
 	    {
 	       var $e = $statement.astChild(i);
 	       TRACE( $astname + ", Decl [ " + i + " ] = " + $e.code + ", joinpointType =" + $e.joinpointType);
-	       getRefVarsInExpr($e, $refVars);
+	       getRefVarsInExpr($e, $refVars,$FunctionRefs);
 	    }
 	break;
 	
 	 case 'IfStmt':
 	 var $e = $statement.cond ;
 	  TRACE( " if  cond = " + $e.code);
-  	  getRefVarsInExpr($e, $refVars);
-      for ( var i = 2; i < $statement.astNumChildren; i++) {
+  	  getRefVarsInExpr($e, $refVars,$FunctionRefs);
+          for ( var i = 2; i < $statement.astNumChildren; i++) {
 	      var $e = $statement.astChild(i);
-	      TRACE( $astname + ", child [ " + i + ' ] = ' + $e.astName + ' ' + $e.code);
-	      getRefVarsInStmt($e, $refVars);
+	      if ($e !== undefined){ // Added 30 Oct 2018
+	      	TRACE( $astname + ", child [ " + i + ' ] = ' + $e.astName + ' ' + $e.code);
+	        getRefVarsInStmt($e, $refVars,$FunctionRefs );
+	        }
 	   }
 
 	  break;
@@ -119,7 +124,7 @@ function getRefVarsInStmt($statement, $refVars) {
 	   for ( var i = 0; i < $statement.astNumChildren; i++) {
 	      var $e = $statement.astChild(i);
 	      TRACE( $astname + ", child [ " + i + ' ] = ' + $e.astName);
-	      getRefVarsInStmt($e, $refVars);
+	      getRefVarsInStmt($e, $refVars, $FunctionRefs);
 	   }
 	 break;
 	   
@@ -139,34 +144,36 @@ function getRefVarsInStmt($statement, $refVars) {
    Return  (in $refVars) the set of symbols (variables, constants, objects) referenced 
    in an expression ($expr).
   */
-function getRefVarsInExpr($expr, $refVars) {
+function getRefVarsInExpr($expr, $refVars,$FunctionRefs) {
 	var $jpt = $expr.joinPointType;
 	TRACE(" getRefVarsInExpr = " + $expr.code + "; joinPointType = " + $jpt);
 	switch ($jpt) {
        case 'binaryOp':	
 		  var $e1 = $expr.left;
 		  TRACE (" binaryOp e1 joinPointType = " + $e1.joinPointType );
-	      getRefVarsInExpr($e1, $refVars);
+	      getRefVarsInExpr($e1, $refVars,$FunctionRefs);
 	      var $e2 = $expr.right;
 	      TRACE (" binaryOp e2 joinPointType = " + $e2.joinPointType );
-	      getRefVarsInExpr($e2, $refVars);
+	      getRefVarsInExpr($e2, $refVars,$FunctionRefs);
           break;
        case 'unaryOp': 
 	      var $e1 = $expr.operand;
 		  TRACE(" unaryOp operand  joinPointType = " + $e1.joinPointType );
-	      getRefVarsInExpr($e1, $refVars);
+	      getRefVarsInExpr($e1, $refVars,$FunctionRefs);
 	    break;
 	 
 	   case 'arrayAccess':
 	   case 'expression':
           for (var i = 0; i < $expr.astNumChildren; i++){
-            	getRefVarsInExpr($expr.astChild(i), $refVars); 
+            	getRefVarsInExpr($expr.astChild(i), $refVars,$FunctionRefs); 
           }
           break;
 	      
 	   case 'call':
+	      var funcDecl = $expr.decl;
+	      if ( isaFunction(funcDecl)) insertInUsingLocation($FunctionRefs, funcDecl);
 	      for (var i = 1; i < $expr.astNumChildren; i++) {
-             getRefVarsInExpr($expr.astChild(i), $refVars); 
+                getRefVarsInExpr($expr.astChild(i), $refVars,$FunctionRefs); 
           }
           break;
 
@@ -176,22 +183,28 @@ function getRefVarsInExpr($expr, $refVars) {
           break;
 
           
-        case 'memberCall':  //  obj.m
+        case 'memberCall':  //  obj.m (...) / obj->m(...)
+         // println("  case memberCall " + $expr.code);
            var $e = $expr.base;
            TRACE("  case memberCall " + $e.code);
-           if ( $e.code !== 'this')  getRefVarsInExpr($e , $refVars); 
+           if ( $e.code !== 'this')  getRefVarsInExpr($e , $refVars,$FunctionRefs); 
+           var args = $expr.args;
+           for (var i = 0; i < args.length; i++){
+            	getRefVarsInExpr(args[i], $refVars,$FunctionRefs); 
+          }
            break;
                        
-	    case 'memberAccess':  //  obj-> m
+	    case 'memberAccess':  //  obj -> member, obj.member
+           // println("  case memberAccess " + $expr.code);
            var $e = $expr.base;
            TRACE( "   case memberAccess. base = " + $e.code);
-           if ( $e.code !== 'this')  getRefVarsInExpr($e , $refVars); 
+           if ( $e.code !== 'this')  getRefVarsInExpr($e , $refVars,$FunctionRefs); 
 	     break;
 	     
 	    case 'vardecl':
 	       var $e = $expr.init;
 	       TRACE("  case vardecl = " + $expr.code);
-           if ( $e !== undefined )  getRefVarsInExpr($e , $refVars);
+           if ( $e !== undefined )  getRefVarsInExpr($e , $refVars,$FunctionRefs);
 	    break;
 	    
         case 'deleteExpr':
@@ -204,14 +217,14 @@ function getRefVarsInExpr($expr, $refVars) {
 }
 
 /**
- Insert a statement ($stmt) in an array (tabDecl) using the location ofthe objects to
+ Insert a statement ($stmt) in an array (tabDecl) using the location of the objects to
  ensure the unicity in tabDecl.
 */
 function insertInUsingLocation(tabDecl, $stmt)
 {
   for (var f of tabDecl)
    if (f.location ===  $stmt.location)  return;
-   TRACE ( " push = " + $stmt.code); 
+   // if ($stmt.astName !== 'ImplicitValueInitExpr' ) TRACE ( " push = " + $stmt.code);
    tabDecl.push($stmt);
 }
 

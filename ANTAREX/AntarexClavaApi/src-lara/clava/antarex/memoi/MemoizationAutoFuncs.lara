@@ -1,4 +1,5 @@
 
+import antarex.utils.IdentReferences;
 
 /** A function/method is memoizable iff
   * 1) The header "vtype func(parameters)" satisfies : 
@@ -109,154 +110,21 @@ function checkBodyMemoizable($file, $function, $body)
   return code;
 }
 
+
 /**
   * @return "true" if $body of $function references only local variables or constant objects, "false" otherwise.
   * */
 function BodyReferencesLocalsOrConstants($function, $body)
 {
-  for (var x = 0; x <  $body.astNumChildren ; x++) {
-	 var $stmt =  $body.astChild(x);
-	 if ( ! StatementReferencesLocalsOrConstants( $stmt, $function)) return false;
-   }
+  var $FunctionDecls=[];
+  var $varDecls=[];
+  var $externDecls = [];
+  getRefVarsInStmt($body, $varDecls, $FunctionDecls);
+  for (var $aDecl of $varDecls)  {
+	if (isOutsideDeclaration($aDecl, $function))
+		if (! isAConstantDecl($aDecl)) return false;
+  }
   return true;
-}
-
-/**
-  * @return "true" if a $statement references only local variables of the function $function or 
-  * constant objects, "false" otherwise.
-  * */
-function StatementReferencesLocalsOrConstants($statement, $function) {
-   var $astname = $statement.astName;
-   switch ($astname) { 
-     case 'ExprStmt':
-     case 'ReturnStmt':
-	  return exprReferencesLocalsOrConstants($statement.astChild(0), $function);
-	  
-    case 'IfStmt':
-      var $e = $statement.astChild(0); // condition
-      if ( ! exprReferencesLocalsOrConstants($e, $function)) return false;
-      for ( var i = 1; i < $statement.astNumChildren; i++)
-	    {
-	       var $e = $statement.astChild(i);
-	       TRACE( $astname + ", Decl [ " + i + " ] = " + $e.code + ", joinpointType =" + $e.joinPointType);
-	       if ( ! StatementReferencesLocalsOrConstants($e, $function)) return false;
-	    }
-      return true;
-    
-	case 'DeclStmt':
-	  for ( var i = 0; i < $statement.astNumChildren; i++)
-	    {
-	       var $e = $statement.astChild(i);
-	       TRACE( $astname + ", Decl [ " + i + " ] = " + $e.code + ", joinpointType =" + $e.joinPointType);
-	       if ( ! exprReferencesLocalsOrConstants($e, $function)) return false;
-	    }
-	 return true;
-	 
-     case 'CompoundStmt': 
-     case 'ForStmt':
-     case 'WhileStmt':
-     case 'CXXForRangeStmt':  //  for(auto edgeId : Pred[w]) {  }
-	   for ( var i = 0; i < $statement.astNumChildren; i++) {
-	      var $e = $statement.astChild(i);
-	      TRACE( $astname + ", child [ " + i + ' ] = ' + $e.astName);
-	      if (! StatementReferencesLocalsOrConstants($e, $function)) return false;
-	   }
-	   return true;
-	   
-     case 'WrapperStmt': // comment.
-     case 'CXXOperatorCallExpr':
- 	return true;
-    		
-     default:
-	  NYI(" StatementReferencesLocalsOrConstants:: " + $astname);
-     }
-     return false;
-}
-
-/**
-  * @return "true" if an expression $expr references only local variables of $function, or constant objects, 
-  * "false" otherwise.
-  * */
-function exprReferencesLocalsOrConstants($expr, $function) {
-	// binaryOp unaryOp  varref   call arrayAccess  expression  memberAccess 
-	// vardecl memberCall stmCall childExpr
-	var $jpt = $expr.joinPointType;
-	TRACE(" exprReferencesLocalsOrConstants = " + $expr.code + "; joinPointType = " + $jpt);
-	switch ($jpt) {
-       case 'binaryOp':	
-		  var $e1 = $expr.left;
-		  TRACE (" binaryOp e1 joinPointType = " + $e1.joinPointType );
-	      if (! exprReferencesLocalsOrConstants($e1, $function)) return false;
-	      var $e2 = $expr.right;
-	      TRACE (" binaryOp e2 joinPointType = " + $e2.joinPointType );
-	      return exprReferencesLocalsOrConstants($e2, $function);
-          
-       case 'unaryOp': 
-	      var $e1 = $expr.operand;
-		  TRACE(" unaryOp operand  joinPointType = " + $e1.joinPointType );
-	      return exprReferencesLocalsOrConstants($e1, $function); 
-	  
-	 
-	   case 'arrayAccess':
-	   case 'expression':
-          for (var i = 0; i < $expr.astNumChildren; i++){
-            	if ( ! exprReferencesLocalsOrConstants($expr.astChild(i), $function)) return false;
-          }
-          return true;
-	      
-	   case 'call':
-	      for (var i = 1; i < $expr.astNumChildren; i++) {
-             if ( ! exprReferencesLocalsOrConstants($expr.astChild(i), $function)) return false;
-          }
-          return true;
-
-	   case  'varref':
-		  var $decl = $expr.vardecl;
-		  if (isConstantDeclaration($decl))  {
-		      TRACE(" isConstantDeclaration return true for " + $decl.code);
-		      return true;
-		    }
-		  var $ancestorFile = $decl.ancestor("function");
-		  if ( $ancestorFile === undefined ) $ancestorFile = $decl.ancestor("method");
-		  if ( $ancestorFile === undefined ) return false; // a global.
-		  return ($ancestorFile.location === $function.location);
-        
-        case 'memberCall':  //  obj.m
-           var $e = $expr.base;
-           TRACE("  case memberCall " + $e.code);
-           if ( $e.code === 'this') return false;
-           return exprReferencesLocalsOrConstants($e , $function);
-         	  
-	    case 'memberAccess':  //  obj-> m
-           var $e = $expr.base;
-           TRACE( "   case memberAccess. base = " + $e.code);
-           if ( $e.code === 'this') return false;
-           return exprReferencesLocalsOrConstants($e , $function);
-	    
-	    case 'vardecl':
-	       TRACE("  case vardecl = " + $expr.code);
-           if ( $expr.init === undefined ) return true;
-           return exprReferencesLocalsOrConstants($expr.init, $function);
-	   
-            case 'deleteExpr':
-	    case 'newExpr':
-	       return false;
-
-	    default:
-	       NYI(" exprReferencesLocalsOrConstants::" + ", joinPointType = " + $jpt + ", code = " + $expr.code);
-	}
-	return false;
-}
-
-/**
-  * @return "true" if $decl is a declaration of a constant, "false" otherwise.
-  * */
-function isConstantDeclaration($decl)
-{
-  var $vardeclType = $decl.type;
-  // println(" isConstantDeclaration :: vtype = " + $vardeclType.code);
-  return ($vardeclType.astIsInstance("QualType"));
-  //return ( $vardeclType.kind === "QualType");
 }
 
 

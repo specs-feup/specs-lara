@@ -5,6 +5,7 @@ var $ID_EXTRACTED_CODE="INRIA_EXTRACTED_CODE_";
 var $CPT_EXTRACTED_CODE=-1;
 var $CURRENT_ID_EXTRACTED_CODE;
 var $ISOLATE_PRAGMA="ISOLATE";
+var $TMP_PRAGMA='INRIA_TMP_PRAGMA';
 
 /**
   @return true if a pragma ($apragma) is named $EXTRACT_CODE_PRAGMA
@@ -46,25 +47,24 @@ function replaceCodeByCall( $stmt, $name, $params)
 }
 /**
   Declare a new function(or method) in a new file to encapsulate the code of a statement ($stmt).
+  The name of the function is a parameter.
 */
-function declareNewIsolateCodeFunctionOrMethod($stmt)
+function declareNewIsolateCodeFunctionOrMethod($stmt, name)
 {
     var $currentFunction = getFunctionOrMethod($stmt);
-	var name = getCurrentExtractedCodeIdentifier();
-    var inter = 'void ' + name + '()';
+    var params = getStrParams($currentFunction);
+    var inter = 'void ' + name + params; //'()';
     var newname = declareNewMethod($currentFunction, name , inter );
     if (name === newname) $currentFunction.insert before inter + ';';
-	
 	var $nfile = mkNewFile( name +'.cpp', "");
 	var vcode = $stmt.code;
 	$nfile.insert before %{ 
- void [[newname]] ()  { 
+ void [[newname]] [[ params ]] { 
   [[ vcode]]
  }
 }%;
  ImportDeclarations($stmt, $nfile);
  ImportIncludes($stmt, $nfile);
- return name;
 }
 
 /**
@@ -147,3 +147,15 @@ function isBeginIsolatePragma($apragma){
   return ($apragma.name === $ISOLATE_PRAGMA);
 }
 
+function getAssociatedName($target) {
+var $prags = $target.pragmas;
+for ( var $p of $prags)
+  if ($p.name === $TMP_PRAGMA) return $p.content;
+return undefined;
+}
+
+
+function getEffectiveParameters($target) {
+  var $fm = getFunctionOrMethod($target);
+  return getStrNameParams($fm);
+}

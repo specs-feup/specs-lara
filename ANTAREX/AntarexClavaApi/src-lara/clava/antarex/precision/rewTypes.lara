@@ -125,6 +125,7 @@ apply
 	TRACE(" variable = " + $vardecl.name );
 	checkDefined($vardecl);
 	var vardeclType = $vardecl.type;
+	TRACE(" variable = " + $vardecl.name + vardeclType.code);
 	var $ntype = getNewType(vardeclType, oldType, newType);
 	$vardecl.setType($ntype);
 	TRACE(" --End variable ");
@@ -137,17 +138,17 @@ input
 	oldType,
 	newType
 end
- 
-select file.function.expr end
+   select file.function.expr end
    apply
 	 if ( $expr.joinpointType === 'cast') {
 	 	TRACE( " CAST expression = " + $expr.code );
+	 	// println(" keys = " + $expr.keys);
 	 	var $vtype = $expr.type;
 	 	var $ntype = getNewType($vtype, oldType, newType);
 	    if ($vtype !== $ntype) $expr.setType($ntype);
 	    TRACE( " --End CAST expression = " + $expr.code );
 	 }
-	 end
+   end
 end
 
 /** Replace oldType by newType for the 'new' operations*/
