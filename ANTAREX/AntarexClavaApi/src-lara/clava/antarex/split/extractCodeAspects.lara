@@ -1,3 +1,10 @@
+/*
+   Author(s): Loïc Besnard (loic.besnard@irisa.fr). 
+              IRISA-INRIA Rennes, France.
+              
+   This code has been developed during the ANTAREX project (http://www.antarex-project.eu).
+   It is provided under the MIT license (https://opensource.org/licenses/MIT).
+*/
 /* This package defines, for C, C++ languages, the aspects 
     - that (1) extract fragment of code into a new function or method (C, C++ languages), in separated file.
     - that (2) isolate function/method in a new file.
@@ -43,7 +50,6 @@ aspectdef extractCode
       var $refFuncs = [ ];
       found = true;
       var $target = $pragma.target;
-      setCurrentFile($target);
       mkNewExtractedCodeIdentifier();
       $externDecls = getExternalDeclsOf($target, $refFuncs);
       substituteSymbols($externDecls);

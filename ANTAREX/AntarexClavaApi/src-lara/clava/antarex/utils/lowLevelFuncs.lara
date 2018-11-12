@@ -1,32 +1,12 @@
-var _INRIA_MODFIED_FILES_=[];
-var _INRIA_CURRENT_FILE_;
+/*
+   Author(s): Loïc Besnard (loic.besnard@irisa.fr). 
+              IRISA-INRIA Rennes, France.
+              
+   This code has been developed during the ANTAREX project (http://www.antarex-project.eu).
+   It is provided under the MIT license (https://opensource.org/licenses/MIT).
+*/
 
-function addModifiedFiles($target){
-   insertElem(_INRIA_MODFIED_FILES_, getFileOf($target));
-}
-
-function getModifiedFiles() {
-  return _INRIA_MODFIED_FILES_;
-}
-
-function resetModifiedFiles() {
-  if (_INRIA_MODFIED_FILES_.length !== 0 ) _INRIA_MODFIED_FILES_.clear();
-}
-
-function setCurrentFile($target)
-{
- if ($target !== undefined) 
-  _INRIA_CURRENT_FILE_= getFileOf($target);
-  else
-  _INRIA_CURRENT_FILE_=undefined;
-}
-
-function getCurrentFile( ) {
- return  _INRIA_CURRENT_FILE_;
-}
-
-// ----------------------------------------   
-
+import antarex.utils.sysfile;
 
 /**
   @return the file of an ast object.
@@ -175,11 +155,4 @@ function insertElem(varray, velem)
   varray.push(velem);
 }
 
-function rebuildFiles(varray)
-{
-  for (var afile of varray) { 
-  	println( " **** rebuild = " + afile.filepath);
-  	afile.rebuild();
-  }	
-}
 

@@ -1,3 +1,10 @@
+/*
+   Author(s): Loïc Besnard (loic.besnard@irisa.fr). 
+              IRISA-INRIA Rennes, France.
+              
+   This code has been developed during the ANTAREX project (http://www.antarex-project.eu).
+   It is provided under the MIT license (https://opensource.org/licenses/MIT).
+*/
 /* This package defines the aspects for the splitting of loops for C, C++ language. 
  * A loop to split must be annotated by the pragma
             #pragma SPLITLOOP NB

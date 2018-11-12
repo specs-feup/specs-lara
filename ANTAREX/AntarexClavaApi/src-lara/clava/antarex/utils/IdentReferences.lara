@@ -1,3 +1,10 @@
+/*
+   Author(s): Loïc Besnard (loic.besnard@irisa.fr). 
+              IRISA-INRIA Rennes, France.
+              
+   This code has been developed during the ANTAREX project (http://www.antarex-project.eu).
+   It is provided under the MIT license (https://opensource.org/licenses/MIT).
+*/
 /**
   @return the set of the declarations of the variables referenced in a statement ($statement) 
   but not declared in it (ie external references to the statement).

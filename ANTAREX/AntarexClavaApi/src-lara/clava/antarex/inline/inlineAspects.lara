@@ -1,11 +1,16 @@
+/*
+   Author(s): Loïc Besnard (loic.besnard@irisa.fr). 
+              IRISA-INRIA Rennes, France.
+              
+   This code has been developed during the ANTAREX project (http://www.antarex-project.eu).
+   It is provided under the MIT license (https://opensource.org/licenses/MIT).
+*/
 import antarex.utils.lowLevelFuncs;
+import antarex.inline.inlineFuncs;
 
-var $INLINE_PRAGMA="INLINE";
-var $ID_INLINE_PRAGMA="INRIA_INLINE_";
-var $CPT_INLINE=-1;
-var $CURRENT_ID_INLINE;
-
-
+/**
+  This aspect adds inline attribute for the function/methods attrributed by the pragma INLINE.
+*/
 aspectdef inline 
  var $externDecls;
  var found=false;
@@ -25,81 +30,22 @@ aspectdef inline
       	ERROR(" The pragma " + $INLINE_PRAGMA + " must be assigned to a function or method definition !");
     }
  end
- if (!found) MESSAGE("", "No pragma " + $INLINE_PRAGMA + " found !!!", "");
+ if (!found) 
+   MESSAGE("", "No pragma " + $INLINE_PRAGMA + " found !!!", "");
 end
 
+/**
+ Initializing the inlining aspects.
+*/
 aspectdef inline_initialize
 
 end
 
+/**
+ Finalizing the inlining aspects.
+*/
 aspectdef inline_finalize
 
 end
 
 
-/**
-  @return true if a pragma ($apragma) is named $INLINE_PRAGMA
-*/
-function isInlinePragma($apragma){
-  return ($apragma.name === $INLINE_PRAGMA);  
-}
-
-function inlineObject($target) {
-  if (isaFunction($target))  {
-     inlineFunction($target);
-     return true;
-   }
-  if (isaMethod($target)) {
-	  inlineMethod($target);
-	  return true;
-  }
-  return false;
-}
-
-function inlineFunction($target) {
-    mkNewInlineName();
-    if ($target.declarationJp === undefined ) {
-      $target.insert before "#ifdef " + $CURRENT_ID_INLINE ;
-      $target.insert before "inline ";
-      $target.insert before "#endif";
-    }
-    else {
-       var $decl =  $target.declarationJp;
-       $target.insert before "#ifndef " + $CURRENT_ID_INLINE ;      
-       $target.insert after "#endif";
-
-       var $cp = $target.copy();
-       $cp.setValue("isInline", true);
-       $decl.insert before "#ifdef " + $CURRENT_ID_INLINE ;
-       $decl.insert before $cp.code;
-       $decl.insert before "#else";
-       $decl.insert after "#endif";
-    }
-}
-
-function inlineMethod($target) {
-  mkNewInlineName();
-  $target.insert before "#ifndef " + $CURRENT_ID_INLINE ;      
-  $target.insert after "#endif";
-       
-  var $decl =  $target.declarationJp;
-  var $body =  $target.body;
-  var returnType = getStrReturnType($target);
-  var codeParams = getStrParams($target);
-  var vattr="";
-  if ($target.functionType.constant) vattr = " const ";
-  var codeDecl = "inline " + returnType + ' '+  $decl.getName() + ' ' + codeParams + vattr + $body.code + ';';
-  // println(" functionType = " + $target.functionType.constant);
-  $decl.insert before "#ifndef " + $CURRENT_ID_INLINE ;      
-  $decl.insert after "#endif";
-  $decl.insert after codeDecl;
-  $decl.insert after "#else";
-}
-
-
- function mkNewInlineName()
- {
- 	$CPT_INLINE ++;
-	$CURRENT_ID_INLINE = $ID_INLINE_PRAGMA + + $CPT_INLINE;
- }
- 
