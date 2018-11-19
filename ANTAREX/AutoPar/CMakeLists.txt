@@ -23,8 +23,8 @@ target_include_directories(autopar_test PUBLIC "include")
 find_package(Clava REQUIRED)
 
 # Apply a generic LARA file to the current code, transforming it
-#clava_weave(autopar_test "ApplyAutopar.lara")
+clava_weave(autopar_test "ApplyAutopar.lara")
 
 # Alternatively, use the utility call for AutoPar.
 # This function automatically adds the flags required for compiling OpenMP
-clava_weave_autopar(autopar_test)
+#clava_weave_autopar(autopar_test)
