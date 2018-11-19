@@ -1,3 +1,4 @@
+import autopar.TestResources;
 import clava.autopar.Parallelize;
 
 /**
@@ -26,6 +27,11 @@ aspectdef ApplyAutopar
 	end
 	
 	println("OMP Pragmas:" + ompPragmas);
+	var expectedPragmas = TestResources.getString("AutoParBt.output");
+			
+	if(ompPragmas.trim() !== expectedPragmas.trim()) {
+		throw "OpenMP pragmas do not match expected pragmas.\nCurrent pragmas begin:\n"+ompPragmas+"\nCurrent output end\nExpected pragmas begin:\n"+expectedPragmas+"\nExpected pragmas end";
+	}
 	
 end
 
