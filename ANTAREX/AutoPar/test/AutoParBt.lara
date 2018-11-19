@@ -14,6 +14,19 @@ aspectdef ApplyAutopar
 	    
 	Parallelize.forLoops($loops);
 
+	// Check pragmas of parallelized loops
+	var ompPragmas = "";
+	select pragma end
+	apply
+		if($pragma.name !== "omp") {
+			continue;
+		}
+		
+		ompPragmas += $pragma.code + "\n";
+	end
+	
+	println("OMP Pragmas:" + ompPragmas);
+	
 end
 
 
