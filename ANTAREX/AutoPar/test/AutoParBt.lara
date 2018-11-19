@@ -26,7 +26,6 @@ aspectdef ApplyAutopar
 		ompPragmas += $pragma.code + "\n";
 	end
 	
-	println("OMP Pragmas:" + ompPragmas);
 	var expectedPragmas = TestResources.getString("AutoParBt.output");
 			
 	if(ompPragmas.trim() !== expectedPragmas.trim()) {
