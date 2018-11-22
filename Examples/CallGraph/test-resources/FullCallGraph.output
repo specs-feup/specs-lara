@@ -1,0 +1,14 @@
+// Copy this code, open the web page http://webgraphviz.com/, paste the code and click Generate Graph!
+digraph static_call_graph {
+	"init_matrix(double *, int const, int const)"->"rand()" [label="1"];
+	"print_matrix_result(double *, int const, int const)"->"printf(char const * __restrict)" [label="1"];
+	"fibonacci(unsigned int)"->"fibonacci(unsigned int)" [label="2"];
+	"test()"->"malloc(unsigned long long)" [label="3"];
+	"test()"->"init_matrix(double *, int const, int const)" [label="2"];
+	"test()"->"matrix_mult(double const *, double const *, double *, int const, int const, int const)" [label="1"];
+	"test()"->"print_matrix_result(double *, int const, int const)" [label="1"];
+	"test()"->"fibonacci(unsigned int)" [label="1"];
+	"main()"->"srand(unsigned int)" [label="1"];
+	"main()"->"test()" [label="1"];
+}
+
