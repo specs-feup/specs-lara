@@ -1,5 +1,7 @@
+import lara.CallGraphUtil;
 import lara.Check;
 import weaver.WeaverJps;
+
 
 aspectdef FunctionCallGraph
 	output callgraph end
@@ -22,25 +24,14 @@ function callGraph($function) {
 	// Collect information
 	_callGraphPrivate($function, callGraph);		
 
-
-	var callGraphDot = "";
-	// Create graph in dot format (Graphviz) and print it to the console
-	callGraphDot += '// Copy this code, open the web page http://webgraphviz.com/, paste the code and click Generate Graph!\n';
-	callGraphDot += 'digraph static_call_graph {\n';
-	
-	for (f in callGraph) {
-		for (c in callGraph[f]) {		
-			callGraphDot += '\t"' + f + '"->"' + c + '" [label="' + callGraph[f][c] + '"];\n';
-		}
-	}
-	callGraphDot += '}\n';
+	var callGraphDot = CallGraphUtil.toDot(callGraph);
 
 	return callGraphDot;
 }
 
 function _callGraphPrivate($function, callGraph) {
 	// Get function signature
-	var functionSig = getSignature($function);
+	var functionSig = CallGraphUtil.getSignature($function);
 
 	// Check if function has been already processed
 	if(callGraph[functionSig] !== undefined) {
@@ -53,10 +44,8 @@ function _callGraphPrivate($function, callGraph) {
 
 	// Add all calls of function
 	for(var $call of WeaverJps.searchFrom($function, 'call').get()) {
-
-		var $callFunction = getDefinitionOrDeclaration($call);
 	
-		var callSig = getSignature($callFunction);
+		var callSig = CallGraphUtil.getSignature($call);
 		if(callCounter[callSig] === undefined) {
 			callCounter[callSig] = 1;
 		} else {
@@ -64,35 +53,10 @@ function _callGraphPrivate($function, callGraph) {
 		}
 
 		// Update call graph for call
-		if($callFunction.hasDefinition) {
-			_callGraphPrivate($callFunction, callGraph);		
+		var $callDefinition = $call.definition;
+		if($callDefinition !== undefined) {
+			_callGraphPrivate($callDefinition, callGraph);		
 		}
 	}
 
-}
-
-/**
- * Returns the definition of the call, and if not found, the declaration.
- */
-function getDefinitionOrDeclaration($call) {
-	var $callFunction = $call.definition;
-	
-	if($callFunction !== undefined) {
-		return $callFunction;
-	}
-
-	$callFunction = $call.declaration;
-	if($callFunction !== undefined) {
-		return $callFunction;
-	}
-
-	throw "Expected call " + $call.name + "@" + $call.location +"to have either a definition or a declaration";
-}
-
-function getSignature($function) {
-	var sig = $function.signature;
-	
-	sig = sig + " (" + $function.filename + ":" + $function.line + ")";
-
-	return sig;
 }

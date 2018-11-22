@@ -1,5 +1,10 @@
+import lara.CallGraphUtil;
+
 aspectdef FullCallGraph
 	output callGraphDot end
+	
+	//CallGraphUtil.setUseTypesInSignature(true);
+	//CallGraphUtil.setUseLocationInSignature(false);
 	
 	// Utility object that counts tuples
 	var callGraph = {};
@@ -7,33 +12,24 @@ aspectdef FullCallGraph
 	// Collect information 
 	select function.call end
 	apply
+		var functionSig = CallGraphUtil.getSignature($function);
+		var callSig = CallGraphUtil.getSignature($call);
+		
 		// Test 1st key
-		if(!($function.signature in callGraph)) {
-			callGraph[$function.signature] = {};
+		if(!(functionSig in callGraph)) {
+			callGraph[functionSig] = {};
 		}
 
 		// Test 2nd key
-		if(!($call.signature in callGraph[$function.signature])){
-			callGraph[$function.signature][$call.signature] = 0;
+		if(!(callSig in callGraph[functionSig])){
+			callGraph[functionSig][callSig] = 0;
 		}
 
 		// Increment
-		callGraph[$function.signature][$call.signature]++;
+		callGraph[functionSig][callSig]++;
 	end
 
-	callGraphDot = "";
-	
-	// Create graph in dot format (Graphviz) and print it to the console
-	callGraphDot += '// Copy this code, open the web page http://webgraphviz.com/, paste the code and click Generate Graph!\n';
-	callGraphDot += 'digraph static_call_graph {\n';
-	
-	for (f in callGraph) {
-		for (c in callGraph[f]) {		
-			callGraphDot += '\t"' + f + '"->"' + c + '" [label="' + callGraph[f][c] + '"];\n';
-		}
-	}
-	
-	callGraphDot += '}\n';
+	callGraphDot = CallGraphUtil.toDot(callGraph);
 
 	println(callGraphDot);
 end
