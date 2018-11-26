@@ -51,3 +51,14 @@ find_package(Clava REQUIRED)
 # Use the utility call for AutoPar.
 # This function automatically adds the flags required for compiling OpenMP
 clava_weave_autopar(bt_w)
+
+
+# Test
+
+add_custom_command(
+     TARGET bt_w
+     COMMENT "Running compiled application"
+     POST_BUILD 
+     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+     COMMAND bt_w
+)
