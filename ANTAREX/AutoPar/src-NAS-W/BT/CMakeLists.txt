@@ -35,7 +35,7 @@ set(SOURCE_FILES
 
 add_executable(bt_w ${SOURCE_FILES})
 
-add_subdirectory("../common" "${CMAKE_CURRENT_BINARY_DIR}/nas_common_build")
+#add_subdirectory("../common" "${CMAKE_CURRENT_BINARY_DIR}/nas_common_build")
 target_link_libraries(bt_w nas_common m)
 #target_include_directories(bt_w PUBLIC ../common "./")
 target_include_directories(bt_w PUBLIC "./")

@@ -21,7 +21,7 @@ set(SOURCE_FILES
 add_executable(dc_w ${SOURCE_FILES})
 
 # Add nas_common
-add_subdirectory("../common" "${CMAKE_CURRENT_BINARY_DIR}/nas_common_build")
+#add_subdirectory("../common" "${CMAKE_CURRENT_BINARY_DIR}/nas_common_build")
 target_link_libraries(dc_w nas_common m)
 
 # Add include folders
