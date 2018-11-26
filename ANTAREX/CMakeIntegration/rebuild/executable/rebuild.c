@@ -14,4 +14,6 @@ void rebuild_exe() {
 
 int main() {
 	rebuild_exe();
+	
+	return 0;
 }

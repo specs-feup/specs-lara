@@ -5,6 +5,7 @@ project(rebuild_exe)
 # can be manually specified by setting the variable Clava_DIR
 # The Clava CMake plugin can be found here: https://github.com/specs-feup/clava/tree/master/CMake
 #set(Clava_DIR <CLAVA CMAKE DIR>)
+set(Clava_DIR "C:/Users/JoaoBispo/Desktop/shared/repositories-programming/clava/CMake")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -O3")
 
@@ -77,3 +78,13 @@ clava_weave(rebuild_exe Rebuild.lara)
 # Use the utility call for AutoPar.
 # This function automatically adds the flags required for compiling OpenMP
 #clava_weave_autopar(rebuild_exe)
+
+# Test
+
+add_custom_command(
+     TARGET rebuild_exe
+     COMMENT "Running compiled application"
+     POST_BUILD 
+     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+     COMMAND rebuild_exe
+)
