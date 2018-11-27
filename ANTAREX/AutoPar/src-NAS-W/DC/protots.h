@@ -1,3 +1,5 @@
+#include "adc.h"
+
  int32 ReadWholeInputData(ADC_VIEW_CNTL *avp, FILE *inpf);
  
  int32 ComputeMemoryFittedView (ADC_VIEW_CNTL *avp);

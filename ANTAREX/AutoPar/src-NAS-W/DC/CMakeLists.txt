@@ -7,7 +7,7 @@ project(dc_w)
 #set(Clava_DIR <CMAKE_CLAVA_PLUGIN>)
 
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -O3 -mcmodel=medium")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -O3 -mcmodel=medium")
 
 set(SOURCE_FILES
 		adc.c
@@ -35,7 +35,6 @@ find_package(Clava REQUIRED)
 # Use the utility call for AutoPar.
 # This function automatically adds the flags required for compiling OpenMP
 clava_weave_autopar(dc_w)
-
 
 # Test
 

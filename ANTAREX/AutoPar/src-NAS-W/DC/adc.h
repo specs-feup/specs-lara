@@ -1,6 +1,9 @@
 #if !adc_h
 #define adc_h 1
 
+#include <stdio.h>
+#include <stddef.h>
+
 /* For checking of L2-cache performance influence */ 
 /*#define IN_CORE_*/
 #define IN_CORE
@@ -9,6 +12,9 @@
 /* Optimizations: prefixed views and share-sorted views */
 /*#define OPTIMIZATION*/
 
+#include "dc_types.h"
+// Moved to dc_types.h
+/*
 #ifdef WINNT
 #ifndef HAS_INT64
 typedef __int64             int64;
@@ -24,6 +30,7 @@ typedef int                 int32;
 typedef unsigned long long uint64;
 typedef unsigned int       uint32;
 #endif
+*/
 
 #include "adcc.h"
 #include "rbt.h"

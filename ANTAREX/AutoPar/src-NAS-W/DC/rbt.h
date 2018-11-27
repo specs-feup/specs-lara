@@ -1,6 +1,8 @@
 #ifndef _ADC_PARVIEW_TREE_DEF_H_
 #define _ADC_PARVIEW_TREE_DEF_H_
 
+#include "dc_types.h"
+
 #define MAX_TREE_HEIGHT	64
 enum{BLACK,RED};
 
