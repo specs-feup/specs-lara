@@ -12,7 +12,7 @@ set(SOURCE_FILES
 	c_print_results.c
 	c_timers.c
 	print_results.c
-	randdp.c
+	#randdp.c
 	wtime.c
 	
 )
