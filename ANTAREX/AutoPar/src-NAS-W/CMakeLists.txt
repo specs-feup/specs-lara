@@ -16,4 +16,5 @@ add_subdirectory(common)
 #add_subdirectory(LU)
 # Currently now supported, verification fails
 #add_subdirectory(MG)
-add_subdirectory(SP)
+#add_subdirectory(SP)
+add_subdirectory(UA)
