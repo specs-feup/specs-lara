@@ -19,6 +19,7 @@ add_executable(is_w ${SOURCE_FILES})
 # Add nas_common
 target_link_libraries(is_w nas_common m)
 
+
 # Add include folders
 target_include_directories(is_w PUBLIC "./")
 
@@ -29,7 +30,8 @@ find_package(Clava REQUIRED)
 
 # Use the utility call for AutoPar.
 # This function automatically adds the flags required for compiling OpenMP
-clava_weave_autopar(is_w)
+#clava_weave_autopar(is_w)
+clava_weave(is_w ../Empty.lara)
 
 
 # Test

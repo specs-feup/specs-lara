@@ -218,7 +218,7 @@ INT_TYPE test_index_array[TEST_ARRAY_SIZE],
 /***********************/
 /* function prototypes */
 /***********************/
-double	randlc( double *X, double *A );
+double	randlc_is( double *X, double *A );
 
 void full_verify( void );
 
@@ -249,7 +249,7 @@ double  timer_read( int n );
 
 
 /*
- *    FUNCTION RANDLC (X, A)
+ *    FUNCTION randlc_is (X, A)
  *
  *  This routine returns a uniform pseudorandom double precision number in the
  *  range (0, 1) by using the linear congruential generator
@@ -259,9 +259,9 @@ double  timer_read( int n );
  *  where 0 < x_k < 2^46 and 0 < a < 2^46.  This scheme generates 2^44 numbers
  *  before repeating.  The argument A is the same as 'a' in the above formula,
  *  and X is the same as x_0.  A and X must be odd double precision integers
- *  in the range (1, 2^46).  The returned value RANDLC is normalized to be
- *  between 0 and 1, i.e. RANDLC = 2^(-46) * x_1.  X is updated to contain
- *  the new seed x_1, so that subsequent calls to RANDLC using the same
+ *  in the range (1, 2^46).  The returned value randlc_is is normalized to be
+ *  between 0 and 1, i.e. randlc_is = 2^(-46) * x_1.  X is updated to contain
+ *  the new seed x_1, so that subsequent calls to randlc_is using the same
  *  arguments will generate a continuous sequence.
  *
  *  This routine should produce the same results on any computer with at least
@@ -274,7 +274,7 @@ double  timer_read( int n );
  *     SAVE KS, R23, R46, T23, T46
  *     DATA KS/0/
  *
- *  If this is the first call to RANDLC, compute R23 = 2 ^ -23, R46 = 2 ^ -46,
+ *  If this is the first call to randlc_is, compute R23 = 2 ^ -23, R46 = 2 ^ -46,
  *  T23 = 2 ^ 23, and T46 = 2 ^ 46.  These are computed in loops, rather than
  *  by merely using the ** operator, in order to insure that the results are
  *  exact on all systems.  This code assumes that 0.5D0 is represented exactly.
@@ -287,7 +287,7 @@ double  timer_read( int n );
 /*************    portable random number generator    ************/
 /*****************************************************************/
 
-double	randlc( double *X, double *A )
+double	randlc_is( double *X, double *A )
 {
       static int        KS=0;
       static double	R23, R46, T23, T46;
@@ -362,10 +362,10 @@ void	create_seq( double seed, double a )
 
 	for (i=0; i<NUM_KEYS; i++)
 	{
-	    x = randlc(&seed, &a);
-	    x += randlc(&seed, &a);
-    	    x += randlc(&seed, &a);
-	    x += randlc(&seed, &a);  
+	    x = randlc_is(&seed, &a);
+	    x += randlc_is(&seed, &a);
+    	    x += randlc_is(&seed, &a);
+	    x += randlc_is(&seed, &a);  
 
             key_array[i] = k*x;
 	}
