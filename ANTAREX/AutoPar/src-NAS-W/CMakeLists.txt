@@ -6,15 +6,17 @@ set(Clava_DIR C:/Users/JoaoBispo/Desktop/shared/repositories-programming/clava/C
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -O3 -mcmodel=medium")
 
 add_subdirectory(common)
-add_subdirectory(BT)
-add_subdirectory(CG)
+#add_subdirectory(BT)
+#add_subdirectory(CG)
 # Currently now supported, error during parallelization
 #add_subdirectory(DC)
-add_subdirectory(EP)
-add_subdirectory(FT)
-add_subdirectory(IS)
-add_subdirectory(LU)
+#add_subdirectory(EP)
+# Currently now supported, verification fails
+#add_subdirectory(FT)
+# Currently now supported, verification fails
+#add_subdirectory(IS)
+#add_subdirectory(LU)
 # Currently now supported, verification fails
 add_subdirectory(MG)
-add_subdirectory(SP)
-add_subdirectory(UA)
+#add_subdirectory(SP)
+#add_subdirectory(UA)
