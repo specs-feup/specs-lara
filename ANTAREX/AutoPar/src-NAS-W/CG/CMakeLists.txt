@@ -7,7 +7,7 @@ project(cg_w)
 #set(Clava_DIR <CMAKE_CLAVA_PLUGIN>)
 
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -Wall -O3 -mcmodel=medium")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -O3 -mcmodel=medium")
 
 set(SOURCE_FILES
 		cg.c
