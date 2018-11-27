@@ -10,6 +10,6 @@ add_subdirectory(common)
 #add_subdirectory(CG)
 # Currently now supported
 #add_subdirectory(DC)
-add_subdirectory(EP)
-
+#add_subdirectory(EP)
+add_subdirectory(FT)
 
