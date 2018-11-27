@@ -254,7 +254,8 @@ int main(int argc, char *argv[])
     print_results("FT", Class, NX, NY, NZ, niter,
                   total_time, mflops, "          floating point", verified);
 
-    return 0;
+  int exitValue = verified ? 0 : 1;
+  return exitValue;
 }
 
 

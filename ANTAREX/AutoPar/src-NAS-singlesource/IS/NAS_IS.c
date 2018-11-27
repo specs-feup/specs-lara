@@ -667,7 +667,8 @@ int main( int argc, char **argv )
 
 
 
-    return 0;
+  int exitValue = verified ? 0 : 1;
+  return exitValue;
 }
 /**************************/
 /*  E N D  P R O G R A M  */

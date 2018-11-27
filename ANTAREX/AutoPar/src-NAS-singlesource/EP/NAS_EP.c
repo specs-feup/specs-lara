@@ -326,7 +326,8 @@ int main()
                   "Random numbers generated",
                   verified);
 
-    return 0;
+  int exitValue = verified ? 0 : 1;
+  return exitValue;
 }
 
 double randlc( double *x, double a )

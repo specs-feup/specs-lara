@@ -280,7 +280,8 @@ int main(int argc, char *argv[])
                   verified);
 
 
-    return 0;
+  int exitValue = verified ? 0 : 1;
+  return exitValue;
 }
 
 

@@ -602,7 +602,8 @@ int main(int argc, char *argv[])
                   tmax, mflops, "    coll. point advanced",
                   verified);
 
-    return 0;
+  int exitValue = verified ? 0 : 1;
+  return exitValue;
 }
 
 

@@ -505,7 +505,8 @@ int main()
 
 
 
-    return 0;
+  int exitValue = verified ? 0 : 1;
+  return exitValue;
 }
 
 
