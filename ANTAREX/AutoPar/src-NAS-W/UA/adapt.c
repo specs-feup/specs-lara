@@ -698,22 +698,27 @@ static void find_coarsen(logical *if_coarsen, int neltold)
   logical iftemp;
   int iel, i;
 
-  *if_coarsen = false;
+  // BUG: AutoPar identifies true/false as variables and tries to add them to OpenMP pragma (e.g., as firstprivate)
+  //*if_coarsen = false;
+  *if_coarsen = 0;
 
   for (iel = 0; iel < neltold; iel++) {
     if (!skip[iel]) {
       ich[iel] = 0;
       if (!iftouch(iel)) {
-        iftemp = false;
+        //iftemp = false;
+		iftemp = 0;
         for (i = 0; i < NSIDES; i++) {
           // if iel has a larger size than its face neighbors, it
           // can not be coarsened
           if (cbc[iel][i] == 3) {
-            iftemp = true;
+            //iftemp = true;
+			iftemp = 1;
           }
         }
         if(!iftemp) {
-          *if_coarsen = true;
+          //*if_coarsen = true;
+		  *if_coarsen = 1;
           ich[iel] = 2;
         }
       }
@@ -730,13 +735,16 @@ static void find_refine(logical *if_refine)
 {
   int iel;
 
-  *if_refine = false;
-
+  // BUG: AutoPar identifies true/false as variables and tries to add them to OpenMP pragma (e.g., as firstprivate)
+  //*if_refine = false;
+  *if_refine = 0;
+  
   for (iel = 0; iel < nelt; iel++) {
     ich[iel] = 0;
     if (iftouch(iel)) {
       if ((xc[iel][1] - xc[iel][0]) > dlmin) {
-        *if_refine = true;
+        //*if_refine = true;
+		*if_refine = 1;
         ich[iel] = 4;
       }
     }
