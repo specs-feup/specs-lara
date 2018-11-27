@@ -33,7 +33,7 @@
 
 #include <stdio.h>
 #include <math.h>
-#include "applu.incl"
+#include "applu.h"
 
 //---------------------------------------------------------------------
 // verification routine                         

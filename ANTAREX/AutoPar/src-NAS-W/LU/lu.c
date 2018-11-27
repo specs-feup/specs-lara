@@ -46,7 +46,7 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include "applu.incl"
+#include "applu.h"
 #include "timers.h"
 #include "print_results.h"
 

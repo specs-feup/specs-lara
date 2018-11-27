@@ -31,7 +31,7 @@
 //          and Jaejin Lee                                                 //
 //-------------------------------------------------------------------------//
 
-#include "applu.incl"
+#include "applu.h"
 
 //---------------------------------------------------------------------
 // compute the lower triangular part of the jacobian matrix

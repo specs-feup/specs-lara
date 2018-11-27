@@ -31,7 +31,7 @@
 //          and Jaejin Lee                                                 //
 //-------------------------------------------------------------------------//
 
-#include "applu.incl"
+#include "applu.h"
 
 //---------------------------------------------------------------------
 // set the boundary values of dependent variables

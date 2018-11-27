@@ -32,7 +32,7 @@
 //-------------------------------------------------------------------------//
 
 #include <stdio.h>
-#include "applu.incl"
+#include "applu.h"
 
 void pintgr()
 {

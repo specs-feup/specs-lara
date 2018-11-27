@@ -33,7 +33,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "applu.incl"
+#include "applu.h"
 
 void read_input()
 {
