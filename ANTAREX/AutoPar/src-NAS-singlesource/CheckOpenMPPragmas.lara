@@ -1,0 +1,32 @@
+import lara.Io;
+import lara.Check;
+
+aspectdef CheckOpenMPPragmas
+	input expectedCodeFile end
+
+	
+	//var ompPragmas = "";
+	select pragma{"omp"}.target end
+	apply
+		// Comment pragmas that are not in outer loops
+		if($target.instanceof("loop")) {
+			if($target.kind === "for" && $target.isOutermost) {
+				continue;
+			}
+		}
+		
+		$pragma.insert replace "// " + $pragma.content;
+		//ompPragmas += $pragma.content;
+	end
+	
+	var currentCode = "<not initialized>";
+	select file end
+	apply
+		currentCode = $file.code;
+		break;
+	end
+
+	var expectedCode = Io.readFile(expectedCodeFile);
+	
+	Check.strings(currentCode, expectedCode);
+end

@@ -26,6 +26,8 @@ find_package(Clava REQUIRED)
 # This function automatically adds the flags required for compiling OpenMP
 clava_weave_autopar(cg_w)
 
+clava_weave(cg_w ../CheckOpenMPPragmas.lara ARGS "expectedCodeFile:'${CMAKE_CURRENT_SOURCE_DIR}/expected_output.c'")
+
 
 # Test
 
