@@ -17,7 +17,7 @@ set(SOURCE_FILES
 add_executable(ep_w ${SOURCE_FILES})
 
 # Add nas_common
-target_link_libraries(ep_w nas_common)
+target_link_libraries(ep_w nas_common m)
 
 # Add include folders
 target_include_directories(ep_w PUBLIC "./")

@@ -8,6 +8,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -O3 -mcmodel=medium")
 add_subdirectory(common)
 #add_subdirectory(BT)
 #add_subdirectory(CG)
+# Currently now supported
 #add_subdirectory(DC)
 add_subdirectory(EP)
 
