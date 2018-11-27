@@ -11,5 +11,5 @@ add_subdirectory(common)
 # Currently now supported
 #add_subdirectory(DC)
 #add_subdirectory(EP)
-add_subdirectory(FT)
-
+#add_subdirectory(FT)
+add_subdirectory(IS)
