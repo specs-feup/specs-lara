@@ -9,7 +9,7 @@ aspectdef CheckOpenMPPragmas
 	select pragma{"omp"}.target end
 	apply
 		// Comment pragmas that are not in outer loops
-		if($target.instanceof("loop")) {
+		if($target.instanceOf("loop")) {
 			if($target.kind === "for" && $target.isOutermost) {
 				continue;
 			}
