@@ -667,7 +667,7 @@ int main( int argc, char **argv )
 
 
 
-  int exitValue = verified ? 0 : 1;
+  int exitValue = passed_verification ? 0 : 1;
   return exitValue;
 }
 /**************************/
