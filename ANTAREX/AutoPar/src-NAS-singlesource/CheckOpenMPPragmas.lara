@@ -5,19 +5,19 @@ aspectdef CheckOpenMPPragmas
 	input expectedCodeFile end
 
 	
-	//var ompPragmas = "";
 	select pragma{"omp"}.target end
 	apply
-		// Comment pragmas that are not in outer loops
+		// Comment OpenMP pragmas that are inside a loop that already has an OpenMP pragma
 		if($target.instanceOf("loop")) {
-			if($target.kind === "for" && $target.isOutermost) {
-				continue;
-			}
+		    
+		    if(!hasForAncestorWithOmp($target)) {
+		        continue;
+		    }
+		    
+	    	$pragma.insert replace "// " + $pragma.code;
 		}
-		
-		$pragma.insert replace "// " + $pragma.code;
-		//ompPragmas += $pragma.content;
 	end
+
 	
 	var currentCode = "<not initialized>";
 	select file end
@@ -33,3 +33,25 @@ aspectdef CheckOpenMPPragmas
 	
 	Check.strings(currentCode, expectedCode);
 end
+
+function hasForAncestorWithOmp($target) {
+    
+    // Find ancestor that is a loop
+    $loopParent = $target.ancestor('loop');
+		    
+	// No loop parent found, return
+	if($loopParent === undefined) {
+	    return false;
+    }
+		    
+    // Check if parent has an OpenMP pragma
+    for(var $parentPragma of $loopParent.pragmas) {
+        // Found OpenMP pragma, return
+        if($parentPragma.name === "omp") {
+            return true;
+        }		        
+    }
+
+    // No OpenMP pragma found, check parent for
+    return hasForAncestorWithOmp($loopParent);
+}
