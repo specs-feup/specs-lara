@@ -27,6 +27,9 @@ aspectdef CheckOpenMPPragmas
 	end
 
 	var expectedCode = Io.readFile(expectedCodeFile);
+	if(expectedCode === null) {
+		expectedCode = "Could not find file '" + expectedCodeFile + "'";
+	}
 	
 	Check.strings(currentCode, expectedCode);
 end
