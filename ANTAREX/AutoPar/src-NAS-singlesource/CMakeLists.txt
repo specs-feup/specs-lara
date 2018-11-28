@@ -4,9 +4,9 @@ project(nas_single_source_w)
 set(Clava_DIR C:/Users/JoaoBispo/Desktop/shared/repositories-programming/clava/CMake)
 
 
-add_subdirectory(BT)
+#add_subdirectory(BT)
 #add_subdirectory(CG)
-#add_subdirectory(EP)
+add_subdirectory(EP)
 #add_subdirectory(FT)
 #add_subdirectory(IS)
 #add_subdirectory(LU)
