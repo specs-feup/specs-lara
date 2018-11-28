@@ -15,7 +15,7 @@ aspectdef CheckOpenMPPragmas
 			}
 		}
 		
-		$pragma.insert replace "// " + $pragma.content;
+		$pragma.insert replace "// " + $pragma.code;
 		//ompPragmas += $pragma.content;
 	end
 	
