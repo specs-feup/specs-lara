@@ -1,6 +1,8 @@
 # ANTAREX LARA examples for Clava
 ANTAREX/ClavaUnitTest
-ANTAREX/AutoPar
+
+# Replaced by specs-cmake tests
+#ANTAREX/AutoPar
 
 
 # Generic LARA examples for Clava
