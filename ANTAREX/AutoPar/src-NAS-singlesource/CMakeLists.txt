@@ -11,5 +11,5 @@ set(Clava_DIR C:/Users/JoaoBispo/Desktop/shared/repositories-programming/clava/C
 #add_subdirectory(IS)
 #add_subdirectory(LU)
 #add_subdirectory(MG)
-add_subdirectory(SP)
-#add_subdirectory(UA)
+#add_subdirectory(SP)
+add_subdirectory(UA)
