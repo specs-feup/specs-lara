@@ -24,7 +24,7 @@ find_package(Clava REQUIRED)
 
 # Use the utility call for AutoPar.
 # This function automatically adds the flags required for compiling OpenMP
-clava_weave_autopar(lu_w)
+clava_weave_autopar(lu_w JAVA_FLAGS -Xmx2048m)
 
 clava_weave(lu_w ../CheckOpenMPPragmas.lara ARGS "expectedCodeFile:'${CMAKE_CURRENT_SOURCE_DIR}/expected_output.c'")
 
