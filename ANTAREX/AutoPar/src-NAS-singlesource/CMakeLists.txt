@@ -6,7 +6,7 @@ set(Clava_DIR C:/Users/JoaoBispo/Desktop/shared/repositories-programming/clava/C
 
 #add_subdirectory(BT)
 #add_subdirectory(CG)
-add_subdirectory(EP)
+#add_subdirectory(EP)
 add_subdirectory(FT)
 add_subdirectory(IS)
 add_subdirectory(LU)
