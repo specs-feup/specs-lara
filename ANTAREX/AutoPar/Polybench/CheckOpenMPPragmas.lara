@@ -28,17 +28,12 @@ aspectdef CheckOpenMPPragmas
 
 	var generateOutputs = true;
 	
-	if(generateOutputs) {
-		writeFile(expectedCodeFile, currentCode);
-	} else {
-		var expectedCode = Io.readFile(expectedCodeFile);
-		if(expectedCode === null) {
-			expectedCode = "Could not find file '" + expectedCodeFile + "'";
-		}
-		
-		Check.strings(currentCode, expectedCode);	
+	var expectedCode = Io.readFile(expectedCodeFile);
+	if(expectedCode === null) {
+		expectedCode = "Could not find file '" + expectedCodeFile + "'";
 	}
 	
+	Check.strings(currentCode, expectedCode);	
 
 end
 
