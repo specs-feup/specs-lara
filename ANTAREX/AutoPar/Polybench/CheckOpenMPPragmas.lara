@@ -22,6 +22,16 @@ aspectdef CheckOpenMPPragmas
 	var currentCode = "<not initialized>";
 	select file end
 	apply
+		var filename = $file.name;
+		
+		if(!filename.endsWith(".c")) {
+			continue;
+		}
+		
+		if(filename === "polybench.c") {
+			continue;
+		}
+	
 		currentCode = $file.code;
 		break;
 	end
