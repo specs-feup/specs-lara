@@ -5400,8 +5400,9 @@ void com_dpc(int iside, int iel, int enumber, int n, int isize) {
         iend = 1;
     }
     else {
-        ((0) ? (void) (0) : __assert_fail("0", "/var/lib/jenkins/workspace/specs-cmake/ANTAREX/AutoPar/src-NAS-singlesource/UA/NAS_UA.c", 6019, __PRETTY_FUNCTION__));
         // MUST NOT reachable!!
+		// Commenting assert to make tests portable, macro hard-codes file location		
+        //assert(0);
         nn1start = 0;
         nn1end = 0;
         nn2start = 0;
@@ -5448,8 +5449,9 @@ void com_dpc(int iside, int iel, int enumber, int n, int isize) {
         anc0 = 0.0;
     }
     else {
-        ((0) ? (void) (0) : __assert_fail("0", "/var/lib/jenkins/workspace/specs-cmake/ANTAREX/AutoPar/src-NAS-singlesource/UA/NAS_UA.c", 6079, __PRETTY_FUNCTION__));
         // MUST NOT reachable!!
+		// Commenting assert to make tests portable, macro hard-codes file location		
+        //assert(0);		
         anc1 = 0.0;
         ac = 0.0;
         anc2 = 0.0;
