@@ -1,10 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
 project(ANTAREX-TESTS)
 
-# AutoPar
-add_subdirectory(AutoPar/NAS)
-add_subdirectory(AutoPar/Polybench)
+# AutoPar tests
+add_subdirectory(AutoPar)
 
-# CMake Plugin
+# CMake Plugin tests
 add_subdirectory(CMakeIntegration/rebuild/executable)
 
