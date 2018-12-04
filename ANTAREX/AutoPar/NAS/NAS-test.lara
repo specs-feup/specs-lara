@@ -1,0 +1,15 @@
+import clava.autopar.Parallelize;
+
+aspectdef LUTest
+
+	setDebug(true);
+
+    var $loops = [];
+    select function{"foo"}.loop end
+	apply
+        $loops.push($loop);
+	end
+
+    Parallelize.forLoops($loops);	
+
+end
