@@ -1,0 +1,18 @@
+import lara.code.Timer;
+
+aspectdef Time
+	
+	// Measure execution time of the loop
+	var timer = new Timer();
+
+	select function{"foo"}.loop end
+	apply
+		timer.time($loop);
+	end
+
+	// Print the modified program code
+	select program end
+	apply
+		println($program.code);
+	end
+end

@@ -1,0 +1,17 @@
+import lara.code.Energy;
+
+aspectdef EnergySolution
+
+	var energy = new Energy();
+
+	select function{"foo"}.loop end
+	apply
+		energy.measure($loop);
+	end
+
+	// Print the modified program code
+	select program end
+	apply
+		println($program.code);
+	end
+end
