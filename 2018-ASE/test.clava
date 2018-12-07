@@ -35,6 +35,10 @@
       <string></string>
     </entry>
     <entry>
+      <string>systemIncludesThreshold</string>
+      <int>1</int>
+    </entry>
+    <entry>
       <string>argv</string>
       <string></string>
     </entry>
@@ -50,6 +54,10 @@
       <file></file>
     </entry>
     <entry>
+      <string>platformIncludes</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
       <string>bundle_tags</string>
       <string></string>
     </entry>
@@ -63,15 +71,15 @@
     </entry>
     <entry>
       <string>aspect</string>
-      <file>test\LoopTilingTest.lara</file>
+      <file>test\MultiversionTest.lara</file>
     </entry>
     <entry>
-      <string>Disable Clava Data nodes</string>
-      <boolean>false</boolean>
+      <string>parsingNumThreads</string>
+      <int>1</int>
     </entry>
     <entry>
       <string>stack trace</string>
-      <boolean>false</boolean>
+      <boolean>true</boolean>
     </entry>
     <entry>
       <string>include</string>
@@ -87,6 +95,10 @@
     </entry>
     <entry>
       <string>Disable Clava Info</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>Generate CMake Integration Helper Files</string>
       <boolean>false</boolean>
     </entry>
     <entry>
@@ -107,6 +119,14 @@
     </entry>
     <entry>
       <string>Flatten woven code folder structure</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>parallelParsing</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>continueOnParsingErrors</string>
       <boolean>false</boolean>
     </entry>
     <entry>
@@ -134,6 +154,10 @@
     </entry>
     <entry>
       <string>Disable Weaving</string>
+      <boolean>false</boolean>
+    </entry>
+    <entry>
+      <string>skipHeaderIncludesParsing</string>
       <boolean>false</boolean>
     </entry>
     <entry>
