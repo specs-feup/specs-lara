@@ -1,0 +1,11 @@
+aspectdef Tile
+
+	select function.loop end
+	apply
+		exec tile('64', $loop);
+	end
+	condition
+		$function.name == 'matrix_mult' &&
+		$loop.controlVar == 'j'
+	end
+end

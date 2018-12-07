@@ -1,0 +1,69 @@
+import CreateFloatVersion;
+import MeasureTimeAndEnergy;
+import lara.code.Timer;
+import clava.ClavaJoinPoints;
+
+aspectdef Main
+    select function{"main"}.body.call{"test_matrix_mul"} end
+    apply
+		// Add knob
+		var $knobDecl = $body.addLocal("version", ClavaJoinPoints.builtinType('int'), 0);
+		call Multiversion($call, $knobDecl.name);
+    end
+end
+
+aspectdef Multiversion
+	input $call, knobName end
+	
+	if($call.definition === undefined) {
+		println("Could not find definition for call '"+$call.name+"'@"+$call.location);
+		return;
+	}
+	
+	if(!$call.isStmtCall) {
+		println("Statement must be composed only by the call: '"+$call.name+"'@"+$call.location);
+		return;
+	}
+	
+	call fVersion : CreateFloatVersion($call.definition, "_f");
+	var $floatFunc = fVersion.$clonedFunc;
+
+	// Create call based on float version of function
+	$floatFunc.exec $floatCall : newCall([]);
+
+	// Copy current call
+	$call.exec $callCopy : copy();
+	
+	var $condition = ClavaJoinPoints.exprLiteral(knobName);
+	call switchJp : CreateSwitch($condition, {0: $callCopy, 1: $floatCall});
+			
+	// Get stmt of the call
+	var $stmt = $call.ancestor("statement");
+			
+	$stmt.exec replaceWith(switchJp.$switch);
+
+	call MeasureTimeAndEnergy($callCopy, "double ");
+	call MeasureTimeAndEnergy($floatCall, "float ");
+	
+end
+
+
+aspectdef CreateSwitch
+	input
+		$condition, switchCases
+	end
+
+	output
+		$switch
+	end
+		
+	var cases = [];
+	for(key in switchCases) {
+		cases.push(ClavaJoinPoints.exprLiteral(key));
+		cases.push(switchCases[key]);
+	}
+	
+	$switch = ClavaJoinPoints.switchStmt($condition, cases);
+	
+end
+

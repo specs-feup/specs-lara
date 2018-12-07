@@ -3,38 +3,33 @@ import clava.Clava;
 import lara.cmake.CMaker;
 import lara.util.ProcessExecutor;
 
-
-aspectdef ExplorePragmas
+aspectdef ExplorePragmas 
 	output executionTimes = {} end
 	
-	var numRuns = 5;
-	// Set timeout to 15 seconds
-	//var timeout = 15;
+	println("Executing ExplorePragmas");
 
+	var timePrefix = "Time in seconds =";
+	var numRuns = 1;
 
-	//var clavaData = Clava.getData();
-	//var cFlags = clavaData.getFlags();
 	var cFlags = "-g -Wall -O3 -mcmodel=medium";
-	//var userIncludes = clavaData.getUserIncludes();
 	
-	println("C flags: " + cFlags);
-	//println("User Includes: " + userIncludes);
-
 	// Collect all pragmas
 	var ompPragmas = WeaverJps.search('pragma', {name:'omp'}).get();
 
 	// Adding "no pragmas" case as the first element, in order to calculate the timeout
-	//ompPragmas.push("serial version");
 	var serialVersion = "serial version";
-    ompPragmas = [serialVersion].concat(ompPragmas);
+    	ompPragmas = [serialVersion].concat(ompPragmas);
 	var timeout = undefined; 	
-
+ 
+	println("Found " + ompPragmas.length + " pragmas to test");
+	var counter = 1;
 	// For each pragma, create a copy and disable all the others
 	for(var ompPragma of ompPragmas) {
 		if(ompPragma === serialVersion) {
 			println("Testing serial version");
 		} else {
-			println("Enabling " + ompPragma.location+ " -> " + ompPragma.code);		
+			println("Enabling pragma " + counter + ": " + ompPragma.location+ " -> " + ompPragma.code);		
+			counter++;
 		}
 				
 		var ompPragmaLocation = ompPragma === serialVersion ? serialVersion : ompPragma.location;
@@ -42,6 +37,7 @@ aspectdef ExplorePragmas
 		// Initialize pragma execution times
 		executionTimes[ompPragmaLocation] = [];
 		
+		// Create a copy of the current AST and push it into the AST stack
 		Clava.pushAst();
 		
 		for(var ompPragmaCopy of WeaverJps.search('pragma', {name:'omp'}).get()) {
@@ -56,12 +52,13 @@ aspectdef ExplorePragmas
 		
 		// Compile current AST
 		var cmaker = (new CMaker("pragmaExplore"))
-						.setGenerator("MinGW Makefiles")
-						.setMakeCommand("mingw32-make")
+						//.setGenerator("MinGW Makefiles")
+						//.setMakeCommand("mingw32-make")
 						.addCurrentAst()
 						.setPrintToolsOutput(true);
 
 		cmaker.addFlags(cFlags);
+		cmaker.addLibs("m");
 		
 		var openMPCmakeCode = %{find_package(OpenMP REQUIRED)
 		set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}" )
@@ -78,10 +75,10 @@ aspectdef ExplorePragmas
 			throw "Time out is undefined and we are testing pragma '"+ompPragma+"', check if serial version is being executed";
 		}
 
-		//println("Executable: " + executable);
 		for(var i=0; i<numRuns; ++i) {
+			println("Executing run " + (i+1) + " of " + numRuns);
 			var executor = new ProcessExecutor();
-			executor.setTimeUnit("MILLISECONDS");
+			executor.setTimeUnit("SECONDS");
 			if(timeout !== undefined) {
 				executor.setTimeout(timeout);
 			}
@@ -94,20 +91,30 @@ aspectdef ExplorePragmas
 			
 			// Execution completed correctly, extract value
 			if(executor.getReturnValue() === 0) {
-				value = Strings.extractValue("Exec time (ms):", executor.getConsoleOutput());
-				//throw "Error while executing '"+executable+"': " + executor.getReturnValue();
+				var valueString = Strings.extractValue(timePrefix, executor.getConsoleOutput());
+
+				if(valueString === null) {
+					throw "Could not extract value from console output when using the prefix '"+timePrefix+"':\n" + executor.getConsoleOutput();
+				}
+
+				// Convert to number
+				value = parseFloat(valueString.trim());
 			} else {
 				value = timeout;
 			}
 		
 			executionTimes[ompPragmaLocation].push(value);
+			
+			// Rewrite execution times file after each new value
+			Io.writeJson("executionTimes.json", executionTimes);
 
 			if(timeout === undefined && ompPragma === serialVersion) {
 				// Time out is the time of serial execution + 5%
 				timeout = value * 1.05;
 			}
 		}
-		
+	
+		// Discard the top-most AST of the AST stack
 		Clava.popAst();
 	}
 	
@@ -115,15 +122,5 @@ aspectdef ExplorePragmas
 	printObject(executionTimes);
 	Io.writeJson("executionTimes.json", executionTimes);
 	
-	/*
-	select pragma end
-	apply
-	
-	end
-	*/
-	
-	// Create copy, disable all pragmas
-	
-	// 
 
 end

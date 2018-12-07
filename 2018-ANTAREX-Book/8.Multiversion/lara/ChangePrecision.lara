@@ -1,0 +1,131 @@
+aspectdef ChangePrecision
+
+	input $func, $oldType, $newType end
+
+	println("\nEntering ChangePrecision");
+	println("func: " + $func.name);
+	println("old: " + $oldType.code);
+	println("new: " + $newType.code);
+	
+	/* change type of variable declarations found
+	 *  inside the function and parameters */
+	select $func.decl end
+	apply
+		changeJpType($decl, $oldType, $newType);
+
+		// If decl has initialization, change types in initialization expression
+		if($decl.hasInit) {
+			$initExpr = $decl.init;
+
+			for(var $descendantExpr of $initExpr.descendantsAndSelf("expression")) {				
+				changeJpType($descendantExpr, $oldType, $newType);
+			}
+		}
+	end
+
+
+	
+	/* do the same with the function return type ... */
+	var $returnType = $func.functionType.returnType;
+	var $changedReturnType = changeType($returnType, $oldType, $newType);
+	$func.functionType.def returnType = $changedReturnType;
+	
+end
+
+function changeJpType($jp, $oldType, $newType) {
+
+	println("\nEntering changeJpType");
+	println("jp: " + $jp.code);
+	println("old: " + $oldType.code);
+	println("new: " + $newType.code);
+
+	if($jp.type === undefined) {
+		return;
+	}
+
+	var changedType = changeType($jp.type, $oldType, $newType);
+	$jp.def type = changedType;
+	
+	// Special case: sizeof
+	if($jp.instanceOf("unaryExprOrType") && $jp.kind === "sizeof") {
+		if($jp.argType.equals($oldType)) {
+			$jp.def argType = $newType;
+		}
+	}
+	
+}
+
+
+function changeType($targetType, $oldType, $newType) {
+
+	println("\nEntering changeType");
+	println("target: " + $targetType.code);
+	println("old: " + $oldType.code);
+	println("new: " + $newType.code);
+
+	/* Replace target type */
+	if($targetType.equals($oldType)) {
+		return $newType;
+	}
+	
+	/* Get underlying type*/
+	var underlyingType = getUnderlyingType($targetType);
+	
+	/* If no underlying type, just return type*/
+	if(underlyingType === undefined) {
+		return $targetType;
+	}
+	
+	/* Apply change to underlying type */
+	var changedUnderlying = changeType(underlyingType, $oldType, $newType);
+
+	println("changed: " + changedUnderlying.code);
+	println("underlying: " + underlyingType.code);
+	
+	/* Update if there are changes */
+	if(!changedUnderlying.equals(underlyingType)) {
+		// Copy target type
+		$targetTypeCopy = $targetType.copy();
+	
+		// TODO: Replace with a $targetTypeCopy.find(underlyingType) attribute?
+	
+		var underlyingTypeCopy = undefined;
+		for(var $descendant of $targetTypeCopy.descendants) {
+			if($descendant.equals(underlyingType)) {
+				underlyingTypeCopy = $descendant;
+				break;
+			}
+		}
+	
+		if(underlyingTypeCopy === undefined) {
+			throw "Could not find corresponding underlying type";
+		}
+		
+		underlyingTypeCopy.replaceWith(changedUnderlying);
+		$targetType = $targetTypeCopy;
+		//underlyingType.replaceWith(changedUnderlying);
+	}
+	
+	return $targetType;
+}
+
+
+function getUnderlyingType($type) {
+	if($type.hasSugar) {
+		return $type.desugar;
+	}
+	
+	if($type.isPointer) {
+		return $type.pointee;
+	}
+	
+	if($type.isArray) {
+		return $type.elementType;
+	}
+	
+	if($type.joinPointType === "qualType") {
+		return $type.unqualifiedType;
+	}
+
+	return undefined;
+}
