@@ -2,6 +2,9 @@
 
 #include <iostream>
 #include "CompType.h"
+
+#include <H5CompType.h>
+
  
 void foo(A& a) {
 }
