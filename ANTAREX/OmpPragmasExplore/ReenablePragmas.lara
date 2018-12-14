@@ -1,0 +1,23 @@
+import lara.code.Timer;
+
+aspectdef ReenablePragmas
+
+	// Select all commented pragmas
+	select comment end
+	apply
+		var commentText = $comment.text.trim();
+		if(!commentText.startsWith("#pragma omp")) {
+			continue;
+		}
+		
+		$comment.insert replace commentText;
+	end
+
+	var timer = new Timer();
+	
+	select call{"kernel_gemm"} end
+	apply
+		timer.time($call);
+	end
+
+end

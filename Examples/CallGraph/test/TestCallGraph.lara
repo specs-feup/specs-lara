@@ -1,0 +1,25 @@
+import CallGraph.TestResources;
+import lara.FullCallGraph;
+import lara.FunctionCallGraph;
+import lara.Check;
+
+/**
+ * @test
+ */
+aspectdef TestsFullCallGraph
+
+	var fullCallGraph = call FullCallGraph();
+	Check.strings(fullCallGraph.callGraphDot, TestResources.getString("FullCallGraph.output"));
+end
+
+
+/**
+ * @test
+ */
+
+aspectdef TestFunctionCallGraph
+
+	var functionCallGraph = call FunctionCallGraph();
+	Check.strings(functionCallGraph.callgraph, TestResources.getString("FunctionCallGraph.output"));
+
+end

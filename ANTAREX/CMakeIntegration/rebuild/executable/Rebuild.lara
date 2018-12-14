@@ -1,0 +1,8 @@
+import clava.Clava;
+
+aspectdef Rebuild
+
+	println("Rebuilding");
+	Clava.rebuild();
+	
+end

@@ -1,0 +1,65 @@
+import ChangePrecision;
+import clava.ClavaJoinPoints;
+
+aspectdef CreateFloatVersion
+	input $function, suffix end
+	output $clonedFunc end
+	
+	$double = ClavaJoinPoints.builtinType('double');
+	$float = ClavaJoinPoints.builtinType('float');
+	
+	/* clone the target functions and the child calls */
+	var clonedFuncs = {};
+	call cloned : CloneFunction($function, suffix, clonedFuncs);
+
+	/* change the precision of the cloned function */
+	for($clonedFunc of clonedFuncs) {
+		call ChangePrecision($clonedFunc, $double, $float);	
+	}
+
+	$clonedFunc = cloned.$clonedFunc;	
+end
+
+aspectdef CloneFunction
+	input $func, suffix, clonedFuncs = {}, originalIds = {} end
+	output $clonedFunc end
+
+	/* clone the target function with a new name*/
+	
+	$clonedFunc = cloneFunc($func, suffix, clonedFuncs, originalIds);
+
+	/* recursively, do the same on functions that are
+	 * called inside the cloned function ... */
+	 select $clonedFunc.body.call end
+	 apply
+		// Ignore calls that have no definition available
+		if($call.definition === undefined) {
+			//println("No def for call: " + $call.name + " on line " + $call.line);
+			continue;
+		}
+	 
+	 	/* change function calls to the cloned function */
+		$call.def name = buildClonedFunctionName($call.name, suffix);
+	 
+		/* Clone if not cloned yet */
+		if(originalIds[$call.definition.id] !== undefined)
+			continue;
+		
+		call clones : CloneFunction($call.definition, suffix, clonedFuncs, originalIds);
+	 end
+	 
+end
+
+function cloneFunc($func, suffix, clonedFuncs, originalIds) {
+
+	var newName = buildClonedFunctionName($func.name, suffix);
+	$func.exec $clonedFunc : clone(newName);
+	clonedFuncs[$clonedFunc.id] = $clonedFunc;
+	originalIds[$func.id] = 0;
+	
+	return $clonedFunc;
+}
+
+function buildClonedFunctionName(functionName, suffix) {
+	return functionName + suffix;
+}

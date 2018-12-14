@@ -1,0 +1,37 @@
+import autopar.TestResources;
+import clava.autopar.Parallelize;
+
+/**
+ * @test
+ */
+
+aspectdef ApplyAutopar
+
+	var $loops = [];
+	select file.loop end
+	apply
+		$loops.push($loop);
+	end
+	    
+	Parallelize.forLoops($loops);
+
+	// Check pragmas of parallelized loops
+	var ompPragmas = "";
+	select pragma end
+	apply
+		if($pragma.name !== "omp") {
+			continue;
+		}
+		
+		ompPragmas += $pragma.code + "\n";
+	end
+	
+	var expectedPragmas = TestResources.getString("AutoParBt.output");
+			
+	if(ompPragmas.trim() !== expectedPragmas.trim()) {
+		throw "OpenMP pragmas do not match expected pragmas.\nCurrent pragmas begin:\n"+ompPragmas+"\nCurrent output end\nExpected pragmas begin:\n"+expectedPragmas+"\nExpected pragmas end";
+	}
+	
+end
+
+

@@ -1,0 +1,11 @@
+  // Copy this code, open the web page http://webgraphviz.com/, paste the code and click Generate Graph!
+  digraph static_call_graph {
+  "test [CallGraph.cpp:74]"->"malloc [stdlib.h]" [label="3"];
+  "test [CallGraph.cpp:74]"->"init_matrix [CallGraph.cpp:34]" [label="2"];
+  "test [CallGraph.cpp:74]"->"matrix_mult [CallGraph.cpp:12]" [label="1"];
+  "test [CallGraph.cpp:74]"->"print_matrix_result [CallGraph.cpp:43]" [label="1"];
+  "test [CallGraph.cpp:74]"->"fibonacci [CallGraph.cpp:61]" [label="1"];
+  "init_matrix [CallGraph.cpp:34]"->"rand [stdlib.h]" [label="1"];
+  "print_matrix_result [CallGraph.cpp:43]"->"printf [stdio.h]" [label="1"];
+  "fibonacci [CallGraph.cpp:61]"->"fibonacci [CallGraph.cpp:61]" [label="2"];
+  }

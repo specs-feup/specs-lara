@@ -1,0 +1,62 @@
+import lara.CallGraphUtil;
+import lara.Check;
+import weaver.WeaverJps;
+
+
+aspectdef FunctionCallGraph
+	output callgraph end
+	
+	select function{"test"} end
+	apply
+		var callgraph = callGraph($function);
+	end
+
+	println(callgraph);
+
+end
+
+function callGraph($function) {
+	Check.isJoinPoint($function, 'function');
+
+	// Utility object that counts tuples
+	var callGraph = {};
+
+	// Collect information
+	_callGraphPrivate($function, callGraph);		
+
+	var callGraphDot = CallGraphUtil.toDot(callGraph);
+
+	return callGraphDot;
+}
+
+function _callGraphPrivate($function, callGraph) {
+	// Get function signature
+	var functionSig = CallGraphUtil.getSignature($function);
+
+	// Check if function has been already processed
+	if(callGraph[functionSig] !== undefined) {
+		return;
+	}
+
+	// Initialize calls of current function
+	callGraph[functionSig] = {};
+	var callCounter = callGraph[functionSig];
+
+	// Add all calls of function
+	for(var $call of WeaverJps.searchFrom($function, 'call').get()) {
+	
+		var callSig = CallGraphUtil.getSignature($call);
+		if(callCounter[callSig] === undefined) {
+			callCounter[callSig] = 1;
+		} else {
+			callCounter[callSig]++;
+		}
+
+		// Update call graph for call
+		var $callDefinition = $call.definition;
+		if($callDefinition !== undefined) {
+			_callGraphPrivate($callDefinition, callGraph);		
+		}
+	}
+
+}

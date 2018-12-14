@@ -18,6 +18,7 @@ aspectdef Multiversion
 
 	
 	call fVersion : CreateFloatVersion($call.definition, "_f");
+
 	var $floatFunc = fVersion.$clonedFunc;
 	
 	//var timer = new Timer();

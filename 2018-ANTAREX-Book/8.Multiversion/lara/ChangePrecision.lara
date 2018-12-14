@@ -1,0 +1,47 @@
+aspectdef ChangePrecision
+
+	input $func, $oldType, $newType end
+	
+	/* change type of variable declarations found
+	 *  inside the function and parameters */
+	select $func.decl end
+	apply
+		changeJpType($decl, $oldType, $newType);
+
+		// If decl has initialization, change types in initialization expression
+		if($decl.hasInit) {
+			$initExpr = $decl.init;
+
+			for(var $descendantExpr of $initExpr.descendantsAndSelf("expression")) {				
+				changeJpType($descendantExpr, $oldType, $newType);
+			}
+		}
+	end
+
+
+	
+	/* do the same with the function return type ... */
+	var $returnType = $func.functionType.returnType;
+	var $changedReturnType = $returnType.setUnderlyingType($oldType, $newType);
+	$func.functionType.def returnType = $changedReturnType;
+	
+end
+
+function changeJpType($jp, $oldType, $newType) {
+
+	if($jp.type === undefined) {
+		return;
+	}
+
+	var changedType = $jp.type.setUnderlyingType($oldType, $newType);	
+	$jp.def type = changedType;
+	
+	// Special case: sizeof
+	if($jp.instanceOf("unaryExprOrType") && $jp.kind === "sizeof") {
+		if($jp.argType.equals($oldType)) {
+			$jp.def argType = $newType;
+		}
+	}
+	
+}
+

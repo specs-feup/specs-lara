@@ -1,0 +1,35 @@
+import lara.CallGraphUtil;
+
+aspectdef FullCallGraph
+	output callGraphDot end
+	
+	//CallGraphUtil.setUseTypesInSignature(true);
+	//CallGraphUtil.setUseLocationInSignature(false);
+	
+	// Utility object that counts tuples
+	var callGraph = {};
+	
+	// Collect information 
+	select function.call end
+	apply
+		var functionSig = CallGraphUtil.getSignature($function);
+		var callSig = CallGraphUtil.getSignature($call);
+		
+		// Test 1st key
+		if(!(functionSig in callGraph)) {
+			callGraph[functionSig] = {};
+		}
+
+		// Test 2nd key
+		if(!(callSig in callGraph[functionSig])){
+			callGraph[functionSig][callSig] = 0;
+		}
+
+		// Increment
+		callGraph[functionSig][callSig]++;
+	end
+
+	callGraphDot = CallGraphUtil.toDot(callGraph);
+
+	println(callGraphDot);
+end

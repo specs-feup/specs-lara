@@ -1,0 +1,20 @@
+/*
+ * Complete this LARA aspect with the necessary
+ * code to log a C++ application, based on the 
+ * example for a C application.
+ */
+aspectdef LoggingWithInsertsExercise
+
+	// Log every time a loop is executed
+	select file.function.loop end
+	apply
+		// Your code goes here!
+	end
+
+	
+	// Print the modified program code
+	select program end
+	apply
+		println($program.code);
+	end
+end

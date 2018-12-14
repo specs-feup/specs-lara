@@ -1,0 +1,17 @@
+/*
+ * Complete this LARA aspect with the necessary
+ * code to measure energy comsumption around the loop,
+ * based on the timer example.
+ */
+ aspectdef Energy
+
+	select function{"foo"}.loop end
+	apply
+	end
+
+	// Print the modified program code
+	select program end
+	apply
+		println($program.code);
+	end
+end

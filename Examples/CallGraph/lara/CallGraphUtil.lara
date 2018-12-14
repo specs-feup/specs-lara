@@ -1,0 +1,86 @@
+import lara.Check;
+
+CallGraphUtil = {};
+
+CallGraphUtil._USE_TYPES_IN_SIGNATURE = false;
+CallGraphUtil._USE_LOCATION_IN_SIGNATURE = true;
+
+/**
+ * Sets if call graph should use types in the function signature. By default, is false.
+ */
+CallGraphUtil.setUseTypesInSignature = function(value) {
+	Check.isBoolean(value);
+	
+	CallGraphUtil._USE_TYPES_IN_SIGNATURE = value;
+}
+
+/**
+ * Sets if call graph should use the location in the function signature. By default, is true.
+ */
+CallGraphUtil.setUseLocationInSignature = function(value) {
+	Check.isBoolean(value);
+	
+	CallGraphUtil._USE_LOCATION_IN_SIGNATURE = value;
+}
+
+/**
+ * @return {string} the signature of the given $function or $call
+ */
+CallGraphUtil.getSignature = function($functionOrCall) {
+	var $function = undefined;
+	
+	if($functionOrCall.instanceOf('function')) {
+		$function = $functionOrCall;
+	} else if($functionOrCall.instanceOf('call')) {
+		$function = CallGraphUtil.getDefinitionOrDeclaration($functionOrCall);
+	} else {
+		throw "Expected input to be a $function or $call, instead is " + $functionOrCall.joinPointType;
+	}
+
+	var sig = CallGraphUtil._USE_TYPES_IN_SIGNATURE ? $function.signature : $function.qualifiedName;
+	
+	var line = $function.ancestor('file') === undefined ? "" :  ":" + $function.line;
+	var location = CallGraphUtil._USE_LOCATION_IN_SIGNATURE ? " [" + $function.filename + line + "]" : "";
+	sig = sig + location;
+
+	return sig;
+}
+
+/**
+ * @return {$function} the definition of the call, and if not found, the declaration.
+ */
+CallGraphUtil.getDefinitionOrDeclaration = function($call) {
+	var $callFunction = $call.definition;
+	
+	if($callFunction !== undefined) {
+		return $callFunction;
+	}
+
+	$callFunction = $call.declaration;
+	if($callFunction !== undefined) {
+		return $callFunction;
+	}
+
+	throw "Expected call " + $call.name + "@" + $call.location +"to have either a definition or a declaration";
+}
+
+/**
+ * @return {string} returns the call graph in DOT format
+ */
+CallGraphUtil.toDot = function(callGraph) {
+	callGraphDot = "";
+	
+	// Create graph in dot format (Graphviz) and print it to the console
+	callGraphDot += '// Copy this code, open the web page http://webgraphviz.com/, paste the code and click Generate Graph!\n';
+	callGraphDot += 'digraph static_call_graph {\n';
+	
+	for (f in callGraph) {
+		for (c in callGraph[f]) {		
+			callGraphDot += '\t"' + f + '"->"' + c + '" [label="' + callGraph[f][c] + '"];\n';
+		}
+	}
+	
+	callGraphDot += '}\n';
+	
+	return callGraphDot;
+}

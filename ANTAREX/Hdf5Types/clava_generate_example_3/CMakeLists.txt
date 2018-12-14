@@ -19,6 +19,12 @@ clava_generate(test_headers test_generated "Generate.lara")
 
 add_executable(test src/test_lib.cpp)
 
-target_include_directories(test PUBLIC  ${test_hdf5_INCLUDE_DIRS} "include")
-target_link_libraries(test ${test_hdf5_LIBRARIES})
+#target_include_directories(test PUBLIC  ${test_hdf5_INCLUDE_DIRS} "include")
+target_include_directories(test PUBLIC "include")
+#get_target_property(INCLUDES_BEFORE test INCLUDE_DIRECTORIES)
+#message(STATUS "Includes before: ${INCLUDES_BEFORE}")
+#target_link_libraries(test test_hdf5 ${test_hdf5_LIBRARIES})
+target_link_libraries(test test_hdf5)
+#get_target_property(INCLUDES_AFTER test INCLUDE_DIRECTORIES)
+#message(STATUS "Includes after: ${INCLUDES_AFTER}")
 
