@@ -5,6 +5,7 @@
    This code has been developed during the ANTAREX project (http://www.antarex-project.eu).
    It is provided under the MIT license (https://opensource.org/licenses/MIT).
 */
+
 /* This package defines the aspects for the splitting of loops for C, C++ language. 
  * A loop to split must be annotated by the pragma
             #pragma SPLITLOOP NB
@@ -31,8 +32,8 @@ import antarex.utils.messages;
 import antarex.utils.mangling;
 import antarex.utils.lowLevelFuncs;
 import antarex.utils.sysfile;
-import antarex.split.splitLoopFuncs;
 import antarex.split.splitDeclarations;
+import antarex.split.splitLoopFuncs;
 
 /**
    Split the loops annotated with the pragma named SPLITLOOP. 
@@ -134,8 +135,10 @@ aspectdef splitLoop_ExtractCode
     if (vpragma !== undefined) {
       var nbParts = vpragma.content;
         MESSAGE(" ++++++  Splitting the loop at = ", $loop.location," in " + nbParts + " parts");
-        declareLoopAsNewFunctionOrMethod($loop);
-        replaceLoop( $loop, nbParts);
+        var RefParams = getReferencedParameters($loop);
+        // printArray(RefParams, " referenced parameters ");
+        declareLoopAsNewFunctionOrMethod($loop, RefParams);
+        replaceLoop( $loop, nbParts, RefParams);
     	vpragma.detach(); // The pragma is removed.
 	  }
     end

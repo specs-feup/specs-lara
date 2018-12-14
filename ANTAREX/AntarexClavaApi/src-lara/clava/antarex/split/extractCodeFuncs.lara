@@ -64,9 +64,19 @@ function declareNewIsolateCodeFunctionOrMethod($stmt, name)
     var newname = declareNewMethod($currentFunction, name , inter );
     if (name === newname) $currentFunction.insert before inter + ';';
 	var $nfile = mkNewFile( name +'.cpp', "");
+    // reporting the pragmas except the tmp one and the $EXTRACT_CODE_PRAGMA
+	var npragmas="";
+	var $prags = $stmt.pragmas;
+    for ( var $p of $prags) {
+       if ($p.name !== $TMP_PRAGMA) 
+       	if ($p.name !== $EXTRACT_CODE_PRAGMA) 
+         if (npragmas === "" ) npragmas = $p.code; else npragmas = npragmas + '\n' + $p.code;
+       }
 	var vcode = $stmt.code;
 	$nfile.insert before %{ 
+	
  void [[newname]] [[ params ]] { 
+  [[npragmas]]
   [[ vcode]]
  }
 }%;
@@ -161,8 +171,3 @@ for ( var $p of $prags)
 return undefined;
 }
 
-
-function getEffectiveParameters($target) {
-  var $fm = getFunctionOrMethod($target);
-  return getStrNameParams($fm);
-}

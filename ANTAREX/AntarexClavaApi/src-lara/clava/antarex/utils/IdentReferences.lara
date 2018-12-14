@@ -5,17 +5,18 @@
    This code has been developed during the ANTAREX project (http://www.antarex-project.eu).
    It is provided under the MIT license (https://opensource.org/licenses/MIT).
 */
+
 /**
   @return the set of the declarations of the variables referenced in a statement ($statement) 
   but not declared in it (ie external references to the statement).
 */
-function getExternalDeclsOf($statement, $FunctionDecls ) {
+function getExternalDeclsOf($statement, $FunctionDecls) {
   var $varDecls = [];
   var $externDecls = [];
   var $stmt = getStmtToVisitForExternalDecls($statement);
   getRefVarsInStmt($stmt, $varDecls, $FunctionDecls);
   for (var $f of $varDecls)  {
-	if (isOutsideDeclaration($f, $statement)) {
+	 if (isOutsideDeclaration($f, $statement)) {
 	   insertInUsingLocation($externDecls, $f); // unicity.
 	   TRACE(" isOutsideDeclaration location  = " + $f.code + ', '  + $f.location);
     }
@@ -25,10 +26,28 @@ function getExternalDeclsOf($statement, $FunctionDecls ) {
 
 
 /**
+  @return the set of the parameters referenced in a statement ($statement). 
+  Assumed: $statement is a statement of a function/method. 
+*/
+function getReferencedParameters($statement) {
+  var $varDecls = [];
+  var $parameters = [];
+  var $FunctionDecls = [ ];
+  var $stmt = getStmtToVisitForExternalDecls($statement);
+  getRefVarsInStmt($stmt, $varDecls, $FunctionDecls);
+  for (var $f of $varDecls)  {
+	if ( isParameterDeclaration($f))
+		insertInUsingLocation($parameters, $f);
+    }
+ return  $parameters;
+}
+
+
+/**
    @return true if a declaration ($aDecl) is not local to a statement ($statement), false otherwise.
 */
 function isOutsideDeclaration($aDecl, $statement) {
-  if ( $aDecl.astName === 'ParmVarDecl') return false; // Added Oct 16 LBesnard
+  if ( isParameterDeclaration($aDecl)) return false;
   var $father = $aDecl.astParent;
   TRACE(" +++  $aDecl = " + $aDecl.code + " astName = " + $aDecl.astName);
   var idStatement = $statement.astId;
@@ -191,7 +210,6 @@ function getRefVarsInExpr($expr, $refVars,$FunctionRefs) {
 
           
         case 'memberCall':  //  obj.m (...) / obj->m(...)
-         // println("  case memberCall " + $expr.code);
            var $e = $expr.base;
            TRACE("  case memberCall " + $e.code);
            if ( $e.code !== 'this')  getRefVarsInExpr($e , $refVars,$FunctionRefs); 
@@ -202,7 +220,6 @@ function getRefVarsInExpr($expr, $refVars,$FunctionRefs) {
            break;
                        
 	    case 'memberAccess':  //  obj -> member, obj.member
-           // println("  case memberAccess " + $expr.code);
            var $e = $expr.base;
            TRACE( "   case memberAccess. base = " + $e.code);
            if ( $e.code !== 'this')  getRefVarsInExpr($e , $refVars,$FunctionRefs); 

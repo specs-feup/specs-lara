@@ -5,6 +5,13 @@
    This code has been developed during the ANTAREX project (http://www.antarex-project.eu).
    It is provided under the MIT license (https://opensource.org/licenses/MIT).
 */
+
+import lara.util.ProcessExecutor;
+
+// Used for computing the mangling
+var C_COMPILER='gcc';
+var CXX_COMPILER='g++';
+
 // ---------------------------
 // Must be set to "true" for a C code compiled with a C++ compiler.
 var manglingForC = false; 
@@ -19,27 +26,45 @@ function setManglingForC(b) {
 }
 
 /**
-  * @return the code used for the mangling of a type (tt).
-  */
-function getManglingType(tt)
-{
-    if (tt === 'int') return "i";
-    if (tt === 'float') return "f";
-    if (tt === 'double') return "d";
-    return "undef";
+   @return the value of the mangling mode for C, set by a call to  the manglingForC function (default false).
+   When this value is true, it specifies that the mangling is required for C code. 
+   */
+function getManglingForC() {
+  return manglingForC;
 }
-
 
 /**
-  * @return the mangled name of a type (typeName) for a method with nbparams parameters of this type.
-  * */
-function getManglingTypeFor(typeName, nbparams) {
-  var tm = getManglingType(typeName);  
-  var par_mangling =  tm; 
-  var nb = 1;
-  while (nb != nbparams){
-    par_mangling = par_mangling + tm;
-    nb++;
-  }
-  return par_mangling;
+  @return the mangled name of name defined in a file (vfile).
+  The compiling of vfile requires some includes (includes array of strings).
+  
+  Restricted to Linux currently. 
+  */
+function getMangledName(vfile, includes , name, ccompiler) {
+ if (ccompiler) $compiler=C_COMPILER; else $compiler=CXX_COMPILER;
+ var line="\n";
+ var codesh = "#!/bin/sh";
+ var TMPFILENAME="INRIA_IRISA_MANGLING";
+ var TMPFILE= Io.getTempFolder()+ getFileSeparator() + TMPFILENAME;
+ var scriptFile= TMPFILE +".sh";
+ if (! Io.isFile(scriptFile)) {
+   // println(" CREATION DU SCRIPT MANGLING");
+   Io.writeFile(scriptFile, codesh+line);
+   Io.appendFile(scriptFile, 'VTMPFILE=' + TMPFILE + line);
+   Io.appendFile(scriptFile, 'rm -f ${VTMPFILE}.s' + line);
+   Io.appendFile(scriptFile, 'rm -f ${VTMPFILE}.res' + line);
+  
+   Io.appendFile(scriptFile, $compiler + ' ${2} -S ${1} -o ${VTMPFILE}.s' + line );
+   Io.appendFile(scriptFile, "grep ${3} ${VTMPFILE}.s | grep \".glob\" | awk '{print $2}'" + line);
+ }
+ var executor = new ProcessExecutor();
+ executor.execute("chmod +x " + scriptFile); 
+ executor.setOutputFile("output.txt"); 
+ executor.setWorkingDir("/tmp");
+ var Incl="";
+ for (incl of includes)
+  Incl = Incl + " -I"+  incl;
+ var code = scriptFile + ' ' + vfile + Incl + ' '+ name ;
+ executor.execute(code); 
+ return executor.getStdOut(); 
 }
+

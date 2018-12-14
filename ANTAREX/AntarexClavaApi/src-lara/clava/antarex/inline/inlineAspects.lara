@@ -23,7 +23,8 @@ aspectdef inline
       if ($target.isInline)
         println($target.getName() + " is already inlined !!!");
       else if ( inlineObject($target) )	{
-      	  println(" inline of < " + $target.getName() + ", file =" + $target.ancestor("file").name + " > is managed by the symbol: " + $CURRENT_ID_INLINE);
+      	  MESSAGE("", " >>> Inline of < " + $target.getName() + ", file =" + $target.ancestor("file").name 
+      	          + " > is managed by the symbol: " + $CURRENT_ID_INLINE, "");
       	  $pragma.detach();
       }
       else 

@@ -61,7 +61,7 @@ aspectdef extractCode
     }
  end
  if (!found) {
-  MESSAGE("", "No pragma EXTRACT_CODE found !!!", "");
+  MESSAGE("No pragma ", $EXTRACT_CODE_PRAGMA, " found !!!");
   return;
  }
   //rebuildFiles(getModifiedFiles());
@@ -74,8 +74,8 @@ aspectdef extractCode
       var $name = getAssociatedName($target);
       declareNewIsolateCodeFunctionOrMethod($target, $name);
       var $params = getEffectiveParameters($target);
-      replaceCodeByCall( $target, $name, $params);
-	  $pragma.detach(); // The pragma is removed.
+      replaceCodeByCall($target, $name, $params);
+	  $pragma.detach();
     }
     end
     // third step, cleaning: the temporary pragma is removed.

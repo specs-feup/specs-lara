@@ -5,8 +5,8 @@
    This code has been developed during the ANTAREX project (http://www.antarex-project.eu).
    It is provided under the MIT license (https://opensource.org/licenses/MIT).
 */
+
 import antarex.utils.messages;
-// import antarex.utils.miscAspects;
 
 var wrapperSuffix = '_wrapper';
 
@@ -381,4 +381,32 @@ function isTheSelectedMethod($method, nbArgs, pType) {
   var functionType = $method.functionType;
   var tt_return = functionType.returnType;
   return (tt_return.code === pType);
+}
+
+/**
+  * @return the code used for the mangling of a type (tt).
+  * Restricted to memoization type ( int, double, float).
+  */
+function getManglingType(tt)
+{
+    if (tt === 'int') return "i";
+    if (tt === 'float') return "f";
+    if (tt === 'double') return "d";
+    return "undef";
+}
+
+
+/**
+  * @return the mangled name of a type (typeName) for a method with nbparams parameters of this type.
+  * Restricted to memoization type ( int, double, float).
+  * */
+function getManglingTypeFor(typeName, nbparams) {
+  var tm = getManglingType(typeName);  
+  var par_mangling =  tm; 
+  var nb = 1;
+  while (nb != nbparams) {
+    par_mangling = par_mangling + tm;
+    nb++;
+  }
+  return par_mangling;
 }

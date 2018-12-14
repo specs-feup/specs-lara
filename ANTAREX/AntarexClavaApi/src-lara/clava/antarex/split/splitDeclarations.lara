@@ -81,12 +81,6 @@ function initMustBeKept($f)
   if ( $f.astName !== 'VarDecl') return false;
   if ( $f.isInsideLoopHeader) return false;
   if ( ! $f.hasInit) return false;
-  /* if ( $f.getValue("initStyle").name() === "CALL_INIT") {
-     var $vinit = $f.init;
-     var $jpt = $vinit.joinPointType;
-     println( " ------- init.joinPointType = " + $jpt);
-     if ( $vinit.joinPointType === 'varref') return false;  // ref to a class
-  } */
   return true;
 }
 
@@ -97,7 +91,7 @@ function initMustBeKept($f)
   
   Example:
    For a declaration such that {...; int i = 88; ...}, it produces {...; i = 88; int i = 88; ...}
-
+   The declaration is removed later.
 */
 function keepInitDeclarations($Decls)
 {
@@ -105,44 +99,53 @@ function keepInitDeclarations($Decls)
   
   TRACE_HERE( "  " + op + " BEGIN");
     for (var $f of $Decls)  {
-     println(" Declaration = " + $f.code + " at " + $f.location );
+     TRACE_HERE(" Declaration = " + $f.code + " at " + $f.location );
 	  if ( ! isfilteredDeclaration($f))
 	   if (initMustBeKept($f))
 	     {
-	      println( " init is kept " );
 		  TRACE_HERE(" Declaration = " + $f.code + " at " + $f.location);
- 	      var $vinit = $f.init;
-  		  var $father = $f.astParent;  // DeclStmt 
-  		  $father.insert before $f.name + ' = ' + $vinit.code + ';';
+		  var $father = $f.astParent;  // DeclStmt
+		  var $vinit = $f.init;
+		  var code = $vinit.code;
+		  // For aClass obj; and aClass a class, the added statement will be obj=aClass();
+		  if (isInitClassWithoutParameters($f)) code = code + "()";
+  		  $father.insert before $f.name + ' = ' + code + ';';
 		 }
     }
     TRACE_HERE( "  " + op + " END");
 }
 
 /**
+  @return true if a declaration ($decl) is initialized with the default class constructor, false otherwise.
+*/
+function isInitClassWithoutParameters($f) {
+  if ($f.getValue("initStyle").name() !== "CALL_INIT") return false;
+  var $vinit = $f.init;
+  if ($vinit.astName !== 'CXXConstructExpr') return false; 
+  return ($vinit.astNumChildren === 0);
+}
+
+/**
   Remove the declaration, element of $Decls, from the code.
   The operation is not applied for some declarations (global one, member of classes).
 */
-function cleanCode($Decls)
-{
+function cleanCode($Decls) {
     TRACE_HERE( "  cleanCode BEGIN");
     for (var $f of $Decls)  {
 	  if (! isfilteredDeclaration($f)) {
        var $DeclStmt = $f.astParent; 
-         if ( ! $f.isInsideLoopHeader)
-         	{
-         	  if ($DeclStmt.astNumChildren === 1) $DeclStmt.detach(); else $f.detach();
-         	}
-	       else 
-	        {  		         
-  		      var $DeclStmt = $f.astParent;  // DeclStmt 
-  		      var $vloop = $DeclStmt.astParent;  
-         	  if ($vloop.astIsInstance('ForStmt'))
-              if ($vloop.astChild(0).location === $DeclStmt.location)
-                $vloop.setInit ( $f.name + ' = ' + $f.init.code );
-              else
-                NYI("cleanCode for " + $f.code + " at " + $f.location);
-  		    }
+       if ( ! $f.isInsideLoopHeader) {
+          if ($DeclStmt.astNumChildren === 1) $DeclStmt.detach(); else $f.detach();
+        }
+	    else {  		         
+  		  var $DeclStmt = $f.astParent;  // DeclStmt 
+  		  var $vloop = $DeclStmt.astParent;  
+          if ($vloop.astIsInstance('ForStmt'))
+          if ($vloop.astChild(0).location === $DeclStmt.location)
+             $vloop.setInit ( $f.name + ' = ' + $f.init.code );
+          else
+             NYI("cleanCode for " + $f.code + " at " + $f.location);
+  	    }
       }
     }
     TRACE_HERE( "  cleanCode END");
@@ -170,17 +173,11 @@ function removeInit($vstmt) {
 	return $vstmt;
 }
 
-/**
-  Import in a file ($afile) the includes of the file of a statement ($aStmt).
-*/
-function ImportIncludes($aStmt, $afile)
+function getImportedIncludes($vFile, id)
 {
    var Includes = [];
-   var id = $aStmt.astId;
-    var $currentFunction = getFunctionOrMethod($aStmt);
-    var $currentFile = $aStmt.ancestor("file");
-    for (var x = 0; x <  $currentFile.astNumChildren ; x++) {
-	  var $stmt =  $currentFile.astChild(x);
+   for (var x = 0; x <  $vFile.astNumChildren ; x++) {
+	  var $stmt =  $vFile.astChild(x);
 	  if ($stmt.astId === id) break; 
 	  if (($stmt.astName === "IncludeDecl") || ($stmt.astName === "TypeAliasDecl") ) {
 	    TRACE(" ImportIncludes, Include = " + $stmt.code);
@@ -191,10 +188,17 @@ function ImportIncludes($aStmt, $afile)
 	     var ch = $stmt.astChild(0);
 		 if (ch.astName === "UsingDirectiveDecl") 
 		 	Includes.push($stmt);
-		 
 	 	 }
-	 	  
-   }
+  }
+  return Includes;
+}
+
+/**
+  Import in a file ($afile) the includes of the file of a statement ($aStmt).
+*/
+function ImportIncludes($aStmt, $afile)
+{
+   var Includes = getImportedIncludes( $aStmt.ancestor("file"), $aStmt.astId);
    // Adding declaration in the original file.
    for (f= Includes.length; f >0; f--) {
        $afile.insertBefore(Includes[f-1].code);
@@ -246,8 +250,10 @@ function ImportDeclarations($st, $splittedfile)
          var $vstmt = $elem.copy(); // a varDecl
          if (isAConstantDecl($vstmt)) 
            $vcode =  $vstmt.code + ';';
-         else
-       	  $vcode = "extern " + removeInitDecl($vstmt).code + ';';
+         else {
+       	   $vcode =  removeInitDecl($vstmt).code + ';';
+       	   if ($elem.storageClass !== 'extern') $vcode = "extern " + $vcode;
+       	 }
          $splittedfile.insertBegin($vcode);
       }
     }
@@ -257,11 +263,14 @@ function ImportDeclarations($st, $splittedfile)
       if ( vfile !== undefined )
 	    if ( vfile.filepath === stFile.filepath) {
 	      if (refFunc.isInline)
-	       $splittedfile.insertBegin(refFunc.code);
-	       else {
-              var code = "extern " + refFunc.declaration(true) + ';';
-              $splittedfile.insertBegin(code);
-	       }
+	        $splittedfile.insertBegin(refFunc.code);
+	      else {
+              if (refFunc.isPublic) 
+                 $vcode = refFunc.declaration(true) + ';';
+              else 
+                 $vcode = "extern " + refFunc.declaration(true) + ';';
+              $splittedfile.insertBegin($vcode);
+	      }
 	    }
     }
 }
