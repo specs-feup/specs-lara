@@ -45,6 +45,9 @@ function MargotDseInfo(blockName) {
 	 * */
 	this._dseRuns = 0;
 	
+	this._flags = undefined;
+	this._compFlags = undefined;
+	
 	this._scope = undefined;
 	this._measure = undefined;
 	
@@ -106,6 +109,27 @@ MargotDseInfo.fromConfig = function(config, blockName) {
 	info.setMargotMonitors(block._monitors);
 	
 	return info;
+};
+
+/**
+ * Sets the execution flags.
+ * 
+ * @param {String} flags - a string with the execution flags
+ * */
+MargotDseInfo.prototype.setExecutionFlags = function(flags) {
+	
+	this._flags = flags;
+};
+
+/**
+ * Sets the compilation flags.
+ * 
+ * @param {String} flags - a string with the compilation flags
+ * */
+MargotDseInfo.prototype.setCompilationFlags = function(flags) {
+	
+	// splits by space and stores as array, since cmaker will later need multiple strings, one per flag
+	this._compFlags = flags.split(' ');
 };
 
 /**
@@ -314,6 +338,14 @@ MargotDseInfo.prototype.execute = function (filePath) {
 	
 	var laraMetrics = this._createLaraMetrics();
 
+	if(this._flags !== undefined) {
+		this.dseLoop.setExecutionFlags(this._flags);
+	}
+	
+	if(this._compFlags !== undefined) {
+		this.dseLoop.setCompilationFlags(this._compFlags);
+	}
+	
 	var results = this.dseLoop.execute(this._scope, this._measure, this._dseVars, laraMetrics, undefined, this._dseRuns);
 	
 	var opList = this._createOpList(results);
