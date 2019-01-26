@@ -26,6 +26,10 @@ public enum LaraAntarexApiResource implements LaraResourceProvider {
     EXAMON("examon/Examon.lara"),
     EXAMON_ASPECTS("examon/ExamonAspects.lara"),
 
+    // Inline
+    INLINE_ASPECTS("inline/inlineAspects.lara"),
+    INLINE_FUNCS("inline/inlineFuncs.lara"),
+
     // LIBVC
     LIBVC("libvc/LibVC.lara"),
     LIBVC_ASPECTS("libvc/_internal/LibVCAspects.lara"),
@@ -80,9 +84,13 @@ public enum LaraAntarexApiResource implements LaraResourceProvider {
     SPLIT_LOOP_FUNCS("split/splitLoopFuncs.lara"),
 
     // Utils
+    IDENT_REFERENCES("utils/IdentReferences.lara"),
+    LOW_LEVEL_FUNCS("utils/lowLevelFuncs.lara"),
+    MANGLING("utils/mangling.lara"),
     MESSAGES("utils/messages.lara"),
-    MISC_ASPECTS("utils/miscAspects.lara"),
-    MISC_FUNCS("utils/miscFuncs.lara");
+    SYSFILE("utils/sysfile.lara");
+    // MISC_ASPECTS("utils/miscAspects.lara"),
+    // MISC_FUNCS("utils/miscFuncs.lara");
 
     private final String resource;
 
