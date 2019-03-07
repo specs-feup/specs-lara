@@ -1,0 +1,41 @@
+aspectdef GeneratePointersArray
+
+	input targetFunction, dims end
+	output mvp end
+
+	println("\t Generating pointers array");
+
+	select function{targetFunction} end
+	apply
+		mvp = new MultiVersionPointers($function, dims);
+	end
+
+	select file end
+	apply
+		mvp.declare($file);
+	end
+	condition
+		$file.hasMain
+	end
+end
+
+aspectdef ChangeCallToPointers
+
+	input targetFunction, mvp, knobs end
+
+	println("\t Changing original calls to pointers array");
+
+	select stmt.call{targetFunction} end
+	apply
+		mvp.replaceCall($call, knobs);
+	end
+end
+
+aspectdef InitPointers
+	input targetFunc, mvp end
+
+	select function{targetFunc} end
+	apply
+		mvp.init($function);
+	end
+end
