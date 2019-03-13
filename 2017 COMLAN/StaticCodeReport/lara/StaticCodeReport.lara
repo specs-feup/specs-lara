@@ -1,4 +1,4 @@
-import lara.JoinPoints;
+import weaver.JoinPoints;
 
 
 // Possible attributes 
