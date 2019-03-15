@@ -2020,14 +2020,14 @@
   //---------------------------------------------------------------------
   /*************** Clava msgError **************
   consoleOutput
-  /tmp/clava_api/petit: AddSSAgraph: too many SSA graph nodes
+  /tmp/tmp_jenkins/clava_api/petit: AddSSAgraph: too many SSA graph nodes
   Exit apparently due to system limitation or error (exit code -2)
   Not dumping core - set PETIT_DUMP_CORE to generate core dump
   ****************************************/
   for(k = 1; k <= grid_points[2] - 2; k++) {
   /*************** Clava msgError **************
   consoleOutput
-  /tmp/clava_api/petit: AddSSAgraph: too many SSA graph nodes
+  /tmp/tmp_jenkins/clava_api/petit: AddSSAgraph: too many SSA graph nodes
   Exit apparently due to system limitation or error (exit code -2)
   Not dumping core - set PETIT_DUMP_CORE to generate core dump
   ****************************************/
@@ -2283,14 +2283,14 @@
   //---------------------------------------------------------------------
   /*************** Clava msgError **************
   consoleOutput
-  /tmp/clava_api/petit: AddSSAgraph: too many SSA graph nodes
+  /tmp/tmp_jenkins/clava_api/petit: AddSSAgraph: too many SSA graph nodes
   Exit apparently due to system limitation or error (exit code -2)
   Not dumping core - set PETIT_DUMP_CORE to generate core dump
   ****************************************/
   for(k = 1; k <= grid_points[2] - 2; k++) {
   /*************** Clava msgError **************
   consoleOutput
-  /tmp/clava_api/petit: AddSSAgraph: too many SSA graph nodes
+  /tmp/tmp_jenkins/clava_api/petit: AddSSAgraph: too many SSA graph nodes
   Exit apparently due to system limitation or error (exit code -2)
   Not dumping core - set PETIT_DUMP_CORE to generate core dump
   ****************************************/
@@ -2544,14 +2544,14 @@
   //---------------------------------------------------------------------
   /*************** Clava msgError **************
   consoleOutput
-  /tmp/clava_api/petit: AddSSAgraph: too many SSA graph nodes
+  /tmp/tmp_jenkins/clava_api/petit: AddSSAgraph: too many SSA graph nodes
   Exit apparently due to system limitation or error (exit code -2)
   Not dumping core - set PETIT_DUMP_CORE to generate core dump
   ****************************************/
   for(j = 1; j <= grid_points[1] - 2; j++) {
   /*************** Clava msgError **************
   consoleOutput
-  /tmp/clava_api/petit: AddSSAgraph: too many SSA graph nodes
+  /tmp/tmp_jenkins/clava_api/petit: AddSSAgraph: too many SSA graph nodes
   Exit apparently due to system limitation or error (exit code -2)
   Not dumping core - set PETIT_DUMP_CORE to generate core dump
   ****************************************/
