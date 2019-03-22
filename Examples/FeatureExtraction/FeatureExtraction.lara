@@ -1,0 +1,33 @@
+import lara.CountLoops;
+import lara.MaxLoopNesting;
+import lara.CountStatements;
+import lara.CountVariableDeclarations;
+import lara.CountArrayReadsWrites;
+
+
+aspectdef FeatureExtraction
+
+
+	var countLoops = call CountLoops();
+	println("#loops per function:");
+	printlnObject(countLoops.stats);
+
+	var maxNesting = call MaxLoopNesting();
+	println("max loop nesting per function:");
+	printlnObject(maxNesting.stats);
+
+	var countStmts = call CountStatements();
+	println("Syntatic statements per function:");
+	printlnObject(countStmts.stats);
+
+	var countVarDecls= call CountVariableDeclarations();
+	println("#variable declarations per function:");
+	printlnObject(countVarDecls.stats);
+
+	var countArrayReadsWrites = call CountArrayReadsWrites();
+	println("#array reads/writes per function:");
+	printlnObject(countArrayReadsWrites.stats);
+
+
+end
+

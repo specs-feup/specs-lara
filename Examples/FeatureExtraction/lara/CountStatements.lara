@@ -1,0 +1,37 @@
+import weaver.Selector;
+
+aspectdef CountStatements
+	output stats end
+
+	stats = new LaraObject();
+	
+    select function end
+    apply    
+        var $stmts = (new Selector($function)).search('statement').get();
+
+        for(var $stmt of $stmts) {
+            if(isInsideLoopHeader($stmt) || $stmt.joinPointType === "scope") {
+                continue;
+            }
+
+	       stats.inc($function.name);
+        }
+
+
+    end
+
+end
+
+function isInsideLoopHeader($stmt) {
+    // Block statements do not count
+    if($stmt.instanceOf('scope')) {
+        return false;
+    }
+   
+    // If direct parent is a loop, is inside header
+    if($stmt.astParent.instanceOf('loop')) {
+        return true;
+    }
+   
+    return false;
+}

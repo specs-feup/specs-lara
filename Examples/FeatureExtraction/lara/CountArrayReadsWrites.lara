@@ -1,0 +1,15 @@
+aspectdef CountArrayReadsWrites
+	output stats end
+
+	stats = new LaraObject();
+	
+	select function.varref end
+	apply
+		if(!$varref.type.isArray) {
+			continue;
+		}
+		
+		stats.inc($function.name, $varref.useExpr.use);
+	end
+	
+end

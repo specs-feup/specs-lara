@@ -1,0 +1,18 @@
+aspectdef CountLoops
+	output stats end
+
+	stats = new LaraObject();
+
+	// Alternatively, you could also select the file:
+	//    select file.function.loop
+	// and use the name of the file (i.e., $file.name) as part of
+	// the identification tuple
+	
+	select function.loop end
+	apply
+		// Alternatively, you could use $function.signature instead of
+		// $function.name, if you want input type information to appear
+		stats.inc($function.name, $loop.kind);
+	end
+	
+end

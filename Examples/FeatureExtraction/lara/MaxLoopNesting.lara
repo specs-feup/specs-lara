@@ -1,0 +1,13 @@
+aspectdef MaxLoopNesting
+	output stats end
+
+	stats = new LaraObject();
+
+	
+	select function.loop end
+	apply
+		var currentValue = stats.get($function.name) || 0;
+		stats.set($function.name, Math.max(currentValue, $loop.nestedLevel));
+	end
+
+end

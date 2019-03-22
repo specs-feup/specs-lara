@@ -1,0 +1,11 @@
+aspectdef CountVariableDeclarations
+	output stats end
+
+	stats = new LaraObject();
+
+	select function.vardecl end
+	apply
+		stats.inc($function.name);
+	end
+	
+end
