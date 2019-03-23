@@ -1,0 +1,77 @@
+import weaver.Selector;
+
+aspectdef OpenCLFeatureExtraction
+
+	var features = new LaraObject();
+
+	// Initialise features
+	features.set("functions", 0);
+	features.set("barriers", 0);
+	features.set("ops", 0);
+	features.set("bitwise ops", 0);
+
+	select function end
+	apply
+		features.inc("functions");
+	end
+
+	select op end
+	apply
+		features.inc("ops");
+		
+		if($op.isBitwise) {
+			features.inc("bitwise ops");
+		}
+	end
+
+	select call end
+	apply
+		if($call.name === "barrier") {
+			features.inc("barriers");
+		}
+
+	end
+
+	select function.varref end
+	apply
+			
+		if($varref.type.isArray) {
+			features.inc("array " + $varref.useExpr.use);
+		}
+
+		if($varref.type.isPointer) {
+			features.inc("pointer " + $varref.useExpr.use);
+		}
+
+	end
+
+    select function end
+    apply    
+        var $stmts = (new Selector($function)).search('statement').get();
+
+        for(var $stmt of $stmts) {
+            if(isInsideLoopHeader($stmt) || $stmt.joinPointType === "scope") {
+                continue;
+            }
+
+	       features.inc("statements");
+        }
+	end
+
+	println("Features:");
+	printlnObject(features);
+end
+
+function isInsideLoopHeader($stmt) {
+    // Block statements do not count
+    if($stmt.instanceOf('scope')) {
+        return false;
+    }
+   
+    // If direct parent is a loop, is inside header
+    if($stmt.astParent.instanceOf('loop')) {
+        return true;
+    }
+   
+    return false;
+}
