@@ -218,7 +218,7 @@ MargotDseInfo.prototype.setDseRuns = function(dseRuns) {
  * @param {joinpoint} $scope - the scope join point
  * */
 MargotDseInfo.prototype.setScope = function ($scope) {
-	
+	checkDefined($scope);
 	this._scope = $scope;
 };
 
@@ -228,7 +228,7 @@ MargotDseInfo.prototype.setScope = function ($scope) {
  * @param {joinpoint} $measure - the reference join point
  * */
 MargotDseInfo.prototype.setMeasure = function ($measure) {
-	
+	checkDefined($measure);	
 	this._measure = $measure;
 };
 
