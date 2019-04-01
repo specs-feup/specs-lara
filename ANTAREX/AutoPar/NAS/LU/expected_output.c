@@ -539,19 +539,12 @@
   //---------------------------------------------------------------------
   if((nx < 4) || (ny < 4) || (nz < 4)) {
 
-  printf("     SUBDOMAIN SIZE IS TOO SMALL - \n"
-  "     ADJUST PROBLEM SIZE OR NUMBER OF PROCESSORS\n"
-  "     SO THAT NX, NY AND NZ ARE GREATER THAN OR EQUAL\n"
-  "     TO 4 THEY ARE CURRENTLY%3d%3d%3d\n", nx, ny, nz);
+  printf("     SUBDOMAIN SIZE IS TOO SMALL - \n     ADJUST PROBLEM SIZE OR NUMBER OF PROCESSORS\n     SO THAT NX, NY AND NZ ARE GREATER THAN OR EQUAL\n     TO 4 THEY ARE CURRENTLY%3d%3d%3d\n", nx, ny, nz);
   exit(1);
   }
   if((nx > 33) || (ny > 33) || (nz > 33)) {
 
-  printf("     SUBDOMAIN SIZE IS TOO LARGE - \n"
-  "     ADJUST PROBLEM SIZE OR NUMBER OF PROCESSORS\n"
-  "     SO THAT NX, NY AND NZ ARE LESS THAN OR EQUAL TO \n"
-  "     ISIZ1, ISIZ2 AND ISIZ3 RESPECTIVELY.  THEY ARE\n"
-  "     CURRENTLYi%4d%4d%4d\n", nx, ny, nz);
+  printf("     SUBDOMAIN SIZE IS TOO LARGE - \n     ADJUST PROBLEM SIZE OR NUMBER OF PROCESSORS\n     SO THAT NX, NY AND NZ ARE LESS THAN OR EQUAL TO \n     ISIZ1, ISIZ2 AND ISIZ3 RESPECTIVELY.  THEY ARE\n     CURRENTLYi%4d%4d%4d\n", nx, ny, nz);
   exit(1);
   }
   //---------------------------------------------------------------------
@@ -1556,15 +1549,12 @@
   //---------------------------------------------------------------------
   if((nx0 < 4) || (ny0 < 4) || (nz0 < 4)) {
 
-  printf("     PROBLEM SIZE IS TOO SMALL - \n"
-  "     SET EACH OF NX, NY AND NZ AT LEAST EQUAL TO 5\n");
+  printf("     PROBLEM SIZE IS TOO SMALL - \n     SET EACH OF NX, NY AND NZ AT LEAST EQUAL TO 5\n");
   exit(1);
   }
   if((nx0 > 33) || (ny0 > 33) || (nz0 > 33)) {
 
-  printf("     PROBLEM SIZE IS TOO LARGE - \n"
-  "     NX, NY AND NZ SHOULD BE EQUAL TO \n"
-  "     ISIZ1, ISIZ2 AND ISIZ3 RESPECTIVELY\n");
+  printf("     PROBLEM SIZE IS TOO LARGE - \n     NX, NY AND NZ SHOULD BE EQUAL TO \n     ISIZ1, ISIZ2 AND ISIZ3 RESPECTIVELY\n");
   exit(1);
   }
   printf(" Size: %4dx%4dx%4d\n", nx0, ny0, nz0);
@@ -2128,7 +2118,7 @@
   // the timestep loop
   //---------------------------------------------------------------------
   /*************** Clava msgError **************
-  Loop contains Invalid Statement -> BreakStmt#3112
+  Loop contains Invalid Statement -> BreakStmt#3102
   ****************************************/
   for(istep = 1; istep <= niter; istep++) {
 
