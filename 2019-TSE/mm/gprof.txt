@@ -1,0 +1,9 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 99.46    117.78   117.78       21     5.61     5.61  void matrix_mult<double>(...)
+  0.39    118.24     0.46 62652416     0.00     0.00  double std::generate_canonical<...>(...)
+  0.22    118.50     0.26       63     0.00     0.00  std::vector<...>::_M_default_append(unsigned long)
+  0.08    118.60     0.10       63     0.00     0.01  void init_matrix<double>(...)

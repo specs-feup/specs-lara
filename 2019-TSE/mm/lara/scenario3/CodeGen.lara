@@ -1,0 +1,16 @@
+import antarex.margot.codegen.MargotCodeGen;
+
+aspectdef CodeGen
+
+	input
+		codeGenInfo
+	end
+	
+	select stmt.call{'matrix_mult_tiling'} end
+	apply
+		codeGenInfo.update($call);
+		codeGenInfo.monitorLog($call);
+	end
+
+	println('CodeGen done');
+end
