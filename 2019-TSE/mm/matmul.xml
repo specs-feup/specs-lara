@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<margot>
+	<block name="matmul">
+		<!-- MONITOR SECTION -->
+		<monitor name="timer" type="TIME">
+			<creation>
+				<param name="unit of measure">
+					<fixed value="margot::TimeUnit::MILLISECONDS" />
+				</param>
+			</creation>
+			<expose var_name="mean_exec_time" what="AVERAGE" />
+		</monitor>
+		<!-- SW-KNOB SECTION -->
+		<knob name="block_size_1" var_name="BS1" var_type="int" />
+		<knob name="block_size_2" var_name="BS2" var_type="int" />
+		<!-- METRIC SECTION -->
+		<metric name="exec_time_ms" type="int" distribution="yes" />
+		<!-- FEATURE SECTION -->
+		<features distance="euclidean">
+			<feature name="N" type="int" comparison="-" />
+			<feature name="M" type="int" comparison="-" />
+			<feature name="K" type="int" comparison="-" />
+		</features>
+		<!-- RUNTIME INFORMATION PROVIDER -->
+		<adapt metric_name="exec_time_ms" using="timer" inertia="1" />
+		<!-- GOAL SECTION -->
+		<goal name="exec_time_lower_bound" cFun="LT" value="2" metric_name="exec_time_ms" />
+		<!-- OPTIMIZATION SECTION -->
+		<state name="my_optimization" starting="yes">
+			<minimize combination="geometric">
+				<metric name="exec_time_ms" coef="1" />
+			</minimize>
+			<subject to="exec_time_lower_bound" confidence="3" priority="30" />
+		</state>
+	</block>
+</margot>
+
