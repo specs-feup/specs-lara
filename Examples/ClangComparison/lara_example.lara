@@ -1,0 +1,18 @@
+aspectdef LaraSample
+
+    select if end
+    apply
+        $if.then.insert before "// the 'if' part";
+        if($if.else !== undefined)
+            $if.else.insert before "// the 'else' part";
+    end
+
+    select function{hasDefinition === true} end
+    apply
+        var typeStr = $function.functionType.returnType.code;
+        var funcName = $function.name;
+        
+        $function.insert before "// Begin function " + funcName + " returning " + typeStr;
+        $function.insert after "// End function " + funcName;
+    end
+end
