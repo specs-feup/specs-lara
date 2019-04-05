@@ -4535,7 +4535,7 @@
   //---------------------------------------------------------------
   void mor_ne(int mor_v[3], int nn, int edge, int face, int edge2, int face2, int ntemp, int iel) {
   int i;
-  int mor_s_v[4] = {0,};
+  int mor_s_v[4] = {0};
   // get mor_s_v which is the mor_v + vertex mortar
   if(edge == 2) {
   if(nn == 0) {
