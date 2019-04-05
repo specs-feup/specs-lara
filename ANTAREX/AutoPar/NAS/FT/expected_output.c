@@ -254,7 +254,7 @@
   int i, i1, ii, ji, ki;
   dcomplex csum_temp = (dcomplex){0.0, 0.0};
   /*************** Clava msgError **************
-  NO  subscript for Array Access (u[5 * i1 % d3][3 * i1 % d2][i1 % d1]).real
+  NO  subscript for Array Access (u[ki][ji][ii]).real
   ****************************************/
   for(i = 1; i <= 1024; i++) {
   i1 = i;
