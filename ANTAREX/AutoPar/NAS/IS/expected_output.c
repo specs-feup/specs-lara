@@ -387,7 +387,7 @@
   long nn = n1;
   if(n2 != 0) nn *= n2;
   printf(" Size            =             %12ld\n", nn);
-  /*as in IS*/
+  
   }
   else printf(" Size            =             %4dx%4dx%4d\n", n1, n2, n3);
   printf(" Iterations      =             %12d\n", niter);
