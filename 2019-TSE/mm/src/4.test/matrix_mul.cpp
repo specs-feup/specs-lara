@@ -1,109 +1,112 @@
 #include "matrix_mul.hpp"
 #include "rapl.h"
+#include <fstream>
 
 template <typename T>
-void matrix_mult_tiling(std::vector<T> const& A, std::vector<T> const& B, std::vector<T>& C, int const N, int const M, int const K, int const BS1, int const BS2) {
-   
-   for(int i = 0; i < N; i++) {
-      for(int j = 0; j < K; j++) {
-         C[K * i + j] = 0;
-      }
-   }
-   
-   for(int l2 = 0; l2 < M; l2 += BS1) {
-	   int l_bound = std::min(M, l2 + BS1);
-      for(int j2 = 0; j2 < K; j2 += BS2) {
-		  int j_bound = std::min(K, j2 + BS2);
-         for(int i = 0; i < N; i++) {
-            for(int l = l2; l < l_bound; l++) {
-               for(int j = j2; j < j_bound; j++) {
-                  C[K * i + j] += A[M * i + l] * B[K * l + j];
-               }
+void matrix_mult_tiling(std::vector<T> const& A, std::vector<T> const& B, std::vector<T>& C, int const N, int const M, int const K, int const BS1, int const BS2, int const BS3)
+{
+
+    for(int i = 0; i < N; i++) {
+        for(int j = 0; j < K; j++) {
+            C[K * i + j] = 0;
+        }
+    }
+
+    for(int i2= 0; i2 < N; i2 += BS3) {
+        int i_bound = std::min(N, i2 + BS3);
+        for(int l2 = 0; l2 < M; l2 += BS1) {
+            int l_bound = std::min(M, l2 + BS1);
+            for(int j2 = 0; j2 < K; j2 += BS2) {
+                int j_bound = std::min(K, j2 + BS2);
+                for(int i = i2; i < i_bound; i++) {
+                    for(int l = l2; l < l_bound; l++) {
+                        for(int j = j2; j < j_bound; j++) {
+                            C[K * i + j] += A[M * i + l] * B[K * l + j];
+                        }
+                    }
+                }
             }
-         }
-      }
-   }
+        }
+    }
 }
 
 template< typename T >
-void matrix_mult(const std::vector<T>& A , const std::vector<T>& B, std::vector<T>& C, const int N, const int M, const int K) {
+void matrix_mult(const std::vector<T>& A, const std::vector<T>& B, std::vector<T>& C, const int N, const int M, const int K)
+{
 
-   for(int i=0; i<N; i++) {
-       for(int j=0; j<K; j++) {
-           C[K*i + j] = 0;
-       }
+    for(int i=0; i<N; i++) {
+        for(int j=0; j<K; j++) {
+            C[K*i + j] = 0;
+        }
     }
 
-	for(int i=0; i<N; i++) {
-		for(int l=0; l < M; l++) {
-			for(int j=0; j < K; j++) {
-				C[K*i + j] += A[M*i+l]*B[K*l+j];
-			}
-		}
-	}
+    for(int i=0; i<N; i++) {
+        for(int l=0; l < M; l++) {
+            for(int j=0; j < K; j++) {
+                C[K*i + j] += A[M*i+l]*B[K*l+j];
+            }
+        }
+    }
 
 }
 
-int main(int argc, char** argv) {
-	
-	int runs = std::stoi(argv[1]);
-	int size = std::stoi(argv[2]);
-	int tile = std::stoi(argv[3]);
+int main(int argc, char** argv)
+{
 
-	printf("RUNS=%d, SIZE=%d", runs, size);
-	if(tile != 0) {
-		printf(", TILE=%d", tile);
-	}
-	printf("\n");
+    int runs = std::stoi(argv[1]);
+    int size = std::stoi(argv[2]);
+    int tile = std::stoi(argv[3]);
 
-  // matrix sizes
-  int N,M,K;
+    //~ printf("RUNS=%d, SIZE=%d", runs, size);
+    //~ if(tile != 0) {
+        //~ printf(", TILE=%d", tile);
+    //~ }
+    //~ printf("\n");
 
-	long long total_energy = 0;
-	auto total_time = 0;
+    // matrix sizes
+    int N,M,K;
 
-  // this is the main loop of the application
-  for( int i = 0; i < runs; i++ )
-  {
+    long long total_energy = 0;
+    auto total_time = 0;
 
-    // declare the matrices
-    std::vector<double> A,B,C;
+    // this is the main loop of the application
+    for( int i = 0; i < runs; i++ ) {
 
-    // mimic the read of the input matrices
-    N = size;
-    M = size;
-    K = size;
-    init_matrix(A, N, M);
-    init_matrix(B, M, K);
-    init_matrix(C, N, K, false);
+        // declare the matrices
+        std::vector<double> A,B,C;
 
-    // execute the kernel
-	if(tile != 0) {
-		auto e0 = rapl_energy();
-		std::chrono::high_resolution_clock::time_point timing_start = std::chrono::high_resolution_clock::now();
-		matrix_mult_tiling(A, B, C, N, M, K, tile, tile);
-		std::chrono::high_resolution_clock::time_point timing_end = std::chrono::high_resolution_clock::now(); 
-		auto e1 = rapl_energy();
-		total_energy += (e1-e0);
-		total_time += std::chrono::duration_cast<std::chrono::milliseconds>(timing_end - timing_start).count();
-	} else {
-		auto e0 = rapl_energy();
-		std::chrono::high_resolution_clock::time_point timing_start = std::chrono::high_resolution_clock::now();
-		matrix_mult(A, B, C, N, M, K);
-		std::chrono::high_resolution_clock::time_point timing_end = std::chrono::high_resolution_clock::now(); 
-		auto e1 = rapl_energy();
-		total_energy += (e1-e0);
-		total_time += std::chrono::duration_cast<std::chrono::milliseconds>(timing_end - timing_start).count();
-	}
+        // mimic the read of the input matrices
+        N = size;
+        M = size;
+        K = size;
+        init_matrix(A, N, M);
+        init_matrix(B, M, K);
+        init_matrix(C, N, K, false);
 
-    std::cout << "#" << i << " ";
-    std::cout << "C[0][0] = " << C[0] << " ";
-    std::cout << "[" << N << "x" << M << "]";
-    std::cout << " X ";
-    std::cout << "[" << M << "x" << K << "]" << std::endl;
-  }
-	std::cout << 1.0 * total_time / runs << " ms" << std::endl;
-	std::cout << 1.0 * total_energy / runs << " uJ" << std::endl;
+        // execute the kernel
+        if(tile != 0) {
+            auto e0 = rapl_energy();
+            std::chrono::high_resolution_clock::time_point timing_start = std::chrono::high_resolution_clock::now();
+            matrix_mult_tiling(A, B, C, N, M, K, tile, tile, tile);
+            std::chrono::high_resolution_clock::time_point timing_end = std::chrono::high_resolution_clock::now();
+            auto e1 = rapl_energy();
+            total_energy += (e1-e0);
+            total_time += std::chrono::duration_cast<std::chrono::milliseconds>(timing_end - timing_start).count();
+        } else {
+            auto e0 = rapl_energy();
+            std::chrono::high_resolution_clock::time_point timing_start = std::chrono::high_resolution_clock::now();
+            matrix_mult(A, B, C, N, M, K);
+            std::chrono::high_resolution_clock::time_point timing_end = std::chrono::high_resolution_clock::now();
+            auto e1 = rapl_energy();
+            total_energy += (e1-e0);
+            total_time += std::chrono::duration_cast<std::chrono::milliseconds>(timing_end - timing_start).count();
+        }
 
-  return EXIT_SUCCESS;
+        std::ofstream out("output.txt");
+        out << C[0];
+    }
+    std::cout << 1.0 * total_time / runs << " ";
+    std::cerr << 1.0 * total_energy / runs << " ";
+
+    return EXIT_SUCCESS;
 }
