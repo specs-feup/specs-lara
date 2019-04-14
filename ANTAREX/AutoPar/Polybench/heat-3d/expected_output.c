@@ -116,8 +116,8 @@ int main(int argc, char ** argv) {
    /*Prevent dead-code elimination. All live-out data must be printed
    by the function call in argument.*/
    if(argc > 42 && !strcmp(argv[0], "")) print_array(n, *A);
-   free((void *) A);
    /*Be clean.*/
+   free((void *) A);
    ;
    
    return 0;

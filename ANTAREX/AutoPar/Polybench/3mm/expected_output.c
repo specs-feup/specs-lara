@@ -107,8 +107,9 @@ int main(int argc, char ** argv) {
    int nk = 1000;
    int nl = 1100;
    int nm = 1200;
-   double (*E)[800][900];
    /*Variable declaration/allocation.*/
+   double (*E)[800][900];
+   
    E = (double (*)[800][900]) polybench_alloc_data((800 + 0) * (900 + 0), sizeof(double));
    ;
    double (*A)[800][1000];
