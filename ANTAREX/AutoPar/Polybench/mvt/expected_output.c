@@ -79,8 +79,8 @@ static void kernel_mvt(int n, double x1[2000], double x2[2000], double y_1[2000]
 int main(int argc, char ** argv) {
    /*Retrieve problem size.*/
    int n = 2000;
-   double (*A)[2000][2000];
    /*Variable declaration/allocation.*/
+   double (*A)[2000][2000];
    A = (double (*)[2000][2000]) polybench_alloc_data((2000 + 0) * (2000 + 0), sizeof(double));
    ;
    double (*x1)[2000];

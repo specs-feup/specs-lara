@@ -93,8 +93,8 @@ int main(int argc, char ** argv) {
    int nr = 150;
    int nq = 140;
    int np = 160;
+   /*Variable declaration/allocation.*/   
    double (*A)[150][140][160];
-   /*Variable declaration/allocation.*/
    A = (double (*)[150][140][160]) polybench_alloc_data((150 + 0) * (140 + 0) * (160 + 0), sizeof(double));
    ;
    double (*sum)[160];

@@ -64,8 +64,8 @@ int main(int argc, char ** argv) {
    /*Retrieve problem size.*/
    int n = 2000;
    int tsteps = 500;
+   /*Variable declaration/allocation.*/   
    double (*A)[2000];
-   /*Variable declaration/allocation.*/
    A = (double (*)[2000]) polybench_alloc_data(2000 + 0, sizeof(double));
    ;
    double (*B)[2000];

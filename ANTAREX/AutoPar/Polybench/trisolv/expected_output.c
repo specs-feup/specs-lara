@@ -67,8 +67,8 @@ static void kernel_trisolv(int n, double L[2000][2000], double x[2000], double b
 int main(int argc, char ** argv) {
    /*Retrieve problem size.*/
    int n = 2000;
-   double (*L)[2000][2000];
    /*Variable declaration/allocation.*/
+   double (*L)[2000][2000];
    L = (double (*)[2000][2000]) polybench_alloc_data((2000 + 0) * (2000 + 0), sizeof(double));
    ;
    double (*x)[2000];

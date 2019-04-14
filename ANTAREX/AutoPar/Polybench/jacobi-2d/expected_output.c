@@ -80,8 +80,8 @@ int main(int argc, char ** argv) {
    /*Retrieve problem size.*/
    int n = 1300;
    int tsteps = 500;
-   double (*A)[1300][1300];
    /*Variable declaration/allocation.*/
+   double (*A)[1300][1300];
    A = (double (*)[1300][1300]) polybench_alloc_data((1300 + 0) * (1300 + 0), sizeof(double));
    ;
    double (*B)[1300][1300];

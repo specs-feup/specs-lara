@@ -82,8 +82,8 @@ static void kernel_durbin(int n, double r[2000], double y[2000]) {
 int main(int argc, char ** argv) {
    /*Retrieve problem size.*/
    int n = 2000;
-   double (*r)[2000];
    /*Variable declaration/allocation.*/
+   double (*r)[2000];
    r = (double (*)[2000]) polybench_alloc_data(2000 + 0, sizeof(double));
    ;
    double (*y)[2000];

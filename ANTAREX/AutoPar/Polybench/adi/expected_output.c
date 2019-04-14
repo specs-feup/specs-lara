@@ -132,8 +132,8 @@ int main(int argc, char ** argv) {
    /*Retrieve problem size.*/
    int n = 1000;
    int tsteps = 500;
-   double (*u)[1000][1000];
    /*Variable declaration/allocation.*/
+   double (*u)[1000][1000];
    u = (double (*)[1000][1000]) polybench_alloc_data((1000 + 0) * (1000 + 0), sizeof(double));
    ;
    double (*v)[1000][1000];
