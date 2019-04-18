@@ -32,9 +32,9 @@
   double imag;
   };
   typedef struct anon_NAS_EP_c_69 dcomplex;
-  double randlc(double * x, double a);
-  void vranlc(int n, double * x, double a, double y[]);
-  void print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int verified);
+  double randlc(double *x, double a);
+  void vranlc(int n, double *x, double a, double y[]);
+  void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified);
   double start[64];
   double elapsed[64];
   double elapsed_time();
@@ -42,7 +42,7 @@
   void timer_start(int n);
   void timer_stop(int n);
   double timer_read(int n);
-  void wtime(double * t);
+  void wtime(double *t);
   int main() {
   double Mops, t1, t2, t3, t4, x1, x2;
   double sx, sy, tm, an, tt, gc;
@@ -55,7 +55,7 @@
   char size[16];
   double x[131072];
   double q[10];
-  FILE * fp;
+  FILE *fp;
   //--------------------------------------------------------------------
   //  Because the size of the problem is too large to store in a 32-bit
   //  integer for some classes, we put it into a string (for printing).
@@ -229,7 +229,7 @@
   int exitValue = verified ? 0 : 1;
   return exitValue;
   }
-  double randlc(double * x, double a) {
+  double randlc(double *x, double a) {
   //--------------------------------------------------------------------
   //
   //  This routine returns a uniform pseudorandom double precision number in the
@@ -287,7 +287,7 @@
   r = r46 * (*x);
   return r;
   }
-  void vranlc(int n, double * x, double a, double y[]) {
+  void vranlc(int n, double *x, double a, double y[]) {
   //--------------------------------------------------------------------
   //
   //  This routine generates N uniform pseudorandom double precision numbers in
@@ -353,7 +353,7 @@
   }
   return;
   }
-  void print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int verified) {
+  void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified) {
   char size[16];
   int j;
   printf("\n\n %s Benchmark Completed.\n", name);
@@ -387,7 +387,7 @@
   if(verified) printf(" Verification    =             %12s\n", "SUCCESSFUL");
   else printf(" Verification    =             %12s\n", "UNSUCCESSFUL");
   }
-  void wtime(double * t) {
+  void wtime(double *t) {
   static int sec = -1;
   struct timeval tv;
   gettimeofday(&tv, (void *) 0);
