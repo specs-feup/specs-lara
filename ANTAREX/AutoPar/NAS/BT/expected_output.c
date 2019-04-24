@@ -162,8 +162,8 @@
   void add();
   void error_norm(double rms[5]);
   void rhs_norm(double rms[5]);
-  void verify(int no_time_steps, char * class, int * verified);
-  void print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int verified);
+  void verify(int no_time_steps, char *class, int *verified);
+  void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified);
   double start[64];
   double elapsed[64];
   double elapsed_time();
@@ -171,8 +171,8 @@
   void timer_start(int n);
   void timer_stop(int n);
   double timer_read(int n);
-  void wtime(double * t);
-  int main(int argc, char * argv[]) {
+  void wtime(double *t);
+  int main(int argc, char *argv[]) {
   int i, niter, step;
   double navg, mflops, n3;
   double tmax;
@@ -180,7 +180,7 @@
   double trecs[12];
   int verified;
   char Class;
-  char * t_names[12];
+  char *t_names[12];
   printf("\n\n NAS Parallel Benchmarks (NPB3.3-SER-C) - BT Benchmark\n\n");
   niter = 200;
   dt = 0.0008;
@@ -1703,7 +1703,7 @@
   //---------------------------------------------------------------------
   // verification routine
   //---------------------------------------------------------------------
-  void verify(int no_time_steps, char * Class, int * verified) {
+  void verify(int no_time_steps, char *Class, int *verified) {
   double xcrref[5];
   double xceref[5];
   double xcrdif[5];
@@ -2785,7 +2785,7 @@
   }
   }
   }
-  void print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int verified) {
+  void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified) {
   char size[16];
   int j;
   printf("\n\n %s Benchmark Completed.\n", name);
@@ -2819,7 +2819,7 @@
   if(verified) printf(" Verification    =             %12s\n", "SUCCESSFUL");
   else printf(" Verification    =             %12s\n", "UNSUCCESSFUL");
   }
-  void wtime(double * t) {
+  void wtime(double *t) {
   static int sec = -1;
   struct timeval tv;
   gettimeofday(&tv, (void *) 0);

@@ -3,7 +3,6 @@
   #include <math.h>
   #include <time.h>
   #include <sys/time.h>
-
   //---------------------------------------------------------------------
   // program LU
   //---------------------------------------------------------------------
@@ -43,7 +42,6 @@
   /*full problem size*/
   /*number of iterations and how often to print the norm*/
   struct anon_NAS_LU_c_109 {
-
   double real;
   double imag;
   };
@@ -171,8 +169,8 @@
   void buts(int ldmx, int ldmy, int ldmz, int nx, int ny, int nz, int k, double omega, double v[][ldmy / 2 * 2 + 1][ldmx / 2 * 2 + 1][5], double tv[ldmy][ldmx / 2 * 2 + 1][5], double d[ldmy][ldmx / 2 * 2 + 1][5][5], double udx[ldmy][ldmx / 2 * 2 + 1][5][5], double udy[ldmy][ldmx / 2 * 2 + 1][5][5], double udz[ldmy][ldmx / 2 * 2 + 1][5][5], int ist, int iend, int jst, int jend, int nx0, int ny0);
   void error();
   void pintgr();
-  void verify(double xcr[5], double xce[5], double xci, char * Class, int * verified);
-  void print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int verified);
+  void verify(double xcr[5], double xce[5], double xci, char *Class, int *verified);
+  void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified);
   double start[64];
   double elapsed[64];
   double elapsed_time();
@@ -180,9 +178,8 @@
   void timer_start(int n);
   void timer_stop(int n);
   double timer_read(int n);
-  void wtime(double * t);
-  int main(int argc, char * argv[]) {
-
+  void wtime(double *t);
+  int main(int argc, char *argv[]) {
   char Class;
   int verified;
   double mflops;
@@ -190,7 +187,7 @@
   double tmax;
   double trecs[12];
   int i;
-  char * t_names[12];
+  char *t_names[12];
   //---------------------------------------------------------------------
   // read input data
   //---------------------------------------------------------------------
@@ -257,7 +254,6 @@
   // for even number sizes only.  Only needed in v.
   //---------------------------------------------------------------------
   void blts(int ldmx, int ldmy, int ldmz, int nx, int ny, int nz, int k, double omega, double v[][ldmy / 2 * 2 + 1][ldmx / 2 * 2 + 1][5], double ldz[ldmy][ldmx / 2 * 2 + 1][5][5], double ldy[ldmy][ldmx / 2 * 2 + 1][5][5], double ldx[ldmy][ldmx / 2 * 2 + 1][5][5], double d[ldmy][ldmx / 2 * 2 + 1][5][5], int ist, int iend, int jst, int jend, int nx0, int ny0) {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -272,15 +268,12 @@
   double (*vkm1)[ldmx / 2 * 2 + 1][5] = v[k - 1];
   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(jst, jend, ist, iend, omega)
   for(j = jst; j < jend; j++) {
-
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, j, omega)
   for(i = ist; i < iend; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   vk[j][i][m] = vk[j][i][m] - omega * (ldz[j][i][0][m] * vkm1[j][i][0] + ldz[j][i][1][m] * vkm1[j][i][1] + ldz[j][i][2][m] * vkm1[j][i][2] + ldz[j][i][3][m] * vkm1[j][i][3] + ldz[j][i][4][m] * vkm1[j][i][4]);
   }
   }
@@ -289,17 +282,14 @@
   unsolved dependency for arrayAccess vk	 use : RW
   ****************************************/
   for(j = jst; j < jend; j++) {
-
   /*************** Clava msgError **************
   unsolved dependency for arrayAccess vk	 use : RW
   ****************************************/
   for(i = ist; i < iend; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   tv[m] = vk[j][i][m] - omega * (ldy[j][i][0][m] * vk[j - 1][i][0] + ldx[j][i][0][m] * vk[j][i - 1][0] + ldy[j][i][1][m] * vk[j - 1][i][1] + ldx[j][i][1][m] * vk[j][i - 1][1] + ldy[j][i][2][m] * vk[j - 1][i][2] + ldx[j][i][2][m] * vk[j][i - 1][2] + ldy[j][i][3][m] * vk[j - 1][i][3] + ldx[j][i][3][m] * vk[j][i - 1][3] + ldy[j][i][4][m] * vk[j - 1][i][4] + ldx[j][i][4][m] * vk[j][i - 1][4]);
   }
   //---------------------------------------------------------------------
@@ -311,7 +301,6 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   tmat[m][0] = d[j][i][0][m];
   tmat[m][1] = d[j][i][1][m];
   tmat[m][2] = d[j][i][2][m];
@@ -399,7 +388,6 @@
   // for even number sizes only.  Only needed in v.
   //---------------------------------------------------------------------
   void buts(int ldmx, int ldmy, int ldmz, int nx, int ny, int nz, int k, double omega, double v[][ldmy / 2 * 2 + 1][ldmx / 2 * 2 + 1][5], double tv[ldmy][ldmx / 2 * 2 + 1][5], double d[ldmy][ldmx / 2 * 2 + 1][5][5], double udx[ldmy][ldmx / 2 * 2 + 1][5][5], double udy[ldmy][ldmx / 2 * 2 + 1][5][5], double udz[ldmy][ldmx / 2 * 2 + 1][5][5], int ist, int iend, int jst, int jend, int nx0, int ny0) {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -408,15 +396,12 @@
   double tmat[5][5];
   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(jend, jst, iend, ist, k, omega)
   for(j = jend - 1; j >= jst; j--) {
-
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(iend, ist, k, j, omega)
   for(i = iend - 1; i >= ist; i--) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   tv[j][i][m] = omega * (udz[j][i][0][m] * v[k + 1][j][i][0] + udz[j][i][1][m] * v[k + 1][j][i][1] + udz[j][i][2][m] * v[k + 1][j][i][2] + udz[j][i][3][m] * v[k + 1][j][i][3] + udz[j][i][4][m] * v[k + 1][j][i][4]);
   }
   }
@@ -425,17 +410,14 @@
   unsolved dependency for arrayAccess v	 use : RW
   ****************************************/
   for(j = jend - 1; j >= jst; j--) {
-
   /*************** Clava msgError **************
   unsolved dependency for arrayAccess v	 use : RW
   ****************************************/
   for(i = iend - 1; i >= ist; i--) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   tv[j][i][m] = tv[j][i][m] + omega * (udy[j][i][0][m] * v[k][j + 1][i][0] + udx[j][i][0][m] * v[k][j][i + 1][0] + udy[j][i][1][m] * v[k][j + 1][i][1] + udx[j][i][1][m] * v[k][j][i + 1][1] + udy[j][i][2][m] * v[k][j + 1][i][2] + udx[j][i][2][m] * v[k][j][i + 1][2] + udy[j][i][3][m] * v[k][j + 1][i][3] + udx[j][i][3][m] * v[k][j][i + 1][3] + udy[j][i][4][m] * v[k][j + 1][i][4] + udx[j][i][4][m] * v[k][j][i + 1][4]);
   }
   //---------------------------------------------------------------------
@@ -445,7 +427,6 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   tmat[m][0] = d[j][i][0][m];
   tmat[m][1] = d[j][i][1][m];
   tmat[m][2] = d[j][i][2][m];
@@ -527,7 +508,6 @@
   }
   }
   void domain() {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -538,12 +518,10 @@
   // check the sub-domain size
   //---------------------------------------------------------------------
   if((nx < 4) || (ny < 4) || (nz < 4)) {
-
   printf("     SUBDOMAIN SIZE IS TOO SMALL - \n     ADJUST PROBLEM SIZE OR NUMBER OF PROCESSORS\n     SO THAT NX, NY AND NZ ARE GREATER THAN OR EQUAL\n     TO 4 THEY ARE CURRENTLY%3d%3d%3d\n", nx, ny, nz);
   exit(1);
   }
   if((nx > 33) || (ny > 33) || (nz > 33)) {
-
   printf("     SUBDOMAIN SIZE IS TOO LARGE - \n     ADJUST PROBLEM SIZE OR NUMBER OF PROCESSORS\n     SO THAT NX, NY AND NZ ARE LESS THAN OR EQUAL TO \n     ISIZ1, ISIZ2 AND ISIZ3 RESPECTIVELY.  THEY ARE\n     CURRENTLYi%4d%4d%4d\n", nx, ny, nz);
   exit(1);
   }
@@ -567,7 +545,6 @@
   //
   //---------------------------------------------------------------------
   void erhs() {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -584,18 +561,14 @@
   double u21km1, u31km1, u41km1, u51km1;
   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(nz, ny, nx)
   for(k = 0; k < nz; k++) {
-
   // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(ny, nx, k)
   for(j = 0; j < ny; j++) {
-
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(nx, k, j)
   for(i = 0; i < nx; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   frct[k][j][i][m] = 0.0;
   }
   }
@@ -603,21 +576,17 @@
   }
   #pragma omp parallel for default(shared) private(k, j, i, m, zeta, eta, xi) firstprivate(nz, ny, ny0, nx, nx0)
   for(k = 0; k < nz; k++) {
-
   zeta = ((double) k) / (nz - 1);
   // #pragma omp parallel for default(shared) private(j, i, m, eta, xi) firstprivate(ny, ny0, nx, nx0, zeta, k)
   for(j = 0; j < ny; j++) {
-
   eta = ((double) j) / (ny0 - 1);
   // #pragma omp parallel for default(shared) private(i, m, xi) firstprivate(nx, nx0, eta, zeta, k, j)
   for(i = 0; i < nx; i++) {
-
   xi = ((double) i) / (nx0 - 1);
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rsd[k][j][i][m] = ce[m][0] + (ce[m][1] + (ce[m][4] + (ce[m][7] + ce[m][10] * xi) * xi) * xi) * xi + (ce[m][2] + (ce[m][5] + (ce[m][8] + ce[m][11] * eta) * eta) * eta) * eta + (ce[m][3] + (ce[m][6] + (ce[m][9] + ce[m][12] * zeta) * zeta) * zeta) * zeta;
   }
   }
@@ -628,13 +597,10 @@
   //---------------------------------------------------------------------
   #pragma omp parallel for default(shared) private(k, j, i, m, u21, q, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(nz, jst, jend, nx, ist, iend, tx2, tx3, dx1, tx1, dx2, dx3, dx4, dx5, dssp, flux)
   for(k = 1; k < nz - 1; k++) {
-
   // #pragma omp parallel for default(shared) private(j, i, m, u21, q, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(jst, jend, nx, k, ist, iend, tx2, tx3, dx1, tx1, dx2, dx3, dx4, dx5, dssp, flux)
   for(j = jst; j < jend; j++) {
-
   // #pragma omp parallel for default(shared) private(i, u21, q) firstprivate(nx, k, j)
   for(i = 0; i < nx; i++) {
-
   flux[i][0] = rsd[k][j][i][1];
   u21 = rsd[k][j][i][1] / rsd[k][j][i][0];
   q = 0.50 * (rsd[k][j][i][1] * rsd[k][j][i][1] + rsd[k][j][i][2] * rsd[k][j][i][2] + rsd[k][j][i][3] * rsd[k][j][i][3]) / rsd[k][j][i][0];
@@ -645,18 +611,15 @@
   }
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, tx2, k, j)
   for(i = ist; i < iend; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   frct[k][j][i][m] = frct[k][j][i][m] - tx2 * (flux[i + 1][m] - flux[i - 1][m]);
   }
   }
   // #pragma omp parallel for default(shared) private(i, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(ist, nx, k, j, tx3)
   for(i = ist; i < nx; i++) {
-
   tmp = 1.0 / rsd[k][j][i][0];
   u21i = tmp * rsd[k][j][i][1];
   u31i = tmp * rsd[k][j][i][2];
@@ -674,7 +637,6 @@
   }
   // #pragma omp parallel for default(shared) private(i) firstprivate(ist, iend, k, j, dx1, tx1, tx3, dx2, dx3, dx4, dx5)
   for(i = ist; i < iend; i++) {
-
   frct[k][j][i][0] = frct[k][j][i][0] + dx1 * tx1 * (rsd[k][j][i - 1][0] - 2.0 * rsd[k][j][i][0] + rsd[k][j][i + 1][0]);
   frct[k][j][i][1] = frct[k][j][i][1] + tx3 * 1.00e-01 * 1.00e+00 * (flux[i + 1][1] - flux[i][1]) + dx2 * tx1 * (rsd[k][j][i - 1][1] - 2.0 * rsd[k][j][i][1] + rsd[k][j][i + 1][1]);
   frct[k][j][i][2] = frct[k][j][i][2] + tx3 * 1.00e-01 * 1.00e+00 * (flux[i + 1][2] - flux[i][2]) + dx3 * tx1 * (rsd[k][j][i - 1][2] - 2.0 * rsd[k][j][i][2] + rsd[k][j][i + 1][2]);
@@ -688,18 +650,15 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   frct[k][j][1][m] = frct[k][j][1][m] - dssp * (+5.0 * rsd[k][j][1][m] - 4.0 * rsd[k][j][2][m] + rsd[k][j][3][m]);
   frct[k][j][2][m] = frct[k][j][2][m] - dssp * (-4.0 * rsd[k][j][1][m] + 6.0 * rsd[k][j][2][m] - 4.0 * rsd[k][j][3][m] + rsd[k][j][4][m]);
   }
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(nx, k, j, dssp)
   for(i = 3; i < nx - 3; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   frct[k][j][i][m] = frct[k][j][i][m] - dssp * (rsd[k][j][i - 2][m] - 4.0 * rsd[k][j][i - 1][m] + 6.0 * rsd[k][j][i][m] - 4.0 * rsd[k][j][i + 1][m] + rsd[k][j][i + 2][m]);
   }
   }
@@ -707,7 +666,6 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   frct[k][j][nx - 3][m] = frct[k][j][nx - 3][m] - dssp * (rsd[k][j][nx - 5][m] - 4.0 * rsd[k][j][nx - 4][m] + 6.0 * rsd[k][j][nx - 3][m] - 4.0 * rsd[k][j][nx - 2][m]);
   frct[k][j][nx - 2][m] = frct[k][j][nx - 2][m] - dssp * (rsd[k][j][nx - 4][m] - 4.0 * rsd[k][j][nx - 3][m] + 5.0 * rsd[k][j][nx - 2][m]);
   }
@@ -718,13 +676,10 @@
   //---------------------------------------------------------------------
   #pragma omp parallel for default(shared) private(k, i, j, m, u31, q, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(nz, ist, iend, ny, jst, jend, ty2, ty3, dy1, ty1, dy2, dy3, dy4, dy5, dssp, flux)
   for(k = 1; k < nz - 1; k++) {
-
   // #pragma omp parallel for default(shared) private(i, j, m, u31, q, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(ist, iend, ny, k, jst, jend, ty2, ty3, dy1, ty1, dy2, dy3, dy4, dy5, dssp, flux)
   for(i = ist; i < iend; i++) {
-
   // #pragma omp parallel for default(shared) private(j, u31, q) firstprivate(ny, k, i)
   for(j = 0; j < ny; j++) {
-
   flux[j][0] = rsd[k][j][i][2];
   u31 = rsd[k][j][i][2] / rsd[k][j][i][0];
   q = 0.50 * (rsd[k][j][i][1] * rsd[k][j][i][1] + rsd[k][j][i][2] * rsd[k][j][i][2] + rsd[k][j][i][3] * rsd[k][j][i][3]) / rsd[k][j][i][0];
@@ -735,18 +690,15 @@
   }
   // #pragma omp parallel for default(shared) private(j, m) firstprivate(jst, jend, ty2, k, i)
   for(j = jst; j < jend; j++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   frct[k][j][i][m] = frct[k][j][i][m] - ty2 * (flux[j + 1][m] - flux[j - 1][m]);
   }
   }
   // #pragma omp parallel for default(shared) private(j, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(jst, ny, k, i, ty3)
   for(j = jst; j < ny; j++) {
-
   tmp = 1.0 / rsd[k][j][i][0];
   u21j = tmp * rsd[k][j][i][1];
   u31j = tmp * rsd[k][j][i][2];
@@ -764,7 +716,6 @@
   }
   // #pragma omp parallel for default(shared) private(j) firstprivate(jst, jend, k, i, dy1, ty1, ty3, dy2, dy3, dy4, dy5)
   for(j = jst; j < jend; j++) {
-
   frct[k][j][i][0] = frct[k][j][i][0] + dy1 * ty1 * (rsd[k][j - 1][i][0] - 2.0 * rsd[k][j][i][0] + rsd[k][j + 1][i][0]);
   frct[k][j][i][1] = frct[k][j][i][1] + ty3 * 1.00e-01 * 1.00e+00 * (flux[j + 1][1] - flux[j][1]) + dy2 * ty1 * (rsd[k][j - 1][i][1] - 2.0 * rsd[k][j][i][1] + rsd[k][j + 1][i][1]);
   frct[k][j][i][2] = frct[k][j][i][2] + ty3 * 1.00e-01 * 1.00e+00 * (flux[j + 1][2] - flux[j][2]) + dy3 * ty1 * (rsd[k][j - 1][i][2] - 2.0 * rsd[k][j][i][2] + rsd[k][j + 1][i][2]);
@@ -778,18 +729,15 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   frct[k][1][i][m] = frct[k][1][i][m] - dssp * (+5.0 * rsd[k][1][i][m] - 4.0 * rsd[k][2][i][m] + rsd[k][3][i][m]);
   frct[k][2][i][m] = frct[k][2][i][m] - dssp * (-4.0 * rsd[k][1][i][m] + 6.0 * rsd[k][2][i][m] - 4.0 * rsd[k][3][i][m] + rsd[k][4][i][m]);
   }
   // #pragma omp parallel for default(shared) private(j, m) firstprivate(ny, k, i, dssp)
   for(j = 3; j < ny - 3; j++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   frct[k][j][i][m] = frct[k][j][i][m] - dssp * (rsd[k][j - 2][i][m] - 4.0 * rsd[k][j - 1][i][m] + 6.0 * rsd[k][j][i][m] - 4.0 * rsd[k][j + 1][i][m] + rsd[k][j + 2][i][m]);
   }
   }
@@ -797,7 +745,6 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   frct[k][ny - 3][i][m] = frct[k][ny - 3][i][m] - dssp * (rsd[k][ny - 5][i][m] - 4.0 * rsd[k][ny - 4][i][m] + 6.0 * rsd[k][ny - 3][i][m] - 4.0 * rsd[k][ny - 2][i][m]);
   frct[k][ny - 2][i][m] = frct[k][ny - 2][i][m] - dssp * (rsd[k][ny - 4][i][m] - 4.0 * rsd[k][ny - 3][i][m] + 5.0 * rsd[k][ny - 2][i][m]);
   }
@@ -808,13 +755,10 @@
   //---------------------------------------------------------------------
   #pragma omp parallel for default(shared) private(j, i, k, m, u41, q, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(jst, jend, ist, iend, nz, tz2, tz3, dz1, tz1, dz2, dz3, dz4, dz5, dssp, flux)
   for(j = jst; j < jend; j++) {
-
   // #pragma omp parallel for default(shared) private(i, k, m, u41, q, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(ist, iend, nz, j, tz2, tz3, dz1, tz1, dz2, dz3, dz4, dz5, dssp, flux)
   for(i = ist; i < iend; i++) {
-
   // #pragma omp parallel for default(shared) private(k, u41, q) firstprivate(nz, j, i)
   for(k = 0; k < nz; k++) {
-
   flux[k][0] = rsd[k][j][i][3];
   u41 = rsd[k][j][i][3] / rsd[k][j][i][0];
   q = 0.50 * (rsd[k][j][i][1] * rsd[k][j][i][1] + rsd[k][j][i][2] * rsd[k][j][i][2] + rsd[k][j][i][3] * rsd[k][j][i][3]) / rsd[k][j][i][0];
@@ -825,18 +769,15 @@
   }
   // #pragma omp parallel for default(shared) private(k, m) firstprivate(nz, tz2, j, i)
   for(k = 1; k < nz - 1; k++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   frct[k][j][i][m] = frct[k][j][i][m] - tz2 * (flux[k + 1][m] - flux[k - 1][m]);
   }
   }
   // #pragma omp parallel for default(shared) private(k, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(nz, j, i, tz3)
   for(k = 1; k < nz; k++) {
-
   tmp = 1.0 / rsd[k][j][i][0];
   u21k = tmp * rsd[k][j][i][1];
   u31k = tmp * rsd[k][j][i][2];
@@ -854,7 +795,6 @@
   }
   // #pragma omp parallel for default(shared) private(k) firstprivate(nz, j, i, dz1, tz1, tz3, dz2, dz3, dz4, dz5)
   for(k = 1; k < nz - 1; k++) {
-
   frct[k][j][i][0] = frct[k][j][i][0] + dz1 * tz1 * (rsd[k + 1][j][i][0] - 2.0 * rsd[k][j][i][0] + rsd[k - 1][j][i][0]);
   frct[k][j][i][1] = frct[k][j][i][1] + tz3 * 1.00e-01 * 1.00e+00 * (flux[k + 1][1] - flux[k][1]) + dz2 * tz1 * (rsd[k + 1][j][i][1] - 2.0 * rsd[k][j][i][1] + rsd[k - 1][j][i][1]);
   frct[k][j][i][2] = frct[k][j][i][2] + tz3 * 1.00e-01 * 1.00e+00 * (flux[k + 1][2] - flux[k][2]) + dz3 * tz1 * (rsd[k + 1][j][i][2] - 2.0 * rsd[k][j][i][2] + rsd[k - 1][j][i][2]);
@@ -868,18 +808,15 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   frct[1][j][i][m] = frct[1][j][i][m] - dssp * (+5.0 * rsd[1][j][i][m] - 4.0 * rsd[2][j][i][m] + rsd[3][j][i][m]);
   frct[2][j][i][m] = frct[2][j][i][m] - dssp * (-4.0 * rsd[1][j][i][m] + 6.0 * rsd[2][j][i][m] - 4.0 * rsd[3][j][i][m] + rsd[4][j][i][m]);
   }
   // #pragma omp parallel for default(shared) private(k, m) firstprivate(nz, j, i, dssp)
   for(k = 3; k < nz - 3; k++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   frct[k][j][i][m] = frct[k][j][i][m] - dssp * (rsd[k - 2][j][i][m] - 4.0 * rsd[k - 1][j][i][m] + 6.0 * rsd[k][j][i][m] - 4.0 * rsd[k + 1][j][i][m] + rsd[k + 2][j][i][m]);
   }
   }
@@ -887,7 +824,6 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   frct[nz - 3][j][i][m] = frct[nz - 3][j][i][m] - dssp * (rsd[nz - 5][j][i][m] - 4.0 * rsd[nz - 4][j][i][m] + 6.0 * rsd[nz - 3][j][i][m] - 4.0 * rsd[nz - 2][j][i][m]);
   frct[nz - 2][j][i][m] = frct[nz - 2][j][i][m] - dssp * (rsd[nz - 4][j][i][m] - 4.0 * rsd[nz - 3][j][i][m] + 5.0 * rsd[nz - 2][j][i][m]);
   }
@@ -900,7 +836,6 @@
   //
   //---------------------------------------------------------------------
   void error() {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -911,24 +846,19 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   errnm[m] = 0.0;
   }
   #pragma omp parallel for default(shared) private(k, j, i, m, tmp) firstprivate(nz, jst, jend, ist, iend, nx0, ny0, u000ijk) reduction(+ : errnm[:5])
   for(k = 1; k < nz - 1; k++) {
-
   // #pragma omp parallel for default(shared) private(j, i, m, tmp) firstprivate(jst, jend, ist, iend, k, nx0, ny0, nz, u000ijk) reduction(+ : errnm[:5])
   for(j = jst; j < jend; j++) {
-
   // #pragma omp parallel for default(shared) private(i, m, tmp) firstprivate(ist, iend, k, j, nx0, ny0, nz, u000ijk) reduction(+ : errnm[:5])
   for(i = ist; i < iend; i++) {
-
   exact(i, j, k, u000ijk);
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   tmp = (u000ijk[m] - u[k][j][i][m]);
   errnm[m] = errnm[m] + tmp * tmp;
   }
@@ -939,7 +869,6 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   errnm[m] = sqrt(errnm[m] / ((nx0 - 2) * (ny0 - 2) * (nz0 - 2)));
   }
   /*
@@ -957,7 +886,6 @@
   //
   //---------------------------------------------------------------------
   void exact(int i, int j, int k, double u000ijk[]) {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -970,7 +898,6 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   u000ijk[m] = ce[m][0] + (ce[m][1] + (ce[m][4] + (ce[m][7] + ce[m][10] * xi) * xi) * xi) * xi + (ce[m][2] + (ce[m][5] + (ce[m][8] + ce[m][11] * eta) * eta) * eta) * eta + (ce[m][3] + (ce[m][6] + (ce[m][9] + ce[m][12] * zeta) * zeta) * zeta) * zeta;
   }
   }
@@ -978,7 +905,6 @@
   // compute the lower triangular part of the jacobian matrix
   //---------------------------------------------------------------------
   void jacld(int k) {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -992,10 +918,8 @@
   c34 = 1.00e-01 * 1.00e+00;
   #pragma omp parallel for default(shared) private(j, i, tmp1, tmp2, tmp3) firstprivate(jst, jend, ist, iend, k, tx1, dx1, ty1, dy1, tz1, dz1, dt, r43, c34, dx2, dy2, dz2, dx3, dy3, dz3, dx4, dy4, dz4, c1345, dx5, dy5, dz5, tz2, ty2, tx2)
   for(j = jst; j < jend; j++) {
-
   // #pragma omp parallel for default(shared) private(i, tmp1, tmp2, tmp3) firstprivate(ist, iend, k, j, tx1, dx1, ty1, dy1, tz1, dz1, dt, r43, c34, dx2, dy2, dz2, dx3, dy3, dz3, dx4, dy4, dz4, c1345, dx5, dy5, dz5, tz2, ty2, tx2)
   for(i = ist; i < iend; i++) {
-
   //---------------------------------------------------------------------
   // form the block daigonal
   //---------------------------------------------------------------------
@@ -1127,7 +1051,6 @@
   // compute the upper triangular part of the jacobian matrix
   //---------------------------------------------------------------------
   void jacu(int k) {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -1141,10 +1064,8 @@
   c34 = 1.00e-01 * 1.00e+00;
   #pragma omp parallel for default(shared) private(j, i, tmp1, tmp2, tmp3) firstprivate(jst, jend, ist, iend, k, tx1, dx1, ty1, dy1, tz1, dz1, dt, r43, c34, dx2, dy2, dz2, dx3, dy3, dz3, dx4, dy4, dz4, c1345, dx5, dy5, dz5, tx2, ty2, tz2)
   for(j = jst; j < jend; j++) {
-
   // #pragma omp parallel for default(shared) private(i, tmp1, tmp2, tmp3) firstprivate(ist, iend, k, j, tx1, dx1, ty1, dy1, tz1, dz1, dt, r43, c34, dx2, dy2, dz2, dx3, dy3, dz3, dx4, dy4, dz4, c1345, dx5, dy5, dz5, tx2, ty2, tz2)
   for(i = ist; i < iend; i++) {
-
   //---------------------------------------------------------------------
   // form the block daigonal
   //---------------------------------------------------------------------
@@ -1280,7 +1201,6 @@
   // for even number sizes only.  Only needed in v.
   //---------------------------------------------------------------------
   void l2norm(int ldx, int ldy, int ldz, int nx0, int ny0, int nz0, int ist, int iend, int jst, int jend, double v[][ldy / 2 * 2 + 1][ldx / 2 * 2 + 1][5], double sum[5]) {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -1289,23 +1209,18 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   sum[m] = 0.0;
   }
   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(nz0, jst, jend, ist, iend) reduction(+ : sum[:5])
   for(k = 1; k < nz0 - 1; k++) {
-
   // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(jst, jend, ist, iend, k) reduction(+ : sum[:5])
   for(j = jst; j < jend; j++) {
-
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, k, j) reduction(+ : sum[:5])
   for(i = ist; i < iend; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   sum[m] = sum[m] + v[k][j][i][m] * v[k][j][i][m];
   }
   }
@@ -1315,12 +1230,10 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   sum[m] = sqrt(sum[m] / ((nx0 - 2) * (ny0 - 2) * (nz0 - 2)));
   }
   }
   void pintgr() {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -1346,22 +1259,18 @@
   Loop Iteration number is too low
   ****************************************/
   for(k = 0; k <= 33 + 1; k++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(i = 0; i <= 33 + 1; i++) {
-
   phi1[k][i] = 0.0;
   phi2[k][i] = 0.0;
   }
   }
   #pragma omp parallel for default(shared) private(j, i, k) firstprivate(jbeg, jfin, ibeg, ifin, ki1, ki2)
   for(j = jbeg; j < jfin; j++) {
-
   // #pragma omp parallel for default(shared) private(i, k) firstprivate(ibeg, ifin, ki1, j, ki2)
   for(i = ibeg; i < ifin; i++) {
-
   k = ki1;
   phi1[j][i] = 0.40e+00 * (u[k][j][i][4] - 0.50 * (u[k][j][i][1] * u[k][j][i][1] + u[k][j][i][2] * u[k][j][i][2] + u[k][j][i][3] * u[k][j][i][3]) / u[k][j][i][0]);
   k = ki2 - 1;
@@ -1371,10 +1280,8 @@
   frc1 = 0.0;
   #pragma omp parallel for default(shared) private(j, i) firstprivate(jbeg, jfin1, ibeg, ifin1) reduction(+ : frc1)
   for(j = jbeg; j < jfin1; j++) {
-
   // #pragma omp parallel for default(shared) private(i) firstprivate(ibeg, ifin1, j) reduction(+ : frc1)
   for(i = ibeg; i < ifin1; i++) {
-
   frc1 = frc1 + (phi1[j][i] + phi1[j][i + 1] + phi1[j + 1][i] + phi1[j + 1][i + 1] + phi2[j][i] + phi2[j][i + 1] + phi2[j + 1][i] + phi2[j + 1][i + 1]);
   }
   }
@@ -1386,36 +1293,28 @@
   Loop Iteration number is too low
   ****************************************/
   for(k = 0; k <= 33 + 1; k++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(i = 0; i <= 33 + 1; i++) {
-
   phi1[k][i] = 0.0;
   phi2[k][i] = 0.0;
   }
   }
   if(jbeg == ji1) {
-
   #pragma omp parallel for default(shared) private(k, i) firstprivate(ki1, ki2, ibeg, ifin, jbeg)
   for(k = ki1; k < ki2; k++) {
-
   // #pragma omp parallel for default(shared) private(i) firstprivate(ibeg, ifin, k, jbeg)
   for(i = ibeg; i < ifin; i++) {
-
   phi1[k][i] = 0.40e+00 * (u[k][jbeg][i][4] - 0.50 * (u[k][jbeg][i][1] * u[k][jbeg][i][1] + u[k][jbeg][i][2] * u[k][jbeg][i][2] + u[k][jbeg][i][3] * u[k][jbeg][i][3]) / u[k][jbeg][i][0]);
   }
   }
   }
   if(jfin == ji2) {
-
   #pragma omp parallel for default(shared) private(k, i) firstprivate(ki1, ki2, ibeg, ifin, jfin)
   for(k = ki1; k < ki2; k++) {
-
   // #pragma omp parallel for default(shared) private(i) firstprivate(ibeg, ifin, jfin, k)
   for(i = ibeg; i < ifin; i++) {
-
   phi2[k][i] = 0.40e+00 * (u[k][jfin - 1][i][4] - 0.50 * (u[k][jfin - 1][i][1] * u[k][jfin - 1][i][1] + u[k][jfin - 1][i][2] * u[k][jfin - 1][i][2] + u[k][jfin - 1][i][3] * u[k][jfin - 1][i][3]) / u[k][jfin - 1][i][0]);
   }
   }
@@ -1423,10 +1322,8 @@
   frc2 = 0.0;
   #pragma omp parallel for default(shared) private(k, i) firstprivate(ki1, ki2, ibeg, ifin1) reduction(+ : frc2)
   for(k = ki1; k < ki2 - 1; k++) {
-
   // #pragma omp parallel for default(shared) private(i) firstprivate(ibeg, ifin1, k) reduction(+ : frc2)
   for(i = ibeg; i < ifin1; i++) {
-
   frc2 = frc2 + (phi1[k][i] + phi1[k][i + 1] + phi1[k + 1][i] + phi1[k + 1][i + 1] + phi2[k][i] + phi2[k][i + 1] + phi2[k + 1][i] + phi2[k + 1][i + 1]);
   }
   }
@@ -1438,36 +1335,28 @@
   Loop Iteration number is too low
   ****************************************/
   for(k = 0; k <= 33 + 1; k++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(i = 0; i <= 33 + 1; i++) {
-
   phi1[k][i] = 0.0;
   phi2[k][i] = 0.0;
   }
   }
   if(ibeg == ii1) {
-
   #pragma omp parallel for default(shared) private(k, j) firstprivate(ki1, ki2, jbeg, jfin, ibeg)
   for(k = ki1; k < ki2; k++) {
-
   // #pragma omp parallel for default(shared) private(j) firstprivate(jbeg, jfin, k, ibeg)
   for(j = jbeg; j < jfin; j++) {
-
   phi1[k][j] = 0.40e+00 * (u[k][j][ibeg][4] - 0.50 * (u[k][j][ibeg][1] * u[k][j][ibeg][1] + u[k][j][ibeg][2] * u[k][j][ibeg][2] + u[k][j][ibeg][3] * u[k][j][ibeg][3]) / u[k][j][ibeg][0]);
   }
   }
   }
   if(ifin == ii2) {
-
   #pragma omp parallel for default(shared) private(k, j) firstprivate(ki1, ki2, jbeg, jfin, ifin)
   for(k = ki1; k < ki2; k++) {
-
   // #pragma omp parallel for default(shared) private(j) firstprivate(jbeg, jfin, ifin, k)
   for(j = jbeg; j < jfin; j++) {
-
   phi2[k][j] = 0.40e+00 * (u[k][j][ifin - 1][4] - 0.50 * (u[k][j][ifin - 1][1] * u[k][j][ifin - 1][1] + u[k][j][ifin - 1][2] * u[k][j][ifin - 1][2] + u[k][j][ifin - 1][3] * u[k][j][ifin - 1][3]) / u[k][j][ifin - 1][0]);
   }
   }
@@ -1475,10 +1364,8 @@
   frc3 = 0.0;
   #pragma omp parallel for default(shared) private(k, j) firstprivate(ki1, ki2, jbeg, jfin1) reduction(+ : frc3)
   for(k = ki1; k < ki2 - 1; k++) {
-
   // #pragma omp parallel for default(shared) private(j) firstprivate(jbeg, jfin1, k) reduction(+ : frc3)
   for(j = jbeg; j < jfin1; j++) {
-
   frc3 = frc3 + (phi1[k][j] + phi1[k][j + 1] + phi1[k + 1][j] + phi1[k + 1][j + 1] + phi2[k][j] + phi2[k][j + 1] + phi2[k + 1][j] + phi2[k + 1][j + 1]);
   }
   }
@@ -1487,8 +1374,7 @@
   //printf("\n\n     surface integral = %12.5E\n\n\n", frc);
   }
   void read_input() {
-
-  FILE * fp;
+  FILE *fp;
   int result;
   //---------------------------------------------------------------------
   // if input file does not exist, it uses defaults
@@ -1502,7 +1388,6 @@
   //---------------------------------------------------------------------
   printf("\n\n NAS Parallel Benchmarks (NPB3.3-SER-C) - LU Benchmark\n\n");
   if((fp = fopen("inputlu.data", "r")) != ((void *) 0)) {
-
   printf("Reading from input file inputlu.data\n");
   while(fgetc(fp) != '\n');
   while(fgetc(fp) != '\n');
@@ -1529,7 +1414,6 @@
   fclose(fp);
   }
   else {
-
   ipr = 1;
   inorm = 300;
   itmax = 300;
@@ -1548,12 +1432,10 @@
   // check problem size
   //---------------------------------------------------------------------
   if((nx0 < 4) || (ny0 < 4) || (nz0 < 4)) {
-
   printf("     PROBLEM SIZE IS TOO SMALL - \n     SET EACH OF NX, NY AND NZ AT LEAST EQUAL TO 5\n");
   exit(1);
   }
   if((nx0 > 33) || (ny0 > 33) || (nz0 > 33)) {
-
   printf("     PROBLEM SIZE IS TOO LARGE - \n     NX, NY AND NZ SHOULD BE EQUAL TO \n     ISIZ1, ISIZ2 AND ISIZ3 RESPECTIVELY\n");
   exit(1);
   }
@@ -1565,7 +1447,6 @@
   // compute the right hand sides
   //---------------------------------------------------------------------
   void rhs() {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -1583,18 +1464,14 @@
   double u21km1, u31km1, u41km1, u51km1;
   #pragma omp parallel for default(shared) private(k, j, i, m, tmp) firstprivate(nz, ny, nx)
   for(k = 0; k < nz; k++) {
-
   // #pragma omp parallel for default(shared) private(j, i, m, tmp) firstprivate(ny, nx, k)
   for(j = 0; j < ny; j++) {
-
   // #pragma omp parallel for default(shared) private(i, m, tmp) firstprivate(nx, k, j)
   for(i = 0; i < nx; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rsd[k][j][i][m] = -frct[k][j][i][m];
   }
   tmp = 1.0 / u[k][j][i][0];
@@ -1608,13 +1485,10 @@
   //---------------------------------------------------------------------
   #pragma omp parallel for default(shared) private(k, j, i, m, u21, q, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(nz, jst, jend, nx, ist, iend, tx2, tx3, dx1, tx1, dx2, dx3, dx4, dx5, dssp, flux)
   for(k = 1; k < nz - 1; k++) {
-
   // #pragma omp parallel for default(shared) private(j, i, m, u21, q, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(jst, jend, nx, k, ist, iend, tx2, tx3, dx1, tx1, dx2, dx3, dx4, dx5, dssp, flux)
   for(j = jst; j < jend; j++) {
-
   // #pragma omp parallel for default(shared) private(i, u21, q) firstprivate(nx, k, j)
   for(i = 0; i < nx; i++) {
-
   flux[i][0] = u[k][j][i][1];
   u21 = u[k][j][i][1] * rho_i[k][j][i];
   q = qs[k][j][i];
@@ -1625,18 +1499,15 @@
   }
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, tx2, k, j)
   for(i = ist; i < iend; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rsd[k][j][i][m] = rsd[k][j][i][m] - tx2 * (flux[i + 1][m] - flux[i - 1][m]);
   }
   }
   // #pragma omp parallel for default(shared) private(i, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(ist, nx, k, j, tx3)
   for(i = ist; i < nx; i++) {
-
   tmp = rho_i[k][j][i];
   u21i = tmp * u[k][j][i][1];
   u31i = tmp * u[k][j][i][2];
@@ -1654,7 +1525,6 @@
   }
   // #pragma omp parallel for default(shared) private(i) firstprivate(ist, iend, k, j, dx1, tx1, tx3, dx2, dx3, dx4, dx5)
   for(i = ist; i < iend; i++) {
-
   rsd[k][j][i][0] = rsd[k][j][i][0] + dx1 * tx1 * (u[k][j][i - 1][0] - 2.0 * u[k][j][i][0] + u[k][j][i + 1][0]);
   rsd[k][j][i][1] = rsd[k][j][i][1] + tx3 * 1.00e-01 * 1.00e+00 * (flux[i + 1][1] - flux[i][1]) + dx2 * tx1 * (u[k][j][i - 1][1] - 2.0 * u[k][j][i][1] + u[k][j][i + 1][1]);
   rsd[k][j][i][2] = rsd[k][j][i][2] + tx3 * 1.00e-01 * 1.00e+00 * (flux[i + 1][2] - flux[i][2]) + dx3 * tx1 * (u[k][j][i - 1][2] - 2.0 * u[k][j][i][2] + u[k][j][i + 1][2]);
@@ -1668,18 +1538,15 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rsd[k][j][1][m] = rsd[k][j][1][m] - dssp * (+5.0 * u[k][j][1][m] - 4.0 * u[k][j][2][m] + u[k][j][3][m]);
   rsd[k][j][2][m] = rsd[k][j][2][m] - dssp * (-4.0 * u[k][j][1][m] + 6.0 * u[k][j][2][m] - 4.0 * u[k][j][3][m] + u[k][j][4][m]);
   }
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(nx, k, j, dssp)
   for(i = 3; i < nx - 3; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rsd[k][j][i][m] = rsd[k][j][i][m] - dssp * (u[k][j][i - 2][m] - 4.0 * u[k][j][i - 1][m] + 6.0 * u[k][j][i][m] - 4.0 * u[k][j][i + 1][m] + u[k][j][i + 2][m]);
   }
   }
@@ -1687,7 +1554,6 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rsd[k][j][nx - 3][m] = rsd[k][j][nx - 3][m] - dssp * (u[k][j][nx - 5][m] - 4.0 * u[k][j][nx - 4][m] + 6.0 * u[k][j][nx - 3][m] - 4.0 * u[k][j][nx - 2][m]);
   rsd[k][j][nx - 2][m] = rsd[k][j][nx - 2][m] - dssp * (u[k][j][nx - 4][m] - 4.0 * u[k][j][nx - 3][m] + 5.0 * u[k][j][nx - 2][m]);
   }
@@ -1698,13 +1564,10 @@
   //---------------------------------------------------------------------
   #pragma omp parallel for default(shared) private(k, i, j, m, u31, q, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(nz, ist, iend, ny, jst, jend, ty2, ty3, dy1, ty1, dy2, dy3, dy4, dy5, dssp, flux)
   for(k = 1; k < nz - 1; k++) {
-
   // #pragma omp parallel for default(shared) private(i, j, m, u31, q, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(ist, iend, ny, k, jst, jend, ty2, ty3, dy1, ty1, dy2, dy3, dy4, dy5, flux)
   for(i = ist; i < iend; i++) {
-
   // #pragma omp parallel for default(shared) private(j, u31, q) firstprivate(ny, k, i)
   for(j = 0; j < ny; j++) {
-
   flux[j][0] = u[k][j][i][2];
   u31 = u[k][j][i][2] * rho_i[k][j][i];
   q = qs[k][j][i];
@@ -1715,18 +1578,15 @@
   }
   // #pragma omp parallel for default(shared) private(j, m) firstprivate(jst, jend, ty2, k, i)
   for(j = jst; j < jend; j++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rsd[k][j][i][m] = rsd[k][j][i][m] - ty2 * (flux[j + 1][m] - flux[j - 1][m]);
   }
   }
   // #pragma omp parallel for default(shared) private(j, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(jst, ny, k, i, ty3)
   for(j = jst; j < ny; j++) {
-
   tmp = rho_i[k][j][i];
   u21j = tmp * u[k][j][i][1];
   u31j = tmp * u[k][j][i][2];
@@ -1744,7 +1604,6 @@
   }
   // #pragma omp parallel for default(shared) private(j) firstprivate(jst, jend, k, i, dy1, ty1, ty3, dy2, dy3, dy4, dy5)
   for(j = jst; j < jend; j++) {
-
   rsd[k][j][i][0] = rsd[k][j][i][0] + dy1 * ty1 * (u[k][j - 1][i][0] - 2.0 * u[k][j][i][0] + u[k][j + 1][i][0]);
   rsd[k][j][i][1] = rsd[k][j][i][1] + ty3 * 1.00e-01 * 1.00e+00 * (flux[j + 1][1] - flux[j][1]) + dy2 * ty1 * (u[k][j - 1][i][1] - 2.0 * u[k][j][i][1] + u[k][j + 1][i][1]);
   rsd[k][j][i][2] = rsd[k][j][i][2] + ty3 * 1.00e-01 * 1.00e+00 * (flux[j + 1][2] - flux[j][2]) + dy3 * ty1 * (u[k][j - 1][i][2] - 2.0 * u[k][j][i][2] + u[k][j + 1][i][2]);
@@ -1757,39 +1616,32 @@
   //---------------------------------------------------------------------
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, k, dssp)
   for(i = ist; i < iend; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rsd[k][1][i][m] = rsd[k][1][i][m] - dssp * (+5.0 * u[k][1][i][m] - 4.0 * u[k][2][i][m] + u[k][3][i][m]);
   rsd[k][2][i][m] = rsd[k][2][i][m] - dssp * (-4.0 * u[k][1][i][m] + 6.0 * u[k][2][i][m] - 4.0 * u[k][3][i][m] + u[k][4][i][m]);
   }
   }
   // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(ny, ist, iend, k, dssp)
   for(j = 3; j < ny - 3; j++) {
-
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, j, k, dssp)
   for(i = ist; i < iend; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rsd[k][j][i][m] = rsd[k][j][i][m] - dssp * (u[k][j - 2][i][m] - 4.0 * u[k][j - 1][i][m] + 6.0 * u[k][j][i][m] - 4.0 * u[k][j + 1][i][m] + u[k][j + 2][i][m]);
   }
   }
   }
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, ny, k, dssp)
   for(i = ist; i < iend; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rsd[k][ny - 3][i][m] = rsd[k][ny - 3][i][m] - dssp * (u[k][ny - 5][i][m] - 4.0 * u[k][ny - 4][i][m] + 6.0 * u[k][ny - 3][i][m] - 4.0 * u[k][ny - 2][i][m]);
   rsd[k][ny - 2][i][m] = rsd[k][ny - 2][i][m] - dssp * (u[k][ny - 4][i][m] - 4.0 * u[k][ny - 3][i][m] + 5.0 * u[k][ny - 2][i][m]);
   }
@@ -1800,13 +1652,10 @@
   //---------------------------------------------------------------------
   #pragma omp parallel for default(shared) private(j, i, k, m, u41, q, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(jst, jend, ist, iend, nz, tz2, tz3, dz1, tz1, dz2, dz3, dz4, dz5, dssp, utmp, flux, rtmp)
   for(j = jst; j < jend; j++) {
-
   // #pragma omp parallel for default(shared) private(i, k, m, u41, q, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(ist, iend, nz, j, tz2, tz3, dz1, tz1, dz2, dz3, dz4, dz5, dssp, utmp, flux, rtmp)
   for(i = ist; i < iend; i++) {
-
   // #pragma omp parallel for default(shared) private(k) firstprivate(nz, j, i)
   for(k = 0; k < nz; k++) {
-
   utmp[k][0] = u[k][j][i][0];
   utmp[k][1] = u[k][j][i][1];
   utmp[k][2] = u[k][j][i][2];
@@ -1816,7 +1665,6 @@
   }
   // #pragma omp parallel for default(shared) private(k, u41, q) firstprivate(nz, j, i)
   for(k = 0; k < nz; k++) {
-
   flux[k][0] = utmp[k][3];
   u41 = utmp[k][3] * utmp[k][5];
   q = qs[k][j][i];
@@ -1827,18 +1675,15 @@
   }
   // #pragma omp parallel for default(shared) private(k, m) firstprivate(nz, tz2, j, i)
   for(k = 1; k < nz - 1; k++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rtmp[k][m] = rsd[k][j][i][m] - tz2 * (flux[k + 1][m] - flux[k - 1][m]);
   }
   }
   // #pragma omp parallel for default(shared) private(k, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(nz, tz3)
   for(k = 1; k < nz; k++) {
-
   tmp = utmp[k][5];
   u21k = tmp * utmp[k][1];
   u31k = tmp * utmp[k][2];
@@ -1856,7 +1701,6 @@
   }
   // #pragma omp parallel for default(shared) private(k) firstprivate(nz, dz1, tz1, tz3, dz2, dz3, dz4, dz5)
   for(k = 1; k < nz - 1; k++) {
-
   rtmp[k][0] = rtmp[k][0] + dz1 * tz1 * (utmp[k - 1][0] - 2.0 * utmp[k][0] + utmp[k + 1][0]);
   rtmp[k][1] = rtmp[k][1] + tz3 * 1.00e-01 * 1.00e+00 * (flux[k + 1][1] - flux[k][1]) + dz2 * tz1 * (utmp[k - 1][1] - 2.0 * utmp[k][1] + utmp[k + 1][1]);
   rtmp[k][2] = rtmp[k][2] + tz3 * 1.00e-01 * 1.00e+00 * (flux[k + 1][2] - flux[k][2]) + dz3 * tz1 * (utmp[k - 1][2] - 2.0 * utmp[k][2] + utmp[k + 1][2]);
@@ -1870,18 +1714,15 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rsd[1][j][i][m] = rtmp[1][m] - dssp * (+5.0 * utmp[1][m] - 4.0 * utmp[2][m] + utmp[3][m]);
   rsd[2][j][i][m] = rtmp[2][m] - dssp * (-4.0 * utmp[1][m] + 6.0 * utmp[2][m] - 4.0 * utmp[3][m] + utmp[4][m]);
   }
   // #pragma omp parallel for default(shared) private(k, m) firstprivate(nz, dssp, j, i)
   for(k = 3; k < nz - 3; k++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rsd[k][j][i][m] = rtmp[k][m] - dssp * (utmp[k - 2][m] - 4.0 * utmp[k - 1][m] + 6.0 * utmp[k][m] - 4.0 * utmp[k + 1][m] + utmp[k + 2][m]);
   }
   }
@@ -1889,7 +1730,6 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rsd[nz - 3][j][i][m] = rtmp[nz - 3][m] - dssp * (utmp[nz - 5][m] - 4.0 * utmp[nz - 4][m] + 6.0 * utmp[nz - 3][m] - 4.0 * utmp[nz - 2][m]);
   rsd[nz - 2][j][i][m] = rtmp[nz - 2][m] - dssp * (utmp[nz - 4][m] - 4.0 * utmp[nz - 3][m] + 5.0 * utmp[nz - 2][m]);
   }
@@ -1900,7 +1740,6 @@
   // set the boundary values of dependent variables
   //---------------------------------------------------------------------
   void setbv() {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -1912,17 +1751,14 @@
   //---------------------------------------------------------------------
   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(ny, nx, nx0, ny0, nz, temp1, temp2)
   for(j = 0; j < ny; j++) {
-
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(nx, j, nx0, ny0, nz, temp1, temp2)
   for(i = 0; i < nx; i++) {
-
   exact(i, j, 0, temp1);
   exact(i, j, nz - 1, temp2);
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   u[0][j][i][m] = temp1[m];
   u[nz - 1][j][i][m] = temp2[m];
   }
@@ -1933,17 +1769,14 @@
   //---------------------------------------------------------------------
   #pragma omp parallel for default(shared) private(k, i, m) firstprivate(nz, nx, nx0, ny0, ny, temp1, temp2)
   for(k = 0; k < nz; k++) {
-
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(nx, k, nx0, ny0, nz, ny, temp1, temp2)
   for(i = 0; i < nx; i++) {
-
   exact(i, 0, k, temp1);
   exact(i, ny - 1, k, temp2);
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   u[k][0][i][m] = temp1[m];
   u[k][ny - 1][i][m] = temp2[m];
   }
@@ -1954,17 +1787,14 @@
   //---------------------------------------------------------------------
   #pragma omp parallel for default(shared) private(k, j, m) firstprivate(nz, ny, nx0, ny0, nx, temp1, temp2)
   for(k = 0; k < nz; k++) {
-
   // #pragma omp parallel for default(shared) private(j, m) firstprivate(ny, k, nx0, ny0, nz, nx, temp1, temp2)
   for(j = 0; j < ny; j++) {
-
   exact(0, j, k, temp1);
   exact(nx - 1, j, k, temp2);
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   u[k][j][0][m] = temp1[m];
   u[k][j][nx - 1][m] = temp2[m];
   }
@@ -1978,7 +1808,6 @@
   //
   //---------------------------------------------------------------------
   void setiv() {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -1993,15 +1822,12 @@
   double ue_ijnz[5];
   #pragma omp parallel for default(shared) private(k, j, i, m, zeta, eta, xi, pxi, peta, pzeta) firstprivate(nz, ny, ny0, nx, nx0, ue_1jk, ue_nx0jk, ue_i1k, ue_iny0k, ue_ij1, ue_ijnz)
   for(k = 1; k < nz - 1; k++) {
-
   zeta = ((double) k) / (nz - 1);
   // #pragma omp parallel for default(shared) private(j, i, m, eta, xi, pxi, peta, pzeta) firstprivate(ny, ny0, nx, nx0, k, nz, zeta, ue_1jk, ue_nx0jk, ue_i1k, ue_iny0k, ue_ij1, ue_ijnz)
   for(j = 1; j < ny - 1; j++) {
-
   eta = ((double) j) / (ny0 - 1);
   // #pragma omp parallel for default(shared) private(i, m, xi, pxi, peta, pzeta) firstprivate(nx, nx0, k, j, ny0, nz, eta, zeta, ue_1jk, ue_nx0jk, ue_i1k, ue_iny0k, ue_ij1, ue_ijnz)
   for(i = 1; i < nx - 1; i++) {
-
   xi = ((double) i) / (nx0 - 1);
   exact(0, j, k, ue_1jk);
   exact(nx0 - 1, j, k, ue_nx0jk);
@@ -2013,7 +1839,6 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   pxi = (1.0 - xi) * ue_1jk[m] + xi * ue_nx0jk[m];
   peta = (1.0 - eta) * ue_i1k[m] + eta * ue_iny0k[m];
   pzeta = (1.0 - zeta) * ue_ij1[m] + zeta * ue_ijnz[m];
@@ -2028,7 +1853,6 @@
   // for five nonlinear pde's.
   //---------------------------------------------------------------------
   void ssor(int niter) {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -2049,22 +1873,18 @@
   Loop Iteration number is too low
   ****************************************/
   for(j = 0; j < 33; j++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(i = 0; i < 33; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(n = 0; n < 5; n++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   a[j][i][n][m] = 0.0;
   b[j][i][n][m] = 0.0;
   c[j][i][n][m] = 0.0;
@@ -2077,7 +1897,6 @@
   Loop Iteration number is too low
   ****************************************/
   for(i = 1; i <= 11; i++) {
-
   timer_clear(i);
   }
   //---------------------------------------------------------------------
@@ -2110,7 +1929,6 @@
   Loop Iteration number is too low
   ****************************************/
   for(i = 1; i <= 11; i++) {
-
   timer_clear(i);
   }
   timer_start(1);
@@ -2121,12 +1939,10 @@
   Loop contains Invalid Statement -> BreakStmt#3102
   ****************************************/
   for(istep = 1; istep <= niter; istep++) {
-
   //if ( ( (istep % inorm) == 0 ) && ipr == 1 ) {
   //  printf(" \n     pseudo-time SSOR iteration no.=%4d\n\n", istep);
   //}
   if((istep % 20) == 0 || istep == itmax || istep == 1) {
-
   if(niter > 1) printf(" Time step %4d\n", istep);
   }
   //---------------------------------------------------------------------
@@ -2134,18 +1950,14 @@
   //---------------------------------------------------------------------
   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(nz, jst, jend, ist, iend, dt)
   for(k = 1; k < nz - 1; k++) {
-
   // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(jst, jend, ist, iend, dt, k)
   for(j = jst; j < jend; j++) {
-
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, dt, k, j)
   for(i = ist; i < iend; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   rsd[k][j][i][m] = dt * rsd[k][j][i][m];
   }
   }
@@ -2155,7 +1967,6 @@
   unsolved dependency for arrayAccess vk_16	 use : RW
   ****************************************/
   for(k = 1; k < nz - 1; k++) {
-
   //---------------------------------------------------------------------
   // form the lower triangular part of the jacobian matrix
   //---------------------------------------------------------------------
@@ -2169,7 +1980,6 @@
   unsolved dependency for arrayAccess rsd	 use : RW
   ****************************************/
   for(k = nz - 2; k > 0; k--) {
-
   //---------------------------------------------------------------------
   // form the strictly upper triangular part of the jacobian matrix
   //---------------------------------------------------------------------
@@ -2184,18 +1994,14 @@
   //---------------------------------------------------------------------
   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(nz, jst, jend, ist, iend, tmp)
   for(k = 1; k < nz - 1; k++) {
-
   // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(jst, jend, ist, iend, tmp, k)
   for(j = jst; j < jend; j++) {
-
   // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, tmp, k, j)
   for(i = ist; i < iend; i++) {
-
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   u[k][j][i][m] = u[k][j][i][m] + tmp * rsd[k][j][i][m];
   }
   }
@@ -2205,7 +2011,6 @@
   // compute the max-norms of newton iteration corrections
   //---------------------------------------------------------------------
   if((istep % inorm) == 0) {
-
   l2norm(33, 33, 33, nx0, ny0, nz0, ist, iend, jst, jend, rsd, delunm);
   /*
   if ( ipr == 1 ) {
@@ -2233,7 +2038,6 @@
   // compute the max-norms of newton iteration residuals
   //---------------------------------------------------------------------
   if(((istep % inorm) == 0) || (istep == itmax)) {
-
   l2norm(33, 33, 33, nx0, ny0, nz0, ist, iend, jst, jend, rsd, rsdnm);
   /*
   if ( ipr == 1 ) {
@@ -2255,7 +2059,6 @@
   // check the newton-iteration residuals against the tolerance levels
   //---------------------------------------------------------------------
   if((rsdnm[0] < tolrsd[0]) && (rsdnm[1] < tolrsd[1]) && (rsdnm[2] < tolrsd[2]) && (rsdnm[3] < tolrsd[3]) && (rsdnm[4] < tolrsd[4])) {
-
   //if (ipr == 1 ) {
   printf(" \n convergence was achieved after %4d pseudo-time steps\n", istep);
   //}
@@ -2268,8 +2071,7 @@
   //---------------------------------------------------------------------
   // verification routine
   //---------------------------------------------------------------------
-  void verify(double xcr[5], double xce[5], double xci, char * Class, int * verified) {
-
+  void verify(double xcr[5], double xce[5], double xci, char *Class, int *verified) {
   double xcrref[5];
   double xceref[5];
   double xciref;
@@ -2288,13 +2090,11 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   xcrref[m] = 1.0;
   xceref[m] = 1.0;
   }
   xciref = 1.0;
   if((nx0 == 12) && (ny0 == 12) && (nz0 == 12) && (itmax == 50)) {
-
   *Class = 'S';
   dtref = 5.0e-1;
   //---------------------------------------------------------------------
@@ -2323,7 +2123,6 @@
   xciref = 7.8418928865937083e+00;
   }
   else if((nx0 == 33) && (ny0 == 33) && (nz0 == 33) && (itmax == 300)) {
-
   *Class = 'W'; //SPEC95fp size
   dtref = 1.5e-3;
   //---------------------------------------------------------------------
@@ -2351,7 +2150,6 @@
   xciref = 0.1161399311023e+02;
   }
   else if((nx0 == 64) && (ny0 == 64) && (nz0 == 64) && (itmax == 250)) {
-
   *Class = 'A';
   dtref = 2.0e+0;
   //---------------------------------------------------------------------
@@ -2380,7 +2178,6 @@
   xciref = 2.6030925604886277e+01;
   }
   else if((nx0 == 102) && (ny0 == 102) && (nz0 == 102) && (itmax == 250)) {
-
   *Class = 'B';
   dtref = 2.0e+0;
   //---------------------------------------------------------------------
@@ -2408,7 +2205,6 @@
   xciref = 4.7887162703308227e+01;
   }
   else if((nx0 == 162) && (ny0 == 162) && (nz0 == 162) && (itmax == 250)) {
-
   *Class = 'C';
   dtref = 2.0e+0;
   //---------------------------------------------------------------------
@@ -2441,7 +2237,6 @@
   xciref = 6.66404553572181300e+01;
   }
   else if((nx0 == 408) && (ny0 == 408) && (nz0 == 408) && (itmax == 300)) {
-
   *Class = 'D';
   dtref = 1.0e+0;
   //---------------------------------------------------------------------
@@ -2469,7 +2264,6 @@
   xciref = 0.8334101392503e+02;
   }
   else if((nx0 == 1020) && (ny0 == 1020) && (nz0 == 1020) && (itmax == 300)) {
-
   *Class = 'E';
   dtref = 0.5e+0;
   //---------------------------------------------------------------------
@@ -2499,7 +2293,6 @@
   xciref = 0.9512163272273e+02;
   }
   else {
-
   *verified = 0;
   }
   //---------------------------------------------------------------------
@@ -2513,7 +2306,6 @@
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   xcrdif[m] = fabs((xcr[m] - xcrref[m]) / xcrref[m]);
   xcedif[m] = fabs((xce[m] - xceref[m]) / xceref[m]);
   }
@@ -2522,111 +2314,87 @@
   // Output the comparison of computed results to known cases.
   //---------------------------------------------------------------------
   if(*Class != 'U') {
-
   printf("\n Verification being performed for class %c\n", *Class);
   printf(" Accuracy setting for epsilon = %20.13E\n", epsilon);
   *verified = (fabs(dt - dtref) <= epsilon);
   if(!(*verified)) {
-
   *Class = 'U';
   printf(" DT does not match the reference value of %15.8E\n", dtref);
   }
   }
   else {
-
   printf(" Unknown class\n");
   }
   if(*Class != 'U') {
-
   printf(" Comparison of RMS-norms of residual\n");
   }
   else {
-
   printf(" RMS-norms of residual\n");
   }
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   if(*Class == 'U') {
-
   printf("          %2d  %20.13E\n", m + 1, xcr[m]);
   }
   else if(xcrdif[m] <= epsilon) {
-
   printf("          %2d  %20.13E%20.13E%20.13E\n", m + 1, xcr[m], xcrref[m], xcrdif[m]);
   }
   else {
-
   *verified = 0;
   printf(" FAILURE: %2d  %20.13E%20.13E%20.13E\n", m + 1, xcr[m], xcrref[m], xcrdif[m]);
   }
   }
   if(*Class != 'U') {
-
   printf(" Comparison of RMS-norms of solution error\n");
   }
   else {
-
   printf(" RMS-norms of solution error\n");
   }
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
   for(m = 0; m < 5; m++) {
-
   if(*Class == 'U') {
-
   printf("          %2d  %20.13E\n", m + 1, xce[m]);
   }
   else if(xcedif[m] <= epsilon) {
-
   printf("          %2d  %20.13E%20.13E%20.13E\n", m + 1, xce[m], xceref[m], xcedif[m]);
   }
   else {
-
   *verified = 0;
   printf(" FAILURE: %2d  %20.13E%20.13E%20.13E\n", m + 1, xce[m], xceref[m], xcedif[m]);
   }
   }
   if(*Class != 'U') {
-
   printf(" Comparison of surface integral\n");
   }
   else {
-
   printf(" Surface integral\n");
   }
   if(*Class == 'U') {
-
   printf("              %20.13E\n", xci);
   }
   else if(xcidif <= epsilon) {
-
   printf("              %20.13E%20.13E%20.13E\n", xci, xciref, xcidif);
   }
   else {
-
   *verified = 0;
   printf(" FAILURE:     %20.13E%20.13E%20.13E\n", xci, xciref, xcidif);
   }
   if(*Class == 'U') {
-
   printf(" No reference values provided\n");
   printf("No verification performed\n");
   }
   else if(*verified) {
-
   printf(" Verification Successful\n");
   }
   else {
-
   printf(" Verification failed\n");
   }
   }
   void setcoeff() {
-
   //---------------------------------------------------------------------
   // local variables
   //---------------------------------------------------------------------
@@ -2748,8 +2516,7 @@
   ce[4][11] = 3.0e-01;
   ce[4][12] = 2.0e-01;
   }
-  void print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int verified) {
-
+  void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified) {
   char size[16];
   int j;
   printf("\n\n %s Benchmark Completed.\n", name);
@@ -2759,13 +2526,10 @@
   // problem size. In that case, n2 and n3 are both zero.
   // Otherwise, we print the grid size n1xn2xn3
   if((n2 == 0) && (n3 == 0)) {
-
   if((name[0] == 'E') && (name[1] == 'P')) {
-
   sprintf(size, "%15.0lf", pow(2.0, n1));
   j = 14;
   if(size[j] == '.') {
-
   size[j] = ' ';
   j--;
   }
@@ -2773,12 +2537,10 @@
   printf(" Size            =          %15s\n", size);
   }
   else {
-
   printf(" Size            =             %12d\n", n1);
   }
   }
   else {
-
   printf(" Size            =           %4dx%4dx%4d\n", n1, n2, n3);
   }
   printf(" Iterations      =             %12d\n", niter);
@@ -2788,8 +2550,7 @@
   if(verified) printf(" Verification    =             %12s\n", "SUCCESSFUL");
   else printf(" Verification    =             %12s\n", "UNSUCCESSFUL");
   }
-  void wtime(double * t) {
-
+  void wtime(double *t) {
   static int sec = -1;
   struct timeval tv;
   gettimeofday(&tv, (void *) 0);
@@ -2800,7 +2561,6 @@
   /******         E  L  A  P  S  E  D  _  T  I  M  E          ******/
   /*****************************************************************/
   double elapsed_time() {
-
   double t;
   wtime(&t);
   return (t);
@@ -2809,21 +2569,18 @@
   /******            T  I  M  E  R  _  C  L  E  A  R          ******/
   /*****************************************************************/
   void timer_clear(int n) {
-
   elapsed[n] = 0.0;
   }
   /*****************************************************************/
   /******            T  I  M  E  R  _  S  T  A  R  T          ******/
   /*****************************************************************/
   void timer_start(int n) {
-
   start[n] = elapsed_time();
   }
   /*****************************************************************/
   /******            T  I  M  E  R  _  S  T  O  P             ******/
   /*****************************************************************/
   void timer_stop(int n) {
-
   double t, now;
   now = elapsed_time();
   t = now - start[n];
@@ -2833,6 +2590,5 @@
   /******            T  I  M  E  R  _  R  E  A  D             ******/
   /*****************************************************************/
   double timer_read(int n) {
-
   return (elapsed[n]);
   }

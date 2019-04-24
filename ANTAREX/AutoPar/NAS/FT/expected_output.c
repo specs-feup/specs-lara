@@ -56,18 +56,18 @@
   double twiddle[32][128][129];
   dcomplex xnt[32][128][129];
   dcomplex y[32][128][129];
-  void appft(int niter, double * total_time, int * verified);
+  void appft(int niter, double *total_time, int *verified);
   void CompExp(int n, dcomplex exponent[n]);
   int ilog2(int n);
-  void CalculateChecksum(dcomplex * csum, int iterN, int d1, int d2, int d3, dcomplex u[d3][d2][d1 + 1]);
+  void CalculateChecksum(dcomplex *csum, int iterN, int d1, int d2, int d3, dcomplex u[d3][d2][d1 + 1]);
   void compute_initial_conditions(int d1, int d2, int d3, dcomplex u0[d3][d2][d1 + 1]);
   void evolve(int nx, int ny, int nz, dcomplex x[nz][ny][nx + 1], dcomplex y[nz][ny][nx + 1], double twiddle[nz][ny][nx + 1]);
   void fftXYZ(int sign, int n1, int n2, int n3, dcomplex x[n3][n2][n1 + 1], dcomplex xout[(n1 + 1) * n2 * n3], dcomplex exp1[n1], dcomplex exp2[n2], dcomplex exp3[n3]);
-  void verify(int n1, int n2, int n3, int nt, dcomplex cksum[nt + 1], int * verified);
-  double randlc(double * x, double a);
-  void vranlc(int n, double * x, double a, double y[]);
+  void verify(int n1, int n2, int n3, int nt, dcomplex cksum[nt + 1], int *verified);
+  double randlc(double *x, double a);
+  void vranlc(int n, double *x, double a, double y[]);
   char getclass();
-  void print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int verified);
+  void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified);
   double start[64];
   double elapsed[64];
   double elapsed_time();
@@ -75,8 +75,8 @@
   void timer_start(int n);
   void timer_stop(int n);
   double timer_read(int n);
-  void wtime(double * t);
-  int main(int argc, char * argv[]) {
+  void wtime(double *t);
+  int main(int argc, char *argv[]) {
   int niter;
   char Class;
   double total_time, mflops;
@@ -121,7 +121,7 @@
   return 'U';
   }
   }
-  void appft(int niter, double * total_time, int * verified) {
+  void appft(int niter, double *total_time, int *verified) {
   int i, j, k, kt, n12, n22, n32, ii, jj, kk, ii2, ik2;
   double ap;
   dcomplex exp1[128];
@@ -250,7 +250,7 @@
   result = r;
   return result;
   }
-  void CalculateChecksum(dcomplex * csum, int iterN, int d1, int d2, int d3, dcomplex u[d3][d2][d1 + 1]) {
+  void CalculateChecksum(dcomplex *csum, int iterN, int d1, int d2, int d3, dcomplex u[d3][d2][d1 + 1]) {
   int i, i1, ii, ji, ki;
   dcomplex csum_temp = (dcomplex){0.0, 0.0};
   /*************** Clava msgError **************
@@ -338,7 +338,7 @@
   // Swarztrauber to
   // perform FFTs
   //---------------------------------------------------------------------
-  void Swarztrauber(int is, int m, int vlen, int n, int xd1, void * ox, dcomplex exponent[n]) {
+  void Swarztrauber(int is, int m, int vlen, int n, int xd1, void *ox, dcomplex exponent[n]) {
   dcomplex (*x)[xd1] = (dcomplex (*)[xd1]) ox;
   int i, j, l;
   dcomplex u1, x11, x21;
@@ -520,7 +520,7 @@
   }
   }
   // FT verification routine.
-  void verify(int n1, int n2, int n3, int nt, dcomplex cksum[nt + 1], int * verified) {
+  void verify(int n1, int n2, int n3, int nt, dcomplex cksum[nt + 1], int *verified) {
   // Local variables.
   int kt;
   dcomplex cexpd[26];
@@ -681,7 +681,7 @@
   }
   }
   }
-  void print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int verified) {
+  void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified) {
   char size[16];
   int j;
   printf("\n\n %s Benchmark Completed.\n", name);
@@ -715,7 +715,7 @@
   if(verified) printf(" Verification    =             %12s\n", "SUCCESSFUL");
   else printf(" Verification    =             %12s\n", "UNSUCCESSFUL");
   }
-  double randlc(double * x, double a) {
+  double randlc(double *x, double a) {
   //--------------------------------------------------------------------
   //
   //  This routine returns a uniform pseudorandom double precision number in the
@@ -773,7 +773,7 @@
   r = r46 * (*x);
   return r;
   }
-  void vranlc(int n, double * x, double a, double y[]) {
+  void vranlc(int n, double *x, double a, double y[]) {
   //--------------------------------------------------------------------
   //
   //  This routine generates N uniform pseudorandom double precision numbers in
@@ -839,7 +839,7 @@
   }
   return;
   }
-  void wtime(double * t) {
+  void wtime(double *t) {
   static int sec = -1;
   struct timeval tv;
   gettimeofday(&tv, (void *) 0);

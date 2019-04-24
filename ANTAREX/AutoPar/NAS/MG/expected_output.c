@@ -72,23 +72,23 @@
   int ie1;
   int ie2;
   int ie3;
-  void setup(int * n1, int * n2, int * n3);
+  void setup(int *n1, int *n2, int *n3);
   void mg3P(double u[], double v[], double r[], double a[4], double c[4], int n1, int n2, int n3);
-  void psinv(void * or, void * ou, int n1, int n2, int n3, double c[4], int k);
-  void resid(void * ou, void * ov, void * or, int n1, int n2, int n3, double a[4], int k);
-  void rprj3(void * or, int m1k, int m2k, int m3k, void * os, int m1j, int m2j, int m3j, int k);
-  void interp(void * oz, int mm1, int mm2, int mm3, void * ou, int n1, int n2, int n3, int k);
-  void norm2u3(void * or, int n1, int n2, int n3, double * rnm2, double * rnmu, int nx, int ny, int nz);
-  void rep_nrm(void * u, int n1, int n2, int n3, char * title, int kk);
-  void comm3(void * ou, int n1, int n2, int n3, int kk);
-  void zran3(void * oz, int n1, int n2, int n3, int nx, int ny, int k);
-  void showall(void * oz, int n1, int n2, int n3);
+  void psinv(void *or, void *ou, int n1, int n2, int n3, double c[4], int k);
+  void resid(void *ou, void *ov, void *or, int n1, int n2, int n3, double a[4], int k);
+  void rprj3(void *or, int m1k, int m2k, int m3k, void *os, int m1j, int m2j, int m3j, int k);
+  void interp(void *oz, int mm1, int mm2, int mm3, void *ou, int n1, int n2, int n3, int k);
+  void norm2u3(void *or, int n1, int n2, int n3, double *rnm2, double *rnmu, int nx, int ny, int nz);
+  void rep_nrm(void *u, int n1, int n2, int n3, char *title, int kk);
+  void comm3(void *ou, int n1, int n2, int n3, int kk);
+  void zran3(void *oz, int n1, int n2, int n3, int nx, int ny, int k);
+  void showall(void *oz, int n1, int n2, int n3);
   double power(double a, int n);
   void bubble(double ten[][2], int j1[][2], int j2[][2], int j3[][2], int m, int ind);
-  void zero3(void * oz, int n1, int n2, int n3);
-  double randlc(double * x, double a);
-  void vranlc(int n, double * x, double a, double y[]);
-  void print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int verified);
+  void zero3(void *oz, int n1, int n2, int n3);
+  double randlc(double *x, double a);
+  void vranlc(int n, double *x, double a, double y[]);
+  void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified);
   double start[64];
   double elapsed[64];
   double elapsed_time();
@@ -96,7 +96,7 @@
   void timer_start(int n);
   void timer_stop(int n);
   double timer_read(int n);
-  void wtime(double * t);
+  void wtime(double *t);
   int main() {
   //-------------------------------------------------------------------------c
   // k is the current level. It is passed down through subroutine args
@@ -111,7 +111,7 @@
   double nn, verify_value, err;
   int verified;
   int i;
-  char * t_names[10];
+  char *t_names[10];
   double tmax;
   /*************** Clava msgError **************
   Loop Iteration number is too low
@@ -304,7 +304,7 @@
   int exitValue = verified ? 0 : 1;
   return exitValue;
   }
-  void setup(int * n1, int * n2, int * n3) {
+  void setup(int *n1, int *n2, int *n3) {
   int k, j;
   int ax;
   int mi[9][3];
@@ -426,7 +426,7 @@
   // Note that this vectorizes, and is also fine for cache
   // based machines.
   //---------------------------------------------------------------------
-  void psinv(void * or, void * ou, int n1, int n2, int n3, double c[4], int k) {
+  void psinv(void *or, void *ou, int n1, int n2, int n3, double c[4], int k) {
   double (*r)[n2][n1] = (double (*)[n2][n1]) or;
   double (*u)[n2][n1] = (double (*)[n2][n1]) ou;
   int i3, i2, i1;
@@ -475,7 +475,7 @@
   // Note that this vectorizes, and is also fine for cache
   // based machines.
   //---------------------------------------------------------------------
-  void resid(void * ou, void * ov, void * or, int n1, int n2, int n3, double a[4], int k) {
+  void resid(void *ou, void *ov, void *or, int n1, int n2, int n3, double a[4], int k) {
   double (*u)[n2][n1] = (double (*)[n2][n1]) ou;
   double (*v)[n2][n1] = (double (*)[n2][n1]) ov;
   double (*r)[n2][n1] = (double (*)[n2][n1]) or;
@@ -523,7 +523,7 @@
   // Note that this vectorizes, and is also fine for cache
   // based machines.
   //---------------------------------------------------------------------
-  void rprj3(void * or, int m1k, int m2k, int m3k, void * os, int m1j, int m2j, int m3j, int k) {
+  void rprj3(void *or, int m1k, int m2k, int m3k, void *os, int m1j, int m2j, int m3j, int k) {
   double (*r)[m2k][m1k] = (double (*)[m2k][m1k]) or;
   double (*s)[m2j][m1j] = (double (*)[m2j][m1j]) os;
   int j3, j2, j1, i3, i2, i1, d1, d2, d3, j;
@@ -589,7 +589,7 @@
   // based machines.  Vector machines may get slightly better
   // performance however, with 8 separate "do i1" loops, rather than 4.
   //---------------------------------------------------------------------
-  void interp(void * oz, int mm1, int mm2, int mm3, void * ou, int n1, int n2, int n3, int k) {
+  void interp(void *oz, int mm1, int mm2, int mm3, void *ou, int n1, int n2, int n3, int k) {
   double (*z)[mm2][mm1] = (double (*)[mm2][mm1]) oz;
   double (*u)[n2][n1] = (double (*)[n2][n1]) ou;
   int i3, i2, i1, d1, d2, d3, t1, t2, t3;
@@ -726,7 +726,7 @@
   // boundaries in with half weight (quarter weight on the edges
   // and eighth weight at the corners) for inhomogeneous boundaries.
   //---------------------------------------------------------------------
-  void norm2u3(void * or, int n1, int n2, int n3, double * rnm2, double * rnmu, int nx, int ny, int nz) {
+  void norm2u3(void *or, int n1, int n2, int n3, double *rnm2, double *rnmu, int nx, int ny, int nz) {
   double (*r)[n2][n1] = (double (*)[n2][n1]) or;
   double s, a;
   int i3, i2, i1;
@@ -757,7 +757,7 @@
   //---------------------------------------------------------------------
   // report on norm
   //---------------------------------------------------------------------
-  void rep_nrm(void * u, int n1, int n2, int n3, char * title, int kk) {
+  void rep_nrm(void *u, int n1, int n2, int n3, char *title, int kk) {
   double rnm2, rnmu;
   norm2u3(u, n1, n2, n3, &rnm2, &rnmu, nx[kk], ny[kk], nz[kk]);
   printf(" Level%2d in %8s: norms =%21.14E%21.14E\n", kk, title, rnm2, rnmu);
@@ -765,7 +765,7 @@
   //---------------------------------------------------------------------
   // comm3 organizes the communication on all borders
   //---------------------------------------------------------------------
-  void comm3(void * ou, int n1, int n2, int n3, int kk) {
+  void comm3(void *ou, int n1, int n2, int n3, int kk) {
   double (*u)[n2][n1] = (double (*)[n2][n1]) ou;
   int i1, i2, i3;
   #pragma omp parallel for default(shared) private(i3, i2) firstprivate(n3, n2, n1)
@@ -798,7 +798,7 @@
   // loads -1 at a different ten random points,
   // and zero elsewhere.
   //---------------------------------------------------------------------
-  void zran3(void * oz, int n1, int n2, int n3, int nx, int ny, int k) {
+  void zran3(void *oz, int n1, int n2, int n3, int nx, int ny, int k) {
   double (*z)[n2][n1] = (double (*)[n2][n1]) oz;
   int i0, m0, m1;
   int i1, i2, i3, d1, e1, e2, e3;
@@ -1004,7 +1004,7 @@
   // showall(z,n1,n2,n3);
   //---------------------------------------------------------------------
   }
-  void showall(void * oz, int n1, int n2, int n3) {
+  void showall(void *oz, int n1, int n2, int n3) {
   double (*z)[n2][n1] = (double (*)[n2][n1]) oz;
   int i1, i2, i3;
   int m1, m2, m3;
@@ -1112,7 +1112,7 @@
   }
   }
   }
-  void zero3(void * oz, int n1, int n2, int n3) {
+  void zero3(void *oz, int n1, int n2, int n3) {
   double (*z)[n2][n1] = (double (*)[n2][n1]) oz;
   int i1, i2, i3;
   #pragma omp parallel for default(shared) private(i3, i2, i1) firstprivate(n3, n2, n1)
@@ -1126,7 +1126,7 @@
   }
   }
   }
-  double randlc(double * x, double a) {
+  double randlc(double *x, double a) {
   //--------------------------------------------------------------------
   //
   //  This routine returns a uniform pseudorandom double precision number in the
@@ -1184,7 +1184,7 @@
   r = r46 * (*x);
   return r;
   }
-  void vranlc(int n, double * x, double a, double y[]) {
+  void vranlc(int n, double *x, double a, double y[]) {
   //--------------------------------------------------------------------
   //
   //  This routine generates N uniform pseudorandom double precision numbers in
@@ -1250,7 +1250,7 @@
   }
   return;
   }
-  void print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int verified) {
+  void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified) {
   char size[16];
   int j;
   printf("\n\n %s Benchmark Completed.\n", name);
@@ -1284,7 +1284,7 @@
   if(verified) printf(" Verification    =             %12s\n", "SUCCESSFUL");
   else printf(" Verification    =             %12s\n", "UNSUCCESSFUL");
   }
-  void wtime(double * t) {
+  void wtime(double *t) {
   static int sec = -1;
   struct timeval tv;
   gettimeofday(&tv, (void *) 0);

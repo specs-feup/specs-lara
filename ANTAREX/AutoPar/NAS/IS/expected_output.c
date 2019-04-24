@@ -1,4 +1,4 @@
- #include <stdio.h>
+  #include <stdio.h>
   #include <stdlib.h>
   #include <math.h>
   #include <time.h>
@@ -38,7 +38,7 @@
   /********************/
   /*Some global info*/
   /********************/
-  INT_TYPE * key_buff_ptr_global;
+  INT_TYPE *key_buff_ptr_global;
   /*used by full_verify to get*/
   /*copies of rank info*/
   int passed_verification;
@@ -70,9 +70,9 @@
   /***********************/
   /*function prototypes*/
   /***********************/
-  double randlc(double * X, double * A);
+  double randlc(double *X, double *A);
   void full_verify();
-  void c_print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int passed_verification);
+  void c_print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int passed_verification);
   double start[64];
   double elapsed[64];
   double elapsed_time();
@@ -80,13 +80,13 @@
   void timer_start(int n);
   void timer_stop(int n);
   double timer_read(int n);
-  void wtime(double * t);
+  void wtime(double *t);
   /*****************************************************************/
   /*************           R  A  N  D  L  C             ************/
   /*************                                        ************/
   /*************    portable random number generator    ************/
   /*****************************************************************/
-  double randlc(double * X, double * A) {
+  double randlc(double *X, double *A) {
   int KS = 0;
   double R23, R46, T23, T46;
   double T1, T2, T3, T4;
@@ -185,7 +185,7 @@
   /*****************************************************************/
   void rank(int iteration) {
   INT_TYPE i, k;
-  INT_TYPE * key_buff_ptr, *key_buff_ptr2;
+  INT_TYPE *key_buff_ptr, *key_buff_ptr2;
   key_array[iteration] = iteration;
   key_array[iteration + 10] = (1 << 16) - iteration;
   /*Determine where the partial verify test keys are, load into*/
@@ -304,10 +304,10 @@
   /*****************************************************************/
   /*************             M  A  I  N             ****************/
   /*****************************************************************/
-  int main(int argc, char ** argv) {
+  int main(int argc, char **argv) {
   int i, iteration;
   double timecounter;
-  FILE * fp;
+  FILE *fp;
   /*Initialize timers*/
   timer_clear(0);
   /*Initialize the verification arrays if a valid class*/
@@ -380,14 +380,13 @@
   /**************************/
   /*E N D  P R O G R A M*/
   /**************************/
-  void c_print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int passed_verification) {
+  void c_print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int passed_verification) {
   printf("\n\n %s Benchmark Completed\n", name);
   printf(" Class           =                        %c\n", class);
   if(n3 == 0) {
   long nn = n1;
   if(n2 != 0) nn *= n2;
   printf(" Size            =             %12ld\n", nn);
-  
   }
   else printf(" Size            =             %4dx%4dx%4d\n", n1, n2, n3);
   printf(" Iterations      =             %12d\n", niter);
@@ -398,7 +397,7 @@
   else if(passed_verification) printf(" Verification    =               SUCCESSFUL\n");
   else printf(" Verification    =             UNSUCCESSFUL\n");
   }
-  void wtime(double * t) {
+  void wtime(double *t) {
   static int sec = -1;
   struct timeval tv;
   gettimeofday(&tv, (void *) 0);

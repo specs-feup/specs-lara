@@ -1,4 +1,3 @@
-
   #include <stdio.h>
   #include <stdlib.h>
   #include <math.h>
@@ -53,15 +52,15 @@
   double amult;
   double tran;
   //---------------------------------------------------------------------
-  void conj_grad(int colidx[], int rowstr[], double x[], double z[], double a[], double p[], double q[], double r[], double * rnorm);
+  void conj_grad(int colidx[], int rowstr[], double x[], double z[], double a[], double p[], double q[], double r[], double *rnorm);
   void makea(int n, int nz, double a[], int colidx[], int rowstr[], int firstrow, int lastrow, int firstcol, int lastcol, int arow[], int acol[][9], double aelt[][9], int iv[]);
   void sparse(double a[], int colidx[], int rowstr[], int n, int nz, int nozer, int arow[], int acol[][9], double aelt[][9], int firstrow, int lastrow, int nzloc[], double rcond, double shift);
   void sprnvc(int n, int nz, int nn1, double v[], int iv[]);
   int icnvrt(double x, int ipwr2);
-  void vecset(int n, double v[], int iv[], int * nzv, int i, double val);
-  void print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int verified);
-  double randlc(double * x, double a);
-  void vranlc(int n, double * x, double a, double y[]);
+  void vecset(int n, double v[], int iv[], int *nzv, int i, double val);
+  void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified);
+  double randlc(double *x, double a);
+  void vranlc(int n, double *x, double a, double y[]);
   double start[64];
   double elapsed[64];
   double elapsed_time();
@@ -69,9 +68,9 @@
   void timer_start(int n);
   void timer_stop(int n);
   double timer_read(int n);
-  void wtime(double * t);
+  void wtime(double *t);
   //---------------------------------------------------------------------
-  int main(int argc, char * argv[]) {
+  int main(int argc, char *argv[]) {
   int i, j, k, it;
   double zeta;
   double rnorm;
@@ -80,7 +79,7 @@
   char Class;
   int verified;
   double zeta_verify_value, epsilon, err;
-  char * t_names[3];
+  char *t_names[3];
   /*************** Clava msgError **************
   Loop Iteration number is too low
   ****************************************/
@@ -294,7 +293,7 @@
   // Floaging point arrays here are named as in NPB1 spec discussion of
   // CG algorithm
   //---------------------------------------------------------------------
-  void conj_grad(int colidx[], int rowstr[], double x[], double z[], double a[], double p[], double q[], double r[], double * rnorm) {
+  void conj_grad(int colidx[], int rowstr[], double x[], double z[], double a[], double p[], double q[], double r[], double *rnorm) {
   int j, k;
   int cgit, cgitmax = 25;
   double d, sum, rho, rho0, alpha, beta;
@@ -746,7 +745,7 @@
   // set ith element of sparse vector (v, iv) with
   // nzv nonzeros to val
   //---------------------------------------------------------------------
-  void vecset(int n, double v[], int iv[], int * nzv, int i, double val) {
+  void vecset(int n, double v[], int iv[], int *nzv, int i, double val) {
   int k;
   int set;
   set = 0;
@@ -765,7 +764,7 @@
   *nzv = *nzv + 1;
   }
   }
-  double randlc(double * x, double a) {
+  double randlc(double *x, double a) {
   //--------------------------------------------------------------------
   //
   //  This routine returns a uniform pseudorandom double precision number in the
@@ -823,7 +822,7 @@
   r = r46 * (*x);
   return r;
   }
-  void vranlc(int n, double * x, double a, double y[]) {
+  void vranlc(int n, double *x, double a, double y[]) {
   //--------------------------------------------------------------------
   //
   //  This routine generates N uniform pseudorandom double precision numbers in
@@ -889,7 +888,7 @@
   }
   return;
   }
-  void wtime(double * t) {
+  void wtime(double *t) {
   static int sec = -1;
   struct timeval tv;
   gettimeofday(&tv, (void *) 0);
@@ -931,7 +930,7 @@
   double timer_read(int n) {
   return (elapsed[n]);
   }
-  void print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int verified) {
+  void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified) {
   char size[16];
   int j;
   printf("\n\n %s Benchmark Completed.\n", name);

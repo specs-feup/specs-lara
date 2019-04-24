@@ -213,13 +213,13 @@
   int face_ld[3];
   // Timer parameters
   /*common /timing/*/
-  void do_coarsen(int * if_coarsen, int * icoarsen, int neltold);
-  void do_refine(int * ifmortar, int * irefine);
+  void do_coarsen(int *if_coarsen, int *icoarsen, int neltold);
+  void do_refine(int *ifmortar, int *irefine);
   int ifcor(int n1, int n2, int i, int iface);
   int icheck(int ie, int n);
-  void find_coarsen(int * if_coarsen, int neltold);
-  void find_refine(int * if_refine);
-  void check_refine(int * ifrepeat);
+  void find_coarsen(int *if_coarsen, int neltold);
+  void find_refine(int *if_refine);
+  void check_refine(int *ifrepeat);
   int iftouch(int iel);
   void remap(double y[5][5][5], double y1[7][5][5][5], double x[5][5][5]);
   void merging(int iela[8]);
@@ -230,7 +230,7 @@
   void convect(int ifmortar);
   void diffusion(int ifmortar);
   void laplacian(double r[5][5][5], double u[5][5][5], int sizei);
-  void adaptation(int * ifmortar, int step);
+  void adaptation(int *ifmortar, int step);
   void move();
   void mortar();
   int ifsame(int iel, int i, int ntemp, int j);
@@ -254,15 +254,15 @@
   void facev(double a[5][5][5], int iface, double val);
   void transf(double tmor[], double tx[]);
   void transfb(double tmor[], double tx[]);
-  void transfb_cor_e(int n, double * tmor, double tx[5][5][5]);
-  void transfb_cor_f(int n, double * tmor, double tx[5][5][5]);
+  void transfb_cor_e(int n, double *tmor, double tx[5][5][5]);
+  void transfb_cor_f(int n, double *tmor, double tx[5][5][5]);
   void transf_nc(double tmor[5][5], double tx[5][5]);
   void transfb_nc0(double tmor[5][5], double tx[5][5][5]);
   void transfb_nc2(double tmor[5][5], double tx[5][5]);
   void transfb_nc1(double tmor[5][5], double tx[5][5]);
   void transfb_c(double tx[]);
   void transfb_c_2(double tx[]);
-  void verify(char * Class, int * verified);
+  void verify(char *Class, int *verified);
   void create_initial_grid();
   void coef();
   void geom1();
@@ -270,7 +270,7 @@
   void prepwork();
   void top_constants();
   void get_emo(int ie, int n, int ng);
-  void mor_assign(int mor_v[3], int * count);
+  void mor_assign(int mor_v[3], int *count);
   void mor_edge(int ie, int face, int iel, int mor_v[3]);
   void edgecopy_s(int face, int iel);
   void mor_s_e(int n, int face, int iel, int mor_s_v[2][4]);
@@ -279,7 +279,7 @@
   void mor_ne(int mor_v[3], int nn, int edge, int face, int edge2, int face2, int ntemp, int iel);
   void pc_corner(int imor);
   void com_dpc(int iside, int iel, int enumber, int n, int isize);
-  void print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int verified);
+  void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified);
   double start[64];
   double elapsed[64];
   double elapsed_time();
@@ -287,20 +287,20 @@
   void timer_start(int n);
   void timer_stop(int n);
   double timer_read(int n);
-  void wtime(double * t);
-  int main(int argc, char * argv[]) {
+  void wtime(double *t);
+  int main(int argc, char *argv[]) {
   int step, ie, iside, i, j, k;
   double mflops, tmax, nelt_tot = 0.0;
   char Class;
   int ifmortar = 0, verified;
   double t2;
   double trecs[11];
-  char * t_names[11];
+  char *t_names[11];
   //---------------------------------------------------------------------
   // Read input file (if it exists), else take
   // defaults from parameters
   //---------------------------------------------------------------------
-  FILE * fp;
+  FILE *fp;
   printf("\n\n NAS Parallel Benchmarks (NPB3.3-SER-C) - UA Benchmark\n\n");
   if((fp = fopen("inputua.data", "r")) != ((void *) 0)) {
   int result;
@@ -476,7 +476,7 @@
   //-----------------------------------------------------------
   // For 3-D mesh adaptation (refinement+ coarsening)
   //-----------------------------------------------------------
-  void adaptation(int * ifmortar, int step) {
+  void adaptation(int *ifmortar, int step) {
   int if_coarsen, if_refine, ifrepeat;
   int iel, miel, irefine, icoarsen, neltold;
   *ifmortar = 0;
@@ -565,7 +565,7 @@
   // 1) check with restrictions
   // 2) perform coarsening
   //---------------------------------------------------------------
-  void do_coarsen(int * if_coarsen, int * icoarsen, int neltold) {
+  void do_coarsen(int *if_coarsen, int *icoarsen, int neltold) {
   int test, test1, test2, test3;
   int iel;
   int ntp[8];
@@ -721,7 +721,7 @@
   //-------------------------------------------------------
   // Refinement procedure
   //--------------------------------------------------------
-  void do_refine(int * ifmortar, int * irefine) {
+  void do_refine(int *ifmortar, int *irefine) {
   double xctemp[8];
   double yctemp[8];
   double zctemp[8];
@@ -1188,7 +1188,7 @@
   // This subroutine only checks the element itself, not its
   // neighbors.
   //-----------------------------------------------------------
-  void find_coarsen(int * if_coarsen, int neltold) {
+  void find_coarsen(int *if_coarsen, int neltold) {
   int iftemp;
   int iel, i;
   *if_coarsen = 0;
@@ -1220,7 +1220,7 @@
   // search elements to be refined based on whether they
   // have overlap with the heat source
   //-----------------------------------------------------------
-  void find_refine(int * if_refine) {
+  void find_refine(int *if_refine) {
   int iel;
   *if_refine = 0;
   #pragma omp parallel for default(shared) private(iel) firstprivate(nelt, dlmin)
@@ -1240,7 +1240,7 @@
   // original element, and set ifrepeat 1. i.e. this procedure
   // needs to be repeated until no further check is needed
   //-----------------------------------------------------------------
-  void check_refine(int * ifrepeat) {
+  void check_refine(int *ifrepeat) {
   int iel, iface, ntemp, nntemp, i, jface;
   *ifrepeat = 0;
   /*************** Clava msgError **************
@@ -3868,7 +3868,7 @@
   // be assigned to the three interior points of an edge as the
   // mortar point indices.
   //-----------------------------------------------------------------
-  void mor_assign(int mor_v[3], int * count) {
+  void mor_assign(int mor_v[3], int *count) {
   int i;
   /*************** Clava msgError **************
   Loop Iteration number is too low
@@ -7209,7 +7209,7 @@
   // n = 2: two edges are nonconforming
   // n = 3: three edges are nonconforming
   //-------------------------------------------------------------------
-  void transfb_cor_e(int n, double * tmor, double tx[5][5][5]) {
+  void transfb_cor_e(int n, double *tmor, double tx[5][5][5]) {
   double tmp;
   int i;
   tmp = tx[0][0][0];
@@ -7246,7 +7246,7 @@
   // n=6: two faces are nonconforming
   // n=7: three faces are nonconforming
   //--------------------------------------------------------------
-  void transfb_cor_f(int n, double * tmor, double tx[5][5][5]) {
+  void transfb_cor_f(int n, double *tmor, double tx[5][5][5]) {
   double temp[5];
   double tmp;
   int col, i;
@@ -7941,7 +7941,7 @@
   }
   }
   }
-  void verify(char * Class, int * verified) {
+  void verify(char *Class, int *verified) {
   double norm, epsilon, norm_dif, norm_ref;
   // tolerance level
   epsilon = 1.0e-08;
@@ -8010,7 +8010,7 @@
   printf(" Verification failed\n");
   }
   }
-  void print_results(char * name, char class, int n1, int n2, int n3, int niter, double t, double mops, char * optype, int verified) {
+  void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified) {
   char size[16];
   int j;
   printf("\n\n %s Benchmark Completed.\n", name);
@@ -8044,7 +8044,7 @@
   if(verified) printf(" Verification    =             %12s\n", "SUCCESSFUL");
   else printf(" Verification    =             %12s\n", "UNSUCCESSFUL");
   }
-  void wtime(double * t) {
+  void wtime(double *t) {
   static int sec = -1;
   struct timeval tv;
   gettimeofday(&tv, (void *) 0);
