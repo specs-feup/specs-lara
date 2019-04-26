@@ -106,7 +106,7 @@ static void kernel_gramschmidt(int m, int n, double A[1000][1200], double R[1200
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int m = 1000;
    int n = 1200;

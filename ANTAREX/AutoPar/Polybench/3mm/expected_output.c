@@ -100,7 +100,7 @@ static void kernel_3mm(int ni, int nj, int nk, int nl, int nm, double E[800][900
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int ni = 800;
    int nj = 900;
@@ -109,7 +109,6 @@ int main(int argc, char ** argv) {
    int nm = 1200;
    /*Variable declaration/allocation.*/
    double (*E)[800][900];
-   
    E = (double (*)[800][900]) polybench_alloc_data((800 + 0) * (900 + 0), sizeof(double));
    ;
    double (*A)[800][1000];

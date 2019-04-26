@@ -76,7 +76,7 @@ static void kernel_bicg(int m, int n, double A[2100][1900], double s[1900], doub
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int n = 2100;
    int m = 1900;

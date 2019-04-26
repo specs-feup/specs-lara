@@ -17,7 +17,7 @@
 /*Include polybench common header.*/
 /*Include benchmark-specific header.*/
 /*Array initialization.*/
-static void init_array(int m, int n, double * alpha, double A[1000][1000], double B[1000][1200]) {
+static void init_array(int m, int n, double *alpha, double A[1000][1000], double B[1000][1200]) {
    int i, j;
    *alpha = 1.5;
    #pragma omp parallel for default(shared) private(i, j) firstprivate(m, n)
@@ -79,7 +79,7 @@ static void kernel_trmm(int m, int n, double alpha, double A[1000][1000], double
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int m = 1000;
    int n = 1200;

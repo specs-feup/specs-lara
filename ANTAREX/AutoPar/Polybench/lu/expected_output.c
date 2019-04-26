@@ -119,7 +119,7 @@ static void kernel_lu(int n, double A[2000][2000]) {
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int n = 2000;
    /*Variable declaration/allocation.*/

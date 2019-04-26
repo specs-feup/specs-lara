@@ -93,7 +93,7 @@ static void kernel_heat_3d(int tsteps, int n, double A[120][120][120], double B[
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int n = 120;
    int tsteps = 500;

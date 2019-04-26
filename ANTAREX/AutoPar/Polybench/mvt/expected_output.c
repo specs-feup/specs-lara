@@ -76,7 +76,7 @@ static void kernel_mvt(int n, double x1[2000], double x2[2000], double y_1[2000]
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int n = 2000;
    /*Variable declaration/allocation.*/

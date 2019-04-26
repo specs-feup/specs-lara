@@ -72,7 +72,7 @@ static void kernel_seidel_2d(int tsteps, int n, double A[2000][2000]) {
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int n = 2000;
    int tsteps = 500;

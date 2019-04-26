@@ -17,7 +17,7 @@
 /*Include polybench common header.*/
 /*Include benchmark-specific header.*/
 /*Array initialization.*/
-static void init_array(int n, double * alpha, double * beta, double A[2000][2000], double u1[2000], double v1[2000], double u2[2000], double v2[2000], double w[2000], double x[2000], double y[2000], double z[2000]) {
+static void init_array(int n, double *alpha, double *beta, double A[2000][2000], double u1[2000], double v1[2000], double u2[2000], double v2[2000], double w[2000], double x[2000], double y[2000], double z[2000]) {
    int i, j;
    *alpha = 1.5;
    *beta = 1.2;
@@ -79,7 +79,7 @@ static void kernel_gemver(int n, double alpha, double beta, double A[2000][2000]
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int n = 2000;
    /*Variable declaration/allocation.*/

@@ -64,7 +64,7 @@ static void kernel_trisolv(int n, double L[2000][2000], double x[2000], double b
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int n = 2000;
    /*Variable declaration/allocation.*/

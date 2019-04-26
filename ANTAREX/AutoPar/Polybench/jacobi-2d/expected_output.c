@@ -76,7 +76,7 @@ static void kernel_jacobi_2d(int tsteps, int n, double A[1300][1300], double B[1
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int n = 1300;
    int tsteps = 500;

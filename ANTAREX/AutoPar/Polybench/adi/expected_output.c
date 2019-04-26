@@ -128,7 +128,7 @@ static void kernel_adi(int tsteps, int n, double u[1000][1000], double v[1000][1
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int n = 1000;
    int tsteps = 500;

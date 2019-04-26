@@ -17,7 +17,7 @@
 /*Include polybench common header.*/
 /*Include benchmark-specific header.*/
 /*Array initialization.*/
-static void init_array(int m, int n, double * float_n, double data[1400][1200]) {
+static void init_array(int m, int n, double *float_n, double data[1400][1200]) {
    int i, j;
    *float_n = (double) 1400;
    #pragma omp parallel for default(shared) private(i, j)
@@ -96,7 +96,7 @@ static void kernel_correlation(int m, int n, double float_n, double data[1400][1
    corr[m - 1][m - 1] = 1.0;
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int n = 1400;
    int m = 1200;

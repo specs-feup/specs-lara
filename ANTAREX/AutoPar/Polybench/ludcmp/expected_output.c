@@ -137,7 +137,7 @@ static void kernel_ludcmp(int n, double A[2000][2000], double b[2000], double x[
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int n = 2000;
    /*Variable declaration/allocation.*/

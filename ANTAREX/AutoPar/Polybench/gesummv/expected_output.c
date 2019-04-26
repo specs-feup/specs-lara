@@ -17,7 +17,7 @@
 /*Include polybench common header.*/
 /*Include benchmark-specific header.*/
 /*Array initialization.*/
-static void init_array(int n, double * alpha, double * beta, double A[1300][1300], double B[1300][1300], double x[1300]) {
+static void init_array(int n, double *alpha, double *beta, double A[1300][1300], double B[1300][1300], double x[1300]) {
    int i, j;
    *alpha = 1.5;
    *beta = 1.2;
@@ -68,7 +68,7 @@ static void kernel_gesummv(int n, double alpha, double beta, double A[1300][1300
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int n = 1300;
    /*Variable declaration/allocation.*/

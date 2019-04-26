@@ -17,7 +17,7 @@
 /*Include polybench common header.*/
 /*Include benchmark-specific header.*/
 /*Array initialization.*/
-static void init_array(int m, int n, double * alpha, double * beta, double C[1000][1200], double A[1000][1000], double B[1000][1200]) {
+static void init_array(int m, int n, double *alpha, double *beta, double C[1000][1200], double A[1000][1000], double B[1000][1200]) {
    int i, j;
    *alpha = 1.5;
    *beta = 1.2;
@@ -86,7 +86,7 @@ static void kernel_symm(int m, int n, double alpha, double beta, double C[1000][
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int m = 1000;
    int n = 1200;

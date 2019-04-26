@@ -79,7 +79,7 @@ static void kernel_durbin(int n, double r[2000], double y[2000]) {
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int n = 2000;
    /*Variable declaration/allocation.*/

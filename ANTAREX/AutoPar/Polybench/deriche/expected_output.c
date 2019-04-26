@@ -17,7 +17,7 @@
 /*Include polybench common header.*/
 /*Include benchmark-specific header.*/
 /*Array initialization.*/
-static void init_array(int w, int h, float * alpha, float imgIn[4096][2160], float imgOut[4096][2160]) {
+static void init_array(int w, int h, float *alpha, float imgIn[4096][2160], float imgOut[4096][2160]) {
    int i, j;
    *alpha = 0.25; //parameter of the filter
    //input should be between 0 and 1 (grayscale image pixel)
@@ -162,7 +162,7 @@ static void kernel_deriche(int w, int h, float alpha, float imgIn[4096][2160], f
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int w = 4096;
    int h = 2160;

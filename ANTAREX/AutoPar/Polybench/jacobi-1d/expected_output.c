@@ -60,11 +60,11 @@ static void kernel_jacobi_1d(int tsteps, int n, double A[2000], double B[2000]) 
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int n = 2000;
    int tsteps = 500;
-   /*Variable declaration/allocation.*/   
+   /*Variable declaration/allocation.*/
    double (*A)[2000];
    A = (double (*)[2000]) polybench_alloc_data(2000 + 0, sizeof(double));
    ;

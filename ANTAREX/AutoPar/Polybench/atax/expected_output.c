@@ -65,7 +65,7 @@ static void kernel_atax(int m, int n, double A[1900][2100], double x[2100], doub
    }
 }
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv) {
    /*Retrieve problem size.*/
    int m = 1900;
    int n = 2100;
