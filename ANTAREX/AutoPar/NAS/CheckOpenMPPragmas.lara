@@ -2,7 +2,7 @@ import lara.Io;
 import lara.Check;
 
 aspectdef CheckOpenMPPragmas
-	input expectedCodeFile end
+	input expectedCodeFile, generateOutputs = false end
 
 	
 	select pragma{"omp"}.target end
@@ -25,6 +25,13 @@ aspectdef CheckOpenMPPragmas
 		currentCode = $file.code;
 		break;
 	end
+
+
+	// Generate outputs and return
+	if(generateOutputs) {
+		Io.writeFile(expectedCodeFile, currentCode);
+		return;
+	}
 
 	var expectedCode = Io.readFile(expectedCodeFile);
 	if(expectedCode === null) {
