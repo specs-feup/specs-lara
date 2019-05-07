@@ -5,9 +5,9 @@ import lara.Io;
  * @test
  */
 aspectdef TestEP
-	println(Io.getPath(".").getAbsolutePath());
+	println("LARA UNIT BASE FOLDER: " + LARA_UNIT_BASE_FOLDER);
 	Parallelize.forLoops();
-	call CheckOpenMPPragmas("EP/expected_output.c");	
+	call CheckOpenMPPragmas(Io.getPath(LARA_UNIT_BASE_FOLDER, "EP/expected_output.c"));	
 end
 
 
