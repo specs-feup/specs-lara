@@ -1,0 +1,13 @@
+import CheckOpenMPPragmas;
+import clava.autopar.Parallelize;
+
+/**
+ * @test
+ */
+aspectdef TestUA
+	Parallelize.forLoops();
+	call CheckOpenMPPragmas("UA/expected_output.c");	
+end
+
+
+

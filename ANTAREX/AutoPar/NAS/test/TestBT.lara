@@ -1,0 +1,13 @@
+import CheckOpenMPPragmas;
+import clava.autopar.Parallelize;
+
+/**
+ * @test
+ */
+aspectdef TestBT
+	Parallelize.forLoops();
+	call CheckOpenMPPragmas("BT/expected_output.c");	
+end
+
+
+
