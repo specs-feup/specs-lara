@@ -5,9 +5,9 @@ import lara.Io;
 /**
  * @test
  */
-aspectdef TestEP
+aspectdef TestCG
 	Parallelize.forLoops();
-	call CheckOpenMPPragmas(Io.getPath(LARA_UNIT_BASE_FOLDER, "EP/expected_output.c"));	
+	call CheckOpenMPPragmas(Io.getPath(LARA_UNIT_BASE_FOLDER, "CG/expected_output.c"));	
 end
 
 
