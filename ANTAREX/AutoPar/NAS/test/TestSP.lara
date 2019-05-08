@@ -1,0 +1,14 @@
+import CheckOpenMPPragmas;
+import clava.autopar.Parallelize;
+import lara.Io;
+
+/**
+ * @test
+ */
+aspectdef TestSP
+	Parallelize.forLoops();
+	call CheckOpenMPPragmas(Io.getPath(LARA_UNIT_BASE_FOLDER, "SP/expected_output.c"));	
+end
+
+
+

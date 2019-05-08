@@ -3,3 +3,6 @@ ANTAREX/ClavaUnitTest
 
 # Generic LARA examples for Clava
 Examples/CallGraph
+
+# Autopar tests - Currently disabled, they are very time-consuming
+#ANTAREX/AutoPar/NAS
