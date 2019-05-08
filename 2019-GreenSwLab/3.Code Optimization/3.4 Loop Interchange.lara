@@ -1,0 +1,118 @@
+import clava.ClavaJoinPoints;
+import clava.Clava;
+
+import lara.Platforms;
+import lara.cmake.CMaker;
+import lara.metrics.ExecutionTimeMetric;
+import lara.util.Combinations;
+import lara.util.ProcessExecutor;
+
+aspectdef LoopInterchange
+
+	var controlVars = ["i", "j", "l"];
+	var executionResults = {};
+	var timeMetric = new ExecutionTimeMetric();
+	
+	
+	println("Testing original code");
+	Clava.pushAst();
+	call testCode("original", timeMetric, executionResults);	
+	Clava.popAst();
+	
+
+	
+	var combs = new Combinations(controlVars, 2);
+	while(combs.hasNext()) {
+		Clava.pushAst();
+
+		// Get next combination
+		var interchangePair = combs.next();
+		
+		println("Testing interchange " + interchangePair);
+		call Interchange(interchangePair[0], interchangePair[1]);
+
+		call testCode("interchange_" + interchangePair, timeMetric, executionResults);
+
+		Clava.popAst();
+	}
+
+	
+	// Print results
+	println("\n-- Results --");
+	for(var interchange in executionResults) {
+		var result = executionResults[interchange];
+		var value = result["value"];
+		if(value === undefined) {
+			value = "timeout";
+		} else {
+			value += result["unit"];
+		}		
+		
+		println(interchange + ": " + value);
+	}
+		
+end
+
+
+
+aspectdef testCode
+	input id, metric, results end
+	
+	select function{'matrix_mult'}.pragma{"loop1"}.target end
+	apply
+		metric.instrument($target);
+	end
+	
+
+	var executor = compileAndExecute(id);
+	results[id] = metric.report(executor);	
+
+
+end
+
+
+function compileAndExecute(id) {
+	var cmaker = (new CMaker(id)).addCurrentAst();
+
+	if(Platforms.isWindows()) {
+		cmaker.setGenerator("MinGW Makefiles").setMakeCommand("mingw32-make");
+	}
+		
+	var executable = cmaker.build();
+	var executor = new ProcessExecutor();
+	executor.setTimeout(20); // 20 seconds
+	executor.execute(executable);
+
+	return executor;
+}
+
+
+aspectdef Interchange
+	input firstVar, secondVar end
+
+	// Find the top-level loop
+	select function{'matrix_mult'}.pragma{"loop1"}.target end
+	apply
+		var $firstLoop = getLoop($target, firstVar);
+		var $secondLoop = getLoop($target, secondVar);
+
+		$firstLoop.interchange($secondLoop);		
+	end
+
+end
+
+
+
+
+function getLoop($start, index) {
+	for(var $loop of $start.descendantsAndSelf("loop")) {
+		if($loop.controlVar === index) {
+			return $loop;
+		}
+	}
+	
+	return undefined;
+}
+
+
+

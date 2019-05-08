@@ -1,0 +1,167 @@
+aspectdef StaticCodeReport
+
+	var loops = [];
+	var callInfo = new LaraObject();
+	
+	var numFiles = 0;
+	var numFunctions = 0;
+	var numCalls = 0;
+	
+	var totalLoopsSum = 0;
+	var innerLoopsSum = 0;
+	var loopsTotal = new LaraObject();
+	var loopsInnermost = new LaraObject();
+	
+	var maxNest = -1;
+	var maxNestLocation = '';
+	
+	select file end
+	apply
+		numFiles++;
+	end
+	
+	select function end
+	apply
+		numFunctions++;
+	end
+	
+	select function.call end
+	apply 
+		numCalls++; 
+		
+		callInfo.inc($call.signature, 'callee');
+		callInfo.inc($function.signature, 'caller');
+	end
+	
+	select file.function.loop end
+	apply
+		totalLoopsSum++;
+		loopsTotal.inc($loop.kind);
+		if($loop.isInnermost) {
+			innerLoopsSum++;
+			loopsInnermost.inc($loop.kind);
+		}
+		
+		if($loop.nestedLevel > maxNest) {
+			maxNest = $loop.nestedLevel;
+			maxNestLocation = $file.name + ' : ' + $function.name + ' : ' + $loop.line;
+		}
+	end
+
+	/********************* HELPER FUNCTIONS *********************/
+
+	function withWidth(string, width) {
+
+		var diff = width - string.toString().length;
+		
+		if(diff <= 0) {
+			return string;
+		}
+
+		var result = '';
+		for (var i = 0; i < diff; i++) {
+
+			result += ' ';
+		}
+
+		return string + result;
+	}
+
+	function lineWidth(string, width) {
+
+		var result = '';
+		for (var i = 0; i < width; i++) {
+
+			result += string;
+		}
+
+		return result;
+	}
+
+	/********************* GENERAL INFORMATION *********************/
+
+	println('\n\n\n-== [ General Information ] ==-\n');
+
+	println("No. of Files: "+numFiles);
+	println("No. of Functions: "+numFunctions);
+	println("No. of Calls: "+numCalls);
+
+
+	/********************* LOOP INFORMATION *********************/
+
+	println('\n\n\n-== [ Loop Information ] ==-\n');
+
+	var firstWidth = 10;
+	var secondWidth = 8;
+	var thirdWidth = 10;
+	var totalWidth = firstWidth + secondWidth + thirdWidth + 2;
+
+
+	println(lineWidth('=', totalWidth));
+	println(withWidth('Type', firstWidth) + ' ' + withWidth('Total', secondWidth) + ' ' + withWidth('Innermost', thirdWidth));
+	
+	println(lineWidth('-', totalWidth));
+
+	
+
+	for(var loopKind in loopsTotal) {
+		println(withWidth(loopKind, firstWidth) + ' ' + withWidth(loopsTotal[loopKind], secondWidth) + ' ' + withWidth(loopsInnermost[loopKind], thirdWidth));	
+	}
+
+	println(lineWidth('-', totalWidth));
+
+	println(withWidth('Total', firstWidth) + ' ' + withWidth(totalLoopsSum, secondWidth) + ' ' + withWidth(innerLoopsSum, thirdWidth));
+
+	println(lineWidth('=', totalWidth));
+
+	println("\nLargest Loop Nest: "+ (maxNest+1) + ' @ ' + maxNestLocation);
+	
+	/********************* CALL INFORMATION *********************/
+
+	var mostCalled = '';
+	var mostCalledCounter = -1;
+	var mostCalls = '';
+	var mostCallsCounter = -1;
+	var largestName = 0;
+	
+	for (var funcName in callInfo) {
+
+		if(funcName.length > largestName) largestName = funcName.length;
+
+		var callee = callInfo[funcName]['callee'] || 0;
+		var caller = callInfo[funcName]['caller'] || 0;
+
+		if(callee > mostCalledCounter) {
+			mostCalledCounter = callee;
+			mostCalled = funcName;
+		}
+
+		if(caller > mostCallsCounter) {
+			mostCallsCounter = caller;
+			mostCalls = funcName;
+		}
+	}
+	secondWidth = 10;
+	thirdWidth = 10;
+	totalWidth = largestName + secondWidth + thirdWidth + 2;
+
+	println('\n\n\n-== [ Call Information ] ==-\n');
+
+	println(lineWidth('=', totalWidth));
+	println(withWidth('Name', largestName) + ' ' + withWidth('As Callee', secondWidth) + '  ' + withWidth('As Caller', thirdWidth));
+
+	println(lineWidth('-', totalWidth));
+	
+	for (var funcName in callInfo) {
+
+		var callee = callInfo[funcName]['callee'] || 0;
+		var caller = callInfo[funcName]['caller'] || 0;
+
+		if(funcName == mostCalled) callee += '*';
+		if(funcName == mostCalls) caller += '*';
+
+		println(withWidth(funcName, largestName) + ' ' + withWidth(callee, secondWidth) + '  ' + withWidth(caller, thirdWidth));
+	}
+
+	println(lineWidth('=', totalWidth));
+end

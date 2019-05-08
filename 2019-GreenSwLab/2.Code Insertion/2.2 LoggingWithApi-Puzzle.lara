@@ -1,0 +1,47 @@
+import lara.code.Logger;
+
+
+aspectdef LoggingWithApi
+
+	// Log every time a function is executed with a Logger
+
+
+	
+	// Print the value of built-in floating or unsigned variables
+	// in the function 'foo', everytime they are written during execution.
+	select function{"foo"}.varref end
+	apply
+		if($varref.use === "read") {
+			continue;
+		}
+
+		var $type = $varref.type;
+
+		if(!$type.instanceOf("builtinType")) {
+			continue;
+		}
+
+		var isFloat = $type.isFloat;
+		var isUnsignedInt = $type.isUnsigned;
+
+		if(!isFloat && !isUnsignedInt) {
+			continue;
+		}
+
+		logger.text("Variable '"+$varref.name+"' written:");
+		if(isFloat) {
+			logger.double($varref.name);
+		}
+		if(isUnsignedInt) {
+			logger.int($varref.name);
+		}
+
+		logger.ln().log($varref);
+	end
+	
+	// Print the modified program code
+	select program end
+	apply
+		println($program.code);
+	end
+end

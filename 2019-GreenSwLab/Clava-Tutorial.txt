@@ -1,0 +1,151 @@
+Cover
+
+AOP
+
+ -> Define concerns orthogonally to the source code
+ -> 
+ 
+LARA [slides from previous presentation]
+
+Clava
+
+Examples Outline
+
+
+1.1) Call Graph
+	Build a static call graph from the application source
+	Superset of the dynamic call graph
+	Edges indicate how many times a call appears in the code
+	
+	Strategy:
+		Select all methods (caller) and the calls inside (callee)
+		Make <caller, callee> tuples
+		Generate a graph, in dot format, with the tuples
+	
+	[cg.dot.svg]
+
+
+1.2) Static Report
+	Generate a report about the application
+		Number of files, functions and calls
+		Number and types of loops
+		Caller<->Callee information
+		
+	Strategy:
+		Select files,functions and calls to count
+		Select loops and query their type
+		Get <caller, callee> tuples
+		Print reports [using JS]
+	
+	[explain how this could be extended and segue into the specs docs]
+
+
+2.1) Logging with Inserts
+	Log certain execution events
+		Start of loops
+		Entering functions
+	
+	Strategy:
+		Select loops and their parent file
+		Insert logging code before loop
+		Add header include at the start of the file
+		Select functions and their parent file
+		Insert logging code at the start of the function body
+		Add header include at the start of the file
+
+	[present the first use of actions, insert and addInclude]
+	[present and explain codedef]
+
+Code Insertion in Clava/LARA
+	insert injects literal code into the application
+	Upsides: extremely versatile, can insert any code you want
+	Downsides: cumbersome (\n), error prone (code might have errors)
+	How to mitigate:
+		codedef
+		option to verify syntax
+		[segue into APIs]
+
+
+2.2) Logging with APIs
+	Log certain execution events (a more complex example) [explain that the first part is the same]
+	Make use of Clava APIs
+	
+	Strategy:
+		Same as before for functions
+		Look for writes to variables inside a specific function
+		Filter variables based on type
+		Log when the writing happens using the Logger API
+	
+	[explain imports (user and Clava)]
+	[introduce Clava APIs (explain the idea is to declare your intentions, not to specify how to do them: multi-lang and multi-implementation)]
+	[introduce and show Clava Doc]
+
+
+
+2.3) Measurements
+	Collect metrics on certain events or around pieces of code
+	Measure execution time and energy consumption
+	
+	Strategy:
+		Capture loops inside a specific function
+		Call APIs to measure around the selected loops
+		
+	[API allows us to abstract from target language, show C and C++ generated code]
+	[show that rapl header was included automatically and explain the API that performs this]
+	[mention the extreme multi-lang case where this exact aspect can be used in Java (got to Kadabra)]
+
+3.1) Gprofer
+	Profile an application using gprof
+	This can be the start of your analysis and optimization cycle
+	
+	Strategy:
+		Import and configure Gprofer
+		Profile the application
+		Get hotspot and its gprof information
+
+	[stress this returns a function join point, which can be used with all aspects we've seen so far]
+	[it can be used to start a more refined search inside the hotspot or passed to other aspects that automatically transform the code]
+	
+	
+3.2) AutoPar
+	Improve execution performance with OpenMP
+	Free the user from analysis
+
+	Strategy:
+		Select target loop based on pragma [explain why this is important (show also the original code)]
+		Call AutoPar API to parallelize the target loop
+	
+	[stress that analysis is performed automatically and the library decides what and how to parallelize]
+
+
+3.3) Exploration
+	Perform a design space exploration on an OpenMP application
+	This can be the output of AutoPar
+	Automatically explore the number of threads (could explore other parameters)
+	
+	Strategy:
+		Import and use LAT to define a variable range for the thread exploration
+		Configure compilation options (in this case, activate OpenMP) [explain the cmaker library]
+		Define the scope where LAT will perform changes
+		Define the scope where LAT will collect metrics
+		Start the exploration
+		
+	[take some time to explain LAT: what it does automatically and in what cases it can be used]
+	[segue into a more complex exploration that cannot be performed with LAT]
+
+
+3.4) Loop Interchange Exploration
+	Apply loop interchange to a matrix multiplication kernel
+	Automatically explore what the best permutation is
+	Use some more Clava APIs
+	
+	Strategy:
+		Generate all possible interchange permutations and for each:
+			Apply interchange
+			Add code to measure execution time
+			Compile and execute the application
+			Save the results
+		Print the results
+		
+
+Conclusions
