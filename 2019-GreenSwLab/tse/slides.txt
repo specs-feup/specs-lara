@@ -1,0 +1,34 @@
+Energy Saving Examples
+	LARA strategies applied to smart navigation system
+	Probabilistic Time-Dependent Routing -- PTDR
+	Betweenness Centrality -- BC
+
+PTDR - Strategy
+	Automatic exploration of the design space
+		variables: threads and samples
+		metrics: time, energy, power and error
+	Informed choice of tradeoffs (Pareto frontier)
+	Possible to autotune and adapt at runtime
+	
+	[LARA sample]
+
+PTDR - Results
+	[images]
+
+BC - Strategy
+	Skip expensive computation if result can be approximated
+	Assumption: if inputs are similar, the outputs are similar
+	Much less expensive to compare inputs than to compute BC
+
+	[pseudo codes]
+	
+BC - Results
+
+	[results]
+
+	With T=2 we skip around 24% of the BC computations
+	From OpenMP to Skip:
+		speedup of 1.32
+		energy consumption improvement of 24.79%
+
+/// [2019-GreenSwLab] Adds new TSE-related content
