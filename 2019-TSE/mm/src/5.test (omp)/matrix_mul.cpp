@@ -1,5 +1,6 @@
 #include "matrix_mul.hpp"
 #include <fstream>
+#include <omp.h>
 
 template <typename T>
 void matrix_mult_tiling(std::vector<T> const& A, std::vector<T> const& B, std::vector<T>& C, int const N, int const M, int const K, int const BS1, int const BS2, int const BS3)
@@ -11,6 +12,7 @@ void matrix_mult_tiling(std::vector<T> const& A, std::vector<T> const& B, std::v
         }
     }
 
+	#pragma omp parallel for
     for(int i2= 0; i2 < N; i2 += BS3) {
         int i_bound = std::min(N, i2 + BS3);
         for(int l2 = 0; l2 < M; l2 += BS1) {
@@ -27,26 +29,6 @@ void matrix_mult_tiling(std::vector<T> const& A, std::vector<T> const& B, std::v
             }
         }
     }
-}
-
-template< typename T >
-void matrix_mult(const std::vector<T>& A, const std::vector<T>& B, std::vector<T>& C, const int N, const int M, const int K)
-{
-
-    for(int i=0; i<N; i++) {
-        for(int j=0; j<K; j++) {
-            C[K*i + j] = 0;
-        }
-    }
-
-    for(int i=0; i<N; i++) {
-        for(int l=0; l < M; l++) {
-            for(int j=0; j < K; j++) {
-                C[K*i + j] += A[M*i+l]*B[K*l+j];
-            }
-        }
-    }
-
 }
 
 int main(int argc, char** argv)
