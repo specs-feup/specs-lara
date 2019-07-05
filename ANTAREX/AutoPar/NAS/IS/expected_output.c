@@ -211,7 +211,7 @@ void full_verify() {
    #pragma omp parallel for default(shared) private(i)
    for(i = 0; i < (1 << 20); i++) key_buff2[i] = key_array[i];
    /*************** Clava msgError **************
-   Array access key_array[--key_buff_ptr_global[key_buff2[i]]] has subscript of arrayType --key_buff_ptr_global[key_buff2[i]]
+   Array access key_array[--key_buff_ptr_global[key_buff2[i]]] which is used for writing has subscript of arrayType --key_buff_ptr_global[key_buff2[i]]
    ****************************************/
    for(i = 0; i < (1 << 20); i++) key_array[--key_buff_ptr_global[key_buff2[i]]] = key_buff2[i];
    /*Confirm keys correctly sorted: count incorrectly sorted keys, if any*/
@@ -252,7 +252,7 @@ void rank(int iteration) {
    own indexes to determine how many of each there are: their
    individual population*/
    /*************** Clava msgError **************
-   Array access key_buff_ptr[key_buff_ptr2[i]] has subscript of arrayType key_buff_ptr2[i]
+   Array access key_buff_ptr[key_buff_ptr2[i]] which is used for writing has subscript of arrayType key_buff_ptr2[i]
    ****************************************/
    for(i = 0; i < (1 << 20); i++) key_buff_ptr[key_buff_ptr2[i]]++;
    /*Now they have individual key*/

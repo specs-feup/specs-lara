@@ -647,7 +647,7 @@ void do_coarsen(int *if_coarsen, int *icoarsen, int neltold) {
    // Check whether the potential coarsening will make neighbor,
    // and neighbor's neighbor....break grid restriction
    /*************** Clava msgError **************
-   Array access ifcoa_id[ntp[i]] has subscript of arrayType ntp[i]
+   Array access ifcoa_id[ntp[i]] which is used for writing has subscript of arrayType ntp[i]
    ****************************************/
    for(miel = 0; miel < nelt; miel++) {
       ifcoa[miel] = 0;
@@ -735,7 +735,7 @@ void do_coarsen(int *if_coarsen, int *icoarsen, int neltold) {
    // element's front-left-bottom-child) to be coarsened.
    // create array mt_to_id to convert actual element index to morton index
    /*************** Clava msgError **************
-   Array access action[front[miel] - 1] has subscript of arrayType front[miel] - 1
+   Array access action[front[miel] - 1] which is used for writing has subscript of arrayType front[miel] - 1
    ****************************************/
    for(miel = 0; miel < nelt; miel++) {
       iel = mt_to_id_old[miel];
@@ -831,7 +831,7 @@ void do_refine(int *ifmortar, int *irefine) {
    num_refine = front[nelt - 1];
    // action[i] records the morton index of the  i'th element to be refined
    /*************** Clava msgError **************
-   Array access action[front[miel] - 1] has subscript of arrayType front[miel] - 1
+   Array access action[front[miel] - 1] which is used for writing has subscript of arrayType front[miel] - 1
    ****************************************/
    for(miel = 0; miel < nelt; miel++) {
       iel = mt_to_id_old[miel];
@@ -927,11 +927,11 @@ void do_refine(int *ifmortar, int *irefine) {
       zleft = zctemp[0];
       zright = zctemp[4];
       /*************** Clava msgError **************
-      loop-step expression is not in canonical form
+      loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
       ****************************************/
       for(j = 0; j < 7; j += 2) {
          /*************** Clava msgError **************
-         loop-step expression is not in canonical form
+         loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
          ****************************************/
          for(i = 0; i < 7; i += 2) {
             xc[nelt + j][i] = xhalf;
@@ -939,11 +939,11 @@ void do_refine(int *ifmortar, int *irefine) {
          }
       }
       /*************** Clava msgError **************
-      loop-step expression is not in canonical form
+      loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
       ****************************************/
       for(j = 1; j < 6; j += 2) {
          /*************** Clava msgError **************
-         loop-step expression is not in canonical form
+         loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
          ****************************************/
          for(i = 0; i < 7; i += 2) {
             xc[nelt + j][i] = xleft;
@@ -951,7 +951,7 @@ void do_refine(int *ifmortar, int *irefine) {
          }
       }
       /*************** Clava msgError **************
-      loop-step expression is not in canonical form
+      loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
       ****************************************/
       for(i = 0; i < 7; i += 2) {
          xc[iel][i] = xleft;
@@ -1529,13 +1529,13 @@ void merging(int iela[8]) {
    z1 = zc[iela[0]][0];
    z2 = zc[iela[4]][4];
    /*************** Clava msgError **************
-   loop-step expression is not in canonical form
+   loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
    ****************************************/
    for(i = 0; i < 7; i += 2) {
       xc[ielnew][i] = x1;
    }
    /*************** Clava msgError **************
-   loop-step expression is not in canonical form
+   loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
    ****************************************/
    for(i = 1; i < 8; i += 2) {
       xc[ielnew][i] = x2;
@@ -3155,7 +3155,7 @@ void mortar() {
    // if_1_edge[iel][n]=1 indicates that the size of iel is smaller than
    //            that of its neighbor connected, neighbored by edge n only
    /*************** Clava msgError **************
-   Array access ncon_edge[sje[ntemp][5][0][0]][9] has subscript of arrayType sje[ntemp][5][0][0]
+   Array access ncon_edge[sje[ntemp][5][0][0]][9] which is used for writing has subscript of arrayType sje[ntemp][5][0][0]
    ****************************************/
    for(iel = 0; iel < nelt; iel++) {
       newc[iel] = 0;
@@ -3754,7 +3754,7 @@ void mortar() {
             space = 1;
          }
          /*************** Clava msgError **************
-         loop-step expression is not in canonical form
+         loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
          ****************************************/
          for(ie = 0; ie < ne; ie += space) {
             edge_g = edgenumber[i][ie];
@@ -5243,7 +5243,7 @@ void setpcmo() {
    l_init(ifpcmor, nvertex, 0);
    l_init((int *) edgevis, 24 * nelt, 0);
    /*************** Clava msgError **************
-   Array access edgevis[nb2][jjface[face2]][op[e_face2[iside][_enum]]] has subscript of arrayType jjface[face2]
+   Array access edgevis[nb2][jjface[face2]][op[e_face2[iside][_enum]]] which is used for writing has subscript of arrayType jjface[face2]
    ****************************************/
    for(iel = 0; iel < nelt; iel++) {
       /*************** Clava msgError **************
@@ -5617,7 +5617,7 @@ void create_initial_grid() {
    tree[0] = 1;
    mt_to_id[0] = 0;
    /*************** Clava msgError **************
-   loop-step expression is not in canonical form
+   loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
    ****************************************/
    for(i = 0; i < 7; i += 2) {
       xc[0][i] = 0.0;
@@ -5962,7 +5962,7 @@ void prepwork() {
    // masks for domain boundary at mortar
    r_init(tmmor, nmor, 1.0);
    /*************** Clava msgError **************
-   Array access tmmor[idmo[iel][iface][0][0][j][i]] has subscript of arrayType idmo[iel][iface][0][0][j][i]
+   Array access tmmor[idmo[iel][iface][0][0][j][i]] which is used for writing has subscript of arrayType idmo[iel][iface][0][0][j][i]
    ****************************************/
    for(iel = 0; iel < nelt; iel++) {
       /*************** Clava msgError **************
@@ -7045,7 +7045,7 @@ void transfb(double tmor[], double tx[]) {
             // nonconforming faces have four pieces of mortar, first map tx to
             // two intermediate mortars stored in temp
             /*************** Clava msgError **************
-            Array access temp[ije2][v_end[ije2]][col] has subscript of arrayType v_end[ije2]
+            Array access temp[ije2][v_end[ije2]][col] which is used for writing has subscript of arrayType v_end[ije2]
             ****************************************/
             for(ije2 = 0; ije2 < nnje; ije2++) {
                shift = ije2;
@@ -8011,7 +8011,7 @@ void parallel_add(int frontier[]) {
       n1 = ntemp * 2;
       n2 = n1;
       /*************** Clava msgError **************
-      loop-step expression is not in canonical form
+      loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
       ****************************************/
       for(iel = n1; iel <= nelt; iel += n1) {
          ahead = frontier[iel - ntemp - 1];

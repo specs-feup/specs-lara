@@ -378,7 +378,7 @@ void Swarztrauber(int is, int m, int vlen, int n, int xd1, void *ox, dcomplex ex
    lj = 1;
    li = 1 << m;
    /*************** Clava msgError **************
-   loop-step expression is not in canonical form
+   loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
    ****************************************/
    for(l = 1; l <= m; l += 2) {
       lk = lj;
@@ -472,7 +472,7 @@ void fftXYZ(int sign, int n1, int n2, int n3, dcomplex x[n3][n2][n1 + 1], dcompl
    ****************************************/
    for(k = 0; k < n3; k++) {
       /*************** Clava msgError **************
-      loop-step expression is not in canonical form
+      loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
       ****************************************/
       for(bls = 0; bls < n2; bls += fftblock) {
          ble = bls + fftblock - 1;
@@ -505,7 +505,7 @@ void fftXYZ(int sign, int n1, int n2, int n3, dcomplex x[n3][n2][n1 + 1], dcompl
    ****************************************/
    for(k = 0; k < n3; k++) {
       /*************** Clava msgError **************
-      loop-step expression is not in canonical form
+      loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
       ****************************************/
       for(bls = 0; bls < n1; bls += fftblock) {
          ble = bls + fftblock - 1;
@@ -524,7 +524,7 @@ void fftXYZ(int sign, int n1, int n2, int n3, dcomplex x[n3][n2][n1 + 1], dcompl
    ****************************************/
    for(k = 0; k < n2; k++) {
       /*************** Clava msgError **************
-      loop-step expression is not in canonical form
+      loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
       ****************************************/
       for(bls = 0; bls < n1; bls += fftblock) {
          ble = bls + fftblock - 1;

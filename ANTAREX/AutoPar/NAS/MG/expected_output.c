@@ -1026,13 +1026,13 @@ void zran3(void *oz, int n1, int n2, int n3, int nx, int ny, int k) {
       }
    }
    /*************** Clava msgError **************
-   Array access z[jg[3][i][0]][jg[2][i][0]][jg[1][i][0]] has subscript of arrayType jg[3][i][0]
+   Array access z[jg[3][i][0]][jg[2][i][0]][jg[1][i][0]] which is used for writing has subscript of arrayType jg[3][i][0]
    ****************************************/
    for(i = mm - 1; i >= m0; i--) {
       z[jg[3][i][0]][jg[2][i][0]][jg[1][i][0]] = -1.0;
    }
    /*************** Clava msgError **************
-   Array access z[jg[3][i][1]][jg[2][i][1]][jg[1][i][1]] has subscript of arrayType jg[3][i][1]
+   Array access z[jg[3][i][1]][jg[2][i][1]][jg[1][i][1]] which is used for writing has subscript of arrayType jg[3][i][1]
    ****************************************/
    for(i = mm - 1; i >= m1; i--) {
       z[jg[3][i][1]][jg[2][i][1]][jg[1][i][1]] = +1.0;
