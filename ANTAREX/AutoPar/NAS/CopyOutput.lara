@@ -1,0 +1,41 @@
+import lara.Io;
+
+var EXPECTED_OUTPUT = "expected_output.c";
+
+/**
+ * Copies expected_output.c files to a folder an properly renames them.
+ */
+aspectdef CopyOutput
+
+
+
+	var workingFolder = Io.getWorkingFolder();
+
+	// Output folder
+	var outputFolder = Io.mkdir(workingFolder, "collectedOutputs");
+
+	// Get all folders
+	println("Obtaning folders inside " + workingFolder.getAbsolutePath() + "...");
+	var paths = Io.getPaths(workingFolder);
+
+	for(var path of paths) {
+		if(!Io.isFolder(path)) {
+			continue;
+		}
+		
+		var foldername = path.getName();
+		
+		var expectedOutput = Io.getPath(path, EXPECTED_OUTPUT);
+		
+		// If file does not exist, continue
+		if(!Io.isFile(expectedOutput)){
+			continue;
+		}
+		
+		// Copy file to output folder
+		var outputFile = Io.getPath(outputFolder, foldername + ".c");
+		println("Copying " + outputFile);
+		Io.copyFile(expectedOutput, outputFile);
+	}
+
+end
