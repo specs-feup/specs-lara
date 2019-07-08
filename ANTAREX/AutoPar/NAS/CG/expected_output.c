@@ -153,9 +153,9 @@ int main(int argc, char *argv[]) {
    //      Shift the col index vals from actual (firstcol --> lastcol )
    //      to local, i.e., (0 --> lastcol-firstcol)
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(j, k) firstprivate(lastrow, firstrow, firstcol) reduction(- : colidx[:567000])
+   #pragma omp parallel for default(shared) private(j, k) firstprivate(lastrow, firstrow, firstcol, rowstr) reduction(- : colidx[:567000])
    for(j = 0; j < lastrow - firstrow + 1; j++) {
-      // #pragma omp parallel for default(shared) private(k) firstprivate(j, firstcol)
+      // #pragma omp parallel for default(shared) private(k) firstprivate(j, firstcol, rowstr)
       for(k = rowstr[j]; k < rowstr[j + 1]; k++) {
          colidx[k] = colidx[k] - firstcol;
       }
@@ -196,7 +196,7 @@ int main(int argc, char *argv[]) {
       //---------------------------------------------------------------------
       norm_temp1 = 0.0;
       norm_temp2 = 0.0;
-      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol) reduction(+ : norm_temp1) reduction(+ : norm_temp2)
+      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol, x, z) reduction(+ : norm_temp1) reduction(+ : norm_temp2)
       for(j = 0; j < lastcol - firstcol + 1; j++) {
          norm_temp1 = norm_temp1 + x[j] * z[j];
          norm_temp2 = norm_temp2 + z[j] * z[j];
@@ -205,7 +205,7 @@ int main(int argc, char *argv[]) {
       //---------------------------------------------------------------------
       // Normalize z to obtain x
       //---------------------------------------------------------------------
-      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol, norm_temp2)
+      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol, norm_temp2, z)
       for(j = 0; j < lastcol - firstcol + 1; j++) {
          x[j] = norm_temp2 * z[j];
       }
@@ -242,7 +242,7 @@ int main(int argc, char *argv[]) {
       //---------------------------------------------------------------------
       norm_temp1 = 0.0;
       norm_temp2 = 0.0;
-      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol) reduction(+ : norm_temp1) reduction(+ : norm_temp2)
+      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol, x, z) reduction(+ : norm_temp1) reduction(+ : norm_temp2)
       for(j = 0; j < lastcol - firstcol + 1; j++) {
          norm_temp1 = norm_temp1 + x[j] * z[j];
          norm_temp2 = norm_temp2 + z[j] * z[j];
@@ -254,7 +254,7 @@ int main(int argc, char *argv[]) {
       //---------------------------------------------------------------------
       // Normalize z to obtain x
       //---------------------------------------------------------------------
-      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol, norm_temp2)
+      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol, norm_temp2, z)
       for(j = 0; j < lastcol - firstcol + 1; j++) {
          x[j] = norm_temp2 * z[j];
       }
@@ -310,7 +310,7 @@ void conj_grad(int colidx[], int rowstr[], double x[], double z[], double a[], d
    //---------------------------------------------------------------------
    // Initialize the CG algorithm:
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(j) firstprivate(naa)
+   #pragma omp parallel for default(shared) private(j) firstprivate(naa, x)
    for(j = 0; j < naa + 1; j++) {
       q[j] = 0.0;
       z[j] = 0.0;
@@ -321,7 +321,7 @@ void conj_grad(int colidx[], int rowstr[], double x[], double z[], double a[], d
    // rho = r.r
    // Now, obtain the norm of r: First, sum squares of r elements locally...
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol) reduction(+ : rho)
+   #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol, r) reduction(+ : rho)
    for(j = 0; j < lastcol - firstcol + 1; j++) {
       rho = rho + r[j] * r[j];
    }
@@ -345,10 +345,10 @@ void conj_grad(int colidx[], int rowstr[], double x[], double z[], double a[], d
       //       unrolled-by-two version is some 10% faster.
       //       The unrolled-by-8 version below is significantly faster
       //       on the Cray t3d - overall speed of code is 1.5 times faster.
-      #pragma omp parallel for default(shared) private(j, k, sum) firstprivate(lastrow, firstrow)
+      #pragma omp parallel for default(shared) private(j, k, sum) firstprivate(lastrow, firstrow, rowstr, a, colidx, p)
       for(j = 0; j < lastrow - firstrow + 1; j++) {
          sum = 0.0;
-         // #pragma omp parallel for default(shared) private(k) firstprivate(j) reduction(+ : sum)
+         // #pragma omp parallel for default(shared) private(k) firstprivate(j, rowstr, a, colidx, p) reduction(+ : sum)
          for(k = rowstr[j]; k < rowstr[j + 1]; k++) {
             sum = sum + a[k] * p[colidx[k]];
          }
@@ -394,7 +394,7 @@ void conj_grad(int colidx[], int rowstr[], double x[], double z[], double a[], d
       // Obtain p.q
       //---------------------------------------------------------------------
       d = 0.0;
-      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol) reduction(+ : d)
+      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol, p, q) reduction(+ : d)
       for(j = 0; j < lastcol - firstcol + 1; j++) {
          d = d + p[j] * q[j];
       }
@@ -411,7 +411,7 @@ void conj_grad(int colidx[], int rowstr[], double x[], double z[], double a[], d
       // and    r = r - alpha*q
       //---------------------------------------------------------------------
       rho = 0.0;
-      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol, alpha)
+      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol, alpha, p, q)
       for(j = 0; j < lastcol - firstcol + 1; j++) {
          z[j] = z[j] + alpha * p[j];
          r[j] = r[j] - alpha * q[j];
@@ -420,7 +420,7 @@ void conj_grad(int colidx[], int rowstr[], double x[], double z[], double a[], d
       // rho = r.r
       // Now, obtain the norm of r: First, sum squares of r elements locally...
       //---------------------------------------------------------------------
-      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol) reduction(+ : rho)
+      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol, r) reduction(+ : rho)
       for(j = 0; j < lastcol - firstcol + 1; j++) {
          rho = rho + r[j] * r[j];
       }
@@ -431,7 +431,7 @@ void conj_grad(int colidx[], int rowstr[], double x[], double z[], double a[], d
       //---------------------------------------------------------------------
       // p = r + beta*p
       //---------------------------------------------------------------------
-      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol, beta)
+      #pragma omp parallel for default(shared) private(j) firstprivate(lastcol, firstcol, beta, r)
       for(j = 0; j < lastcol - firstcol + 1; j++) {
          p[j] = r[j] + beta * p[j];
       }
@@ -442,10 +442,10 @@ void conj_grad(int colidx[], int rowstr[], double x[], double z[], double a[], d
    // The partition submatrix-vector multiply
    //---------------------------------------------------------------------
    sum = 0.0;
-   #pragma omp parallel for default(shared) private(j, k, d) firstprivate(lastrow, firstrow)
+   #pragma omp parallel for default(shared) private(j, k, d) firstprivate(lastrow, firstrow, rowstr, a, colidx, z)
    for(j = 0; j < lastrow - firstrow + 1; j++) {
       d = 0.0;
-      // #pragma omp parallel for default(shared) private(k) firstprivate(j) reduction(+ : d)
+      // #pragma omp parallel for default(shared) private(k) firstprivate(j, rowstr, a, colidx, z) reduction(+ : d)
       for(k = rowstr[j]; k < rowstr[j + 1]; k++) {
          d = d + a[k] * z[colidx[k]];
       }
@@ -454,7 +454,7 @@ void conj_grad(int colidx[], int rowstr[], double x[], double z[], double a[], d
    //---------------------------------------------------------------------
    // At this point, r contains A.z
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(j, d) firstprivate(lastcol, firstcol) reduction(+ : sum)
+   #pragma omp parallel for default(shared) private(j, d) firstprivate(lastcol, firstcol, x, r) reduction(+ : sum)
    for(j = 0; j < lastcol - firstcol + 1; j++) {
       d = x[j] - r[j];
       sum = sum + d * d;
@@ -513,7 +513,7 @@ void makea(int n, int nz, double a[], int colidx[], int rowstr[], int firstrow, 
       sprnvc(n, nzv, nn1, vc, ivc);
       vecset(n, vc, ivc, &nzv, iouter + 1, 0.5);
       arow[iouter] = nzv;
-      #pragma omp parallel for default(shared) private(ivelt) firstprivate(nzv, iouter)
+      #pragma omp parallel for default(shared) private(ivelt) firstprivate(nzv, iouter, ivc, vc)
       for(ivelt = 0; ivelt < nzv; ivelt++) {
          acol[iouter][ivelt] = ivc[ivelt] - 1;
          aelt[iouter][ivelt] = vc[ivelt];
@@ -587,7 +587,7 @@ void sparse(double a[], int colidx[], int rowstr[], int n, int nz, int nozer, in
    unsolved dependency for arrayAccess colidx	 use : W
    ****************************************/
    for(j = 0; j < nrows; j++) {
-      #pragma omp parallel for default(shared) private(k) firstprivate(j)
+      #pragma omp parallel for default(shared) private(k) firstprivate(j, rowstr)
       for(k = rowstr[j]; k < rowstr[j + 1]; k++) {
          a[k] = 0.0;
          colidx[k] = -1;
@@ -700,7 +700,7 @@ void sparse(double a[], int colidx[], int rowstr[], int n, int nz, int nozer, in
          nza = nza + 1;
       }
    }
-   #pragma omp parallel for default(shared) private(j) firstprivate(nrows)
+   #pragma omp parallel for default(shared) private(j) firstprivate(nrows, nzloc)
    for(j = 1; j < nrows + 1; j++) {
       rowstr[j] = rowstr[j] - nzloc[j - 1];
    }

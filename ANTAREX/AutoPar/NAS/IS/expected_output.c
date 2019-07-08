@@ -208,7 +208,7 @@ void full_verify() {
    /*Now, finally, sort the keys:*/
    /*key_buff2[] already has the proper information, so do nothing*/
    /*Copy keys into work array; keys in key_array will be reassigned.*/
-   #pragma omp parallel for default(shared) private(i)
+   #pragma omp parallel for default(shared) private(i) firstprivate(key_array)
    for(i = 0; i < (1 << 20); i++) key_buff2[i] = key_array[i];
    /*************** Clava msgError **************
    Array access key_array[--key_buff_ptr_global[key_buff2[i]]] which is used for writing has subscript of arrayType --key_buff_ptr_global[key_buff2[i]]
@@ -216,7 +216,7 @@ void full_verify() {
    for(i = 0; i < (1 << 20); i++) key_array[--key_buff_ptr_global[key_buff2[i]]] = key_buff2[i];
    /*Confirm keys correctly sorted: count incorrectly sorted keys, if any*/
    j = 0;
-   #pragma omp parallel for default(shared) private(i) reduction(+ : j)
+   #pragma omp parallel for default(shared) private(i) firstprivate(key_array) reduction(+ : j)
    for(i = 1; i < (1 << 20); i++) if(key_array[i - 1] > key_array[i]) j++;
    if(j != 0) {
       printf("Full_verify: number of keys out of sort: %ld\n", (long) j);

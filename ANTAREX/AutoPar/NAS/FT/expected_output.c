@@ -330,7 +330,7 @@ void compute_initial_conditions(int d1, int d2, int d3, dcomplex u0[d3][d2][d1 +
       ****************************************/
       for(j = 0; j < d2; j++) {
          vranlc(2 * d1, &x0, a, (double *) tmp);
-         #pragma omp parallel for default(shared) private(i) firstprivate(d1, k, j)
+         #pragma omp parallel for default(shared) private(i) firstprivate(d1, k, j, tmp)
          for(i = 0; i < d1; i++) {
             u0[k][j][i] = tmp[i];
          }
@@ -403,7 +403,7 @@ void Swarztrauber(int is, int m, int vlen, int n, int xd1, void *ox, dcomplex ex
          unsolved dependency for arrayAccess scr	 use : W
          ****************************************/
          for(k = 0; k <= lk - 1; k++) {
-            #pragma omp parallel for default(shared) private(j, x11, x21) firstprivate(vlen, i11, k, i12, i21, u1, i22)
+            #pragma omp parallel for default(shared) private(j, x11, x21) firstprivate(vlen, i11, k, i12, i21, u1, i22, x)
             for(j = 0; j < vlen; j++) {
                x11 = x[i11 + k][j];
                x21 = x[i12 + k][j];
@@ -413,9 +413,9 @@ void Swarztrauber(int is, int m, int vlen, int n, int xd1, void *ox, dcomplex ex
          }
       }
       if(l == m) {
-         #pragma omp parallel for default(shared) private(k, j) firstprivate(n, vlen)
+         #pragma omp parallel for default(shared) private(k, j) firstprivate(n, vlen, scr)
          for(k = 0; k < n; k++) {
-            // #pragma omp parallel for default(shared) private(j) firstprivate(vlen, k)
+            // #pragma omp parallel for default(shared) private(j) firstprivate(vlen, k, scr)
             for(j = 0; j < vlen; j++) {
                x[k][j] = scr[k][j];
             }
@@ -444,7 +444,7 @@ void Swarztrauber(int is, int m, int vlen, int n, int xd1, void *ox, dcomplex ex
             unsolved dependency for arrayAccess x	 use : W
             ****************************************/
             for(k = 0; k <= lk - 1; k++) {
-               #pragma omp parallel for default(shared) private(j, x11, x21) firstprivate(vlen, i11, k, i12, i21, u1, i22)
+               #pragma omp parallel for default(shared) private(j, x11, x21) firstprivate(vlen, i11, k, i12, i21, u1, i22, scr)
                for(j = 0; j < vlen; j++) {
                   x11 = scr[i11 + k][j];
                   x21 = scr[i12 + k][j];
@@ -478,17 +478,17 @@ void fftXYZ(int sign, int n1, int n2, int n3, dcomplex x[n3][n2][n1 + 1], dcompl
          ble = bls + fftblock - 1;
          if(ble > n2) ble = n2 - 1;
          len = ble - bls + 1;
-         #pragma omp parallel for default(shared) private(j, i) firstprivate(bls, ble, n1, blkp, k)
+         #pragma omp parallel for default(shared) private(j, i) firstprivate(bls, ble, n1, blkp, k, x)
          for(j = bls; j <= ble; j++) {
-            // #pragma omp parallel for default(shared) private(i) firstprivate(n1, j, bls, blkp, k)
+            // #pragma omp parallel for default(shared) private(i) firstprivate(n1, j, bls, blkp, k, x)
             for(i = 0; i < n1; i++) {
                plane[j - bls + blkp * i] = x[k][j][i];
             }
          }
          Swarztrauber(sign, log, len, n1, blkp, plane, exp1);
-         #pragma omp parallel for default(shared) private(j, i) firstprivate(bls, ble, n1, blkp, k)
+         #pragma omp parallel for default(shared) private(j, i) firstprivate(bls, ble, n1, blkp, k, plane)
          for(j = bls; j <= ble; j++) {
-            // #pragma omp parallel for default(shared) private(i) firstprivate(n1, j, bls, blkp, k)
+            // #pragma omp parallel for default(shared) private(i) firstprivate(n1, j, bls, blkp, k, plane)
             for(i = 0; i < n1; i++) {
                x[k][j][i] = plane[j - bls + blkp * i];
             }
@@ -530,17 +530,17 @@ void fftXYZ(int sign, int n1, int n2, int n3, dcomplex x[n3][n2][n1 + 1], dcompl
          ble = bls + fftblock - 1;
          if(ble > n1) ble = n1 - 1;
          len = ble - bls + 1;
-         #pragma omp parallel for default(shared) private(i, j) firstprivate(n3, bls, ble, blkp, k)
+         #pragma omp parallel for default(shared) private(i, j) firstprivate(n3, bls, ble, blkp, k, x)
          for(i = 0; i < n3; i++) {
-            // #pragma omp parallel for default(shared) private(j) firstprivate(bls, ble, blkp, i, k)
+            // #pragma omp parallel for default(shared) private(j) firstprivate(bls, ble, blkp, i, k, x)
             for(j = bls; j <= ble; j++) {
                plane[j - bls + blkp * i] = x[i][k][j];
             }
          }
          Swarztrauber(sign, log, len, n3, blkp, plane, exp3);
-         #pragma omp parallel for default(shared) private(i, j) firstprivate(n3, bls, ble, n2, n1, k, blkp)
+         #pragma omp parallel for default(shared) private(i, j) firstprivate(n3, bls, ble, n2, n1, k, blkp, plane)
          for(i = 0; i <= n3 - 1; i++) {
-            // #pragma omp parallel for default(shared) private(j) firstprivate(bls, ble, n2, i, n1, k, blkp)
+            // #pragma omp parallel for default(shared) private(j) firstprivate(bls, ble, n2, i, n1, k, blkp, plane)
             for(j = bls; j <= ble; j++) {
                xout[j + (n1 + 1) * (k + n2 * i)] = plane[j - bls + blkp * i];
             }
