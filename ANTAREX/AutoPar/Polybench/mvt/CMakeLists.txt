@@ -22,9 +22,9 @@ target_link_libraries(mvt utilities)
 
 find_package(Clava REQUIRED)
 
-# Use the utility call for AutoPar.
-# This function automatically adds the flags required for compiling OpenMP
-clava_weave_autopar(mvt)
+# Call AutoPar
+clava_enable_openmp()
+clava_weave(mvt ../PolybenchAutopar.lara)
 
 clava_weave(mvt ../CheckOpenMPPragmas.lara ARGS "expectedCodeFile:'${CMAKE_CURRENT_SOURCE_DIR}/expected_output.c'")
 

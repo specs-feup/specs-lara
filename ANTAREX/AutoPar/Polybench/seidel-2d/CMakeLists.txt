@@ -22,9 +22,9 @@ target_link_libraries(seidel-2d utilities)
 
 find_package(Clava REQUIRED)
 
-# Use the utility call for AutoPar.
-# This function automatically adds the flags required for compiling OpenMP
-clava_weave_autopar(seidel-2d)
+# Call AutoPar
+clava_enable_openmp()
+clava_weave(seidel-2d ../PolybenchAutopar.lara)
 
 clava_weave(seidel-2d ../CheckOpenMPPragmas.lara ARGS "expectedCodeFile:'${CMAKE_CURRENT_SOURCE_DIR}/expected_output.c'")
 

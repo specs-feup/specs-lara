@@ -22,9 +22,9 @@ target_link_libraries(covariance utilities)
 
 find_package(Clava REQUIRED)
 
-# Use the utility call for AutoPar.
-# This function automatically adds the flags required for compiling OpenMP
-clava_weave_autopar(covariance)
+# Call AutoPar
+clava_enable_openmp()
+clava_weave(covariance ../PolybenchAutopar.lara)
 
 clava_weave(covariance ../CheckOpenMPPragmas.lara ARGS "expectedCodeFile:'${CMAKE_CURRENT_SOURCE_DIR}/expected_output.c'")
 

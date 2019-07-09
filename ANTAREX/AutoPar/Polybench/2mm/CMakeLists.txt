@@ -6,7 +6,6 @@ project(2mm)
 # The Clava CMake plugin can be found here: https://github.com/specs-feup/clava/tree/master/CMake
 #set(Clava_DIR <CMAKE_CLAVA_PLUGIN>)
 
-
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -O3 -mcmodel=medium")
 
 set(SOURCE_FILES
@@ -22,9 +21,10 @@ target_link_libraries(2mm utilities)
 
 find_package(Clava REQUIRED)
 
-# Use the utility call for AutoPar.
-# This function automatically adds the flags required for compiling OpenMP
-clava_weave_autopar(2mm)
+# Call AutoPar
+clava_enable_openmp()
+clava_weave(2mm ../PolybenchAutopar.lara)
+
 
 clava_weave(2mm ../CheckOpenMPPragmas.lara ARGS "expectedCodeFile:'${CMAKE_CURRENT_SOURCE_DIR}/expected_output.c'")
 

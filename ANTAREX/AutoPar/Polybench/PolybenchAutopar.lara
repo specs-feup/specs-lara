@@ -1,0 +1,17 @@
+import clava.autopar.Parallelize;
+
+aspectdef PolybenchAutopar
+
+	var $loops = [];
+	select function.loop end
+	apply
+		// Only parallelize loops inside Polybench kernel functions
+		if(!$function.name.startsWith("kernel_")) {
+			continue;
+		}
+		$loops.push($loop);
+	end
+	    
+	Parallelize.forLoops($loops);	
+
+end
