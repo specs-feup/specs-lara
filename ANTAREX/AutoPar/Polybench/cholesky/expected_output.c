@@ -19,11 +19,8 @@
 /*Array initialization.*/
 static void init_array(int n, double A[2000][2000]) {
    int i, j;
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n)
    for(i = 0; i < n; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(i, n)
       for(j = 0; j <= i; j++) A[i][j] = (double) (-j % n) / n + 1;
-      // #pragma omp parallel for default(shared) private(j) firstprivate(i, n)
       for(j = i + 1; j < n; j++) {
          A[i][j] = 0;
       }
@@ -34,26 +31,9 @@ static void init_array(int n, double A[2000][2000]) {
    double (*B)[2000][2000];
    B = (double (*)[2000][2000]) polybench_alloc_data((2000 + 0) * (2000 + 0), sizeof(double));
    ;
-   #pragma omp parallel for default(shared) private(r, s) firstprivate(n)
-   for(r = 0; r < n; ++r) {
-      // #pragma omp parallel for default(shared) private(s) firstprivate(n, r)
-      for(s = 0; s < n; ++s) (*B)[r][s] = 0;
-   }
-   /*************** Clava msgError **************
-   unsolved dependency for arrayAccess (*B)	 use : RW
-   ****************************************/
-   for(t = 0; t < n; ++t) {
-      #pragma omp parallel for default(shared) private(r, s) firstprivate(n, t)
-      for(r = 0; r < n; ++r) {
-         // #pragma omp parallel for default(shared) private(s) firstprivate(n, r, t)
-         for(s = 0; s < n; ++s) (*B)[r][s] += A[r][t] * A[s][t];
-      }
-   }
-   #pragma omp parallel for default(shared) private(r, s) firstprivate(n)
-   for(r = 0; r < n; ++r) {
-      // #pragma omp parallel for default(shared) private(s) firstprivate(n, r)
-      for(s = 0; s < n; ++s) A[r][s] = (*B)[r][s];
-   }
+   for(r = 0; r < n; ++r) for(s = 0; s < n; ++s) (*B)[r][s] = 0;
+   for(t = 0; t < n; ++t) for(r = 0; r < n; ++r) for(s = 0; s < n; ++s) (*B)[r][s] += A[r][t] * A[s][t];
+   for(r = 0; r < n; ++r) for(s = 0; s < n; ++s) A[r][s] = (*B)[r][s];
    free((void *) B);
    ;
 }
@@ -64,21 +44,9 @@ static void print_array(int n, double A[2000][2000]) {
    int i, j;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "A");
-   /*************** Clava msgError **************
-   Variables Access as passed arguments Can not be traced inside of function calls :
-   fprintf#91{fprintf(stderr, "\n")}
-   fprintf#93{fprintf(stderr, "%0.2lf ", A[i][j])}
-   ****************************************/
-   for(i = 0; i < n; i++) {
-      /*************** Clava msgError **************
-      Variables Access as passed arguments Can not be traced inside of function calls :
-      fprintf#91{fprintf(stderr, "\n")}
-      fprintf#93{fprintf(stderr, "%0.2lf ", A[i][j])}
-      ****************************************/
-      for(j = 0; j <= i; j++) {
-         if((i * n + j) % 20 == 0) fprintf(stderr, "\n");
-         fprintf(stderr, "%0.2lf ", A[i][j]);
-      }
+   for(i = 0; i < n; i++) for(j = 0; j <= i; j++) {
+      if((i * n + j) % 20 == 0) fprintf(stderr, "\n");
+      fprintf(stderr, "%0.2lf ", A[i][j]);
    }
    fprintf(stderr, "\nend   dump: %s\n", "A");
    fprintf(stderr, "==END   DUMP_ARRAYS==\n");

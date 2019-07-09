@@ -20,11 +20,7 @@
 static void init_array(int m, int n, double *float_n, double data[1400][1200]) {
    int i, j;
    *float_n = (double) n;
-   #pragma omp parallel for default(shared) private(i, j)
-   for(i = 0; i < 1400; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(i)
-      for(j = 0; j < 1200; j++) data[i][j] = ((double) i * j) / 1200;
-   }
+   for(i = 0; i < 1400; i++) for(j = 0; j < 1200; j++) data[i][j] = ((double) i * j) / 1200;
 }
 
 /*DCE code. Must scan the entire live-out data.
@@ -33,21 +29,9 @@ static void print_array(int m, double cov[1200][1200]) {
    int i, j;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "cov");
-   /*************** Clava msgError **************
-   Variables Access as passed arguments Can not be traced inside of function calls :
-   fprintf#48{fprintf(stderr, "\n")}
-   fprintf#50{fprintf(stderr, "%0.2lf ", cov[i][j])}
-   ****************************************/
-   for(i = 0; i < m; i++) {
-      /*************** Clava msgError **************
-      Variables Access as passed arguments Can not be traced inside of function calls :
-      fprintf#48{fprintf(stderr, "\n")}
-      fprintf#50{fprintf(stderr, "%0.2lf ", cov[i][j])}
-      ****************************************/
-      for(j = 0; j < m; j++) {
-         if((i * m + j) % 20 == 0) fprintf(stderr, "\n");
-         fprintf(stderr, "%0.2lf ", cov[i][j]);
-      }
+   for(i = 0; i < m; i++) for(j = 0; j < m; j++) {
+      if((i * m + j) % 20 == 0) fprintf(stderr, "\n");
+      fprintf(stderr, "%0.2lf ", cov[i][j]);
    }
    fprintf(stderr, "\nend   dump: %s\n", "cov");
    fprintf(stderr, "==END   DUMP_ARRAYS==\n");
@@ -57,24 +41,24 @@ static void print_array(int m, double cov[1200][1200]) {
 including the call and return.*/
 static void kernel_covariance(int m, int n, double float_n, double data[1400][1200], double cov[1200][1200], double mean[1200]) {
    int i, j, k;
-   #pragma omp parallel for default(shared) private(j, i) firstprivate(m, n, float_n)
+   #pragma omp parallel for default(shared) private(j, i) firstprivate(m, n, float_n, data)
    for(j = 0; j < m; j++) {
       mean[j] = 0.0;
-      // #pragma omp parallel for default(shared) private(i) firstprivate(n, j) reduction(+ : mean[j])
+      // #pragma omp parallel for default(shared) private(i) firstprivate(n, j, data) reduction(+ : mean[j])
       for(i = 0; i < n; i++) mean[j] += data[i][j];
       mean[j] /= float_n;
    }
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, m)
+   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, m, mean)
    for(i = 0; i < n; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(m, i)
+      // #pragma omp parallel for default(shared) private(j) firstprivate(m, i, mean)
       for(j = 0; j < m; j++) data[i][j] -= mean[j];
    }
-   #pragma omp parallel for default(shared) private(i, j, k) firstprivate(m, n, float_n)
+   #pragma omp parallel for default(shared) private(i, j, k) firstprivate(m, n, float_n, data)
    for(i = 0; i < m; i++) {
-      // #pragma omp parallel for default(shared) private(j, k) firstprivate(i, m, n, float_n)
+      // #pragma omp parallel for default(shared) private(j, k) firstprivate(i, m, n, float_n, data)
       for(j = i; j < m; j++) {
          cov[i][j] = 0.0;
-         // #pragma omp parallel for default(shared) private(k) firstprivate(n, i, j) reduction(+ : cov[i][j])
+         // #pragma omp parallel for default(shared) private(k) firstprivate(n, i, j, data) reduction(+ : cov[i][j])
          for(k = 0; k < n; k++) cov[i][j] += data[k][i] * data[k][j];
          cov[i][j] /= (float_n - 1.0);
          cov[j][i] = cov[i][j];

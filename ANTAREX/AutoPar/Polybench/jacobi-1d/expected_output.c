@@ -19,7 +19,6 @@
 /*Array initialization.*/
 static void init_array(int n, double A[2000], double B[2000]) {
    int i;
-   #pragma omp parallel for default(shared) private(i) firstprivate(n)
    for(i = 0; i < n; i++) {
       A[i] = ((double) i + 2) / n;
       B[i] = ((double) i + 3) / n;
@@ -32,11 +31,6 @@ static void print_array(int n, double A[2000]) {
    int i;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "A");
-   /*************** Clava msgError **************
-   Variables Access as passed arguments Can not be traced inside of function calls :
-   fprintf#41{fprintf(stderr, "\n")}
-   fprintf#43{fprintf(stderr, "%0.2lf ", A[i])}
-   ****************************************/
    for(i = 0; i < n; i++) {
       if(i % 20 == 0) fprintf(stderr, "\n");
       fprintf(stderr, "%0.2lf ", A[i]);
@@ -53,9 +47,9 @@ static void kernel_jacobi_1d(int tsteps, int n, double A[2000], double B[2000]) 
    unsolved dependency for arrayAccess A	 use : RW
    ****************************************/
    for(t = 0; t < tsteps; t++) {
-      #pragma omp parallel for default(shared) private(i) firstprivate(n)
+      #pragma omp parallel for default(shared) private(i) firstprivate(n, A)
       for(i = 1; i < n - 1; i++) B[i] = 0.33333 * (A[i - 1] + A[i] + A[i + 1]);
-      #pragma omp parallel for default(shared) private(i) firstprivate(n)
+      #pragma omp parallel for default(shared) private(i) firstprivate(n, B)
       for(i = 1; i < n - 1; i++) A[i] = 0.33333 * (B[i - 1] + B[i] + B[i + 1]);
    }
 }

@@ -21,19 +21,12 @@ static void init_array(int m, int n, double *alpha, double *beta, double C[1000]
    int i, j;
    *alpha = 1.5;
    *beta = 1.2;
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(m, n)
-   for(i = 0; i < m; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(n, i, m)
-      for(j = 0; j < n; j++) {
-         C[i][j] = (double) ((i + j) % 100) / m;
-         B[i][j] = (double) ((n + i - j) % 100) / m;
-      }
+   for(i = 0; i < m; i++) for(j = 0; j < n; j++) {
+      C[i][j] = (double) ((i + j) % 100) / m;
+      B[i][j] = (double) ((n + i - j) % 100) / m;
    }
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(m)
    for(i = 0; i < m; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(i, m)
       for(j = 0; j <= i; j++) A[i][j] = (double) ((i + j) % 100) / m;
-      // #pragma omp parallel for default(shared) private(j) firstprivate(i, m)
       for(j = i + 1; j < m; j++) A[i][j] = -999; //regions of arrays that should not be used
    }
 }
@@ -44,21 +37,9 @@ static void print_array(int m, int n, double C[1000][1200]) {
    int i, j;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "C");
-   /*************** Clava msgError **************
-   Variables Access as passed arguments Can not be traced inside of function calls :
-   fprintf#64{fprintf(stderr, "\n")}
-   fprintf#66{fprintf(stderr, "%0.2lf ", C[i][j])}
-   ****************************************/
-   for(i = 0; i < m; i++) {
-      /*************** Clava msgError **************
-      Variables Access as passed arguments Can not be traced inside of function calls :
-      fprintf#64{fprintf(stderr, "\n")}
-      fprintf#66{fprintf(stderr, "%0.2lf ", C[i][j])}
-      ****************************************/
-      for(j = 0; j < n; j++) {
-         if((i * m + j) % 20 == 0) fprintf(stderr, "\n");
-         fprintf(stderr, "%0.2lf ", C[i][j]);
-      }
+   for(i = 0; i < m; i++) for(j = 0; j < n; j++) {
+      if((i * m + j) % 20 == 0) fprintf(stderr, "\n");
+      fprintf(stderr, "%0.2lf ", C[i][j]);
    }
    fprintf(stderr, "\nend   dump: %s\n", "C");
    fprintf(stderr, "==END   DUMP_ARRAYS==\n");
@@ -73,10 +54,10 @@ static void kernel_symm(int m, int n, double alpha, double beta, double C[1000][
    unsolved dependency for arrayAccess C	 use : RW
    ****************************************/
    for(i = 0; i < m; i++) {
-      #pragma omp parallel for default(shared) private(j, k, temp2) firstprivate(n, i, alpha, beta)
+      #pragma omp parallel for default(shared) private(j, k, temp2) firstprivate(n, i, alpha, beta, B, A)
       for(j = 0; j < n; j++) {
          temp2 = 0;
-         // #pragma omp parallel for default(shared) private(k) firstprivate(i, alpha, j) reduction(+ : temp2)
+         // #pragma omp parallel for default(shared) private(k) firstprivate(i, alpha, j, B, A) reduction(+ : temp2)
          for(k = 0; k < i; k++) {
             C[k][j] += alpha * B[i][j] * A[i][k];
             temp2 += B[k][j] * A[i][k];

@@ -19,12 +19,8 @@
 /*Array initialization.*/
 static void init_array(int n, double u[1000][1000]) {
    int i, j;
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n)
-   for(i = 0; i < n; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(n, i)
-      for(j = 0; j < n; j++) {
-         u[i][j] = (double) (i + n - j) / n;
-      }
+   for(i = 0; i < n; i++) for(j = 0; j < n; j++) {
+      u[i][j] = (double) (i + n - j) / n;
    }
 }
 
@@ -34,21 +30,9 @@ static void print_array(int n, double u[1000][1000]) {
    int i, j;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "u");
-   /*************** Clava msgError **************
-   Variables Access as passed arguments Can not be traced inside of function calls :
-   fprintf#47{fprintf(stderr, "\n")}
-   fprintf#49{fprintf(stderr, "%0.2lf ", u[i][j])}
-   ****************************************/
-   for(i = 0; i < n; i++) {
-      /*************** Clava msgError **************
-      Variables Access as passed arguments Can not be traced inside of function calls :
-      fprintf#47{fprintf(stderr, "\n")}
-      fprintf#49{fprintf(stderr, "%0.2lf ", u[i][j])}
-      ****************************************/
-      for(j = 0; j < n; j++) {
-         if((i * n + j) % 20 == 0) fprintf(stderr, "\n");
-         fprintf(stderr, "%0.2lf ", u[i][j]);
-      }
+   for(i = 0; i < n; i++) for(j = 0; j < n; j++) {
+      if((i * n + j) % 20 == 0) fprintf(stderr, "\n");
+      fprintf(stderr, "%0.2lf ", u[i][j]);
    }
    fprintf(stderr, "\nend   dump: %s\n", "u");
    fprintf(stderr, "==END   DUMP_ARRAYS==\n");
@@ -83,7 +67,7 @@ static void kernel_adi(int tsteps, int n, double u[1000][1000], double v[1000][1
    unsolved dependency for arrayAccess u	 use : RW
    ****************************************/
    for(t = 1; t <= tsteps; t++) {
-      #pragma omp parallel for default(shared) private(i, j) firstprivate(n, a, b, c, d, f)
+      #pragma omp parallel for default(shared) private(i, j) firstprivate(n, a, b, c, d, f, u)
       for(i = 1; i < n - 1; i++) {
          v[0][i] = 1.0;
          p[i][0] = 0.0;
@@ -104,7 +88,7 @@ static void kernel_adi(int tsteps, int n, double u[1000][1000], double v[1000][1
             v[j][i] = p[i][j] * v[j + 1][i] + q[i][j];
          }
       }
-      #pragma omp parallel for default(shared) private(i, j) firstprivate(n, d, e, f, a, c)
+      #pragma omp parallel for default(shared) private(i, j) firstprivate(n, d, e, f, a, c, v)
       for(i = 1; i < n - 1; i++) {
          u[i][0] = 1.0;
          p[i][0] = 0.0;

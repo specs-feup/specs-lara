@@ -21,16 +21,8 @@ static void init_array(int n, int m, double *alpha, double *beta, double C[1200]
    int i, j;
    *alpha = 1.5;
    *beta = 1.2;
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, m)
-   for(i = 0; i < n; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(m, i, n)
-      for(j = 0; j < m; j++) A[i][j] = (double) ((i * j + 1) % n) / n;
-   }
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, m)
-   for(i = 0; i < n; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(n, i, m)
-      for(j = 0; j < n; j++) C[i][j] = (double) ((i * j + 2) % m) / m;
-   }
+   for(i = 0; i < n; i++) for(j = 0; j < m; j++) A[i][j] = (double) ((i * j + 1) % n) / n;
+   for(i = 0; i < n; i++) for(j = 0; j < n; j++) C[i][j] = (double) ((i * j + 2) % m) / m;
 }
 
 /*DCE code. Must scan the entire live-out data.
@@ -39,21 +31,9 @@ static void print_array(int n, double C[1200][1200]) {
    int i, j;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "C");
-   /*************** Clava msgError **************
-   Variables Access as passed arguments Can not be traced inside of function calls :
-   fprintf#58{fprintf(stderr, "\n")}
-   fprintf#60{fprintf(stderr, "%0.2lf ", C[i][j])}
-   ****************************************/
-   for(i = 0; i < n; i++) {
-      /*************** Clava msgError **************
-      Variables Access as passed arguments Can not be traced inside of function calls :
-      fprintf#58{fprintf(stderr, "\n")}
-      fprintf#60{fprintf(stderr, "%0.2lf ", C[i][j])}
-      ****************************************/
-      for(j = 0; j < n; j++) {
-         if((i * n + j) % 20 == 0) fprintf(stderr, "\n");
-         fprintf(stderr, "%0.2lf ", C[i][j]);
-      }
+   for(i = 0; i < n; i++) for(j = 0; j < n; j++) {
+      if((i * n + j) % 20 == 0) fprintf(stderr, "\n");
+      fprintf(stderr, "%0.2lf ", C[i][j]);
    }
    fprintf(stderr, "\nend   dump: %s\n", "C");
    fprintf(stderr, "==END   DUMP_ARRAYS==\n");
@@ -63,13 +43,13 @@ static void print_array(int n, double C[1200][1200]) {
 including the call and return.*/
 static void kernel_syrk(int n, int m, double alpha, double beta, double C[1200][1200], double A[1200][1000]) {
    int i, j, k;
-   #pragma omp parallel for default(shared) private(i, j, k) firstprivate(n, beta, m, alpha)
+   #pragma omp parallel for default(shared) private(i, j, k) firstprivate(n, beta, m, alpha, A)
    for(i = 0; i < n; i++) {
       // #pragma omp parallel for default(shared) private(j) firstprivate(i, beta)
       for(j = 0; j <= i; j++) C[i][j] *= beta;
-      // #pragma omp parallel for default(shared) private(k, j) firstprivate(m, i, alpha)
+      // #pragma omp parallel for default(shared) private(k, j) firstprivate(m, i, alpha, A)
       for(k = 0; k < m; k++) {
-         // #pragma omp parallel for default(shared) private(j) firstprivate(i, alpha, k)
+         // #pragma omp parallel for default(shared) private(j) firstprivate(i, alpha, k, A)
          for(j = 0; j <= i; j++) C[i][j] += alpha * A[i][k] * A[j][k];
       }
    }

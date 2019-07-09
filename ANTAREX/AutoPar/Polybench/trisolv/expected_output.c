@@ -19,11 +19,9 @@
 /*Array initialization.*/
 static void init_array(int n, double L[2000][2000], double x[2000], double b[2000]) {
    int i, j;
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n)
    for(i = 0; i < n; i++) {
       x[i] = -999;
       b[i] = i;
-      // #pragma omp parallel for default(shared) private(j) firstprivate(i, n)
       for(j = 0; j <= i; j++) L[i][j] = (double) (i + n - j + 1) * 2 / n;
    }
 }
@@ -34,11 +32,6 @@ static void print_array(int n, double x[2000]) {
    int i;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "x");
-   /*************** Clava msgError **************
-   Variables Access as passed arguments Can not be traced inside of function calls :
-   fprintf#45{fprintf(stderr, "%0.2lf ", x[i])}
-   fprintf#47{fprintf(stderr, "\n")}
-   ****************************************/
    for(i = 0; i < n; i++) {
       fprintf(stderr, "%0.2lf ", x[i]);
       if(i % 20 == 0) fprintf(stderr, "\n");

@@ -21,11 +21,7 @@ static void init_array(int w, int h, float *alpha, float imgIn[4096][2160], floa
    int i, j;
    *alpha = 0.25; //parameter of the filter
    //input should be between 0 and 1 (grayscale image pixel)
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(w, h)
-   for(i = 0; i < w; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(h, i)
-      for(j = 0; j < h; j++) imgIn[i][j] = (float) ((313 * i + 991 * j) % 65536) / 65535.0f;
-   }
+   for(i = 0; i < w; i++) for(j = 0; j < h; j++) imgIn[i][j] = (float) ((313 * i + 991 * j) % 65536) / 65535.0f;
 }
 
 /*DCE code. Must scan the entire live-out data.
@@ -34,21 +30,9 @@ static void print_array(int w, int h, float imgOut[4096][2160]) {
    int i, j;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "imgOut");
-   /*************** Clava msgError **************
-   Variables Access as passed arguments Can not be traced inside of function calls :
-   fprintf#49{fprintf(stderr, "\n")}
-   fprintf#51{fprintf(stderr, "%0.2f ", imgOut[i][j])}
-   ****************************************/
-   for(i = 0; i < w; i++) {
-      /*************** Clava msgError **************
-      Variables Access as passed arguments Can not be traced inside of function calls :
-      fprintf#49{fprintf(stderr, "\n")}
-      fprintf#51{fprintf(stderr, "%0.2f ", imgOut[i][j])}
-      ****************************************/
-      for(j = 0; j < h; j++) {
-         if((i * h + j) % 20 == 0) fprintf(stderr, "\n");
-         fprintf(stderr, "%0.2f ", imgOut[i][j]);
-      }
+   for(i = 0; i < w; i++) for(j = 0; j < h; j++) {
+      if((i * h + j) % 20 == 0) fprintf(stderr, "\n");
+      fprintf(stderr, "%0.2f ", imgOut[i][j]);
    }
    fprintf(stderr, "\nend   dump: %s\n", "imgOut");
    fprintf(stderr, "==END   DUMP_ARRAYS==\n");
@@ -74,7 +58,7 @@ static void kernel_deriche(int w, int h, float alpha, float imgIn[4096][2160], f
    b1 = powf(2.0f, -alpha);
    b2 = -expf(-2.0f * alpha);
    c1 = c2 = 1;
-   #pragma omp parallel for default(shared) private(i, j, ym1, ym2, xm1) firstprivate(w, h, a1, a2, b1, b2)
+   #pragma omp parallel for default(shared) private(i, j, ym1, ym2, xm1) firstprivate(w, h, a1, a2, b1, b2, imgIn)
    for(i = 0; i < w; i++) {
       ym1 = 0.0f;
       ym2 = 0.0f;
@@ -91,7 +75,7 @@ static void kernel_deriche(int w, int h, float alpha, float imgIn[4096][2160], f
          ym1 = y1[i][j];
       }
    }
-   #pragma omp parallel for default(shared) private(i, j, yp1, yp2, xp1, xp2) firstprivate(w, h, a3, a4, b1, b2)
+   #pragma omp parallel for default(shared) private(i, j, yp1, yp2, xp1, xp2) firstprivate(w, h, a3, a4, b1, b2, imgIn)
    for(i = 0; i < w; i++) {
       yp1 = 0.0f;
       yp2 = 0.0f;
@@ -111,14 +95,14 @@ static void kernel_deriche(int w, int h, float alpha, float imgIn[4096][2160], f
          yp1 = y2[i][j];
       }
    }
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(w, h, c1)
+   #pragma omp parallel for default(shared) private(i, j) firstprivate(w, h, c1, y1, y2)
    for(i = 0; i < w; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(h, i, c1)
+      // #pragma omp parallel for default(shared) private(j) firstprivate(h, i, c1, y1, y2)
       for(j = 0; j < h; j++) {
          imgOut[i][j] = c1 * (y1[i][j] + y2[i][j]);
       }
    }
-   #pragma omp parallel for default(shared) private(j, i, tm1, ym1, ym2) firstprivate(h, w, a5, a6, b1, b2)
+   #pragma omp parallel for default(shared) private(j, i, tm1, ym1, ym2) firstprivate(h, w, a5, a6, b1, b2, imgOut)
    for(j = 0; j < h; j++) {
       tm1 = 0.0f;
       ym1 = 0.0f;
@@ -135,7 +119,7 @@ static void kernel_deriche(int w, int h, float alpha, float imgIn[4096][2160], f
          ym1 = y1[i][j];
       }
    }
-   #pragma omp parallel for default(shared) private(j, i, tp1, tp2, yp1, yp2) firstprivate(h, w, a7, a8, b1, b2)
+   #pragma omp parallel for default(shared) private(j, i, tp1, tp2, yp1, yp2) firstprivate(h, w, a7, a8, b1, b2, imgOut)
    for(j = 0; j < h; j++) {
       tp1 = 0.0f;
       tp2 = 0.0f;
@@ -155,9 +139,9 @@ static void kernel_deriche(int w, int h, float alpha, float imgIn[4096][2160], f
          yp1 = y2[i][j];
       }
    }
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(w, h, c2)
+   #pragma omp parallel for default(shared) private(i, j) firstprivate(w, h, c2, y1, y2)
    for(i = 0; i < w; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(h, i, c2)
+      // #pragma omp parallel for default(shared) private(j) firstprivate(h, i, c2, y1, y2)
       for(j = 0; j < h; j++) imgOut[i][j] = c2 * (y1[i][j] + y2[i][j]);
    }
 }

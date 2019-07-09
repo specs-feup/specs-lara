@@ -19,7 +19,6 @@
 /*Array initialization.*/
 static void init_array(int n, double r[2000]) {
    int i, j;
-   #pragma omp parallel for default(shared) private(i) firstprivate(n)
    for(i = 0; i < n; i++) {
       r[i] = (n + 1 - i);
    }
@@ -31,11 +30,6 @@ static void print_array(int n, double y[2000]) {
    int i;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "y");
-   /*************** Clava msgError **************
-   Variables Access as passed arguments Can not be traced inside of function calls :
-   fprintf#40{fprintf(stderr, "\n")}
-   fprintf#42{fprintf(stderr, "%0.2lf ", y[i])}
-   ****************************************/
    for(i = 0; i < n; i++) {
       if(i % 20 == 0) fprintf(stderr, "\n");
       fprintf(stderr, "%0.2lf ", y[i]);
@@ -62,16 +56,16 @@ static void kernel_durbin(int n, double r[2000], double y[2000]) {
    for(k = 1; k < n; k++) {
       beta = (1 - alpha * alpha) * beta;
       sum = 0.0;
-      #pragma omp parallel for default(shared) private(i) firstprivate(k) reduction(+ : sum)
+      #pragma omp parallel for default(shared) private(i) firstprivate(k, r, y) reduction(+ : sum)
       for(i = 0; i < k; i++) {
          sum += r[k - i - 1] * y[i];
       }
       alpha = -(r[k] + sum) / beta;
-      #pragma omp parallel for default(shared) private(i) firstprivate(k, alpha)
+      #pragma omp parallel for default(shared) private(i) firstprivate(k, alpha, y)
       for(i = 0; i < k; i++) {
          z[i] = y[i] + alpha * y[k - i - 1];
       }
-      #pragma omp parallel for default(shared) private(i) firstprivate(k)
+      #pragma omp parallel for default(shared) private(i) firstprivate(k, z)
       for(i = 0; i < k; i++) {
          y[i] = z[i];
       }

@@ -20,14 +20,11 @@
 static void init_array(int m, int n, double *alpha, double A[1000][1000], double B[1000][1200]) {
    int i, j;
    *alpha = 1.5;
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(m, n)
    for(i = 0; i < m; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(i, m)
       for(j = 0; j < i; j++) {
          A[i][j] = (double) ((i + j) % m) / m;
       }
       A[i][i] = 1.0;
-      // #pragma omp parallel for default(shared) private(j) firstprivate(n, i)
       for(j = 0; j < n; j++) {
          B[i][j] = (double) ((n + (i - j)) % n) / n;
       }
@@ -40,21 +37,9 @@ static void print_array(int m, int n, double B[1000][1200]) {
    int i, j;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "B");
-   /*************** Clava msgError **************
-   Variables Access as passed arguments Can not be traced inside of function calls :
-   fprintf#54{fprintf(stderr, "\n")}
-   fprintf#56{fprintf(stderr, "%0.2lf ", B[i][j])}
-   ****************************************/
-   for(i = 0; i < m; i++) {
-      /*************** Clava msgError **************
-      Variables Access as passed arguments Can not be traced inside of function calls :
-      fprintf#54{fprintf(stderr, "\n")}
-      fprintf#56{fprintf(stderr, "%0.2lf ", B[i][j])}
-      ****************************************/
-      for(j = 0; j < n; j++) {
-         if((i * m + j) % 20 == 0) fprintf(stderr, "\n");
-         fprintf(stderr, "%0.2lf ", B[i][j]);
-      }
+   for(i = 0; i < m; i++) for(j = 0; j < n; j++) {
+      if((i * m + j) % 20 == 0) fprintf(stderr, "\n");
+      fprintf(stderr, "%0.2lf ", B[i][j]);
    }
    fprintf(stderr, "\nend   dump: %s\n", "B");
    fprintf(stderr, "==END   DUMP_ARRAYS==\n");
@@ -68,7 +53,7 @@ static void kernel_trmm(int m, int n, double alpha, double A[1000][1000], double
    unsolved dependency for arrayAccess B	 use : RW
    ****************************************/
    for(i = 0; i < m; i++) {
-      #pragma omp parallel for default(shared) private(j, k) firstprivate(n, i, m, alpha)
+      #pragma omp parallel for default(shared) private(j, k) firstprivate(n, i, m, alpha, A)
       for(j = 0; j < n; j++) {
          /*************** Clava msgError **************
          unsolved dependency for arrayAccess B	 use : RW

@@ -19,12 +19,9 @@
 /*Array initialization.*/
 static void init_array(int m, int n, double A[2100][1900], double r[2100], double p[1900]) {
    int i, j;
-   #pragma omp parallel for default(shared) private(i) firstprivate(m)
    for(i = 0; i < m; i++) p[i] = (double) (i % m) / m;
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, m)
    for(i = 0; i < n; i++) {
       r[i] = (double) (i % n) / n;
-      // #pragma omp parallel for default(shared) private(j) firstprivate(m, i, n)
       for(j = 0; j < m; j++) A[i][j] = (double) (i * (j + 1) % n) / n;
    }
 }
@@ -35,22 +32,12 @@ static void print_array(int m, int n, double s[1900], double q[2100]) {
    int i;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "s");
-   /*************** Clava msgError **************
-   Variables Access as passed arguments Can not be traced inside of function calls :
-   fprintf#50{fprintf(stderr, "\n")}
-   fprintf#52{fprintf(stderr, "%0.2lf ", s[i])}
-   ****************************************/
    for(i = 0; i < m; i++) {
       if(i % 20 == 0) fprintf(stderr, "\n");
       fprintf(stderr, "%0.2lf ", s[i]);
    }
    fprintf(stderr, "\nend   dump: %s\n", "s");
    fprintf(stderr, "begin dump: %s", "q");
-   /*************** Clava msgError **************
-   Variables Access as passed arguments Can not be traced inside of function calls :
-   fprintf#60{fprintf(stderr, "\n")}
-   fprintf#62{fprintf(stderr, "%0.2lf ", q[i])}
-   ****************************************/
    for(i = 0; i < n; i++) {
       if(i % 20 == 0) fprintf(stderr, "\n");
       fprintf(stderr, "%0.2lf ", q[i]);
@@ -65,10 +52,10 @@ static void kernel_bicg(int m, int n, double A[2100][1900], double s[1900], doub
    int i, j;
    #pragma omp parallel for default(shared) private(i) firstprivate(m)
    for(i = 0; i < m; i++) s[i] = 0;
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, m) reduction(+ : s[:1900])
+   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, m, r, A, p) reduction(+ : s[:1900])
    for(i = 0; i < n; i++) {
       q[i] = 0.0;
-      // #pragma omp parallel for default(shared) private(j) firstprivate(m, i) reduction(+ : q[i])
+      // #pragma omp parallel for default(shared) private(j) firstprivate(m, i, r, A, p) reduction(+ : q[i])
       for(j = 0; j < m; j++) {
          s[j] = s[j] + r[i] * A[i][j];
          q[i] = q[i] + A[i][j] * p[j];

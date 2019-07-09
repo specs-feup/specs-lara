@@ -22,7 +22,6 @@ static void init_array(int n, double *alpha, double *beta, double A[2000][2000],
    *alpha = 1.5;
    *beta = 1.2;
    double fn = (double) n;
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, fn)
    for(i = 0; i < n; i++) {
       u1[i] = i;
       u2[i] = ((i + 1) / fn) / 2.0;
@@ -32,7 +31,6 @@ static void init_array(int n, double *alpha, double *beta, double A[2000][2000],
       z[i] = ((i + 1) / fn) / 9.0;
       x[i] = 0.0;
       w[i] = 0.0;
-      // #pragma omp parallel for default(shared) private(j) firstprivate(n, i)
       for(j = 0; j < n; j++) A[i][j] = (double) (i * j % n) / n;
    }
 }
@@ -43,11 +41,6 @@ static void print_array(int n, double w[2000]) {
    int i;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "w");
-   /*************** Clava msgError **************
-   Variables Access as passed arguments Can not be traced inside of function calls :
-   fprintf#55{fprintf(stderr, "\n")}
-   fprintf#57{fprintf(stderr, "%0.2lf ", w[i])}
-   ****************************************/
    for(i = 0; i < n; i++) {
       if(i % 20 == 0) fprintf(stderr, "\n");
       fprintf(stderr, "%0.2lf ", w[i]);
@@ -60,21 +53,21 @@ static void print_array(int n, double w[2000]) {
 including the call and return.*/
 static void kernel_gemver(int n, double alpha, double beta, double A[2000][2000], double u1[2000], double v1[2000], double u2[2000], double v2[2000], double w[2000], double x[2000], double y[2000], double z[2000]) {
    int i, j;
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n)
+   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, u1, v1, u2, v2)
    for(i = 0; i < n; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(n, i)
+      // #pragma omp parallel for default(shared) private(j) firstprivate(n, i, u1, v1, u2, v2)
       for(j = 0; j < n; j++) A[i][j] = A[i][j] + u1[i] * v1[j] + u2[i] * v2[j];
    }
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, beta)
+   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, beta, A, y)
    for(i = 0; i < n; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(n, beta, i) reduction(+ : x[i])
+      // #pragma omp parallel for default(shared) private(j) firstprivate(n, beta, i, A, y) reduction(+ : x[i])
       for(j = 0; j < n; j++) x[i] = x[i] + beta * A[j][i] * y[j];
    }
-   #pragma omp parallel for default(shared) private(i) firstprivate(n)
+   #pragma omp parallel for default(shared) private(i) firstprivate(n, z)
    for(i = 0; i < n; i++) x[i] = x[i] + z[i];
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, alpha)
+   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, alpha, A, x)
    for(i = 0; i < n; i++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(n, alpha, i) reduction(+ : w[i])
+      // #pragma omp parallel for default(shared) private(j) firstprivate(n, alpha, i, A, x) reduction(+ : w[i])
       for(j = 0; j < n; j++) w[i] = w[i] + alpha * A[i][j] * x[j];
    }
 }

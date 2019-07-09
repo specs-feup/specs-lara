@@ -21,10 +21,8 @@ static void init_array(int n, double *alpha, double *beta, double A[1300][1300],
    int i, j;
    *alpha = 1.5;
    *beta = 1.2;
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n)
    for(i = 0; i < n; i++) {
       x[i] = (double) (i % n) / n;
-      // #pragma omp parallel for default(shared) private(j) firstprivate(n, i)
       for(j = 0; j < n; j++) {
          A[i][j] = (double) ((i * j + 1) % n) / n;
          B[i][j] = (double) ((i * j + 2) % n) / n;
@@ -38,11 +36,6 @@ static void print_array(int n, double y[1300]) {
    int i;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "y");
-   /*************** Clava msgError **************
-   Variables Access as passed arguments Can not be traced inside of function calls :
-   fprintf#48{fprintf(stderr, "\n")}
-   fprintf#50{fprintf(stderr, "%0.2lf ", y[i])}
-   ****************************************/
    for(i = 0; i < n; i++) {
       if(i % 20 == 0) fprintf(stderr, "\n");
       fprintf(stderr, "%0.2lf ", y[i]);
@@ -55,11 +48,11 @@ static void print_array(int n, double y[1300]) {
 including the call and return.*/
 static void kernel_gesummv(int n, double alpha, double beta, double A[1300][1300], double B[1300][1300], double tmp[1300], double x[1300], double y[1300]) {
    int i, j;
-   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, alpha, beta)
+   #pragma omp parallel for default(shared) private(i, j) firstprivate(n, alpha, beta, A, x, B)
    for(i = 0; i < n; i++) {
       tmp[i] = 0.0;
       y[i] = 0.0;
-      // #pragma omp parallel for default(shared) private(j) firstprivate(n, i) reduction(+ : tmp[i]) reduction(+ : y[i])
+      // #pragma omp parallel for default(shared) private(j) firstprivate(n, i, A, x, B) reduction(+ : tmp[i]) reduction(+ : y[i])
       for(j = 0; j < n; j++) {
          tmp[i] = A[i][j] * x[j] + tmp[i];
          y[i] = B[i][j] * x[j] + y[i];
