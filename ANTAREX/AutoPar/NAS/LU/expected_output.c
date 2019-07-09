@@ -310,9 +310,9 @@ void blts(int ldmx, int ldmy, int ldmz, int nx, int ny, int nz, int k, double om
    // we use casted pointers.
    double (*vk)[ldmx / 2 * 2 + 1][5] = v[k];
    double (*vkm1)[ldmx / 2 * 2 + 1][5] = v[k - 1];
-   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(jst, jend, ist, iend, omega)
+   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(jst, jend, ist, iend, omega, ldz, vkm1)
    for(j = jst; j < jend; j++) {
-      // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, j, omega)
+      // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, j, omega, ldz, vkm1)
       for(i = ist; i < iend; i++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -439,9 +439,9 @@ void buts(int ldmx, int ldmy, int ldmz, int nx, int ny, int nz, int k, double om
    int i, j, m;
    double tmp, tmp1;
    double tmat[5][5];
-   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(jend, jst, iend, ist, k, omega)
+   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(jend, jst, iend, ist, k, omega, udz, v)
    for(j = jend - 1; j >= jst; j--) {
-      // #pragma omp parallel for default(shared) private(i, m) firstprivate(iend, ist, k, j, omega)
+      // #pragma omp parallel for default(shared) private(i, m) firstprivate(iend, ist, k, j, omega, udz, v)
       for(i = iend - 1; i >= ist; i--) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -621,13 +621,13 @@ void erhs() {
          }
       }
    }
-   #pragma omp parallel for default(shared) private(k, j, i, m, zeta, eta, xi) firstprivate(nz, ny, ny0, nx, nx0)
+   #pragma omp parallel for default(shared) private(k, j, i, m, zeta, eta, xi) firstprivate(nz, ny, ny0, nx, nx0, ce)
    for(k = 0; k < nz; k++) {
       zeta = ((double) k) / (nz - 1);
-      // #pragma omp parallel for default(shared) private(j, i, m, eta, xi) firstprivate(ny, ny0, nx, nx0, zeta, k)
+      // #pragma omp parallel for default(shared) private(j, i, m, eta, xi) firstprivate(ny, ny0, nx, nx0, zeta, k, ce)
       for(j = 0; j < ny; j++) {
          eta = ((double) j) / (ny0 - 1);
-         // #pragma omp parallel for default(shared) private(i, m, xi) firstprivate(nx, nx0, eta, zeta, k, j)
+         // #pragma omp parallel for default(shared) private(i, m, xi) firstprivate(nx, nx0, eta, zeta, k, j, ce)
          for(i = 0; i < nx; i++) {
             xi = ((double) i) / (nx0 - 1);
             /*************** Clava msgError **************
@@ -642,11 +642,11 @@ void erhs() {
    //---------------------------------------------------------------------
    // xi-direction flux differences
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, j, i, m, u21, q, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(nz, jst, jend, nx, ist, iend, tx2, tx3, dx1, tx1, dx2, dx3, dx4, dx5, dssp, flux)
+   #pragma omp parallel for default(shared) private(k, j, i, m, u21, q, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(nz, jst, jend, nx, ist, iend, tx2, tx3, dx1, tx1, dx2, dx3, dx4, dx5, dssp, rsd, flux)
    for(k = 1; k < nz - 1; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, m, u21, q, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(jst, jend, nx, k, ist, iend, tx2, tx3, dx1, tx1, dx2, dx3, dx4, dx5, dssp, flux)
+      // #pragma omp parallel for default(shared) private(j, i, m, u21, q, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(jst, jend, nx, k, ist, iend, tx2, tx3, dx1, tx1, dx2, dx3, dx4, dx5, dssp, rsd, flux)
       for(j = jst; j < jend; j++) {
-         // #pragma omp parallel for default(shared) private(i, u21, q) firstprivate(nx, k, j)
+         // #pragma omp parallel for default(shared) private(i, u21, q) firstprivate(nx, k, j, rsd)
          for(i = 0; i < nx; i++) {
             flux[i][0] = rsd[k][j][i][1];
             u21 = rsd[k][j][i][1] / rsd[k][j][i][0];
@@ -656,7 +656,7 @@ void erhs() {
             flux[i][3] = rsd[k][j][i][3] * u21;
             flux[i][4] = (1.40e+00 * rsd[k][j][i][4] - 0.40e+00 * q) * u21;
          }
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, tx2, k, j)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, tx2, k, j, flux)
          for(i = ist; i < iend; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -665,7 +665,7 @@ void erhs() {
                frct[k][j][i][m] = frct[k][j][i][m] - tx2 * (flux[i + 1][m] - flux[i - 1][m]);
             }
          }
-         // #pragma omp parallel for default(shared) private(i, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(ist, nx, k, j, tx3)
+         // #pragma omp parallel for default(shared) private(i, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(ist, nx, k, j, tx3, rsd)
          for(i = ist; i < nx; i++) {
             tmp = 1.0 / rsd[k][j][i][0];
             u21i = tmp * rsd[k][j][i][1];
@@ -682,7 +682,7 @@ void erhs() {
             flux[i][3] = tx3 * (u41i - u41im1);
             flux[i][4] = 0.50 * (1.0 - 1.40e+00 * 1.40e+00) * tx3 * ((u21i * u21i + u31i * u31i + u41i * u41i) - (u21im1 * u21im1 + u31im1 * u31im1 + u41im1 * u41im1)) + (1.0 / 6.0) * tx3 * (u21i * u21i - u21im1 * u21im1) + 1.40e+00 * 1.40e+00 * tx3 * (u51i - u51im1);
          }
-         // #pragma omp parallel for default(shared) private(i) firstprivate(ist, iend, k, j, dx1, tx1, tx3, dx2, dx3, dx4, dx5)
+         // #pragma omp parallel for default(shared) private(i) firstprivate(ist, iend, k, j, dx1, tx1, tx3, dx2, dx3, dx4, dx5, rsd, flux)
          for(i = ist; i < iend; i++) {
             frct[k][j][i][0] = frct[k][j][i][0] + dx1 * tx1 * (rsd[k][j][i - 1][0] - 2.0 * rsd[k][j][i][0] + rsd[k][j][i + 1][0]);
             frct[k][j][i][1] = frct[k][j][i][1] + tx3 * 1.00e-01 * 1.00e+00 * (flux[i + 1][1] - flux[i][1]) + dx2 * tx1 * (rsd[k][j][i - 1][1] - 2.0 * rsd[k][j][i][1] + rsd[k][j][i + 1][1]);
@@ -700,7 +700,7 @@ void erhs() {
             frct[k][j][1][m] = frct[k][j][1][m] - dssp * (+5.0 * rsd[k][j][1][m] - 4.0 * rsd[k][j][2][m] + rsd[k][j][3][m]);
             frct[k][j][2][m] = frct[k][j][2][m] - dssp * (-4.0 * rsd[k][j][1][m] + 6.0 * rsd[k][j][2][m] - 4.0 * rsd[k][j][3][m] + rsd[k][j][4][m]);
          }
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(nx, k, j, dssp)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(nx, k, j, dssp, rsd)
          for(i = 3; i < nx - 3; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -721,11 +721,11 @@ void erhs() {
    //---------------------------------------------------------------------
    // eta-direction flux differences
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, i, j, m, u31, q, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(nz, ist, iend, ny, jst, jend, ty2, ty3, dy1, ty1, dy2, dy3, dy4, dy5, dssp, flux)
+   #pragma omp parallel for default(shared) private(k, i, j, m, u31, q, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(nz, ist, iend, ny, jst, jend, ty2, ty3, dy1, ty1, dy2, dy3, dy4, dy5, dssp, rsd, flux)
    for(k = 1; k < nz - 1; k++) {
-      // #pragma omp parallel for default(shared) private(i, j, m, u31, q, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(ist, iend, ny, k, jst, jend, ty2, ty3, dy1, ty1, dy2, dy3, dy4, dy5, dssp, flux)
+      // #pragma omp parallel for default(shared) private(i, j, m, u31, q, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(ist, iend, ny, k, jst, jend, ty2, ty3, dy1, ty1, dy2, dy3, dy4, dy5, dssp, rsd, flux)
       for(i = ist; i < iend; i++) {
-         // #pragma omp parallel for default(shared) private(j, u31, q) firstprivate(ny, k, i)
+         // #pragma omp parallel for default(shared) private(j, u31, q) firstprivate(ny, k, i, rsd)
          for(j = 0; j < ny; j++) {
             flux[j][0] = rsd[k][j][i][2];
             u31 = rsd[k][j][i][2] / rsd[k][j][i][0];
@@ -735,7 +735,7 @@ void erhs() {
             flux[j][3] = rsd[k][j][i][3] * u31;
             flux[j][4] = (1.40e+00 * rsd[k][j][i][4] - 0.40e+00 * q) * u31;
          }
-         // #pragma omp parallel for default(shared) private(j, m) firstprivate(jst, jend, ty2, k, i)
+         // #pragma omp parallel for default(shared) private(j, m) firstprivate(jst, jend, ty2, k, i, flux)
          for(j = jst; j < jend; j++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -744,7 +744,7 @@ void erhs() {
                frct[k][j][i][m] = frct[k][j][i][m] - ty2 * (flux[j + 1][m] - flux[j - 1][m]);
             }
          }
-         // #pragma omp parallel for default(shared) private(j, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(jst, ny, k, i, ty3)
+         // #pragma omp parallel for default(shared) private(j, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(jst, ny, k, i, ty3, rsd)
          for(j = jst; j < ny; j++) {
             tmp = 1.0 / rsd[k][j][i][0];
             u21j = tmp * rsd[k][j][i][1];
@@ -761,7 +761,7 @@ void erhs() {
             flux[j][3] = ty3 * (u41j - u41jm1);
             flux[j][4] = 0.50 * (1.0 - 1.40e+00 * 1.40e+00) * ty3 * ((u21j * u21j + u31j * u31j + u41j * u41j) - (u21jm1 * u21jm1 + u31jm1 * u31jm1 + u41jm1 * u41jm1)) + (1.0 / 6.0) * ty3 * (u31j * u31j - u31jm1 * u31jm1) + 1.40e+00 * 1.40e+00 * ty3 * (u51j - u51jm1);
          }
-         // #pragma omp parallel for default(shared) private(j) firstprivate(jst, jend, k, i, dy1, ty1, ty3, dy2, dy3, dy4, dy5)
+         // #pragma omp parallel for default(shared) private(j) firstprivate(jst, jend, k, i, dy1, ty1, ty3, dy2, dy3, dy4, dy5, rsd, flux)
          for(j = jst; j < jend; j++) {
             frct[k][j][i][0] = frct[k][j][i][0] + dy1 * ty1 * (rsd[k][j - 1][i][0] - 2.0 * rsd[k][j][i][0] + rsd[k][j + 1][i][0]);
             frct[k][j][i][1] = frct[k][j][i][1] + ty3 * 1.00e-01 * 1.00e+00 * (flux[j + 1][1] - flux[j][1]) + dy2 * ty1 * (rsd[k][j - 1][i][1] - 2.0 * rsd[k][j][i][1] + rsd[k][j + 1][i][1]);
@@ -779,7 +779,7 @@ void erhs() {
             frct[k][1][i][m] = frct[k][1][i][m] - dssp * (+5.0 * rsd[k][1][i][m] - 4.0 * rsd[k][2][i][m] + rsd[k][3][i][m]);
             frct[k][2][i][m] = frct[k][2][i][m] - dssp * (-4.0 * rsd[k][1][i][m] + 6.0 * rsd[k][2][i][m] - 4.0 * rsd[k][3][i][m] + rsd[k][4][i][m]);
          }
-         // #pragma omp parallel for default(shared) private(j, m) firstprivate(ny, k, i, dssp)
+         // #pragma omp parallel for default(shared) private(j, m) firstprivate(ny, k, i, dssp, rsd)
          for(j = 3; j < ny - 3; j++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -800,11 +800,11 @@ void erhs() {
    //---------------------------------------------------------------------
    // zeta-direction flux differences
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(j, i, k, m, u41, q, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(jst, jend, ist, iend, nz, tz2, tz3, dz1, tz1, dz2, dz3, dz4, dz5, dssp, flux)
+   #pragma omp parallel for default(shared) private(j, i, k, m, u41, q, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(jst, jend, ist, iend, nz, tz2, tz3, dz1, tz1, dz2, dz3, dz4, dz5, dssp, rsd, flux)
    for(j = jst; j < jend; j++) {
-      // #pragma omp parallel for default(shared) private(i, k, m, u41, q, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(ist, iend, nz, j, tz2, tz3, dz1, tz1, dz2, dz3, dz4, dz5, dssp, flux)
+      // #pragma omp parallel for default(shared) private(i, k, m, u41, q, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(ist, iend, nz, j, tz2, tz3, dz1, tz1, dz2, dz3, dz4, dz5, dssp, rsd, flux)
       for(i = ist; i < iend; i++) {
-         // #pragma omp parallel for default(shared) private(k, u41, q) firstprivate(nz, j, i)
+         // #pragma omp parallel for default(shared) private(k, u41, q) firstprivate(nz, j, i, rsd)
          for(k = 0; k < nz; k++) {
             flux[k][0] = rsd[k][j][i][3];
             u41 = rsd[k][j][i][3] / rsd[k][j][i][0];
@@ -814,7 +814,7 @@ void erhs() {
             flux[k][3] = rsd[k][j][i][3] * u41 + 0.40e+00 * (rsd[k][j][i][4] - q);
             flux[k][4] = (1.40e+00 * rsd[k][j][i][4] - 0.40e+00 * q) * u41;
          }
-         // #pragma omp parallel for default(shared) private(k, m) firstprivate(nz, tz2, j, i)
+         // #pragma omp parallel for default(shared) private(k, m) firstprivate(nz, tz2, j, i, flux)
          for(k = 1; k < nz - 1; k++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -823,7 +823,7 @@ void erhs() {
                frct[k][j][i][m] = frct[k][j][i][m] - tz2 * (flux[k + 1][m] - flux[k - 1][m]);
             }
          }
-         // #pragma omp parallel for default(shared) private(k, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(nz, j, i, tz3)
+         // #pragma omp parallel for default(shared) private(k, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(nz, j, i, tz3, rsd)
          for(k = 1; k < nz; k++) {
             tmp = 1.0 / rsd[k][j][i][0];
             u21k = tmp * rsd[k][j][i][1];
@@ -840,7 +840,7 @@ void erhs() {
             flux[k][3] = (4.0 / 3.0) * tz3 * (u41k - u41km1);
             flux[k][4] = 0.50 * (1.0 - 1.40e+00 * 1.40e+00) * tz3 * ((u21k * u21k + u31k * u31k + u41k * u41k) - (u21km1 * u21km1 + u31km1 * u31km1 + u41km1 * u41km1)) + (1.0 / 6.0) * tz3 * (u41k * u41k - u41km1 * u41km1) + 1.40e+00 * 1.40e+00 * tz3 * (u51k - u51km1);
          }
-         // #pragma omp parallel for default(shared) private(k) firstprivate(nz, j, i, dz1, tz1, tz3, dz2, dz3, dz4, dz5)
+         // #pragma omp parallel for default(shared) private(k) firstprivate(nz, j, i, dz1, tz1, tz3, dz2, dz3, dz4, dz5, rsd, flux)
          for(k = 1; k < nz - 1; k++) {
             frct[k][j][i][0] = frct[k][j][i][0] + dz1 * tz1 * (rsd[k + 1][j][i][0] - 2.0 * rsd[k][j][i][0] + rsd[k - 1][j][i][0]);
             frct[k][j][i][1] = frct[k][j][i][1] + tz3 * 1.00e-01 * 1.00e+00 * (flux[k + 1][1] - flux[k][1]) + dz2 * tz1 * (rsd[k + 1][j][i][1] - 2.0 * rsd[k][j][i][1] + rsd[k - 1][j][i][1]);
@@ -858,7 +858,7 @@ void erhs() {
             frct[1][j][i][m] = frct[1][j][i][m] - dssp * (+5.0 * rsd[1][j][i][m] - 4.0 * rsd[2][j][i][m] + rsd[3][j][i][m]);
             frct[2][j][i][m] = frct[2][j][i][m] - dssp * (-4.0 * rsd[1][j][i][m] + 6.0 * rsd[2][j][i][m] - 4.0 * rsd[3][j][i][m] + rsd[4][j][i][m]);
          }
-         // #pragma omp parallel for default(shared) private(k, m) firstprivate(nz, j, i, dssp)
+         // #pragma omp parallel for default(shared) private(k, m) firstprivate(nz, j, i, dssp, rsd)
          for(k = 3; k < nz - 3; k++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -896,11 +896,11 @@ void error() {
    for(m = 0; m < 5; m++) {
       errnm[m] = 0.0;
    }
-   #pragma omp parallel for default(shared) private(k, j, i, m, tmp) firstprivate(nz, jst, jend, ist, iend, nx0, ny0, u000ijk) reduction(+ : errnm[:5])
+   #pragma omp parallel for default(shared) private(k, j, i, m, tmp) firstprivate(nz, jst, jend, ist, iend, nx0, ny0, ce, u, u000ijk) reduction(+ : errnm[:5])
    for(k = 1; k < nz - 1; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, m, tmp) firstprivate(jst, jend, ist, iend, k, nx0, ny0, nz, u000ijk) reduction(+ : errnm[:5])
+      // #pragma omp parallel for default(shared) private(j, i, m, tmp) firstprivate(jst, jend, ist, iend, k, nx0, ny0, nz, ce, u, u000ijk) reduction(+ : errnm[:5])
       for(j = jst; j < jend; j++) {
-         // #pragma omp parallel for default(shared) private(i, m, tmp) firstprivate(ist, iend, k, j, nx0, ny0, nz, u000ijk) reduction(+ : errnm[:5])
+         // #pragma omp parallel for default(shared) private(i, m, tmp) firstprivate(ist, iend, k, j, nx0, ny0, nz, ce, u, u000ijk) reduction(+ : errnm[:5])
          for(i = ist; i < iend; i++) {
             exact(i, j, k, u000ijk);
             /*************** Clava msgError **************
@@ -966,9 +966,9 @@ void jacld(int k) {
    r43 = (4.0 / 3.0);
    c1345 = 1.40e+00 * 1.00e-01 * 1.00e+00 * 1.40e+00;
    c34 = 1.00e-01 * 1.00e+00;
-   #pragma omp parallel for default(shared) private(j, i, tmp1, tmp2, tmp3) firstprivate(jst, jend, ist, iend, k, tx1, dx1, ty1, dy1, tz1, dz1, dt, r43, c34, dx2, dy2, dz2, dx3, dy3, dz3, dx4, dy4, dz4, c1345, dx5, dy5, dz5, tz2, ty2, tx2)
+   #pragma omp parallel for default(shared) private(j, i, tmp1, tmp2, tmp3) firstprivate(jst, jend, ist, iend, k, tx1, dx1, ty1, dy1, tz1, dz1, dt, r43, c34, dx2, dy2, dz2, dx3, dy3, dz3, dx4, dy4, dz4, c1345, dx5, dy5, dz5, tz2, ty2, tx2, rho_i, u, qs)
    for(j = jst; j < jend; j++) {
-      // #pragma omp parallel for default(shared) private(i, tmp1, tmp2, tmp3) firstprivate(ist, iend, k, j, tx1, dx1, ty1, dy1, tz1, dz1, dt, r43, c34, dx2, dy2, dz2, dx3, dy3, dz3, dx4, dy4, dz4, c1345, dx5, dy5, dz5, tz2, ty2, tx2)
+      // #pragma omp parallel for default(shared) private(i, tmp1, tmp2, tmp3) firstprivate(ist, iend, k, j, tx1, dx1, ty1, dy1, tz1, dz1, dt, r43, c34, dx2, dy2, dz2, dx3, dy3, dz3, dx4, dy4, dz4, c1345, dx5, dy5, dz5, tz2, ty2, tx2, rho_i, u, qs)
       for(i = ist; i < iend; i++) {
          //---------------------------------------------------------------------
          // form the block daigonal
@@ -1113,9 +1113,9 @@ void jacu(int k) {
    r43 = (4.0 / 3.0);
    c1345 = 1.40e+00 * 1.00e-01 * 1.00e+00 * 1.40e+00;
    c34 = 1.00e-01 * 1.00e+00;
-   #pragma omp parallel for default(shared) private(j, i, tmp1, tmp2, tmp3) firstprivate(jst, jend, ist, iend, k, tx1, dx1, ty1, dy1, tz1, dz1, dt, r43, c34, dx2, dy2, dz2, dx3, dy3, dz3, dx4, dy4, dz4, c1345, dx5, dy5, dz5, tx2, ty2, tz2)
+   #pragma omp parallel for default(shared) private(j, i, tmp1, tmp2, tmp3) firstprivate(jst, jend, ist, iend, k, tx1, dx1, ty1, dy1, tz1, dz1, dt, r43, c34, dx2, dy2, dz2, dx3, dy3, dz3, dx4, dy4, dz4, c1345, dx5, dy5, dz5, tx2, ty2, tz2, rho_i, u, qs)
    for(j = jst; j < jend; j++) {
-      // #pragma omp parallel for default(shared) private(i, tmp1, tmp2, tmp3) firstprivate(ist, iend, k, j, tx1, dx1, ty1, dy1, tz1, dz1, dt, r43, c34, dx2, dy2, dz2, dx3, dy3, dz3, dx4, dy4, dz4, c1345, dx5, dy5, dz5, tx2, ty2, tz2)
+      // #pragma omp parallel for default(shared) private(i, tmp1, tmp2, tmp3) firstprivate(ist, iend, k, j, tx1, dx1, ty1, dy1, tz1, dz1, dt, r43, c34, dx2, dy2, dz2, dx3, dy3, dz3, dx4, dy4, dz4, c1345, dx5, dy5, dz5, tx2, ty2, tz2, rho_i, u, qs)
       for(i = ist; i < iend; i++) {
          //---------------------------------------------------------------------
          // form the block daigonal
@@ -1263,11 +1263,11 @@ void l2norm(int ldx, int ldy, int ldz, int nx0, int ny0, int nz0, int ist, int i
    for(m = 0; m < 5; m++) {
       sum[m] = 0.0;
    }
-   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(nz0, jst, jend, ist, iend) reduction(+ : sum[:5])
+   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(nz0, jst, jend, ist, iend, v) reduction(+ : sum[:5])
    for(k = 1; k < nz0 - 1; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(jst, jend, ist, iend, k) reduction(+ : sum[:5])
+      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(jst, jend, ist, iend, k, v) reduction(+ : sum[:5])
       for(j = jst; j < jend; j++) {
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, k, j) reduction(+ : sum[:5])
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, k, j, v) reduction(+ : sum[:5])
          for(i = ist; i < iend; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -1320,9 +1320,9 @@ void pintgr() {
          phi2[k][i] = 0.0;
       }
    }
-   #pragma omp parallel for default(shared) private(j, i, k) firstprivate(jbeg, jfin, ibeg, ifin, ki1, ki2)
+   #pragma omp parallel for default(shared) private(j, i, k) firstprivate(jbeg, jfin, ibeg, ifin, ki1, ki2, u)
    for(j = jbeg; j < jfin; j++) {
-      // #pragma omp parallel for default(shared) private(i, k) firstprivate(ibeg, ifin, ki1, j, ki2)
+      // #pragma omp parallel for default(shared) private(i, k) firstprivate(ibeg, ifin, ki1, j, ki2, u)
       for(i = ibeg; i < ifin; i++) {
          k = ki1;
          phi1[j][i] = 0.40e+00 * (u[k][j][i][4] - 0.50 * (u[k][j][i][1] * u[k][j][i][1] + u[k][j][i][2] * u[k][j][i][2] + u[k][j][i][3] * u[k][j][i][3]) / u[k][j][i][0]);
@@ -1331,9 +1331,9 @@ void pintgr() {
       }
    }
    frc1 = 0.0;
-   #pragma omp parallel for default(shared) private(j, i) firstprivate(jbeg, jfin1, ibeg, ifin1) reduction(+ : frc1)
+   #pragma omp parallel for default(shared) private(j, i) firstprivate(jbeg, jfin1, ibeg, ifin1, phi1, phi2) reduction(+ : frc1)
    for(j = jbeg; j < jfin1; j++) {
-      // #pragma omp parallel for default(shared) private(i) firstprivate(ibeg, ifin1, j) reduction(+ : frc1)
+      // #pragma omp parallel for default(shared) private(i) firstprivate(ibeg, ifin1, j, phi1, phi2) reduction(+ : frc1)
       for(i = ibeg; i < ifin1; i++) {
          frc1 = frc1 + (phi1[j][i] + phi1[j][i + 1] + phi1[j + 1][i] + phi1[j + 1][i + 1] + phi2[j][i] + phi2[j][i + 1] + phi2[j + 1][i] + phi2[j + 1][i + 1]);
       }
@@ -1355,27 +1355,27 @@ void pintgr() {
       }
    }
    if(jbeg == ji1) {
-      #pragma omp parallel for default(shared) private(k, i) firstprivate(ki1, ki2, ibeg, ifin, jbeg)
+      #pragma omp parallel for default(shared) private(k, i) firstprivate(ki1, ki2, ibeg, ifin, jbeg, u)
       for(k = ki1; k < ki2; k++) {
-         // #pragma omp parallel for default(shared) private(i) firstprivate(ibeg, ifin, k, jbeg)
+         // #pragma omp parallel for default(shared) private(i) firstprivate(ibeg, ifin, k, jbeg, u)
          for(i = ibeg; i < ifin; i++) {
             phi1[k][i] = 0.40e+00 * (u[k][jbeg][i][4] - 0.50 * (u[k][jbeg][i][1] * u[k][jbeg][i][1] + u[k][jbeg][i][2] * u[k][jbeg][i][2] + u[k][jbeg][i][3] * u[k][jbeg][i][3]) / u[k][jbeg][i][0]);
          }
       }
    }
    if(jfin == ji2) {
-      #pragma omp parallel for default(shared) private(k, i) firstprivate(ki1, ki2, ibeg, ifin, jfin)
+      #pragma omp parallel for default(shared) private(k, i) firstprivate(ki1, ki2, ibeg, ifin, jfin, u)
       for(k = ki1; k < ki2; k++) {
-         // #pragma omp parallel for default(shared) private(i) firstprivate(ibeg, ifin, jfin, k)
+         // #pragma omp parallel for default(shared) private(i) firstprivate(ibeg, ifin, jfin, k, u)
          for(i = ibeg; i < ifin; i++) {
             phi2[k][i] = 0.40e+00 * (u[k][jfin - 1][i][4] - 0.50 * (u[k][jfin - 1][i][1] * u[k][jfin - 1][i][1] + u[k][jfin - 1][i][2] * u[k][jfin - 1][i][2] + u[k][jfin - 1][i][3] * u[k][jfin - 1][i][3]) / u[k][jfin - 1][i][0]);
          }
       }
    }
    frc2 = 0.0;
-   #pragma omp parallel for default(shared) private(k, i) firstprivate(ki1, ki2, ibeg, ifin1) reduction(+ : frc2)
+   #pragma omp parallel for default(shared) private(k, i) firstprivate(ki1, ki2, ibeg, ifin1, phi1, phi2) reduction(+ : frc2)
    for(k = ki1; k < ki2 - 1; k++) {
-      // #pragma omp parallel for default(shared) private(i) firstprivate(ibeg, ifin1, k) reduction(+ : frc2)
+      // #pragma omp parallel for default(shared) private(i) firstprivate(ibeg, ifin1, k, phi1, phi2) reduction(+ : frc2)
       for(i = ibeg; i < ifin1; i++) {
          frc2 = frc2 + (phi1[k][i] + phi1[k][i + 1] + phi1[k + 1][i] + phi1[k + 1][i + 1] + phi2[k][i] + phi2[k][i + 1] + phi2[k + 1][i] + phi2[k + 1][i + 1]);
       }
@@ -1397,27 +1397,27 @@ void pintgr() {
       }
    }
    if(ibeg == ii1) {
-      #pragma omp parallel for default(shared) private(k, j) firstprivate(ki1, ki2, jbeg, jfin, ibeg)
+      #pragma omp parallel for default(shared) private(k, j) firstprivate(ki1, ki2, jbeg, jfin, ibeg, u)
       for(k = ki1; k < ki2; k++) {
-         // #pragma omp parallel for default(shared) private(j) firstprivate(jbeg, jfin, k, ibeg)
+         // #pragma omp parallel for default(shared) private(j) firstprivate(jbeg, jfin, k, ibeg, u)
          for(j = jbeg; j < jfin; j++) {
             phi1[k][j] = 0.40e+00 * (u[k][j][ibeg][4] - 0.50 * (u[k][j][ibeg][1] * u[k][j][ibeg][1] + u[k][j][ibeg][2] * u[k][j][ibeg][2] + u[k][j][ibeg][3] * u[k][j][ibeg][3]) / u[k][j][ibeg][0]);
          }
       }
    }
    if(ifin == ii2) {
-      #pragma omp parallel for default(shared) private(k, j) firstprivate(ki1, ki2, jbeg, jfin, ifin)
+      #pragma omp parallel for default(shared) private(k, j) firstprivate(ki1, ki2, jbeg, jfin, ifin, u)
       for(k = ki1; k < ki2; k++) {
-         // #pragma omp parallel for default(shared) private(j) firstprivate(jbeg, jfin, ifin, k)
+         // #pragma omp parallel for default(shared) private(j) firstprivate(jbeg, jfin, ifin, k, u)
          for(j = jbeg; j < jfin; j++) {
             phi2[k][j] = 0.40e+00 * (u[k][j][ifin - 1][4] - 0.50 * (u[k][j][ifin - 1][1] * u[k][j][ifin - 1][1] + u[k][j][ifin - 1][2] * u[k][j][ifin - 1][2] + u[k][j][ifin - 1][3] * u[k][j][ifin - 1][3]) / u[k][j][ifin - 1][0]);
          }
       }
    }
    frc3 = 0.0;
-   #pragma omp parallel for default(shared) private(k, j) firstprivate(ki1, ki2, jbeg, jfin1) reduction(+ : frc3)
+   #pragma omp parallel for default(shared) private(k, j) firstprivate(ki1, ki2, jbeg, jfin1, phi1, phi2) reduction(+ : frc3)
    for(k = ki1; k < ki2 - 1; k++) {
-      // #pragma omp parallel for default(shared) private(j) firstprivate(jbeg, jfin1, k) reduction(+ : frc3)
+      // #pragma omp parallel for default(shared) private(j) firstprivate(jbeg, jfin1, k, phi1, phi2) reduction(+ : frc3)
       for(j = jbeg; j < jfin1; j++) {
          frc3 = frc3 + (phi1[k][j] + phi1[k][j + 1] + phi1[k + 1][j] + phi1[k + 1][j + 1] + phi2[k][j] + phi2[k][j + 1] + phi2[k + 1][j] + phi2[k + 1][j + 1]);
       }
@@ -1517,11 +1517,11 @@ void rhs() {
    double u21im1, u31im1, u41im1, u51im1;
    double u21jm1, u31jm1, u41jm1, u51jm1;
    double u21km1, u31km1, u41km1, u51km1;
-   #pragma omp parallel for default(shared) private(k, j, i, m, tmp) firstprivate(nz, ny, nx)
+   #pragma omp parallel for default(shared) private(k, j, i, m, tmp) firstprivate(nz, ny, nx, frct, u)
    for(k = 0; k < nz; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, m, tmp) firstprivate(ny, nx, k)
+      // #pragma omp parallel for default(shared) private(j, i, m, tmp) firstprivate(ny, nx, k, frct, u)
       for(j = 0; j < ny; j++) {
-         // #pragma omp parallel for default(shared) private(i, m, tmp) firstprivate(nx, k, j)
+         // #pragma omp parallel for default(shared) private(i, m, tmp) firstprivate(nx, k, j, frct, u)
          for(i = 0; i < nx; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -1538,11 +1538,11 @@ void rhs() {
    //---------------------------------------------------------------------
    // xi-direction flux differences
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, j, i, m, u21, q, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(nz, jst, jend, nx, ist, iend, tx2, tx3, dx1, tx1, dx2, dx3, dx4, dx5, dssp, flux)
+   #pragma omp parallel for default(shared) private(k, j, i, m, u21, q, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(nz, jst, jend, nx, ist, iend, tx2, tx3, dx1, tx1, dx2, dx3, dx4, dx5, dssp, u, rho_i, qs, flux)
    for(k = 1; k < nz - 1; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, m, u21, q, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(jst, jend, nx, k, ist, iend, tx2, tx3, dx1, tx1, dx2, dx3, dx4, dx5, dssp, flux)
+      // #pragma omp parallel for default(shared) private(j, i, m, u21, q, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(jst, jend, nx, k, ist, iend, tx2, tx3, dx1, tx1, dx2, dx3, dx4, dx5, dssp, u, rho_i, qs, flux)
       for(j = jst; j < jend; j++) {
-         // #pragma omp parallel for default(shared) private(i, u21, q) firstprivate(nx, k, j)
+         // #pragma omp parallel for default(shared) private(i, u21, q) firstprivate(nx, k, j, u, rho_i, qs)
          for(i = 0; i < nx; i++) {
             flux[i][0] = u[k][j][i][1];
             u21 = u[k][j][i][1] * rho_i[k][j][i];
@@ -1552,7 +1552,7 @@ void rhs() {
             flux[i][3] = u[k][j][i][3] * u21;
             flux[i][4] = (1.40e+00 * u[k][j][i][4] - 0.40e+00 * q) * u21;
          }
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, tx2, k, j)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, tx2, k, j, flux)
          for(i = ist; i < iend; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -1561,7 +1561,7 @@ void rhs() {
                rsd[k][j][i][m] = rsd[k][j][i][m] - tx2 * (flux[i + 1][m] - flux[i - 1][m]);
             }
          }
-         // #pragma omp parallel for default(shared) private(i, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(ist, nx, k, j, tx3)
+         // #pragma omp parallel for default(shared) private(i, tmp, u21i, u31i, u41i, u51i, u21im1, u31im1, u41im1, u51im1) firstprivate(ist, nx, k, j, tx3, rho_i, u)
          for(i = ist; i < nx; i++) {
             tmp = rho_i[k][j][i];
             u21i = tmp * u[k][j][i][1];
@@ -1578,7 +1578,7 @@ void rhs() {
             flux[i][3] = tx3 * (u41i - u41im1);
             flux[i][4] = 0.50 * (1.0 - 1.40e+00 * 1.40e+00) * tx3 * ((u21i * u21i + u31i * u31i + u41i * u41i) - (u21im1 * u21im1 + u31im1 * u31im1 + u41im1 * u41im1)) + (1.0 / 6.0) * tx3 * (u21i * u21i - u21im1 * u21im1) + 1.40e+00 * 1.40e+00 * tx3 * (u51i - u51im1);
          }
-         // #pragma omp parallel for default(shared) private(i) firstprivate(ist, iend, k, j, dx1, tx1, tx3, dx2, dx3, dx4, dx5)
+         // #pragma omp parallel for default(shared) private(i) firstprivate(ist, iend, k, j, dx1, tx1, tx3, dx2, dx3, dx4, dx5, u, flux)
          for(i = ist; i < iend; i++) {
             rsd[k][j][i][0] = rsd[k][j][i][0] + dx1 * tx1 * (u[k][j][i - 1][0] - 2.0 * u[k][j][i][0] + u[k][j][i + 1][0]);
             rsd[k][j][i][1] = rsd[k][j][i][1] + tx3 * 1.00e-01 * 1.00e+00 * (flux[i + 1][1] - flux[i][1]) + dx2 * tx1 * (u[k][j][i - 1][1] - 2.0 * u[k][j][i][1] + u[k][j][i + 1][1]);
@@ -1596,7 +1596,7 @@ void rhs() {
             rsd[k][j][1][m] = rsd[k][j][1][m] - dssp * (+5.0 * u[k][j][1][m] - 4.0 * u[k][j][2][m] + u[k][j][3][m]);
             rsd[k][j][2][m] = rsd[k][j][2][m] - dssp * (-4.0 * u[k][j][1][m] + 6.0 * u[k][j][2][m] - 4.0 * u[k][j][3][m] + u[k][j][4][m]);
          }
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(nx, k, j, dssp)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(nx, k, j, dssp, u)
          for(i = 3; i < nx - 3; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -1617,11 +1617,11 @@ void rhs() {
    //---------------------------------------------------------------------
    // eta-direction flux differences
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, i, j, m, u31, q, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(nz, ist, iend, ny, jst, jend, ty2, ty3, dy1, ty1, dy2, dy3, dy4, dy5, dssp, flux)
+   #pragma omp parallel for default(shared) private(k, i, j, m, u31, q, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(nz, ist, iend, ny, jst, jend, ty2, ty3, dy1, ty1, dy2, dy3, dy4, dy5, dssp, u, rho_i, qs, flux)
    for(k = 1; k < nz - 1; k++) {
-      // #pragma omp parallel for default(shared) private(i, j, m, u31, q, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(ist, iend, ny, k, jst, jend, ty2, ty3, dy1, ty1, dy2, dy3, dy4, dy5, flux)
+      // #pragma omp parallel for default(shared) private(i, j, m, u31, q, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(ist, iend, ny, k, jst, jend, ty2, ty3, dy1, ty1, dy2, dy3, dy4, dy5, u, rho_i, qs, flux)
       for(i = ist; i < iend; i++) {
-         // #pragma omp parallel for default(shared) private(j, u31, q) firstprivate(ny, k, i)
+         // #pragma omp parallel for default(shared) private(j, u31, q) firstprivate(ny, k, i, u, rho_i, qs)
          for(j = 0; j < ny; j++) {
             flux[j][0] = u[k][j][i][2];
             u31 = u[k][j][i][2] * rho_i[k][j][i];
@@ -1631,7 +1631,7 @@ void rhs() {
             flux[j][3] = u[k][j][i][3] * u31;
             flux[j][4] = (1.40e+00 * u[k][j][i][4] - 0.40e+00 * q) * u31;
          }
-         // #pragma omp parallel for default(shared) private(j, m) firstprivate(jst, jend, ty2, k, i)
+         // #pragma omp parallel for default(shared) private(j, m) firstprivate(jst, jend, ty2, k, i, flux)
          for(j = jst; j < jend; j++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -1640,7 +1640,7 @@ void rhs() {
                rsd[k][j][i][m] = rsd[k][j][i][m] - ty2 * (flux[j + 1][m] - flux[j - 1][m]);
             }
          }
-         // #pragma omp parallel for default(shared) private(j, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(jst, ny, k, i, ty3)
+         // #pragma omp parallel for default(shared) private(j, tmp, u21j, u31j, u41j, u51j, u21jm1, u31jm1, u41jm1, u51jm1) firstprivate(jst, ny, k, i, ty3, rho_i, u)
          for(j = jst; j < ny; j++) {
             tmp = rho_i[k][j][i];
             u21j = tmp * u[k][j][i][1];
@@ -1657,7 +1657,7 @@ void rhs() {
             flux[j][3] = ty3 * (u41j - u41jm1);
             flux[j][4] = 0.50 * (1.0 - 1.40e+00 * 1.40e+00) * ty3 * ((u21j * u21j + u31j * u31j + u41j * u41j) - (u21jm1 * u21jm1 + u31jm1 * u31jm1 + u41jm1 * u41jm1)) + (1.0 / 6.0) * ty3 * (u31j * u31j - u31jm1 * u31jm1) + 1.40e+00 * 1.40e+00 * ty3 * (u51j - u51jm1);
          }
-         // #pragma omp parallel for default(shared) private(j) firstprivate(jst, jend, k, i, dy1, ty1, ty3, dy2, dy3, dy4, dy5)
+         // #pragma omp parallel for default(shared) private(j) firstprivate(jst, jend, k, i, dy1, ty1, ty3, dy2, dy3, dy4, dy5, u, flux)
          for(j = jst; j < jend; j++) {
             rsd[k][j][i][0] = rsd[k][j][i][0] + dy1 * ty1 * (u[k][j - 1][i][0] - 2.0 * u[k][j][i][0] + u[k][j + 1][i][0]);
             rsd[k][j][i][1] = rsd[k][j][i][1] + ty3 * 1.00e-01 * 1.00e+00 * (flux[j + 1][1] - flux[j][1]) + dy2 * ty1 * (u[k][j - 1][i][1] - 2.0 * u[k][j][i][1] + u[k][j + 1][i][1]);
@@ -1669,7 +1669,7 @@ void rhs() {
       //---------------------------------------------------------------------
       // fourth-order dissipation
       //---------------------------------------------------------------------
-      // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, k, dssp)
+      // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, k, dssp, u)
       for(i = ist; i < iend; i++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -1679,9 +1679,9 @@ void rhs() {
             rsd[k][2][i][m] = rsd[k][2][i][m] - dssp * (-4.0 * u[k][1][i][m] + 6.0 * u[k][2][i][m] - 4.0 * u[k][3][i][m] + u[k][4][i][m]);
          }
       }
-      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(ny, ist, iend, k, dssp)
+      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(ny, ist, iend, k, dssp, u)
       for(j = 3; j < ny - 3; j++) {
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, j, k, dssp)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, j, k, dssp, u)
          for(i = ist; i < iend; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -1691,7 +1691,7 @@ void rhs() {
             }
          }
       }
-      // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, ny, k, dssp)
+      // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, ny, k, dssp, u)
       for(i = ist; i < iend; i++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -1705,11 +1705,11 @@ void rhs() {
    //---------------------------------------------------------------------
    // zeta-direction flux differences
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(j, i, k, m, u41, q, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(jst, jend, ist, iend, nz, tz2, tz3, dz1, tz1, dz2, dz3, dz4, dz5, dssp, utmp, flux, rtmp)
+   #pragma omp parallel for default(shared) private(j, i, k, m, u41, q, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(jst, jend, ist, iend, nz, tz2, tz3, dz1, tz1, dz2, dz3, dz4, dz5, dssp, u, rho_i, qs, utmp, flux, rtmp)
    for(j = jst; j < jend; j++) {
-      // #pragma omp parallel for default(shared) private(i, k, m, u41, q, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(ist, iend, nz, j, tz2, tz3, dz1, tz1, dz2, dz3, dz4, dz5, dssp, utmp, flux, rtmp)
+      // #pragma omp parallel for default(shared) private(i, k, m, u41, q, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(ist, iend, nz, j, tz2, tz3, dz1, tz1, dz2, dz3, dz4, dz5, dssp, u, rho_i, qs, utmp, flux, rtmp)
       for(i = ist; i < iend; i++) {
-         // #pragma omp parallel for default(shared) private(k) firstprivate(nz, j, i)
+         // #pragma omp parallel for default(shared) private(k) firstprivate(nz, j, i, u, rho_i)
          for(k = 0; k < nz; k++) {
             utmp[k][0] = u[k][j][i][0];
             utmp[k][1] = u[k][j][i][1];
@@ -1718,7 +1718,7 @@ void rhs() {
             utmp[k][4] = u[k][j][i][4];
             utmp[k][5] = rho_i[k][j][i];
          }
-         // #pragma omp parallel for default(shared) private(k, u41, q) firstprivate(nz, j, i)
+         // #pragma omp parallel for default(shared) private(k, u41, q) firstprivate(nz, j, i, utmp, qs)
          for(k = 0; k < nz; k++) {
             flux[k][0] = utmp[k][3];
             u41 = utmp[k][3] * utmp[k][5];
@@ -1728,7 +1728,7 @@ void rhs() {
             flux[k][3] = utmp[k][3] * u41 + 0.40e+00 * (utmp[k][4] - q);
             flux[k][4] = (1.40e+00 * utmp[k][4] - 0.40e+00 * q) * u41;
          }
-         // #pragma omp parallel for default(shared) private(k, m) firstprivate(nz, tz2, j, i)
+         // #pragma omp parallel for default(shared) private(k, m) firstprivate(nz, tz2, j, i, flux, rsd)
          for(k = 1; k < nz - 1; k++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -1737,7 +1737,7 @@ void rhs() {
                rtmp[k][m] = rsd[k][j][i][m] - tz2 * (flux[k + 1][m] - flux[k - 1][m]);
             }
          }
-         // #pragma omp parallel for default(shared) private(k, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(nz, tz3)
+         // #pragma omp parallel for default(shared) private(k, tmp, u21k, u31k, u41k, u51k, u21km1, u31km1, u41km1, u51km1) firstprivate(nz, tz3, utmp)
          for(k = 1; k < nz; k++) {
             tmp = utmp[k][5];
             u21k = tmp * utmp[k][1];
@@ -1754,7 +1754,7 @@ void rhs() {
             flux[k][3] = (4.0 / 3.0) * tz3 * (u41k - u41km1);
             flux[k][4] = 0.50 * (1.0 - 1.40e+00 * 1.40e+00) * tz3 * ((u21k * u21k + u31k * u31k + u41k * u41k) - (u21km1 * u21km1 + u31km1 * u31km1 + u41km1 * u41km1)) + (1.0 / 6.0) * tz3 * (u41k * u41k - u41km1 * u41km1) + 1.40e+00 * 1.40e+00 * tz3 * (u51k - u51km1);
          }
-         // #pragma omp parallel for default(shared) private(k) firstprivate(nz, dz1, tz1, tz3, dz2, dz3, dz4, dz5)
+         // #pragma omp parallel for default(shared) private(k) firstprivate(nz, dz1, tz1, tz3, dz2, dz3, dz4, dz5, utmp, flux)
          for(k = 1; k < nz - 1; k++) {
             rtmp[k][0] = rtmp[k][0] + dz1 * tz1 * (utmp[k - 1][0] - 2.0 * utmp[k][0] + utmp[k + 1][0]);
             rtmp[k][1] = rtmp[k][1] + tz3 * 1.00e-01 * 1.00e+00 * (flux[k + 1][1] - flux[k][1]) + dz2 * tz1 * (utmp[k - 1][1] - 2.0 * utmp[k][1] + utmp[k + 1][1]);
@@ -1772,7 +1772,7 @@ void rhs() {
             rsd[1][j][i][m] = rtmp[1][m] - dssp * (+5.0 * utmp[1][m] - 4.0 * utmp[2][m] + utmp[3][m]);
             rsd[2][j][i][m] = rtmp[2][m] - dssp * (-4.0 * utmp[1][m] + 6.0 * utmp[2][m] - 4.0 * utmp[3][m] + utmp[4][m]);
          }
-         // #pragma omp parallel for default(shared) private(k, m) firstprivate(nz, dssp, j, i)
+         // #pragma omp parallel for default(shared) private(k, m) firstprivate(nz, dssp, j, i, utmp, rtmp)
          for(k = 3; k < nz - 3; k++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -1805,9 +1805,9 @@ void setbv() {
    //---------------------------------------------------------------------
    // set the dependent variable values along the top and bottom faces
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(ny, nx, nx0, ny0, nz, temp1, temp2)
+   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(ny, nx, nx0, ny0, nz, ce, temp1, temp2)
    for(j = 0; j < ny; j++) {
-      // #pragma omp parallel for default(shared) private(i, m) firstprivate(nx, j, nx0, ny0, nz, temp1, temp2)
+      // #pragma omp parallel for default(shared) private(i, m) firstprivate(nx, j, nx0, ny0, nz, ce, temp1, temp2)
       for(i = 0; i < nx; i++) {
          exact(i, j, 0, temp1);
          exact(i, j, nz - 1, temp2);
@@ -1823,9 +1823,9 @@ void setbv() {
    //---------------------------------------------------------------------
    // set the dependent variable values along north and south faces
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, i, m) firstprivate(nz, nx, nx0, ny0, ny, temp1, temp2)
+   #pragma omp parallel for default(shared) private(k, i, m) firstprivate(nz, nx, nx0, ny0, ny, ce, temp1, temp2)
    for(k = 0; k < nz; k++) {
-      // #pragma omp parallel for default(shared) private(i, m) firstprivate(nx, k, nx0, ny0, nz, ny, temp1, temp2)
+      // #pragma omp parallel for default(shared) private(i, m) firstprivate(nx, k, nx0, ny0, nz, ny, ce, temp1, temp2)
       for(i = 0; i < nx; i++) {
          exact(i, 0, k, temp1);
          exact(i, ny - 1, k, temp2);
@@ -1841,9 +1841,9 @@ void setbv() {
    //---------------------------------------------------------------------
    // set the dependent variable values along east and west faces
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, j, m) firstprivate(nz, ny, nx0, ny0, nx, temp1, temp2)
+   #pragma omp parallel for default(shared) private(k, j, m) firstprivate(nz, ny, nx0, ny0, nx, ce, temp1, temp2)
    for(k = 0; k < nz; k++) {
-      // #pragma omp parallel for default(shared) private(j, m) firstprivate(ny, k, nx0, ny0, nz, nx, temp1, temp2)
+      // #pragma omp parallel for default(shared) private(j, m) firstprivate(ny, k, nx0, ny0, nz, nx, ce, temp1, temp2)
       for(j = 0; j < ny; j++) {
          exact(0, j, k, temp1);
          exact(nx - 1, j, k, temp2);
@@ -1877,13 +1877,13 @@ void setiv() {
    double ue_iny0k[5];
    double ue_ij1[5];
    double ue_ijnz[5];
-   #pragma omp parallel for default(shared) private(k, j, i, m, zeta, eta, xi, pxi, peta, pzeta) firstprivate(nz, ny, ny0, nx, nx0, ue_1jk, ue_nx0jk, ue_i1k, ue_iny0k, ue_ij1, ue_ijnz)
+   #pragma omp parallel for default(shared) private(k, j, i, m, zeta, eta, xi, pxi, peta, pzeta) firstprivate(nz, ny, ny0, nx, nx0, ce, ue_1jk, ue_nx0jk, ue_i1k, ue_iny0k, ue_ij1, ue_ijnz)
    for(k = 1; k < nz - 1; k++) {
       zeta = ((double) k) / (nz - 1);
-      // #pragma omp parallel for default(shared) private(j, i, m, eta, xi, pxi, peta, pzeta) firstprivate(ny, ny0, nx, nx0, k, nz, zeta, ue_1jk, ue_nx0jk, ue_i1k, ue_iny0k, ue_ij1, ue_ijnz)
+      // #pragma omp parallel for default(shared) private(j, i, m, eta, xi, pxi, peta, pzeta) firstprivate(ny, ny0, nx, nx0, k, nz, zeta, ce, ue_1jk, ue_nx0jk, ue_i1k, ue_iny0k, ue_ij1, ue_ijnz)
       for(j = 1; j < ny - 1; j++) {
          eta = ((double) j) / (ny0 - 1);
-         // #pragma omp parallel for default(shared) private(i, m, xi, pxi, peta, pzeta) firstprivate(nx, nx0, k, j, ny0, nz, eta, zeta, ue_1jk, ue_nx0jk, ue_i1k, ue_iny0k, ue_ij1, ue_ijnz)
+         // #pragma omp parallel for default(shared) private(i, m, xi, pxi, peta, pzeta) firstprivate(nx, nx0, k, j, ny0, nz, eta, zeta, ce, ue_1jk, ue_nx0jk, ue_i1k, ue_iny0k, ue_ij1, ue_ijnz)
          for(i = 1; i < nx - 1; i++) {
             xi = ((double) i) / (nx0 - 1);
             exact(0, j, k, ue_1jk);
@@ -2050,11 +2050,11 @@ void ssor(int niter) {
       //---------------------------------------------------------------------
       // update the variables
       //---------------------------------------------------------------------
-      #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(nz, jst, jend, ist, iend, tmp)
+      #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(nz, jst, jend, ist, iend, tmp, rsd)
       for(k = 1; k < nz - 1; k++) {
-         // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(jst, jend, ist, iend, tmp, k)
+         // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(jst, jend, ist, iend, tmp, k, rsd)
          for(j = jst; j < jend; j++) {
-            // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, tmp, k, j)
+            // #pragma omp parallel for default(shared) private(i, m) firstprivate(ist, iend, tmp, k, j, rsd)
             for(i = ist; i < iend; i++) {
                /*************** Clava msgError **************
                Loop Iteration number is too low

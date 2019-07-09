@@ -266,11 +266,11 @@ void adi() {
 //---------------------------------------------------------------------
 void add() {
    int i, j, k, m;
-   #pragma omp parallel for default(shared) private(k, j, i, m)
+   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(grid_points, rhs)
    for(k = 1; k <= grid_points[2] - 2; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k)
+      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, grid_points, rhs)
       for(j = 1; j <= grid_points[1] - 2; j++) {
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, grid_points, rhs)
          for(i = 1; i <= grid_points[0] - 2; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -300,13 +300,13 @@ void error_norm(double rms[5]) {
    for(m = 0; m < 5; m++) {
       rms[m] = 0.0;
    }
-   #pragma omp parallel for default(shared) private(k, j, i, m, zeta, eta, xi, add) firstprivate(dnzm1, dnym1, dnxm1, u_exact) reduction(+ : rms[:5])
+   #pragma omp parallel for default(shared) private(k, j, i, m, zeta, eta, xi, add) firstprivate(dnzm1, dnym1, dnxm1, grid_points, ce, u, u_exact) reduction(+ : rms[:5])
    for(k = 0; k <= grid_points[2] - 1; k++) {
       zeta = (double) (k) * dnzm1;
-      // #pragma omp parallel for default(shared) private(j, i, m, eta, xi, add) firstprivate(dnym1, dnxm1, zeta, k, u_exact) reduction(+ : rms[:5])
+      // #pragma omp parallel for default(shared) private(j, i, m, eta, xi, add) firstprivate(dnym1, dnxm1, zeta, k, grid_points, ce, u, u_exact) reduction(+ : rms[:5])
       for(j = 0; j <= grid_points[1] - 1; j++) {
          eta = (double) (j) * dnym1;
-         // #pragma omp parallel for default(shared) private(i, m, xi, add) firstprivate(dnxm1, zeta, eta, k, j, u_exact) reduction(+ : rms[:5])
+         // #pragma omp parallel for default(shared) private(i, m, xi, add) firstprivate(dnxm1, zeta, eta, k, j, grid_points, ce, u, u_exact) reduction(+ : rms[:5])
          for(i = 0; i <= grid_points[0] - 1; i++) {
             xi = (double) (i) * dnxm1;
             exact_solution(xi, eta, zeta, u_exact);
@@ -343,11 +343,11 @@ void rhs_norm(double rms[5]) {
    for(m = 0; m < 5; m++) {
       rms[m] = 0.0;
    }
-   #pragma omp parallel for default(shared) private(k, j, i, m, add) reduction(+ : rms[:5])
+   #pragma omp parallel for default(shared) private(k, j, i, m, add) firstprivate(grid_points, rhs) reduction(+ : rms[:5])
    for(k = 1; k <= grid_points[2] - 2; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, m, add) firstprivate(k) reduction(+ : rms[:5])
+      // #pragma omp parallel for default(shared) private(j, i, m, add) firstprivate(k, grid_points, rhs) reduction(+ : rms[:5])
       for(j = 1; j <= grid_points[1] - 2; j++) {
-         // #pragma omp parallel for default(shared) private(i, m, add) firstprivate(k, j) reduction(+ : rms[:5])
+         // #pragma omp parallel for default(shared) private(i, m, add) firstprivate(k, j, grid_points, rhs) reduction(+ : rms[:5])
          for(i = 1; i <= grid_points[0] - 2; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -390,11 +390,11 @@ void exact_rhs() {
    //---------------------------------------------------------------------
    // initialize
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, j, i, m)
+   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(grid_points)
    for(k = 0; k <= grid_points[2] - 1; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k)
+      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, grid_points)
       for(j = 0; j <= grid_points[1] - 1; j++) {
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, grid_points)
          for(i = 0; i <= grid_points[0] - 1; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -408,13 +408,13 @@ void exact_rhs() {
    //---------------------------------------------------------------------
    // xi-direction flux differences
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, j, i, m, zeta, eta, xi, dtpp, im1, ip1) firstprivate(dnzm1, dnym1, dnxm1, tx2, dx1tx1, c2, xxcon1, dx2tx1, xxcon2, dx3tx1, dx4tx1, c1, xxcon3, xxcon4, xxcon5, dx5tx1, dssp, dtemp, ue, buf, cuf, q)
+   #pragma omp parallel for default(shared) private(k, j, i, m, zeta, eta, xi, dtpp, im1, ip1) firstprivate(dnzm1, dnym1, dnxm1, tx2, dx1tx1, c2, xxcon1, dx2tx1, xxcon2, dx3tx1, dx4tx1, c1, xxcon3, xxcon4, xxcon5, dx5tx1, dssp, grid_points, ce, dtemp, ue, buf, cuf, q)
    for(k = 1; k <= grid_points[2] - 2; k++) {
       zeta = (double) (k) * dnzm1;
-      // #pragma omp parallel for default(shared) private(j, i, m, eta, xi, dtpp, im1, ip1) firstprivate(dnym1, dnxm1, zeta, tx2, k, dx1tx1, c2, xxcon1, dx2tx1, xxcon2, dx3tx1, dx4tx1, c1, xxcon3, xxcon4, xxcon5, dx5tx1, dssp, dtemp, ue, buf, cuf, q)
+      // #pragma omp parallel for default(shared) private(j, i, m, eta, xi, dtpp, im1, ip1) firstprivate(dnym1, dnxm1, zeta, tx2, k, dx1tx1, c2, xxcon1, dx2tx1, xxcon2, dx3tx1, dx4tx1, c1, xxcon3, xxcon4, xxcon5, dx5tx1, dssp, grid_points, ce, dtemp, ue, buf, cuf, q)
       for(j = 1; j <= grid_points[1] - 2; j++) {
          eta = (double) (j) * dnym1;
-         // #pragma omp parallel for default(shared) private(i, m, xi, dtpp) firstprivate(dnxm1, zeta, eta, dtemp)
+         // #pragma omp parallel for default(shared) private(i, m, xi, dtpp) firstprivate(dnxm1, zeta, eta, grid_points, ce, dtemp)
          for(i = 0; i <= grid_points[0] - 1; i++) {
             xi = (double) (i) * dnxm1;
             exact_solution(xi, eta, zeta, dtemp);
@@ -435,7 +435,7 @@ void exact_rhs() {
             buf[i][0] = cuf[i] + buf[i][2] * buf[i][2] + buf[i][3] * buf[i][3];
             q[i] = 0.5 * (buf[i][1] * ue[i][1] + buf[i][2] * ue[i][2] + buf[i][3] * ue[i][3]);
          }
-         // #pragma omp parallel for default(shared) private(i, im1, ip1) firstprivate(tx2, k, j, dx1tx1, c2, xxcon1, dx2tx1, xxcon2, dx3tx1, dx4tx1, c1, xxcon3, xxcon4, xxcon5, dx5tx1)
+         // #pragma omp parallel for default(shared) private(i, im1, ip1) firstprivate(tx2, k, j, dx1tx1, c2, xxcon1, dx2tx1, xxcon2, dx3tx1, dx4tx1, c1, xxcon3, xxcon4, xxcon5, dx5tx1, grid_points, ue, q, buf, cuf)
          for(i = 1; i <= grid_points[0] - 2; i++) {
             im1 = i - 1;
             ip1 = i + 1;
@@ -457,7 +457,7 @@ void exact_rhs() {
             i = 2;
             forcing[k][j][i][m] = forcing[k][j][i][m] - dssp * (-4.0 * ue[i - 1][m] + 6.0 * ue[i][m] - 4.0 * ue[i + 1][m] + ue[i + 2][m]);
          }
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(dssp, k, j)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(dssp, k, j, grid_points, ue)
          for(i = 3; i <= grid_points[0] - 4; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -480,13 +480,13 @@ void exact_rhs() {
    //---------------------------------------------------------------------
    // eta-direction flux differences
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, i, j, m, zeta, xi, eta, dtpp, jm1, jp1) firstprivate(dnzm1, dnxm1, dnym1, ty2, dy1ty1, yycon2, dy2ty1, c2, yycon1, dy3ty1, dy4ty1, c1, yycon3, yycon4, yycon5, dy5ty1, dssp, dtemp, ue, buf, cuf, q)
+   #pragma omp parallel for default(shared) private(k, i, j, m, zeta, xi, eta, dtpp, jm1, jp1) firstprivate(dnzm1, dnxm1, dnym1, ty2, dy1ty1, yycon2, dy2ty1, c2, yycon1, dy3ty1, dy4ty1, c1, yycon3, yycon4, yycon5, dy5ty1, dssp, grid_points, ce, dtemp, ue, buf, cuf, q)
    for(k = 1; k <= grid_points[2] - 2; k++) {
       zeta = (double) (k) * dnzm1;
-      // #pragma omp parallel for default(shared) private(i, j, m, xi, eta, dtpp, jm1, jp1) firstprivate(dnxm1, dnym1, zeta, ty2, k, dy1ty1, yycon2, dy2ty1, c2, yycon1, dy3ty1, dy4ty1, c1, yycon3, yycon4, yycon5, dy5ty1, dssp, dtemp, ue, buf, cuf, q)
+      // #pragma omp parallel for default(shared) private(i, j, m, xi, eta, dtpp, jm1, jp1) firstprivate(dnxm1, dnym1, zeta, ty2, k, dy1ty1, yycon2, dy2ty1, c2, yycon1, dy3ty1, dy4ty1, c1, yycon3, yycon4, yycon5, dy5ty1, dssp, grid_points, ce, dtemp, ue, buf, cuf, q)
       for(i = 1; i <= grid_points[0] - 2; i++) {
          xi = (double) (i) * dnxm1;
-         // #pragma omp parallel for default(shared) private(j, m, eta, dtpp) firstprivate(dnym1, zeta, xi, dtemp)
+         // #pragma omp parallel for default(shared) private(j, m, eta, dtpp) firstprivate(dnym1, zeta, xi, grid_points, ce, dtemp)
          for(j = 0; j <= grid_points[1] - 1; j++) {
             eta = (double) (j) * dnym1;
             exact_solution(xi, eta, zeta, dtemp);
@@ -507,7 +507,7 @@ void exact_rhs() {
             buf[j][0] = cuf[j] + buf[j][1] * buf[j][1] + buf[j][3] * buf[j][3];
             q[j] = 0.5 * (buf[j][1] * ue[j][1] + buf[j][2] * ue[j][2] + buf[j][3] * ue[j][3]);
          }
-         // #pragma omp parallel for default(shared) private(j, jm1, jp1) firstprivate(ty2, k, i, dy1ty1, yycon2, dy2ty1, c2, yycon1, dy3ty1, dy4ty1, c1, yycon3, yycon4, yycon5, dy5ty1)
+         // #pragma omp parallel for default(shared) private(j, jm1, jp1) firstprivate(ty2, k, i, dy1ty1, yycon2, dy2ty1, c2, yycon1, dy3ty1, dy4ty1, c1, yycon3, yycon4, yycon5, dy5ty1, grid_points, ue, buf, q, cuf)
          for(j = 1; j <= grid_points[1] - 2; j++) {
             jm1 = j - 1;
             jp1 = j + 1;
@@ -529,7 +529,7 @@ void exact_rhs() {
             j = 2;
             forcing[k][j][i][m] = forcing[k][j][i][m] - dssp * (-4.0 * ue[j - 1][m] + 6.0 * ue[j][m] - 4.0 * ue[j + 1][m] + ue[j + 2][m]);
          }
-         // #pragma omp parallel for default(shared) private(j, m) firstprivate(dssp, k, i)
+         // #pragma omp parallel for default(shared) private(j, m) firstprivate(dssp, k, i, grid_points, ue)
          for(j = 3; j <= grid_points[1] - 4; j++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -552,13 +552,13 @@ void exact_rhs() {
    //---------------------------------------------------------------------
    // zeta-direction flux differences
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(j, i, k, m, eta, xi, zeta, dtpp, km1, kp1) firstprivate(dnym1, dnxm1, dnzm1, tz2, dz1tz1, zzcon2, dz2tz1, dz3tz1, c2, zzcon1, dz4tz1, c1, zzcon3, zzcon4, zzcon5, dz5tz1, dssp, dtemp, ue, buf, cuf, q)
+   #pragma omp parallel for default(shared) private(j, i, k, m, eta, xi, zeta, dtpp, km1, kp1) firstprivate(dnym1, dnxm1, dnzm1, tz2, dz1tz1, zzcon2, dz2tz1, dz3tz1, c2, zzcon1, dz4tz1, c1, zzcon3, zzcon4, zzcon5, dz5tz1, dssp, grid_points, ce, dtemp, ue, buf, cuf, q)
    for(j = 1; j <= grid_points[1] - 2; j++) {
       eta = (double) (j) * dnym1;
-      // #pragma omp parallel for default(shared) private(i, k, m, xi, zeta, dtpp, km1, kp1) firstprivate(dnxm1, dnzm1, eta, tz2, j, dz1tz1, zzcon2, dz2tz1, dz3tz1, c2, zzcon1, dz4tz1, c1, zzcon3, zzcon4, zzcon5, dz5tz1, dssp, dtemp, ue, buf, cuf, q)
+      // #pragma omp parallel for default(shared) private(i, k, m, xi, zeta, dtpp, km1, kp1) firstprivate(dnxm1, dnzm1, eta, tz2, j, dz1tz1, zzcon2, dz2tz1, dz3tz1, c2, zzcon1, dz4tz1, c1, zzcon3, zzcon4, zzcon5, dz5tz1, dssp, grid_points, ce, dtemp, ue, buf, cuf, q)
       for(i = 1; i <= grid_points[0] - 2; i++) {
          xi = (double) (i) * dnxm1;
-         // #pragma omp parallel for default(shared) private(k, m, zeta, dtpp) firstprivate(dnzm1, eta, xi, dtemp)
+         // #pragma omp parallel for default(shared) private(k, m, zeta, dtpp) firstprivate(dnzm1, eta, xi, grid_points, ce, dtemp)
          for(k = 0; k <= grid_points[2] - 1; k++) {
             zeta = (double) (k) * dnzm1;
             exact_solution(xi, eta, zeta, dtemp);
@@ -579,7 +579,7 @@ void exact_rhs() {
             buf[k][0] = cuf[k] + buf[k][1] * buf[k][1] + buf[k][2] * buf[k][2];
             q[k] = 0.5 * (buf[k][1] * ue[k][1] + buf[k][2] * ue[k][2] + buf[k][3] * ue[k][3]);
          }
-         // #pragma omp parallel for default(shared) private(k, km1, kp1) firstprivate(tz2, j, i, dz1tz1, zzcon2, dz2tz1, dz3tz1, c2, zzcon1, dz4tz1, c1, zzcon3, zzcon4, zzcon5, dz5tz1)
+         // #pragma omp parallel for default(shared) private(k, km1, kp1) firstprivate(tz2, j, i, dz1tz1, zzcon2, dz2tz1, dz3tz1, c2, zzcon1, dz4tz1, c1, zzcon3, zzcon4, zzcon5, dz5tz1, grid_points, ue, buf, q, cuf)
          for(k = 1; k <= grid_points[2] - 2; k++) {
             km1 = k - 1;
             kp1 = k + 1;
@@ -601,7 +601,7 @@ void exact_rhs() {
             k = 2;
             forcing[k][j][i][m] = forcing[k][j][i][m] - dssp * (-4.0 * ue[k - 1][m] + 6.0 * ue[k][m] - 4.0 * ue[k + 1][m] + ue[k + 2][m]);
          }
-         // #pragma omp parallel for default(shared) private(k, m) firstprivate(dssp, j, i)
+         // #pragma omp parallel for default(shared) private(k, m) firstprivate(dssp, j, i, grid_points, ue)
          for(k = 3; k <= grid_points[2] - 4; k++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -624,11 +624,11 @@ void exact_rhs() {
    //---------------------------------------------------------------------
    // now change the sign of the forcing function,
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, j, i, m)
+   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(grid_points)
    for(k = 1; k <= grid_points[2] - 2; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k)
+      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, grid_points)
       for(j = 1; j <= grid_points[1] - 2; j++) {
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, grid_points)
          for(i = 1; i <= grid_points[0] - 2; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -674,11 +674,11 @@ void initialize() {
    // to compute the whole thing with a simple loop. Make sure those
    // values are nonzero by initializing the whole thing here.
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, j, i, m)
+   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(grid_points)
    for(k = 0; k <= grid_points[2] - 1; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k)
+      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, grid_points)
       for(j = 0; j <= grid_points[1] - 1; j++) {
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, grid_points)
          for(i = 0; i <= grid_points[0] - 1; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -692,13 +692,13 @@ void initialize() {
    //---------------------------------------------------------------------
    // first store the "interpolated" values everywhere on the grid
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, j, i, ix, iy, iz, m, zeta, eta, xi, Pxi, Peta, Pzeta) firstprivate(dnzm1, dnym1, dnxm1, Pface)
+   #pragma omp parallel for default(shared) private(k, j, i, ix, iy, iz, m, zeta, eta, xi, Pxi, Peta, Pzeta) firstprivate(dnzm1, dnym1, dnxm1, grid_points, ce, Pface)
    for(k = 0; k <= grid_points[2] - 1; k++) {
       zeta = (double) (k) * dnzm1;
-      // #pragma omp parallel for default(shared) private(j, i, ix, iy, iz, m, eta, xi, Pxi, Peta, Pzeta) firstprivate(dnym1, dnxm1, zeta, k, Pface)
+      // #pragma omp parallel for default(shared) private(j, i, ix, iy, iz, m, eta, xi, Pxi, Peta, Pzeta) firstprivate(dnym1, dnxm1, zeta, k, grid_points, ce, Pface)
       for(j = 0; j <= grid_points[1] - 1; j++) {
          eta = (double) (j) * dnym1;
-         // #pragma omp parallel for default(shared) private(i, ix, iy, iz, m, xi, Pxi, Peta, Pzeta) firstprivate(dnxm1, zeta, eta, k, j, Pface)
+         // #pragma omp parallel for default(shared) private(i, ix, iy, iz, m, xi, Pxi, Peta, Pzeta) firstprivate(dnxm1, zeta, eta, k, j, grid_points, ce, Pface)
          for(i = 0; i <= grid_points[0] - 1; i++) {
             xi = (double) (i) * dnxm1;
             /*************** Clava msgError **************
@@ -739,10 +739,10 @@ void initialize() {
    //---------------------------------------------------------------------
    i = 0;
    xi = 0.0;
-   #pragma omp parallel for default(shared) private(k, j, m, zeta, eta) firstprivate(dnzm1, dnym1, xi, i, temp)
+   #pragma omp parallel for default(shared) private(k, j, m, zeta, eta) firstprivate(dnzm1, dnym1, xi, i, grid_points, ce, temp)
    for(k = 0; k <= grid_points[2] - 1; k++) {
       zeta = (double) (k) * dnzm1;
-      // #pragma omp parallel for default(shared) private(j, m, eta) firstprivate(dnym1, zeta, xi, k, i, temp)
+      // #pragma omp parallel for default(shared) private(j, m, eta) firstprivate(dnym1, zeta, xi, k, i, grid_points, ce, temp)
       for(j = 0; j <= grid_points[1] - 1; j++) {
          eta = (double) (j) * dnym1;
          exact_solution(xi, eta, zeta, temp);
@@ -759,10 +759,10 @@ void initialize() {
    //---------------------------------------------------------------------
    i = grid_points[0] - 1;
    xi = 1.0;
-   #pragma omp parallel for default(shared) private(k, j, m, zeta, eta) firstprivate(dnzm1, dnym1, xi, i, temp)
+   #pragma omp parallel for default(shared) private(k, j, m, zeta, eta) firstprivate(dnzm1, dnym1, xi, i, grid_points, ce, temp)
    for(k = 0; k <= grid_points[2] - 1; k++) {
       zeta = (double) (k) * dnzm1;
-      // #pragma omp parallel for default(shared) private(j, m, eta) firstprivate(dnym1, zeta, xi, k, i, temp)
+      // #pragma omp parallel for default(shared) private(j, m, eta) firstprivate(dnym1, zeta, xi, k, i, grid_points, ce, temp)
       for(j = 0; j <= grid_points[1] - 1; j++) {
          eta = (double) (j) * dnym1;
          exact_solution(xi, eta, zeta, temp);
@@ -779,10 +779,10 @@ void initialize() {
    //---------------------------------------------------------------------
    j = 0;
    eta = 0.0;
-   #pragma omp parallel for default(shared) private(k, i, m, zeta, xi) firstprivate(dnzm1, dnxm1, eta, j, temp)
+   #pragma omp parallel for default(shared) private(k, i, m, zeta, xi) firstprivate(dnzm1, dnxm1, eta, j, grid_points, ce, temp)
    for(k = 0; k <= grid_points[2] - 1; k++) {
       zeta = (double) (k) * dnzm1;
-      // #pragma omp parallel for default(shared) private(i, m, xi) firstprivate(dnxm1, zeta, eta, k, j, temp)
+      // #pragma omp parallel for default(shared) private(i, m, xi) firstprivate(dnxm1, zeta, eta, k, j, grid_points, ce, temp)
       for(i = 0; i <= grid_points[0] - 1; i++) {
          xi = (double) (i) * dnxm1;
          exact_solution(xi, eta, zeta, temp);
@@ -799,10 +799,10 @@ void initialize() {
    //---------------------------------------------------------------------
    j = grid_points[1] - 1;
    eta = 1.0;
-   #pragma omp parallel for default(shared) private(k, i, m, zeta, xi) firstprivate(dnzm1, dnxm1, eta, j, temp)
+   #pragma omp parallel for default(shared) private(k, i, m, zeta, xi) firstprivate(dnzm1, dnxm1, eta, j, grid_points, ce, temp)
    for(k = 0; k <= grid_points[2] - 1; k++) {
       zeta = (double) (k) * dnzm1;
-      // #pragma omp parallel for default(shared) private(i, m, xi) firstprivate(dnxm1, zeta, eta, k, j, temp)
+      // #pragma omp parallel for default(shared) private(i, m, xi) firstprivate(dnxm1, zeta, eta, k, j, grid_points, ce, temp)
       for(i = 0; i <= grid_points[0] - 1; i++) {
          xi = (double) (i) * dnxm1;
          exact_solution(xi, eta, zeta, temp);
@@ -819,10 +819,10 @@ void initialize() {
    //---------------------------------------------------------------------
    k = 0;
    zeta = 0.0;
-   #pragma omp parallel for default(shared) private(j, i, m, eta, xi) firstprivate(dnym1, dnxm1, zeta, k, temp)
+   #pragma omp parallel for default(shared) private(j, i, m, eta, xi) firstprivate(dnym1, dnxm1, zeta, k, grid_points, ce, temp)
    for(j = 0; j <= grid_points[1] - 1; j++) {
       eta = (double) (j) * dnym1;
-      // #pragma omp parallel for default(shared) private(i, m, xi) firstprivate(dnxm1, zeta, eta, k, j, temp)
+      // #pragma omp parallel for default(shared) private(i, m, xi) firstprivate(dnxm1, zeta, eta, k, j, grid_points, ce, temp)
       for(i = 0; i <= grid_points[0] - 1; i++) {
          xi = (double) (i) * dnxm1;
          exact_solution(xi, eta, zeta, temp);
@@ -839,10 +839,10 @@ void initialize() {
    //---------------------------------------------------------------------
    k = grid_points[2] - 1;
    zeta = 1.0;
-   #pragma omp parallel for default(shared) private(j, i, m, eta, xi) firstprivate(dnym1, dnxm1, zeta, k, temp)
+   #pragma omp parallel for default(shared) private(j, i, m, eta, xi) firstprivate(dnym1, dnxm1, zeta, k, grid_points, ce, temp)
    for(j = 0; j <= grid_points[1] - 1; j++) {
       eta = (double) (j) * dnym1;
-      // #pragma omp parallel for default(shared) private(i, m, xi) firstprivate(dnxm1, zeta, eta, k, j, temp)
+      // #pragma omp parallel for default(shared) private(i, m, xi) firstprivate(dnxm1, zeta, eta, k, j, grid_points, ce, temp)
       for(i = 0; i <= grid_points[0] - 1; i++) {
          xi = (double) (i) * dnxm1;
          exact_solution(xi, eta, zeta, temp);
@@ -897,11 +897,11 @@ void compute_rhs() {
    // compute the reciprocal of density, and the kinetic energy,
    // and the speed of sound.
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, j, i, rho_inv)
+   #pragma omp parallel for default(shared) private(k, j, i, rho_inv) firstprivate(grid_points, u)
    for(k = 0; k <= grid_points[2] - 1; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, rho_inv) firstprivate(k)
+      // #pragma omp parallel for default(shared) private(j, i, rho_inv) firstprivate(k, grid_points, u)
       for(j = 0; j <= grid_points[1] - 1; j++) {
-         // #pragma omp parallel for default(shared) private(i, rho_inv) firstprivate(k, j)
+         // #pragma omp parallel for default(shared) private(i, rho_inv) firstprivate(k, j, grid_points, u)
          for(i = 0; i <= grid_points[0] - 1; i++) {
             rho_inv = 1.0 / u[k][j][i][0];
             rho_i[k][j][i] = rho_inv;
@@ -918,11 +918,11 @@ void compute_rhs() {
    // this forcing term is known, we can store it on the whole grid
    // including the boundary
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, j, i, m)
+   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(grid_points, forcing)
    for(k = 0; k <= grid_points[2] - 1; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k)
+      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, grid_points, forcing)
       for(j = 0; j <= grid_points[1] - 1; j++) {
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, grid_points, forcing)
          for(i = 0; i <= grid_points[0] - 1; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -936,11 +936,11 @@ void compute_rhs() {
    //---------------------------------------------------------------------
    // compute xi-direction fluxes
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, j, i, m, uijk, up1, um1) firstprivate(dx1tx1, tx2, c2, dx2tx1, xxcon2, con43, dx3tx1, dx4tx1, c1, dx5tx1, xxcon3, xxcon4, xxcon5, dssp)
+   #pragma omp parallel for default(shared) private(k, j, i, m, uijk, up1, um1) firstprivate(dx1tx1, tx2, c2, dx2tx1, xxcon2, con43, dx3tx1, dx4tx1, c1, dx5tx1, xxcon3, xxcon4, xxcon5, dssp, grid_points, us, u, square, vs, ws, qs, rho_i)
    for(k = 1; k <= grid_points[2] - 2; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, uijk, up1, um1) firstprivate(k, dx1tx1, tx2, c2, dx2tx1, xxcon2, con43, dx3tx1, dx4tx1, c1, dx5tx1, xxcon3, xxcon4, xxcon5)
+      // #pragma omp parallel for default(shared) private(j, i, uijk, up1, um1) firstprivate(k, dx1tx1, tx2, c2, dx2tx1, xxcon2, con43, dx3tx1, dx4tx1, c1, dx5tx1, xxcon3, xxcon4, xxcon5, grid_points, us, u, square, vs, ws, qs, rho_i)
       for(j = 1; j <= grid_points[1] - 2; j++) {
-         // #pragma omp parallel for default(shared) private(i, uijk, up1, um1) firstprivate(k, j, dx1tx1, tx2, c2, dx2tx1, xxcon2, con43, dx3tx1, dx4tx1, c1, dx5tx1, xxcon3, xxcon4, xxcon5)
+         // #pragma omp parallel for default(shared) private(i, uijk, up1, um1) firstprivate(k, j, dx1tx1, tx2, c2, dx2tx1, xxcon2, con43, dx3tx1, dx4tx1, c1, dx5tx1, xxcon3, xxcon4, xxcon5, grid_points, us, u, square, vs, ws, qs, rho_i)
          for(i = 1; i <= grid_points[0] - 2; i++) {
             uijk = us[k][j][i];
             up1 = us[k][j][i + 1];
@@ -955,7 +955,7 @@ void compute_rhs() {
       //---------------------------------------------------------------------
       // add fourth order xi-direction dissipation
       //---------------------------------------------------------------------
-      // #pragma omp parallel for default(shared) private(j, m, i) firstprivate(k, dssp)
+      // #pragma omp parallel for default(shared) private(j, m, i) firstprivate(k, dssp, grid_points, u)
       for(j = 1; j <= grid_points[1] - 2; j++) {
          i = 1;
          /*************** Clava msgError **************
@@ -972,9 +972,9 @@ void compute_rhs() {
             rhs[k][j][i][m] = rhs[k][j][i][m] - dssp * (-4.0 * u[k][j][i - 1][m] + 6.0 * u[k][j][i][m] - 4.0 * u[k][j][i + 1][m] + u[k][j][i + 2][m]);
          }
       }
-      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dssp)
+      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dssp, grid_points, u)
       for(j = 1; j <= grid_points[1] - 2; j++) {
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, dssp)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, dssp, grid_points, u)
          for(i = 3; i <= grid_points[0] - 4; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -984,7 +984,7 @@ void compute_rhs() {
             }
          }
       }
-      // #pragma omp parallel for default(shared) private(j, m, i) firstprivate(k, dssp)
+      // #pragma omp parallel for default(shared) private(j, m, i) firstprivate(k, dssp, grid_points, u)
       for(j = 1; j <= grid_points[1] - 2; j++) {
          i = grid_points[0] - 3;
          /*************** Clava msgError **************
@@ -1005,11 +1005,11 @@ void compute_rhs() {
    //---------------------------------------------------------------------
    // compute eta-direction fluxes
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, j, i, m, vijk, vp1, vm1) firstprivate(dy1ty1, ty2, dy2ty1, yycon2, c2, dy3ty1, con43, dy4ty1, c1, dy5ty1, yycon3, yycon4, yycon5, dssp)
+   #pragma omp parallel for default(shared) private(k, j, i, m, vijk, vp1, vm1) firstprivate(dy1ty1, ty2, dy2ty1, yycon2, c2, dy3ty1, con43, dy4ty1, c1, dy5ty1, yycon3, yycon4, yycon5, dssp, grid_points, vs, u, us, square, ws, qs, rho_i)
    for(k = 1; k <= grid_points[2] - 2; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, vijk, vp1, vm1) firstprivate(k, dy1ty1, ty2, dy2ty1, yycon2, c2, dy3ty1, con43, dy4ty1, c1, dy5ty1, yycon3, yycon4, yycon5)
+      // #pragma omp parallel for default(shared) private(j, i, vijk, vp1, vm1) firstprivate(k, dy1ty1, ty2, dy2ty1, yycon2, c2, dy3ty1, con43, dy4ty1, c1, dy5ty1, yycon3, yycon4, yycon5, grid_points, vs, u, us, square, ws, qs, rho_i)
       for(j = 1; j <= grid_points[1] - 2; j++) {
-         // #pragma omp parallel for default(shared) private(i, vijk, vp1, vm1) firstprivate(k, j, dy1ty1, ty2, dy2ty1, yycon2, c2, dy3ty1, con43, dy4ty1, c1, dy5ty1, yycon3, yycon4, yycon5)
+         // #pragma omp parallel for default(shared) private(i, vijk, vp1, vm1) firstprivate(k, j, dy1ty1, ty2, dy2ty1, yycon2, c2, dy3ty1, con43, dy4ty1, c1, dy5ty1, yycon3, yycon4, yycon5, grid_points, vs, u, us, square, ws, qs, rho_i)
          for(i = 1; i <= grid_points[0] - 2; i++) {
             vijk = vs[k][j][i];
             vp1 = vs[k][j + 1][i];
@@ -1025,7 +1025,7 @@ void compute_rhs() {
       // add fourth order eta-direction dissipation
       //---------------------------------------------------------------------
       j = 1;
-      // #pragma omp parallel for default(shared) private(i, m) firstprivate(j, k, dssp)
+      // #pragma omp parallel for default(shared) private(i, m) firstprivate(j, k, dssp, grid_points, u)
       for(i = 1; i <= grid_points[0] - 2; i++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -1035,7 +1035,7 @@ void compute_rhs() {
          }
       }
       j = 2;
-      // #pragma omp parallel for default(shared) private(i, m) firstprivate(j, k, dssp)
+      // #pragma omp parallel for default(shared) private(i, m) firstprivate(j, k, dssp, grid_points, u)
       for(i = 1; i <= grid_points[0] - 2; i++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -1044,9 +1044,9 @@ void compute_rhs() {
             rhs[k][j][i][m] = rhs[k][j][i][m] - dssp * (-4.0 * u[k][j - 1][i][m] + 6.0 * u[k][j][i][m] - 4.0 * u[k][j + 1][i][m] + u[k][j + 2][i][m]);
          }
       }
-      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dssp)
+      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dssp, grid_points, u)
       for(j = 3; j <= grid_points[1] - 4; j++) {
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(j, k, dssp)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(j, k, dssp, grid_points, u)
          for(i = 1; i <= grid_points[0] - 2; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -1057,7 +1057,7 @@ void compute_rhs() {
          }
       }
       j = grid_points[1] - 3;
-      // #pragma omp parallel for default(shared) private(i, m) firstprivate(j, k, dssp)
+      // #pragma omp parallel for default(shared) private(i, m) firstprivate(j, k, dssp, grid_points, u)
       for(i = 1; i <= grid_points[0] - 2; i++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -1067,7 +1067,7 @@ void compute_rhs() {
          }
       }
       j = grid_points[1] - 2;
-      // #pragma omp parallel for default(shared) private(i, m) firstprivate(j, k, dssp)
+      // #pragma omp parallel for default(shared) private(i, m) firstprivate(j, k, dssp, grid_points, u)
       for(i = 1; i <= grid_points[0] - 2; i++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -1080,11 +1080,11 @@ void compute_rhs() {
    //---------------------------------------------------------------------
    // compute zeta-direction fluxes
    //---------------------------------------------------------------------
-   #pragma omp parallel for default(shared) private(k, j, i, wijk, wp1, wm1) firstprivate(dz1tz1, tz2, dz2tz1, zzcon2, dz3tz1, c2, dz4tz1, con43, c1, dz5tz1, zzcon3, zzcon4, zzcon5)
+   #pragma omp parallel for default(shared) private(k, j, i, wijk, wp1, wm1) firstprivate(dz1tz1, tz2, dz2tz1, zzcon2, dz3tz1, c2, dz4tz1, con43, c1, dz5tz1, zzcon3, zzcon4, zzcon5, grid_points, ws, u, us, vs, square, qs, rho_i)
    for(k = 1; k <= grid_points[2] - 2; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, wijk, wp1, wm1) firstprivate(k, dz1tz1, tz2, dz2tz1, zzcon2, dz3tz1, c2, dz4tz1, con43, c1, dz5tz1, zzcon3, zzcon4, zzcon5)
+      // #pragma omp parallel for default(shared) private(j, i, wijk, wp1, wm1) firstprivate(k, dz1tz1, tz2, dz2tz1, zzcon2, dz3tz1, c2, dz4tz1, con43, c1, dz5tz1, zzcon3, zzcon4, zzcon5, grid_points, ws, u, us, vs, square, qs, rho_i)
       for(j = 1; j <= grid_points[1] - 2; j++) {
-         // #pragma omp parallel for default(shared) private(i, wijk, wp1, wm1) firstprivate(k, j, dz1tz1, tz2, dz2tz1, zzcon2, dz3tz1, c2, dz4tz1, con43, c1, dz5tz1, zzcon3, zzcon4, zzcon5)
+         // #pragma omp parallel for default(shared) private(i, wijk, wp1, wm1) firstprivate(k, j, dz1tz1, tz2, dz2tz1, zzcon2, dz3tz1, c2, dz4tz1, con43, c1, dz5tz1, zzcon3, zzcon4, zzcon5, grid_points, ws, u, us, vs, square, qs, rho_i)
          for(i = 1; i <= grid_points[0] - 2; i++) {
             wijk = ws[k][j][i];
             wp1 = ws[k + 1][j][i];
@@ -1101,9 +1101,9 @@ void compute_rhs() {
    // add fourth order zeta-direction dissipation
    //---------------------------------------------------------------------
    k = 1;
-   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dssp)
+   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dssp, grid_points, u)
    for(j = 1; j <= grid_points[1] - 2; j++) {
-      // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, dssp)
+      // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, dssp, grid_points, u)
       for(i = 1; i <= grid_points[0] - 2; i++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -1114,9 +1114,9 @@ void compute_rhs() {
       }
    }
    k = 2;
-   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dssp)
+   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dssp, grid_points, u)
    for(j = 1; j <= grid_points[1] - 2; j++) {
-      // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, dssp)
+      // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, dssp, grid_points, u)
       for(i = 1; i <= grid_points[0] - 2; i++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -1126,11 +1126,11 @@ void compute_rhs() {
          }
       }
    }
-   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(dssp)
+   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(dssp, grid_points, u)
    for(k = 3; k <= grid_points[2] - 4; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dssp)
+      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dssp, grid_points, u)
       for(j = 1; j <= grid_points[1] - 2; j++) {
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, dssp)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, dssp, grid_points, u)
          for(i = 1; i <= grid_points[0] - 2; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -1142,9 +1142,9 @@ void compute_rhs() {
       }
    }
    k = grid_points[2] - 3;
-   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dssp)
+   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dssp, grid_points, u)
    for(j = 1; j <= grid_points[1] - 2; j++) {
-      // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, dssp)
+      // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, dssp, grid_points, u)
       for(i = 1; i <= grid_points[0] - 2; i++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -1155,9 +1155,9 @@ void compute_rhs() {
       }
    }
    k = grid_points[2] - 2;
-   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dssp)
+   #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dssp, grid_points, u)
    for(j = 1; j <= grid_points[1] - 2; j++) {
-      // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, dssp)
+      // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, dssp, grid_points, u)
       for(i = 1; i <= grid_points[0] - 2; i++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -1167,11 +1167,11 @@ void compute_rhs() {
          }
       }
    }
-   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(dt)
+   #pragma omp parallel for default(shared) private(k, j, i, m) firstprivate(dt, grid_points)
    for(k = 1; k <= grid_points[2] - 2; k++) {
-      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dt)
+      // #pragma omp parallel for default(shared) private(j, i, m) firstprivate(k, dt, grid_points)
       for(j = 1; j <= grid_points[1] - 2; j++) {
-         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, dt)
+         // #pragma omp parallel for default(shared) private(i, m) firstprivate(k, j, dt, grid_points)
          for(i = 1; i <= grid_points[0] - 2; i++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -2044,22 +2044,20 @@ void x_solve() {
    // determine a (labeled f) and n jacobians
    //---------------------------------------------------------------------
    /*************** Clava msgError **************
-   consoleOutput
-   /tmp/tmp_jenkins/clava_api/petit: AddSSAgraph: too many SSA graph nodes
+   consoleOutput petit: AddSSAgraph: too many SSA graph nodes
    Exit apparently due to system limitation or error (exit code -2)
    Not dumping core - set PETIT_DUMP_CORE to generate core dump
    
    ****************************************/
    for(k = 1; k <= grid_points[2] - 2; k++) {
       /*************** Clava msgError **************
-      consoleOutput
-      /tmp/tmp_jenkins/clava_api/petit: AddSSAgraph: too many SSA graph nodes
+      consoleOutput petit: AddSSAgraph: too many SSA graph nodes
       Exit apparently due to system limitation or error (exit code -2)
       Not dumping core - set PETIT_DUMP_CORE to generate core dump
       
       ****************************************/
       for(j = 1; j <= grid_points[1] - 2; j++) {
-         #pragma omp parallel for default(shared) private(i, tmp1, tmp2, tmp3) firstprivate(isize, k, j, c2, c1, con43, c3c4, c1345)
+         #pragma omp parallel for default(shared) private(i, tmp1, tmp2, tmp3) firstprivate(isize, k, j, c2, c1, con43, c3c4, c1345, rho_i, u, qs, square)
          for(i = 0; i <= isize; i++) {
             tmp1 = rho_i[k][j][i];
             tmp2 = tmp1 * tmp1;
@@ -2122,7 +2120,7 @@ void x_solve() {
          // now jacobians set, so form left hand side in x direction
          //---------------------------------------------------------------------
          lhsinit(lhs, isize);
-         #pragma omp parallel for default(shared) private(i, tmp1, tmp2) firstprivate(isize, dt, tx1, tx2, dx1, dx2, dx3, dx4, dx5)
+         #pragma omp parallel for default(shared) private(i, tmp1, tmp2) firstprivate(isize, dt, tx1, tx2, dx1, dx2, dx3, dx4, dx5, fjac, njac)
          for(i = 1; i <= isize - 1; i++) {
             tmp1 = dt * tx1;
             tmp2 = dt * tx2;
@@ -2310,22 +2308,20 @@ void y_solve() {
    // determine a (labeled f) and n jacobians for cell c
    //---------------------------------------------------------------------
    /*************** Clava msgError **************
-   consoleOutput
-   /tmp/tmp_jenkins/clava_api/petit: AddSSAgraph: too many SSA graph nodes
+   consoleOutput petit: AddSSAgraph: too many SSA graph nodes
    Exit apparently due to system limitation or error (exit code -2)
    Not dumping core - set PETIT_DUMP_CORE to generate core dump
    
    ****************************************/
    for(k = 1; k <= grid_points[2] - 2; k++) {
       /*************** Clava msgError **************
-      consoleOutput
-      /tmp/tmp_jenkins/clava_api/petit: AddSSAgraph: too many SSA graph nodes
+      consoleOutput petit: AddSSAgraph: too many SSA graph nodes
       Exit apparently due to system limitation or error (exit code -2)
       Not dumping core - set PETIT_DUMP_CORE to generate core dump
       
       ****************************************/
       for(i = 1; i <= grid_points[0] - 2; i++) {
-         #pragma omp parallel for default(shared) private(j, tmp1, tmp2, tmp3) firstprivate(jsize, k, i, c2, c1, c3c4, con43, c1345)
+         #pragma omp parallel for default(shared) private(j, tmp1, tmp2, tmp3) firstprivate(jsize, k, i, c2, c1, c3c4, con43, c1345, rho_i, u, qs, square)
          for(j = 0; j <= jsize; j++) {
             tmp1 = rho_i[k][j][i];
             tmp2 = tmp1 * tmp1;
@@ -2385,7 +2381,7 @@ void y_solve() {
          // now joacobians set, so form left hand side in y direction
          //---------------------------------------------------------------------
          lhsinit(lhs, jsize);
-         #pragma omp parallel for default(shared) private(j, tmp1, tmp2) firstprivate(jsize, dt, ty1, ty2, dy1, dy2, dy3, dy4, dy5)
+         #pragma omp parallel for default(shared) private(j, tmp1, tmp2) firstprivate(jsize, dt, ty1, ty2, dy1, dy2, dy3, dy4, dy5, fjac, njac)
          for(j = 1; j <= jsize - 1; j++) {
             tmp1 = dt * ty1;
             tmp2 = dt * ty2;
@@ -2574,22 +2570,20 @@ void z_solve() {
    // determine c (labeled f) and s jacobians
    //---------------------------------------------------------------------
    /*************** Clava msgError **************
-   consoleOutput
-   /tmp/tmp_jenkins/clava_api/petit: AddSSAgraph: too many SSA graph nodes
+   consoleOutput petit: AddSSAgraph: too many SSA graph nodes
    Exit apparently due to system limitation or error (exit code -2)
    Not dumping core - set PETIT_DUMP_CORE to generate core dump
    
    ****************************************/
    for(j = 1; j <= grid_points[1] - 2; j++) {
       /*************** Clava msgError **************
-      consoleOutput
-      /tmp/tmp_jenkins/clava_api/petit: AddSSAgraph: too many SSA graph nodes
+      consoleOutput petit: AddSSAgraph: too many SSA graph nodes
       Exit apparently due to system limitation or error (exit code -2)
       Not dumping core - set PETIT_DUMP_CORE to generate core dump
       
       ****************************************/
       for(i = 1; i <= grid_points[0] - 2; i++) {
-         #pragma omp parallel for default(shared) private(k, tmp1, tmp2, tmp3) firstprivate(ksize, j, i, c2, c1, c3c4, con43, c3, c4, c1345)
+         #pragma omp parallel for default(shared) private(k, tmp1, tmp2, tmp3) firstprivate(ksize, j, i, c2, c1, c3c4, con43, c3, c4, c1345, u, qs, square)
          for(k = 0; k <= ksize; k++) {
             tmp1 = 1.0 / u[k][j][i][0];
             tmp2 = tmp1 * tmp1;
@@ -2649,7 +2643,7 @@ void z_solve() {
          // now jacobians set, so form left hand side in z direction
          //---------------------------------------------------------------------
          lhsinit(lhs, ksize);
-         #pragma omp parallel for default(shared) private(k, tmp1, tmp2) firstprivate(ksize, dt, tz1, tz2, dz1, dz2, dz3, dz4, dz5)
+         #pragma omp parallel for default(shared) private(k, tmp1, tmp2) firstprivate(ksize, dt, tz1, tz2, dz1, dz2, dz3, dz4, dz5, fjac, njac)
          for(k = 1; k <= ksize - 1; k++) {
             tmp1 = dt * tz1;
             tmp2 = dt * tz2;

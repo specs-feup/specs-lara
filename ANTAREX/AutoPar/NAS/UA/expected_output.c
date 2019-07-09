@@ -469,7 +469,7 @@ int main(int argc, char *argv[]) {
          laplacian(ta2[ie], ta1[ie], size_e[ie]);
       }
       // compute the residual
-      #pragma omp parallel for default(shared) private(ie, k, j, i) firstprivate(nelt)
+      #pragma omp parallel for default(shared) private(ie, k, j, i) firstprivate(nelt, ta2)
       for(ie = 0; ie < nelt; ie++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -492,7 +492,7 @@ int main(int argc, char *argv[]) {
       transfb(rmor, (double *) trhs);
       // apply boundary condition: zero out the residual on domain boundaries
       // apply boundary conidtion to trhs
-      #pragma omp parallel for default(shared) private(ie, iside) firstprivate(nelt)
+      #pragma omp parallel for default(shared) private(ie, iside) firstprivate(nelt, cbc)
       for(ie = 0; ie < nelt; ie++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -647,7 +647,7 @@ void do_coarsen(int *if_coarsen, int *icoarsen, int neltold) {
    // Check whether the potential coarsening will make neighbor,
    // and neighbor's neighbor....break grid restriction
    /*************** Clava msgError **************
-   Array access ifcoa_id[ntp[i]] has subscript of arrayType ntp[i]
+   Array access ifcoa_id[ntp[i]] which is used for writing has subscript of arrayType ntp[i]
    ****************************************/
    for(miel = 0; miel < nelt; miel++) {
       ifcoa[miel] = 0;
@@ -735,7 +735,7 @@ void do_coarsen(int *if_coarsen, int *icoarsen, int neltold) {
    // element's front-left-bottom-child) to be coarsened.
    // create array mt_to_id to convert actual element index to morton index
    /*************** Clava msgError **************
-   Array access action[front[miel] - 1] has subscript of arrayType front[miel] - 1
+   Array access action[front[miel] - 1] which is used for writing has subscript of arrayType front[miel] - 1
    ****************************************/
    for(miel = 0; miel < nelt; miel++) {
       iel = mt_to_id_old[miel];
@@ -815,7 +815,7 @@ void do_refine(int *ifmortar, int *irefine) {
    ncopy(mt_to_id_old, mt_to_id, nelt);
    nr_init(mt_to_id, nelt, -1);
    nr_init(action, nelt, -1);
-   #pragma omp parallel for default(shared) private(miel) firstprivate(nelt)
+   #pragma omp parallel for default(shared) private(miel) firstprivate(nelt, mt_to_id_old, ich)
    for(miel = 0; miel < nelt; miel++) {
       if(ich[mt_to_id_old[miel]] != 4) {
          front[miel] = 0;
@@ -831,7 +831,7 @@ void do_refine(int *ifmortar, int *irefine) {
    num_refine = front[nelt - 1];
    // action[i] records the morton index of the  i'th element to be refined
    /*************** Clava msgError **************
-   Array access action[front[miel] - 1] has subscript of arrayType front[miel] - 1
+   Array access action[front[miel] - 1] which is used for writing has subscript of arrayType front[miel] - 1
    ****************************************/
    for(miel = 0; miel < nelt; miel++) {
       iel = mt_to_id_old[miel];
@@ -927,11 +927,11 @@ void do_refine(int *ifmortar, int *irefine) {
       zleft = zctemp[0];
       zright = zctemp[4];
       /*************** Clava msgError **************
-      loop-step expression is not in canonical form
+      loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
       ****************************************/
       for(j = 0; j < 7; j += 2) {
          /*************** Clava msgError **************
-         loop-step expression is not in canonical form
+         loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
          ****************************************/
          for(i = 0; i < 7; i += 2) {
             xc[nelt + j][i] = xhalf;
@@ -939,11 +939,11 @@ void do_refine(int *ifmortar, int *irefine) {
          }
       }
       /*************** Clava msgError **************
-      loop-step expression is not in canonical form
+      loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
       ****************************************/
       for(j = 1; j < 6; j += 2) {
          /*************** Clava msgError **************
-         loop-step expression is not in canonical form
+         loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
          ****************************************/
          for(i = 0; i < 7; i += 2) {
             xc[nelt + j][i] = xleft;
@@ -951,7 +951,7 @@ void do_refine(int *ifmortar, int *irefine) {
          }
       }
       /*************** Clava msgError **************
-      loop-step expression is not in canonical form
+      loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
       ****************************************/
       for(i = 0; i < 7; i += 2) {
          xc[iel][i] = xleft;
@@ -1259,7 +1259,7 @@ void find_coarsen(int *if_coarsen, int neltold) {
    int iftemp;
    int iel, i;
    *if_coarsen = 0;
-   #pragma omp parallel for default(shared) private(iel, i, iftemp) firstprivate(neltold)
+   #pragma omp parallel for default(shared) private(iel, i, iftemp) firstprivate(neltold, skip, cbc)
    for(iel = 0; iel < neltold; iel++) {
       if(!skip[iel]) {
          ich[iel] = 0;
@@ -1291,7 +1291,7 @@ void find_coarsen(int *if_coarsen, int neltold) {
 void find_refine(int *if_refine) {
    int iel;
    *if_refine = 0;
-   #pragma omp parallel for default(shared) private(iel) firstprivate(nelt, dlmin)
+   #pragma omp parallel for default(shared) private(iel) firstprivate(nelt, dlmin, xc)
    for(iel = 0; iel < nelt; iel++) {
       ich[iel] = 0;
       if(iftouch(iel)) {
@@ -1529,13 +1529,13 @@ void merging(int iela[8]) {
    z1 = zc[iela[0]][0];
    z2 = zc[iela[4]][4];
    /*************** Clava msgError **************
-   loop-step expression is not in canonical form
+   loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
    ****************************************/
    for(i = 0; i < 7; i += 2) {
       xc[ielnew][i] = x1;
    }
    /*************** Clava msgError **************
-   loop-step expression is not in canonical form
+   loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
    ****************************************/
    for(i = 1; i < 8; i += 2) {
       xc[ielnew][i] = x2;
@@ -1813,7 +1813,7 @@ void convect(int ifmortar) {
       yy0[substep] = (2.0 / 7.0) + 3.0 * subtime[substep];
       zz0[substep] = (2.0 / 7.0) + 3.0 * subtime[substep];
    }
-   #pragma omp parallel for default(shared) private(iel, i, j, k, ip, iside, isize, r2, src, sum, dtx1, dtx2, dtx3) firstprivate(nelt, alpha2, pidivalpha, dtime2, dtime, sixth, rdtime, xloc, yloc, zloc, rk1, temp, rk2, tempa, rk3, rk4)
+   #pragma omp parallel for default(shared) private(iel, i, j, k, ip, iside, isize, r2, src, sum, dtx1, dtx2, dtx3) firstprivate(nelt, alpha2, pidivalpha, dtime2, dtime, sixth, rdtime, size_e, xc, xfrac, yc, zc, xx0, yy0, zz0, dxm1, xrm1_s, cbc, bm1_s, xloc, yloc, zloc, rk1, temp, rk2, tempa, rk3, rk4)
    for(iel = 0; iel < nelt; iel++) {
       isize = size_e[iel];
       /*
@@ -2065,7 +2065,7 @@ void convect(int ifmortar) {
    else {
       transfb_c((double *) ta1);
    }
-   #pragma omp parallel for default(shared) private(i) firstprivate(nmor)
+   #pragma omp parallel for default(shared) private(i) firstprivate(nmor, mormult)
    for(i = 0; i < nmor; i++) {
       tmort[i] = tmort[i] / mormult[i];
    }
@@ -2091,7 +2091,7 @@ void diffusion(int ifmortar) {
    // pdiff and pmorx are combined to generate q0 in the CG algorithm.
    // rho1 is  (qm,rm) in the CG algorithm.
    rho1 = 0.0;
-   #pragma omp parallel for default(shared) private(ie, k, j, i) firstprivate(nelt) reduction(+ : rho1)
+   #pragma omp parallel for default(shared) private(ie, k, j, i) firstprivate(nelt, dpcelm, trhs, tmult) reduction(+ : rho1)
    for(ie = 0; ie < nelt; ie++) {
       /*************** Clava msgError **************
       Loop Iteration number is too low
@@ -2111,7 +2111,7 @@ void diffusion(int ifmortar) {
          }
       }
    }
-   #pragma omp parallel for default(shared) private(im) firstprivate(nmor) reduction(+ : rho1)
+   #pragma omp parallel for default(shared) private(im) firstprivate(nmor, dpcmor, rmor) reduction(+ : rho1)
    for(im = 0; im < nmor; im++) {
       pmorx[im] = dpcmor[im] * rmor[im];
       rho1 = rho1 + rmor[im] * pmorx[im];
@@ -2135,7 +2135,7 @@ void diffusion(int ifmortar) {
          rho_aux = 0.0;
          // pdiffp and ppmor are combined to generate q_m+1 in the specification
          // rho_aux is (q_m+1,r_m+1)
-         #pragma omp parallel for default(shared) private(ie, k, j, i) firstprivate(nelt) reduction(+ : rho_aux)
+         #pragma omp parallel for default(shared) private(ie, k, j, i) firstprivate(nelt, dpcelm, trhs, tmult) reduction(+ : rho_aux)
          for(ie = 0; ie < nelt; ie++) {
             /*************** Clava msgError **************
             Loop Iteration number is too low
@@ -2155,7 +2155,7 @@ void diffusion(int ifmortar) {
                }
             }
          }
-         #pragma omp parallel for default(shared) private(im) firstprivate(nmor) reduction(+ : rho_aux)
+         #pragma omp parallel for default(shared) private(im) firstprivate(nmor, dpcmor, rmor) reduction(+ : rho_aux)
          for(im = 0; im < nmor; im++) {
             ppmor[im] = dpcmor[im] * rmor[im];
             rho_aux = rho_aux + rmor[im] * ppmor[im];
@@ -2184,7 +2184,7 @@ void diffusion(int ifmortar) {
       // in the specification
       transfb(ppmor, (double *) pdiffp);
       // apply boundary condition
-      #pragma omp parallel for default(shared) private(ie, iside) firstprivate(nelt)
+      #pragma omp parallel for default(shared) private(ie, iside) firstprivate(nelt, cbc)
       for(ie = 0; ie < nelt; ie++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -2197,7 +2197,7 @@ void diffusion(int ifmortar) {
       }
       // compute cona which is (pm,theta T A theta pm)
       cona = 0.0;
-      #pragma omp parallel for default(shared) private(ie, k, j, i) firstprivate(nelt) reduction(+ : cona)
+      #pragma omp parallel for default(shared) private(ie, k, j, i) firstprivate(nelt, pdiff, pdiffp, tmult) reduction(+ : cona)
       for(ie = 0; ie < nelt; ie++) {
          /*************** Clava msgError **************
          Loop Iteration number is too low
@@ -2216,7 +2216,7 @@ void diffusion(int ifmortar) {
             }
          }
       }
-      #pragma omp parallel for default(shared) private(im) firstprivate(nmor) reduction(+ : cona)
+      #pragma omp parallel for default(shared) private(im) firstprivate(nmor, tmmor, pmorx) reduction(+ : cona)
       for(im = 0; im < nmor; im++) {
          ppmor[im] = ppmor[im] * tmmor[im];
          cona = cona + pmorx[im] * ppmor[im];
@@ -2361,7 +2361,7 @@ void mortar() {
    // VERTICES
    count = -1;
    // assign mortar point indices to element vertices
-   #pragma omp parallel for default(shared) private(iel, cb, cb1, cb2, sumcb, ij1, ij2, ntemp, ntemp1) firstprivate(nelt)
+   #pragma omp parallel for default(shared) private(iel, cb, cb1, cb2, sumcb, ij1, ij2, ntemp, ntemp1) firstprivate(nelt, cbc, ijel, sje)
    for(iel = 0; iel < nelt; iel++) {
       // first calculate how many new mortar indices will be generated for
       // each element.
@@ -3155,7 +3155,7 @@ void mortar() {
    // if_1_edge[iel][n]=1 indicates that the size of iel is smaller than
    //            that of its neighbor connected, neighbored by edge n only
    /*************** Clava msgError **************
-   Array access ncon_edge[sje[ntemp][5][0][0]][9] has subscript of arrayType sje[ntemp][5][0][0]
+   Array access ncon_edge[sje[ntemp][5][0][0]][9] which is used for writing has subscript of arrayType sje[ntemp][5][0][0]
    ****************************************/
    for(iel = 0; iel < nelt; iel++) {
       newc[iel] = 0;
@@ -3754,7 +3754,7 @@ void mortar() {
             space = 1;
          }
          /*************** Clava msgError **************
-         loop-step expression is not in canonical form
+         loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
          ****************************************/
          for(ie = 0; ie < ne; ie += space) {
             edge_g = edgenumber[i][ie];
@@ -4726,7 +4726,7 @@ void move() {
    n1 = n2 * 2;
    nr_init((int *) sje_new, n1, -1);
    nr_init((int *) ijel_new, n2, -1);
-   #pragma omp parallel for default(shared) private(iel, iside, ii2, ii1, i, jface, cb, ntemp) firstprivate(nelt)
+   #pragma omp parallel for default(shared) private(iel, iside, ii2, ii1, i, jface, cb, ntemp) firstprivate(nelt, mt_to_id, tree, xc, yc, zc, jjface, cbc, sje, id_to_mt, ijel, ta1)
    for(iel = 0; iel < nelt; iel++) {
       i = mt_to_id[iel];
       treenew[iel] = tree[i];
@@ -4817,7 +4817,7 @@ void setuppc() {
       }
    }
    rdtime = 1.0 / dtime;
-   #pragma omp parallel for default(shared) private(ie, k, j, i, q, isize) firstprivate(nelt, rdtime)
+   #pragma omp parallel for default(shared) private(ie, k, j, i, q, isize) firstprivate(nelt, rdtime, size_e, g1m1_s, dxtm1_2, bm1_s)
    for(ie = 0; ie < nelt; ie++) {
       r_init(dpcelm[ie][0][0], (5 * 5 * 5), 0.0);
       isize = size_e[ie];
@@ -5243,7 +5243,7 @@ void setpcmo() {
    l_init(ifpcmor, nvertex, 0);
    l_init((int *) edgevis, 24 * nelt, 0);
    /*************** Clava msgError **************
-   Array access edgevis[nb2][jjface[face2]][op[e_face2[iside][_enum]]] has subscript of arrayType jjface[face2]
+   Array access edgevis[nb2][jjface[face2]][op[e_face2[iside][_enum]]] which is used for writing has subscript of arrayType jjface[face2]
    ****************************************/
    for(iel = 0; iel < nelt; iel++) {
       /*************** Clava msgError **************
@@ -5384,7 +5384,7 @@ void pc_corner(int imor) {
    int sface, sedge, iiface, iface, iiedge, iedge, n = 0;
    tmortemp = 0.0;
    // loop over all elements sharing this vertex
-   #pragma omp parallel for default(shared) private(inemo, iiface, iiedge, ie, sizei, cornernumber, sface, sedge, iface, iedge, n) firstprivate(imor) reduction(+ : tmortemp)
+   #pragma omp parallel for default(shared) private(inemo, iiface, iiedge, ie, sizei, cornernumber, sface, sedge, iface, iedge, n) firstprivate(imor, nemo, emo, size_e, f_c, cbc, e_c, ncon_edge, pcmor_cor) reduction(+ : tmortemp)
    for(inemo = 0; inemo <= nemo[imor]; inemo++) {
       ie = emo[imor][inemo][0];
       sizei = size_e[ie];
@@ -5617,7 +5617,7 @@ void create_initial_grid() {
    tree[0] = 1;
    mt_to_id[0] = 0;
    /*************** Clava msgError **************
-   loop-step expression is not in canonical form
+   loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
    ****************************************/
    for(i = 0; i < 7; i += 2) {
       xc[0][i] = 0.0;
@@ -5944,7 +5944,7 @@ void prepwork() {
    ntot = nelt * (5 * 5 * 5);
    rdlog2 = 1.0 / log(2.0);
    // calculate the refinement levels of each element
-   #pragma omp parallel for default(shared) private(iel) firstprivate(nelt, rdlog2)
+   #pragma omp parallel for default(shared) private(iel) firstprivate(nelt, rdlog2, xc)
    for(iel = 0; iel < nelt; iel++) {
       size_e[iel] = (int) (-log(xc[iel][1] - xc[iel][0]) * rdlog2 + 1.e-8) - 1;
    }
@@ -5962,7 +5962,7 @@ void prepwork() {
    // masks for domain boundary at mortar
    r_init(tmmor, nmor, 1.0);
    /*************** Clava msgError **************
-   Array access tmmor[idmo[iel][iface][0][0][j][i]] has subscript of arrayType idmo[iel][iface][0][0][j][i]
+   Array access tmmor[idmo[iel][iface][0][0][j][i]] which is used for writing has subscript of arrayType idmo[iel][iface][0][0][j][i]
    ****************************************/
    for(iel = 0; iel < nelt; iel++) {
       /*************** Clava msgError **************
@@ -6746,9 +6746,9 @@ void transf(double tmor[], double tx[]) {
             // nonconforming faces have four pieces of mortar, first map them to
             // two intermediate mortars, stored in tmp
             r_init((double *) tmp, 5 * 5 * 2, 0.0);
-            #pragma omp parallel for default(shared) private(ije1, ije2, col, i, j, ig, il) firstprivate(nnje, ie, iface)
+            #pragma omp parallel for default(shared) private(ije1, ije2, col, i, j, ig, il) firstprivate(nnje, ie, iface, v_end, idmo, tmor, idel, qbnew)
             for(ije1 = 0; ije1 < nnje; ije1++) {
-               // #pragma omp parallel for default(shared) private(ije2, col, i, j, ig, il) firstprivate(nnje, ie, iface, ije1)
+               // #pragma omp parallel for default(shared) private(ije2, col, i, j, ig, il) firstprivate(nnje, ie, iface, ije1, v_end, idmo, tmor, idel, qbnew)
                for(ije2 = 0; ije2 < nnje; ije2++) {
                   /*************** Clava msgError **************
                   Loop Iteration number is too low
@@ -7045,7 +7045,7 @@ void transfb(double tmor[], double tx[]) {
             // nonconforming faces have four pieces of mortar, first map tx to
             // two intermediate mortars stored in temp
             /*************** Clava msgError **************
-            Array access temp[ije2][v_end[ije2]][col] has subscript of arrayType v_end[ije2]
+            Array access temp[ije2][v_end[ije2]][col] which is used for writing has subscript of arrayType v_end[ije2]
             ****************************************/
             for(ije2 = 0; ije2 < nnje; ije2++) {
                shift = ije2;
@@ -7071,7 +7071,7 @@ void transfb(double tmor[], double tx[]) {
                   top[ije2][col] = tmp;
                   // Use mapping matrices qbnew to map the value from tx to temp
                   // for mortar points not on the top bottom face edge.
-                  #pragma omp parallel for default(shared) private(j, i, tmp, il) firstprivate(shift, ie, iface, col, ije2)
+                  #pragma omp parallel for default(shared) private(j, i, tmp, il) firstprivate(shift, ie, iface, col, ije2, idel, qbnew, tx)
                   for(j = 2 - shift - 1; j < 5 - shift; j++) {
                      tmp = 0.0;
                      /*************** Clava msgError **************
@@ -7883,7 +7883,7 @@ void l_init(int a[], int n, int _cnst) {
 //------------------------------------------------------------------
 void ncopy(int a[], int b[], int n) {
    int i;
-   #pragma omp parallel for default(shared) private(i) firstprivate(n)
+   #pragma omp parallel for default(shared) private(i) firstprivate(n, b)
    for(i = 0; i < n; i++) {
       a[i] = b[i];
    }
@@ -7894,7 +7894,7 @@ void ncopy(int a[], int b[], int n) {
 //------------------------------------------------------------------
 void copy(double a[], double b[], int n) {
    int i;
-   #pragma omp parallel for default(shared) private(i) firstprivate(n)
+   #pragma omp parallel for default(shared) private(i) firstprivate(n, b)
    for(i = 0; i < n; i++) {
       a[i] = b[i];
    }
@@ -7905,7 +7905,7 @@ void copy(double a[], double b[], int n) {
 //-----------------------------------------------------------------
 void adds2m1(double a[], double b[], double c1, int n) {
    int i;
-   #pragma omp parallel for default(shared) private(i) firstprivate(n, c1)
+   #pragma omp parallel for default(shared) private(i) firstprivate(n, c1, b)
    for(i = 0; i < n; i++) {
       a[i] = a[i] + c1 * b[i];
    }
@@ -7916,7 +7916,7 @@ void adds2m1(double a[], double b[], double c1, int n) {
 //-----------------------------------------------------------------
 void adds1m1(double a[], double b[], double c1, int n) {
    int i;
-   #pragma omp parallel for default(shared) private(i) firstprivate(n, c1)
+   #pragma omp parallel for default(shared) private(i) firstprivate(n, c1, b)
    for(i = 0; i < n; i++) {
       a[i] = c1 * a[i] + b[i];
    }
@@ -7927,7 +7927,7 @@ void adds1m1(double a[], double b[], double c1, int n) {
 //------------------------------------------------------------------
 void col2(double a[], double b[], int n) {
    int i;
-   #pragma omp parallel for default(shared) private(i) firstprivate(n)
+   #pragma omp parallel for default(shared) private(i) firstprivate(n, b)
    for(i = 0; i < n; i++) {
       a[i] = a[i] * b[i];
    }
@@ -7949,7 +7949,7 @@ void nrzero(int na[], int n) {
 //------------------------------------------------------------------
 void add2(double a[], double b[], int n) {
    int i;
-   #pragma omp parallel for default(shared) private(i) firstprivate(n)
+   #pragma omp parallel for default(shared) private(i) firstprivate(n, b)
    for(i = 0; i < n; i++) {
       a[i] = a[i] + b[i];
    }
@@ -7962,7 +7962,7 @@ double calc_norm() {
    double total, ieltotal;
    int iel, k, j, i, isize;
    total = 0.0;
-   #pragma omp parallel for default(shared) private(iel, k, j, i, ieltotal, isize) firstprivate(nelt) reduction(+ : total)
+   #pragma omp parallel for default(shared) private(iel, k, j, i, ieltotal, isize) firstprivate(nelt, size_e, ta1, w3m1, jacm1_s) reduction(+ : total)
    for(iel = 0; iel < nelt; iel++) {
       ieltotal = 0.0;
       isize = size_e[iel];
@@ -8011,7 +8011,7 @@ void parallel_add(int frontier[]) {
       n1 = ntemp * 2;
       n2 = n1;
       /*************** Clava msgError **************
-      loop-step expression is not in canonical form
+      loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
       ****************************************/
       for(iel = n1; iel <= nelt; iel += n1) {
          ahead = frontier[iel - ntemp - 1];
