@@ -7,7 +7,7 @@ aspectdef NasAutopar
 	AutoParStats.reset();
 
 	var $loops = [];
-	select function.loop end
+	select file.loop end
 	apply
 		// Set name
 		AutoParStats.get().setName(Io.removeExtension($file.name));
