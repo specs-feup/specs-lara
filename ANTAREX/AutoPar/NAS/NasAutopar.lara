@@ -1,7 +1,7 @@
 import clava.autopar.Parallelize;
 import clava.autopar.AutoParStats;
 
-aspectdef PolybenchAutopar
+aspectdef NasAutopar
 
 	// Reset stats
 	AutoParStats.reset();
@@ -9,11 +9,6 @@ aspectdef PolybenchAutopar
 	var $loops = [];
 	select function.loop end
 	apply
-		// Only parallelize loops inside Polybench kernel functions
-		if(!$function.name.startsWith("kernel_")) {
-			continue;
-		}
-		
 		// Set name
 		AutoParStats.get().setName(Io.removeExtension($file.name));
 		
