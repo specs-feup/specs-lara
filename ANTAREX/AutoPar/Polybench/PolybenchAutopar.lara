@@ -7,7 +7,7 @@ aspectdef PolybenchAutopar
 	AutoParStats.reset();
 
 	var $loops = [];
-	select function.loop end
+	select file.function.loop end
 	apply
 		// Only parallelize loops inside Polybench kernel functions
 		if(!$function.name.startsWith("kernel_")) {
