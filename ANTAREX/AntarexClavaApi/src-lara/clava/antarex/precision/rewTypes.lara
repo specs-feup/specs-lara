@@ -147,7 +147,7 @@ input
 end
    select file.function.expr end
    apply
-	 if ( $expr.joinpointType === 'cast') {
+	 if ( $expr.joinPointType === 'cast') {
 	 	TRACE( " CAST expression = " + $expr.code );
 	 	// println(" keys = " + $expr.keys);
 	 	var $vtype = $expr.type;

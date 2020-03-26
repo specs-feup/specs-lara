@@ -115,7 +115,7 @@ function getRefVarsInStmt($statement, $refVars, $FunctionRefs) {
 	for ( var i = 0; i < $statement.astNumChildren; i++)
 	    {
 	       var $e = $statement.astChild(i);
-	       TRACE( $astname + ", Decl [ " + i + " ] = " + $e.code + ", joinpointType =" + $e.astName);
+	       TRACE( $astname + ", Decl [ " + i + " ] = " + $e.code + ", joinPointType =" + $e.astName);
 	    }
 	       
     break;
@@ -124,7 +124,7 @@ function getRefVarsInStmt($statement, $refVars, $FunctionRefs) {
 	    for ( var i = 0; i < $statement.astNumChildren; i++)
 	    {
 	       var $e = $statement.astChild(i);
-	       TRACE( $astname + ", Decl [ " + i + " ] = " + $e.code + ", joinpointType =" + $e.joinpointType);
+	       TRACE( $astname + ", Decl [ " + i + " ] = " + $e.code + ", joinPointType =" + $e.joinPointType);
 	       getRefVarsInExpr($e, $refVars,$FunctionRefs);
 	    }
 	break;
