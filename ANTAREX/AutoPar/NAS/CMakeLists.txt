@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
 project(nas_single_source_w)
 
+set(CMAKE_C_STANDARD 99)
+
 # Putting a smaller example first
 add_subdirectory(EP)
 
