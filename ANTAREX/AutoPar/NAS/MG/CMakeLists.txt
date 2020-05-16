@@ -6,6 +6,7 @@ project(mg_w)
 # The Clava CMake plugin can be found here: https://github.com/specs-feup/clava/tree/master/CMake
 #set(Clava_DIR <CMAKE_CLAVA_PLUGIN>)
 
+set(CMAKE_C_STANDARD 99)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g -Wall -O3 -mcmodel=medium")
 
