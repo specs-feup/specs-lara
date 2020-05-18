@@ -839,13 +839,13 @@ void zran3(void *oz, int n1, int n2, int n3, int nx, int ny, int k) {
    int const mm = 10;
    double const a = pow(5.0, 13.0);
    double const x = 314159265.0;
-   double ten[mm][2];
+   double ten[10][2];
    double best;
    int i;
-   int j1[mm][2];
-   int j2[mm][2];
-   int j3[mm][2];
-   int jg[4][mm][2];
+   int j1[10][2];
+   int j2[10][2];
+   int j3[10][2];
+   int jg[4][10][2];
    double rdummy;
    a1 = power(a, nx);
    a2 = power(a, nx * ny);
