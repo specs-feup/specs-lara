@@ -72,6 +72,7 @@ void kernel_heat_3d(int tsteps,
 
     for (t = 1; t <= TSTEPS; t++)
     {
+#pragma omp parallel for default(shared) private(i, j, k) firstprivate(n, A)
         for (i = 1; i < _PB_N - 1; i++)
         {
             for (j = 1; j < _PB_N - 1; j++)
@@ -88,6 +89,7 @@ void kernel_heat_3d(int tsteps,
 
 
 
+#pragma omp parallel for default(shared) private(i, j, k) firstprivate(n, B)
         for (i = 1; i < _PB_N - 1; i++)
         {
             for (j = 1; j < _PB_N - 1; j++)
