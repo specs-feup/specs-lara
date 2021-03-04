@@ -1,0 +1,6 @@
+// Copy this code, open the web page http://webgraphviz.com/, paste the code and click Generate Graph!
+digraph static_call_graph {
+        "sobel"->"convolve2d" [label="3"];
+        "sobel"->"abs" [label="2"];
+        "convolve2d"->"abs" [label="1"];
+}

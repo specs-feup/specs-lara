@@ -1,0 +1,17 @@
+import CallGraph.TestResources;
+import lara.StaticCallGraph;
+import lara.Check;
+import weaver.Weaver;
+
+/**
+ * @test
+ */
+aspectdef TestsStaticCallGraph
+
+	var staticCallGraph = call StaticCallGraph();
+	
+	// Test will differ depending on the weaver
+	println(staticCallGraph.callGraphDot);
+	Check.strings(staticCallGraph.callGraphDot, TestResources.getString("StaticCallGraph_"+Weaver.getName()+".output"));
+end
+

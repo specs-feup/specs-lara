@@ -1,0 +1,13 @@
+// Copy this code, open the web page http://webgraphviz.com/, paste the code and click Generate Graph!
+digraph static_call_graph {
+	"init_matrix"->"rand" [label="1"];
+	"print_matrix_result"->"printf" [label="1"];
+	"fibonacci"->"fibonacci" [label="2"];
+	"test"->"malloc" [label="3"];
+	"test"->"init_matrix" [label="2"];
+	"test"->"matrix_mult" [label="1"];
+	"test"->"print_matrix_result" [label="1"];
+	"test"->"fibonacci" [label="1"];
+	"main"->"srand" [label="1"];
+	"main"->"test" [label="1"];
+}

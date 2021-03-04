@@ -1,0 +1,45 @@
+import lcl.LaraCommonLanguage;
+import weaver.Query;
+
+aspectdef StaticCallGraph
+	output callGraphDot end
+	// Utility object that counts tuples
+	var callGraph = {};
+	
+	// Collect information
+	for(var chain of Query.search("function").search("call").chain()) {
+		var $function = chain["function"];
+		var $call = chain["call"];		
+		
+		// Skip it is not possible to obtain name from call
+		if($call.name === undefined) {
+			continue;
+		}
+		
+		// Test 1st key
+		if(!($function.name in callGraph)) {
+			callGraph[$function.name] = {};
+		}
+
+		// Test 2nd key
+		if(!($call.name in callGraph[$function.name])){
+			callGraph[$function.name][$call.name] = 0;
+		}
+
+		// Increment
+		callGraph[$function.name][$call.name]++;
+	}
+
+	// Create graph in dot format (Graphviz) and print it to the console
+	callGraphDot = "";
+	callGraphDot += '// Copy this code, open the web page http://webgraphviz.com/, paste the code and click Generate Graph!\n';
+	callGraphDot += 'digraph static_call_graph {\n';
+	
+	for (f in callGraph) {
+		for (c in callGraph[f]) {		
+			callGraphDot += '\t"' + f + '"->"' + c + '" [label="' + callGraph[f][c] + '"];\n';
+		}
+	}
+
+	callGraphDot += '}\n';
+end
