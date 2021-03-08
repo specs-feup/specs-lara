@@ -1,0 +1,17 @@
+import weaver.Query;
+import lcl.metrics.Metrics;
+import lara.ProjectMetrics;
+import ProjectMetrics.TestResources;
+
+/**
+ * @test
+ */
+aspectdef TestProjectMetrics
+
+	var projectMetrics = call ProjectMetrics();
+	
+	// Test will differ depending on the weaver
+	println(projectMetrics.project_results_str);
+	Check.strings(projectMetrics.project_results_str, TestResources.getString("ProjectMetrics_"+Weaver.getName()+".output"));
+end
+

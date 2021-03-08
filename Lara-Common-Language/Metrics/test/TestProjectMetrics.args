@@ -1,0 +1,15 @@
+
+
+Weaver Clava
+	-p $BASE/src/cpp -pi
+end
+
+
+Weaver KADABRA
+	-p $BASE/src/java
+end
+
+
+Weaver Jackdaw
+	-p $BASE/src/js
+end

@@ -1,0 +1,15 @@
+import weaver.Query;
+import lcl.LaraCommonLanguage;
+
+aspectdef ProjectMetrics
+	output project_results_str end
+
+	var project_results = {
+		'NOCl':(new NOCl()).calculateForProject(), 
+		'NOFu':(new NOFu()).calculateForProject(), 
+		'NOFi':(new NOFi()).calculateForProject(), 
+		'NOL' :(new NOL()).calculateForProject()
+	};
+
+	project_results_str = JSON.stringify(project_results);
+end
