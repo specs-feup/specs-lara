@@ -1,0 +1,16 @@
+import weaver.Query;
+import lcl.metrics.Metrics;
+import lara.ClassMetrics;
+import CommonMetrics.TestResources;
+
+/**
+ * @test
+ */
+aspectdef TestClassMetrics
+
+	var classMetrics = call ClassMetrics();
+	
+	// Test will differ depending on the weaver
+	Check.strings(classMetrics.class_results_str, TestResources.getString("ClassMetrics_"+Weaver.getName()+".output"));
+end
+

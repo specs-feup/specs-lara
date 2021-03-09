@@ -1,0 +1,28 @@
+import weaver.Query;
+import lcl.LaraCommonLanguage;
+
+aspectdef ClassMetrics
+	output class_results_str end
+
+    var store = Query.search('class', 'Store').first();
+
+	var class_results = {
+		'CogniComplex':(new CogniComplex()).calculateForClass(store), 
+		'CycloComplex':(new CycloComplex()).calculateForClass(store),
+
+		'DAC':(new DAC()).calculateForClass(store), 
+		'MPC' :(new MPC()).calculateForClass(store),
+        'NOM':(new NOM()).calculateForClass(store), 
+		'SIZE1' :(new SIZE1()).calculateForClass(store),
+        'SIZE2':(new SIZE2()).calculateForClass(store), 
+
+        'CBO':(new CBO()).calculateForClass(store), 
+		'DIT' :(new DIT()).calculateForClass(store),
+        'LCOM94':(new LCOM94()).calculateForClass(store), 
+		//'NOC' :(new NOC()).calculateForClass(store),
+        'RFC':(new RFC()).calculateForClass(store), 
+		'WMC' :(new WMC()).calculateForClass(store)
+	};
+
+	class_results_str = JSON.stringify(class_results);
+end
