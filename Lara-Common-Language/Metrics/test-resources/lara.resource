@@ -1,2 +1,2 @@
 # Import path to import this resource
-ProjectMetrics.TestResources
+CommonMetrics.TestResources

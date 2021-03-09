@@ -8,7 +8,9 @@ aspectdef ProjectMetrics
 		'NOCl':(new NOCl()).calculateForProject(), 
 		'NOFu':(new NOFu()).calculateForProject(), 
 		'NOFi':(new NOFi()).calculateForProject(), 
-		'NOL' :(new NOL()).calculateForProject()
+		'NOL' :(new NOL()).calculateForProject(),
+		'CogniComplex' :(new CogniComplex()).calculateForProject(),
+		'CycloComplex' :(new CycloComplex()).calculateForProject()
 	};
 
 	project_results_str = JSON.stringify(project_results);
