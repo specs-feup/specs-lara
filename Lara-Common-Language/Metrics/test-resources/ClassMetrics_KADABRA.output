@@ -1,1 +1,8 @@
-{"CogniComplex":56,"CycloComplex":38,"DAC":3,"MPC":5,"NOM":10,"SIZE1":123,"SIZE2":15,"CBO":5,"DIT":0,"LCOM94":0,"RFC":22,"WMC":28}
+{
+"Client":{"CogniComplex":0,"CycloComplex":5,"NOL":27,"DAC":1,"MPC":1,"NOM":5,"SIZE1":13,"SIZE2":7,"CBO":2,"DIT":1,"LCOM94":0,"RFC":7,"WMC":0},
+"Date":{"CogniComplex":9,"CycloComplex":18,"NOL":64,"DAC":0,"MPC":0,"NOM":11,"SIZE1":19,"SIZE2":14,"CBO":0,"DIT":0,"LCOM94":0,"RFC":11,"WMC":7},
+"Person":{"CogniComplex":0,"CycloComplex":5,"NOL":24,"DAC":0,"MPC":0,"NOM":5,"SIZE1":8,"SIZE2":7,"CBO":0,"DIT":0,"LCOM94":0,"RFC":5,"WMC":0},
+"Product":{"CogniComplex":0,"CycloComplex":4,"NOL":22,"DAC":0,"MPC":0,"NOM":4,"SIZE1":7,"SIZE2":6,"CBO":0,"DIT":0,"LCOM94":1,"RFC":4,"WMC":0},
+"Store":{"CogniComplex":56,"CycloComplex":38,"NOL":248,"DAC":3,"MPC":5,"NOM":10,"SIZE1":123,"SIZE2":15,"CBO":5,"DIT":0,"LCOM94":0,"RFC":22,"WMC":28},
+"Transaction":{"CogniComplex":3,"CycloComplex":8,"NOL":43,"DAC":1,"MPC":1,"NOM":6,"SIZE1":19,"SIZE2":9,"CBO":1,"DIT":0,"LCOM94":0,"RFC":8,"WMC":2}
+}

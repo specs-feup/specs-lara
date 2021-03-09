@@ -11,6 +11,9 @@ aspectdef TestClassMetrics
 	var classMetrics = call ClassMetrics();
 	
 	// Test will differ depending on the weaver
-	Check.strings(classMetrics.class_results_str, TestResources.getString("ClassMetrics_"+Weaver.getName()+".output"));
+	var expected_results = TestResources.getString("ClassMetrics_"+Weaver.getName()+".output");
+	// Remove newlines
+	expected_results = expected_results.replace(/(\r\n|\n|\r)/gm, "");;
+	Check.strings(classMetrics.class_results_str, expected_results);
 end
 
