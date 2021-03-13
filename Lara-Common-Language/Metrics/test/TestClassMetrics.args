@@ -8,3 +8,7 @@ end
 Weaver KADABRA
 	-p $BASE/src/java
 end
+
+Weaver Jackdaw
+	Ignore
+end
