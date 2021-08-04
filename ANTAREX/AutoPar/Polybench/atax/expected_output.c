@@ -21,8 +21,11 @@ static void init_array(int m, int n, double A[1900][2100], double x[2100]) {
    int i, j;
    double fn;
    fn = (double) n;
-   for(i = 0; i < n; i++) x[i] = 1 + (i / fn);
-   for(i = 0; i < m; i++) for(j = 0; j < n; j++) A[i][j] = (double) ((i + j) % n) / (5 * m);
+   for(i = 0; i < n; i++)
+      x[i] = 1 + (i / fn);
+   for(i = 0; i < m; i++)
+      for(j = 0; j < n; j++)
+         A[i][j] = (double) ((i + j) % n) / (5 * m);
 }
 
 /*DCE code. Must scan the entire live-out data.
@@ -44,14 +47,17 @@ including the call and return.*/
 static void kernel_atax(int m, int n, double A[1900][2100], double x[2100], double y[2100], double tmp[1900]) {
    int i, j;
    #pragma omp parallel for default(shared) private(i) firstprivate(n)
-   for(i = 0; i < n; i++) y[i] = 0;
+   for(i = 0; i < n; i++)
+      y[i] = 0;
    #pragma omp parallel for default(shared) private(i, j) firstprivate(m, n, A, x) reduction(+ : y[:2100])
    for(i = 0; i < m; i++) {
       tmp[i] = 0.0;
       // #pragma omp parallel for default(shared) private(j) firstprivate(n, i, A, x) reduction(+ : tmp[i])
-      for(j = 0; j < n; j++) tmp[i] = tmp[i] + A[i][j] * x[j];
+      for(j = 0; j < n; j++)
+         tmp[i] = tmp[i] + A[i][j] * x[j];
       // #pragma omp parallel for default(shared) private(j) firstprivate(n, i, A, tmp)
-      for(j = 0; j < n; j++) y[j] = y[j] + A[i][j] * tmp[i];
+      for(j = 0; j < n; j++)
+         y[j] = y[j] + A[i][j] * tmp[i];
    }
 }
 

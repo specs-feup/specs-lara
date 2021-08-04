@@ -3940,8 +3940,7 @@ void get_emo(int ie, int n, int ng) {
 // location as j's vertex of element ntemp.
 //-----------------------------------------------------------------
 int ifsame(int iel, int i, int ntemp, int j) {
-   if(ntemp == -1 || iel == -1) 
-   return 0;
+   if(ntemp == -1 || iel == -1) return 0;
    if(xc[iel][i] == xc[ntemp][j] && yc[iel][i] == yc[ntemp][j] && zc[iel][i] == zc[ntemp][j]) {
       
       return 1;
@@ -7994,8 +7993,7 @@ double calc_norm() {
 //-----------------------------------------------------------------
 void parallel_add(int frontier[]) {
    int nellog, i, ahead, ii, ntemp, n1, ntemp1, n2, iel;
-   if(nelt <= 1) 
-   return;
+   if(nelt <= 1) return;
    nellog = 0;
    iel = 1;
    do  {

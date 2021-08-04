@@ -20,7 +20,9 @@
 static void init_array(int m, int n, double *float_n, double data[1400][1200]) {
    int i, j;
    *float_n = (double) 1400;
-   for(i = 0; i < 1400; i++) for(j = 0; j < 1200; j++) data[i][j] = (double) (i * j) / 1200 + i;
+   for(i = 0; i < 1400; i++)
+      for(j = 0; j < 1200; j++)
+         data[i][j] = (double) (i * j) / 1200 + i;
 }
 
 /*DCE code. Must scan the entire live-out data.
@@ -29,10 +31,11 @@ static void print_array(int m, double corr[1200][1200]) {
    int i, j;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "corr");
-   for(i = 0; i < m; i++) for(j = 0; j < m; j++) {
-      if((i * m + j) % 20 == 0) fprintf(stderr, "\n");
-      fprintf(stderr, "%0.2lf ", corr[i][j]);
-   }
+   for(i = 0; i < m; i++)
+      for(j = 0; j < m; j++) {
+         if((i * m + j) % 20 == 0) fprintf(stderr, "\n");
+         fprintf(stderr, "%0.2lf ", corr[i][j]);
+      }
    fprintf(stderr, "\nend   dump: %s\n", "corr");
    fprintf(stderr, "==END   DUMP_ARRAYS==\n");
 }
@@ -46,14 +49,16 @@ static void kernel_correlation(int m, int n, double float_n, double data[1400][1
    for(j = 0; j < m; j++) {
       mean[j] = 0.0;
       // #pragma omp parallel for default(shared) private(i) firstprivate(n, j, data) reduction(+ : mean[j])
-      for(i = 0; i < n; i++) mean[j] += data[i][j];
+      for(i = 0; i < n; i++)
+         mean[j] += data[i][j];
       mean[j] /= float_n;
    }
    #pragma omp parallel for default(shared) private(j, i) firstprivate(m, n, float_n, eps, data, mean)
    for(j = 0; j < m; j++) {
       stddev[j] = 0.0;
       // #pragma omp parallel for default(shared) private(i) firstprivate(n, j, data, mean) reduction(+ : stddev[j])
-      for(i = 0; i < n; i++) stddev[j] += (data[i][j] - mean[j]) * (data[i][j] - mean[j]);
+      for(i = 0; i < n; i++)
+         stddev[j] += (data[i][j] - mean[j]) * (data[i][j] - mean[j]);
       stddev[j] /= float_n;
       stddev[j] = sqrt(stddev[j]);
       stddev[j] = stddev[j] <= eps ? 1.0 : stddev[j];
@@ -73,7 +78,8 @@ static void kernel_correlation(int m, int n, double float_n, double data[1400][1
       for(j = i + 1; j < m; j++) {
          corr[i][j] = 0.0;
          // #pragma omp parallel for default(shared) private(k) firstprivate(n, i, j, data) reduction(+ : corr[i][j])
-         for(k = 0; k < n; k++) corr[i][j] += (data[k][i] * data[k][j]);
+         for(k = 0; k < n; k++)
+            corr[i][j] += (data[k][i] * data[k][j]);
          corr[j][i] = corr[i][j];
       }
    }

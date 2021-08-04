@@ -19,8 +19,13 @@
 /*Array initialization.*/
 static void init_array(int nr, int nq, int np, double A[150][140][160], double C4[160][160]) {
    int i, j, k;
-   for(i = 0; i < nr; i++) for(j = 0; j < nq; j++) for(k = 0; k < np; k++) A[i][j][k] = (double) ((i * j + k) % np) / np;
-   for(i = 0; i < np; i++) for(j = 0; j < np; j++) C4[i][j] = (double) (i * j % np) / np;
+   for(i = 0; i < nr; i++)
+      for(j = 0; j < nq; j++)
+         for(k = 0; k < np; k++)
+            A[i][j][k] = (double) ((i * j + k) % np) / np;
+   for(i = 0; i < np; i++)
+      for(j = 0; j < np; j++)
+         C4[i][j] = (double) (i * j % np) / np;
 }
 
 /*DCE code. Must scan the entire live-out data.
@@ -29,10 +34,12 @@ static void print_array(int nr, int nq, int np, double A[150][140][160]) {
    int i, j, k;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "A");
-   for(i = 0; i < nr; i++) for(j = 0; j < nq; j++) for(k = 0; k < np; k++) {
-      if((i * nq * np + j * np + k) % 20 == 0) fprintf(stderr, "\n");
-      fprintf(stderr, "%0.2lf ", A[i][j][k]);
-   }
+   for(i = 0; i < nr; i++)
+      for(j = 0; j < nq; j++)
+         for(k = 0; k < np; k++) {
+            if((i * nq * np + j * np + k) % 20 == 0) fprintf(stderr, "\n");
+            fprintf(stderr, "%0.2lf ", A[i][j][k]);
+         }
    fprintf(stderr, "\nend   dump: %s\n", "A");
    fprintf(stderr, "==END   DUMP_ARRAYS==\n");
 }
@@ -50,10 +57,12 @@ void kernel_doitgen(int nr, int nq, int np, double A[150][140][160], double C4[1
          for(p = 0; p < np; p++) {
             sum[p] = 0.0;
             // #pragma omp parallel for default(shared) private(s) firstprivate(np, r, q, p, A, C4) reduction(+ : sum[p])
-            for(s = 0; s < np; s++) sum[p] += A[r][q][s] * C4[s][p];
+            for(s = 0; s < np; s++)
+               sum[p] += A[r][q][s] * C4[s][p];
          }
          // #pragma omp parallel for default(shared) private(p) firstprivate(np, r, q, sum)
-         for(p = 0; p < np; p++) A[r][q][p] = sum[p];
+         for(p = 0; p < np; p++)
+            A[r][q][p] = sum[p];
       }
    }
 }

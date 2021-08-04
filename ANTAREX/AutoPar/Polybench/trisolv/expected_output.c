@@ -22,7 +22,8 @@ static void init_array(int n, double L[2000][2000], double x[2000], double b[200
    for(i = 0; i < n; i++) {
       x[i] = -999;
       b[i] = i;
-      for(j = 0; j <= i; j++) L[i][j] = (double) (i + n - j + 1) * 2 / n;
+      for(j = 0; j <= i; j++)
+         L[i][j] = (double) (i + n - j + 1) * 2 / n;
    }
 }
 
@@ -52,7 +53,8 @@ static void kernel_trisolv(int n, double L[2000][2000], double x[2000], double b
       /*************** Clava msgError **************
       unsolved dependency for arrayAccess x	 use : RW
       ****************************************/
-      for(j = 0; j < i; j++) x[i] -= L[i][j] * x[j];
+      for(j = 0; j < i; j++)
+         x[i] -= L[i][j] * x[j];
       x[i] = x[i] / L[i][i];
    }
 }

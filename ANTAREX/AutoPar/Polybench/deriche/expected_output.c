@@ -21,7 +21,9 @@ static void init_array(int w, int h, float *alpha, float imgIn[4096][2160], floa
    int i, j;
    *alpha = 0.25; //parameter of the filter
    //input should be between 0 and 1 (grayscale image pixel)
-   for(i = 0; i < w; i++) for(j = 0; j < h; j++) imgIn[i][j] = (float) ((313 * i + 991 * j) % 65536) / 65535.0f;
+   for(i = 0; i < w; i++)
+      for(j = 0; j < h; j++)
+         imgIn[i][j] = (float) ((313 * i + 991 * j) % 65536) / 65535.0f;
 }
 
 /*DCE code. Must scan the entire live-out data.
@@ -30,10 +32,11 @@ static void print_array(int w, int h, float imgOut[4096][2160]) {
    int i, j;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "imgOut");
-   for(i = 0; i < w; i++) for(j = 0; j < h; j++) {
-      if((i * h + j) % 20 == 0) fprintf(stderr, "\n");
-      fprintf(stderr, "%0.2f ", imgOut[i][j]);
-   }
+   for(i = 0; i < w; i++)
+      for(j = 0; j < h; j++) {
+         if((i * h + j) % 20 == 0) fprintf(stderr, "\n");
+         fprintf(stderr, "%0.2f ", imgOut[i][j]);
+      }
    fprintf(stderr, "\nend   dump: %s\n", "imgOut");
    fprintf(stderr, "==END   DUMP_ARRAYS==\n");
 }
@@ -142,7 +145,8 @@ static void kernel_deriche(int w, int h, float alpha, float imgIn[4096][2160], f
    #pragma omp parallel for default(shared) private(i, j) firstprivate(w, h, c2, y1, y2)
    for(i = 0; i < w; i++) {
       // #pragma omp parallel for default(shared) private(j) firstprivate(h, i, c2, y1, y2)
-      for(j = 0; j < h; j++) imgOut[i][j] = c2 * (y1[i][j] + y2[i][j]);
+      for(j = 0; j < h; j++)
+         imgOut[i][j] = c2 * (y1[i][j] + y2[i][j]);
    }
 }
 

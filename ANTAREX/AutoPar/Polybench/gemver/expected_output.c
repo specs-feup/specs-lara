@@ -31,7 +31,8 @@ static void init_array(int n, double *alpha, double *beta, double A[2000][2000],
       z[i] = ((i + 1) / fn) / 9.0;
       x[i] = 0.0;
       w[i] = 0.0;
-      for(j = 0; j < n; j++) A[i][j] = (double) (i * j % n) / n;
+      for(j = 0; j < n; j++)
+         A[i][j] = (double) (i * j % n) / n;
    }
 }
 
@@ -56,19 +57,23 @@ static void kernel_gemver(int n, double alpha, double beta, double A[2000][2000]
    #pragma omp parallel for default(shared) private(i, j) firstprivate(n, u1, v1, u2, v2)
    for(i = 0; i < n; i++) {
       // #pragma omp parallel for default(shared) private(j) firstprivate(n, i, u1, v1, u2, v2)
-      for(j = 0; j < n; j++) A[i][j] = A[i][j] + u1[i] * v1[j] + u2[i] * v2[j];
+      for(j = 0; j < n; j++)
+         A[i][j] = A[i][j] + u1[i] * v1[j] + u2[i] * v2[j];
    }
    #pragma omp parallel for default(shared) private(i, j) firstprivate(n, beta, A, y)
    for(i = 0; i < n; i++) {
       // #pragma omp parallel for default(shared) private(j) firstprivate(n, beta, i, A, y) reduction(+ : x[i])
-      for(j = 0; j < n; j++) x[i] = x[i] + beta * A[j][i] * y[j];
+      for(j = 0; j < n; j++)
+         x[i] = x[i] + beta * A[j][i] * y[j];
    }
    #pragma omp parallel for default(shared) private(i) firstprivate(n, z)
-   for(i = 0; i < n; i++) x[i] = x[i] + z[i];
+   for(i = 0; i < n; i++)
+      x[i] = x[i] + z[i];
    #pragma omp parallel for default(shared) private(i, j) firstprivate(n, alpha, A, x)
    for(i = 0; i < n; i++) {
       // #pragma omp parallel for default(shared) private(j) firstprivate(n, alpha, i, A, x) reduction(+ : w[i])
-      for(j = 0; j < n; j++) w[i] = w[i] + alpha * A[i][j] * x[j];
+      for(j = 0; j < n; j++)
+         w[i] = w[i] + alpha * A[i][j] * x[j];
    }
 }
 

@@ -209,15 +209,18 @@ void full_verify() {
    /*key_buff2[] already has the proper information, so do nothing*/
    /*Copy keys into work array; keys in key_array will be reassigned.*/
    #pragma omp parallel for default(shared) private(i) firstprivate(key_array)
-   for(i = 0; i < (1 << 20); i++) key_buff2[i] = key_array[i];
+   for(i = 0; i < (1 << 20); i++) 
+   	key_buff2[i] = key_array[i];
    /*************** Clava msgError **************
    Array access key_array[--key_buff_ptr_global[key_buff2[i]]] which is used for writing has subscript of arrayType --key_buff_ptr_global[key_buff2[i]]
    ****************************************/
-   for(i = 0; i < (1 << 20); i++) key_array[--key_buff_ptr_global[key_buff2[i]]] = key_buff2[i];
+   for(i = 0; i < (1 << 20); i++) 
+   	key_array[--key_buff_ptr_global[key_buff2[i]]] = key_buff2[i];
    /*Confirm keys correctly sorted: count incorrectly sorted keys, if any*/
    j = 0;
    #pragma omp parallel for default(shared) private(i) firstprivate(key_array) reduction(+ : j)
-   for(i = 1; i < (1 << 20); i++) if(key_array[i - 1] > key_array[i]) j++;
+   for(i = 1; i < (1 << 20); i++) 
+   	if(key_array[i - 1] > key_array[i]) j++;
    if(j != 0) {
       printf("Full_verify: number of keys out of sort: %ld\n", (long) j);
    }
@@ -237,7 +240,8 @@ void rank(int iteration) {
    /*************** Clava msgError **************
    Loop Iteration number is too low
    ****************************************/
-   for(i = 0; i < 5; i++) partial_verify_vals[i] = key_array[test_index_array[i]];
+   for(i = 0; i < 5; i++) 
+   	partial_verify_vals[i] = key_array[test_index_array[i]];
    /*Initialize*/
    /*Determine the number of keys in each bucket*/
    /*Accumulative bucket sizes are the bucket pointers*/
@@ -245,7 +249,8 @@ void rank(int iteration) {
    key_buff_ptr2 = key_array;
    /*Clear the work array*/
    #pragma omp parallel for default(shared) private(i)
-   for(i = 0; i < (1 << 16); i++) key_buff1[i] = 0;
+   for(i = 0; i < (1 << 16); i++) 
+   	key_buff1[i] = 0;
    /*Ranking of all keys occurs in this section:*/
    key_buff_ptr = key_buff1;
    /*In this section, the keys themselves are used as their
@@ -254,7 +259,8 @@ void rank(int iteration) {
    /*************** Clava msgError **************
    Array access key_buff_ptr[key_buff_ptr2[i]] which is used for writing has subscript of arrayType key_buff_ptr2[i]
    ****************************************/
-   for(i = 0; i < (1 << 20); i++) key_buff_ptr[key_buff_ptr2[i]]++;
+   for(i = 0; i < (1 << 20); i++) 
+   	key_buff_ptr[key_buff_ptr2[i]]++;
    /*Now they have individual key*/
    /*population*/
    /*To obtain ranks of each key, successively add the individual key
@@ -262,7 +268,8 @@ void rank(int iteration) {
    /*************** Clava msgError **************
    unsolved dependency for arrayAccess key_buff_ptr	 use : RWR
    ****************************************/
-   for(i = 0; i < (1 << 16) - 1; i++) key_buff_ptr[i + 1] += key_buff_ptr[i];
+   for(i = 0; i < (1 << 16) - 1; i++) 
+   	key_buff_ptr[i + 1] += key_buff_ptr[i];
    /*This is the partial verify test section*/
    /*Observe that test_rank_array vals are*/
    /*shifted differently for different cases*/
@@ -359,7 +366,8 @@ int main(int argc, char **argv) {
    /*************** Clava msgError **************
    Loop contains Invalid Statement -> BreakStmt#608
    ****************************************/
-   for(i = 0; i < 5; i++) switch ('W') {
+   for(i = 0; i < 5; i++) 
+     switch ('W') {
       case 'S':
       test_index_array[i] = S_test_index_array[i];
       test_rank_array[i] = S_test_rank_array[i];

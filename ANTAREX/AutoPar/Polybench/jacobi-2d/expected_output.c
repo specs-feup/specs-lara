@@ -19,10 +19,11 @@
 /*Array initialization.*/
 static void init_array(int n, double A[1300][1300], double B[1300][1300]) {
    int i, j;
-   for(i = 0; i < n; i++) for(j = 0; j < n; j++) {
-      A[i][j] = ((double) i * (j + 2) + 2) / n;
-      B[i][j] = ((double) i * (j + 3) + 3) / n;
-   }
+   for(i = 0; i < n; i++)
+      for(j = 0; j < n; j++) {
+         A[i][j] = ((double) i * (j + 2) + 2) / n;
+         B[i][j] = ((double) i * (j + 3) + 3) / n;
+      }
 }
 
 /*DCE code. Must scan the entire live-out data.
@@ -31,10 +32,11 @@ static void print_array(int n, double A[1300][1300]) {
    int i, j;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "A");
-   for(i = 0; i < n; i++) for(j = 0; j < n; j++) {
-      if((i * n + j) % 20 == 0) fprintf(stderr, "\n");
-      fprintf(stderr, "%0.2lf ", A[i][j]);
-   }
+   for(i = 0; i < n; i++)
+      for(j = 0; j < n; j++) {
+         if((i * n + j) % 20 == 0) fprintf(stderr, "\n");
+         fprintf(stderr, "%0.2lf ", A[i][j]);
+      }
    fprintf(stderr, "\nend   dump: %s\n", "A");
    fprintf(stderr, "==END   DUMP_ARRAYS==\n");
 }
@@ -50,12 +52,14 @@ static void kernel_jacobi_2d(int tsteps, int n, double A[1300][1300], double B[1
       #pragma omp parallel for default(shared) private(i, j) firstprivate(n, A)
       for(i = 1; i < n - 1; i++) {
          // #pragma omp parallel for default(shared) private(j) firstprivate(n, i, A)
-         for(j = 1; j < n - 1; j++) B[i][j] = 0.2 * (A[i][j] + A[i][j - 1] + A[i][1 + j] + A[1 + i][j] + A[i - 1][j]);
+         for(j = 1; j < n - 1; j++)
+            B[i][j] = 0.2 * (A[i][j] + A[i][j - 1] + A[i][1 + j] + A[1 + i][j] + A[i - 1][j]);
       }
       #pragma omp parallel for default(shared) private(i, j) firstprivate(n, B)
       for(i = 1; i < n - 1; i++) {
          // #pragma omp parallel for default(shared) private(j) firstprivate(n, i, B)
-         for(j = 1; j < n - 1; j++) A[i][j] = 0.2 * (B[i][j] + B[i][j - 1] + B[i][1 + j] + B[1 + i][j] + B[i - 1][j]);
+         for(j = 1; j < n - 1; j++)
+            A[i][j] = 0.2 * (B[i][j] + B[i][j - 1] + B[i][1 + j] + B[1 + i][j] + B[i - 1][j]);
       }
    }
 }

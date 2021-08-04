@@ -21,9 +21,15 @@ static void init_array(int ni, int nj, int nk, double *alpha, double *beta, doub
    int i, j;
    *alpha = 1.5;
    *beta = 1.2;
-   for(i = 0; i < ni; i++) for(j = 0; j < nj; j++) C[i][j] = (double) ((i * j + 1) % ni) / ni;
-   for(i = 0; i < ni; i++) for(j = 0; j < nk; j++) A[i][j] = (double) (i * (j + 1) % nk) / nk;
-   for(i = 0; i < nk; i++) for(j = 0; j < nj; j++) B[i][j] = (double) (i * (j + 2) % nj) / nj;
+   for(i = 0; i < ni; i++)
+      for(j = 0; j < nj; j++)
+         C[i][j] = (double) ((i * j + 1) % ni) / ni;
+   for(i = 0; i < ni; i++)
+      for(j = 0; j < nk; j++)
+         A[i][j] = (double) (i * (j + 1) % nk) / nk;
+   for(i = 0; i < nk; i++)
+      for(j = 0; j < nj; j++)
+         B[i][j] = (double) (i * (j + 2) % nj) / nj;
 }
 
 /*DCE code. Must scan the entire live-out data.
@@ -32,10 +38,11 @@ static void print_array(int ni, int nj, double C[1000][1100]) {
    int i, j;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "C");
-   for(i = 0; i < ni; i++) for(j = 0; j < nj; j++) {
-      if((i * ni + j) % 20 == 0) fprintf(stderr, "\n");
-      fprintf(stderr, "%0.2lf ", C[i][j]);
-   }
+   for(i = 0; i < ni; i++)
+      for(j = 0; j < nj; j++) {
+         if((i * ni + j) % 20 == 0) fprintf(stderr, "\n");
+         fprintf(stderr, "%0.2lf ", C[i][j]);
+      }
    fprintf(stderr, "\nend   dump: %s\n", "C");
    fprintf(stderr, "==END   DUMP_ARRAYS==\n");
 }
@@ -47,11 +54,13 @@ static void kernel_gemm(int ni, int nj, int nk, double alpha, double beta, doubl
    #pragma omp parallel for default(shared) private(i, j, k) firstprivate(ni, nj, beta, nk, alpha, A, B)
    for(i = 0; i < ni; i++) {
       // #pragma omp parallel for default(shared) private(j) firstprivate(nj, i, beta)
-      for(j = 0; j < nj; j++) C[i][j] *= beta;
+      for(j = 0; j < nj; j++)
+         C[i][j] *= beta;
       // #pragma omp parallel for default(shared) private(k, j) firstprivate(nk, nj, alpha, i, A, B)
       for(k = 0; k < nk; k++) {
          // #pragma omp parallel for default(shared) private(j) firstprivate(nj, alpha, i, k, A, B)
-         for(j = 0; j < nj; j++) C[i][j] += alpha * A[i][k] * B[k][j];
+         for(j = 0; j < nj; j++)
+            C[i][j] += alpha * A[i][k] * B[k][j];
       }
    }
 }

@@ -229,8 +229,8 @@ void CompExp(int n, dcomplex exponent[n]) {
 
 int ilog2(int n) {
    int nn, lg;
-   if(n == 1) 
-   return 0;
+   if(n == 1) return 0; 
+   
    lg = 1;
    nn = 2;
    while(nn < n) {
@@ -253,8 +253,8 @@ double ipow46(double a, int exponent) {
    //   a^n = a*a^(n-1)       if n odd
    //---------------------------------------------------------------------
    result = 1;
-   if(exponent == 0) 
-   return result;
+   if(exponent == 0) return result; 
+  
    q = a;
    r = 1;
    n = exponent;

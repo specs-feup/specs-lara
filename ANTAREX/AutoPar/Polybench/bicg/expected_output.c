@@ -19,10 +19,12 @@
 /*Array initialization.*/
 static void init_array(int m, int n, double A[2100][1900], double r[2100], double p[1900]) {
    int i, j;
-   for(i = 0; i < m; i++) p[i] = (double) (i % m) / m;
+   for(i = 0; i < m; i++)
+      p[i] = (double) (i % m) / m;
    for(i = 0; i < n; i++) {
       r[i] = (double) (i % n) / n;
-      for(j = 0; j < m; j++) A[i][j] = (double) (i * (j + 1) % n) / n;
+      for(j = 0; j < m; j++)
+         A[i][j] = (double) (i * (j + 1) % n) / n;
    }
 }
 
@@ -51,7 +53,8 @@ including the call and return.*/
 static void kernel_bicg(int m, int n, double A[2100][1900], double s[1900], double q[2100], double p[1900], double r[2100]) {
    int i, j;
    #pragma omp parallel for default(shared) private(i) firstprivate(m)
-   for(i = 0; i < m; i++) s[i] = 0;
+   for(i = 0; i < m; i++)
+      s[i] = 0;
    #pragma omp parallel for default(shared) private(i, j) firstprivate(n, m, r, A, p) reduction(+ : s[:1900])
    for(i = 0; i < n; i++) {
       q[i] = 0.0;
