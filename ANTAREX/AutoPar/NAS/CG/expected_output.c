@@ -103,32 +103,32 @@ int main(int argc, char *argv[]) {
       zeta_verify_value = 8.5971775078648;
    }
    else if(7000 == 7000 && 8 == 8 && 15 == 15 && 12.0 == 12) {
-      Class = 'W';
-      zeta_verify_value = 10.362595087124;
-   }
-   else if(7000 == 14000 && 8 == 11 && 15 == 15 && 12.0 == 20) {
-      Class = 'A';
-      zeta_verify_value = 17.130235054029;
-   }
-   else if(7000 == 75000 && 8 == 13 && 15 == 75 && 12.0 == 60) {
-      Class = 'B';
-      zeta_verify_value = 22.712745482631;
-   }
-   else if(7000 == 150000 && 8 == 15 && 15 == 75 && 12.0 == 110) {
-      Class = 'C';
-      zeta_verify_value = 28.973605592845;
-   }
-   else if(7000 == 1500000 && 8 == 21 && 15 == 100 && 12.0 == 500) {
-      Class = 'D';
-      zeta_verify_value = 52.514532105794;
-   }
-   else if(7000 == 9000000 && 8 == 26 && 15 == 100 && 12.0 == 1500) {
-      Class = 'E';
-      zeta_verify_value = 77.522164599383;
-   }
-   else {
-      Class = 'U';
-   }
+         Class = 'W';
+         zeta_verify_value = 10.362595087124;
+      }
+      else if(7000 == 14000 && 8 == 11 && 15 == 15 && 12.0 == 20) {
+            Class = 'A';
+            zeta_verify_value = 17.130235054029;
+         }
+         else if(7000 == 75000 && 8 == 13 && 15 == 75 && 12.0 == 60) {
+               Class = 'B';
+               zeta_verify_value = 22.712745482631;
+            }
+            else if(7000 == 150000 && 8 == 15 && 15 == 75 && 12.0 == 110) {
+                  Class = 'C';
+                  zeta_verify_value = 28.973605592845;
+               }
+               else if(7000 == 1500000 && 8 == 21 && 15 == 100 && 12.0 == 500) {
+                     Class = 'D';
+                     zeta_verify_value = 52.514532105794;
+                  }
+                  else if(7000 == 9000000 && 8 == 26 && 15 == 100 && 12.0 == 1500) {
+                        Class = 'E';
+                        zeta_verify_value = 77.522164599383;
+                     }
+                     else {
+                        Class = 'U';
+                     }
    printf("\n\n NAS Parallel Benchmarks (NPB3.3-SER-C) - CG Benchmark\n\n");
    printf(" Size: %11d\n", 7000);
    printf(" Iterations: %5d\n", 15);
@@ -647,18 +647,18 @@ void sparse(double a[], int colidx[], int rowstr[], int n, int nz, int nozer, in
                   break;
                }
                else if(colidx[k] == -1) {
-                  colidx[k] = jcol;
-                  cont40 = 1;
-                  break;
-               }
-               else if(colidx[k] == jcol) {
-                  //--------------------------------------------------------------
-                  // ... mark the duplicated entry
-                  //--------------------------------------------------------------
-                  nzloc[j] = nzloc[j] + 1;
-                  cont40 = 1;
-                  break;
-               }
+                     colidx[k] = jcol;
+                     cont40 = 1;
+                     break;
+                  }
+                  else if(colidx[k] == jcol) {
+                        //--------------------------------------------------------------
+                        // ... mark the duplicated entry
+                        //--------------------------------------------------------------
+                        nzloc[j] = nzloc[j] + 1;
+                        cont40 = 1;
+                        break;
+                     }
             }
             if(cont40 == 0) {
                printf("internal error in sparse: i=%d\n", i);

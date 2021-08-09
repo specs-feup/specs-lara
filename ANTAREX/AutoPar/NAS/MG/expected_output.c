@@ -159,29 +159,29 @@ int main() {
       Class = 'U';
    }
    else if(nx[lt] == 32 && nit == 4) {
-      Class = 'S';
-   }
-   else if(nx[lt] == 128 && nit == 4) {
-      Class = 'W';
-   }
-   else if(nx[lt] == 256 && nit == 4) {
-      Class = 'A';
-   }
-   else if(nx[lt] == 256 && nit == 20) {
-      Class = 'B';
-   }
-   else if(nx[lt] == 512 && nit == 20) {
-      Class = 'C';
-   }
-   else if(nx[lt] == 1024 && nit == 50) {
-      Class = 'D';
-   }
-   else if(nx[lt] == 2048 && nit == 50) {
-      Class = 'E';
-   }
-   else {
-      Class = 'U';
-   }
+         Class = 'S';
+      }
+      else if(nx[lt] == 128 && nit == 4) {
+            Class = 'W';
+         }
+         else if(nx[lt] == 256 && nit == 4) {
+               Class = 'A';
+            }
+            else if(nx[lt] == 256 && nit == 20) {
+                  Class = 'B';
+               }
+               else if(nx[lt] == 512 && nit == 20) {
+                     Class = 'C';
+                  }
+                  else if(nx[lt] == 1024 && nit == 50) {
+                        Class = 'D';
+                     }
+                     else if(nx[lt] == 2048 && nit == 50) {
+                           Class = 'E';
+                        }
+                        else {
+                           Class = 'U';
+                        }
    //---------------------------------------------------------------------
    // Use these for debug info:
    //---------------------------------------------------------------------
@@ -277,23 +277,23 @@ int main() {
          verify_value = 0.5307707005734e-04;
       }
       else if(Class == 'W') {
-         verify_value = 0.6467329375339e-05;
-      }
-      else if(Class == 'A') {
-         verify_value = 0.2433365309069e-05;
-      }
-      else if(Class == 'B') {
-         verify_value = 0.1800564401355e-05;
-      }
-      else if(Class == 'C') {
-         verify_value = 0.5706732285740e-06;
-      }
-      else if(Class == 'D') {
-         verify_value = 0.1583275060440e-09;
-      }
-      else if(Class == 'E') {
-         verify_value = 0.8157592357404e-10;
-      }
+            verify_value = 0.6467329375339e-05;
+         }
+         else if(Class == 'A') {
+               verify_value = 0.2433365309069e-05;
+            }
+            else if(Class == 'B') {
+                  verify_value = 0.1800564401355e-05;
+               }
+               else if(Class == 'C') {
+                     verify_value = 0.5706732285740e-06;
+                  }
+                  else if(Class == 'D') {
+                        verify_value = 0.1583275060440e-09;
+                     }
+                     else if(Class == 'E') {
+                           verify_value = 0.8157592357404e-10;
+                        }
       err = fabs(rnm2 - verify_value) / verify_value;
       // err = fabs( rnm2 - verify_value );
       if(err <= epsilon) {
@@ -839,13 +839,13 @@ void zran3(void *oz, int n1, int n2, int n3, int nx, int ny, int k) {
    int const mm = 10;
    double const a = pow(5.0, 13.0);
    double const x = 314159265.0;
-   double ten[10][2];
+   double ten[mm][2];
    double best;
    int i;
-   int j1[10][2];
-   int j2[10][2];
-   int j3[10][2];
-   int jg[4][10][2];
+   int j1[mm][2];
+   int j2[mm][2];
+   int j3[mm][2];
+   int jg[4][mm][2];
    double rdummy;
    a1 = power(a, nx);
    a2 = power(a, nx * ny);

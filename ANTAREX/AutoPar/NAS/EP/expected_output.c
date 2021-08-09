@@ -183,32 +183,32 @@ int main() {
       sy_verify_value = -6.958407078382297e+3;
    }
    else if(25 == 25) {
-      sx_verify_value = -2.863319731645753e+3;
-      sy_verify_value = -6.320053679109499e+3;
-   }
-   else if(25 == 28) {
-      sx_verify_value = -4.295875165629892e+3;
-      sy_verify_value = -1.580732573678431e+4;
-   }
-   else if(25 == 30) {
-      sx_verify_value = 4.033815542441498e+4;
-      sy_verify_value = -2.660669192809235e+4;
-   }
-   else if(25 == 32) {
-      sx_verify_value = 4.764367927995374e+4;
-      sy_verify_value = -8.084072988043731e+4;
-   }
-   else if(25 == 36) {
-      sx_verify_value = 1.982481200946593e+5;
-      sy_verify_value = -1.020596636361769e+5;
-   }
-   else if(25 == 40) {
-      sx_verify_value = -5.319717441530e+05;
-      sy_verify_value = -3.688834557731e+05;
-   }
-   else {
-      verified = 0;
-   }
+         sx_verify_value = -2.863319731645753e+3;
+         sy_verify_value = -6.320053679109499e+3;
+      }
+      else if(25 == 28) {
+            sx_verify_value = -4.295875165629892e+3;
+            sy_verify_value = -1.580732573678431e+4;
+         }
+         else if(25 == 30) {
+               sx_verify_value = 4.033815542441498e+4;
+               sy_verify_value = -2.660669192809235e+4;
+            }
+            else if(25 == 32) {
+                  sx_verify_value = 4.764367927995374e+4;
+                  sy_verify_value = -8.084072988043731e+4;
+               }
+               else if(25 == 36) {
+                     sx_verify_value = 1.982481200946593e+5;
+                     sy_verify_value = -1.020596636361769e+5;
+                  }
+                  else if(25 == 40) {
+                        sx_verify_value = -5.319717441530e+05;
+                        sy_verify_value = -3.688834557731e+05;
+                     }
+                     else {
+                        verified = 0;
+                     }
    if(verified) {
       sx_err = fabs((sx - sx_verify_value) / sx_verify_value);
       sy_err = fabs((sy - sy_verify_value) / sy_verify_value);

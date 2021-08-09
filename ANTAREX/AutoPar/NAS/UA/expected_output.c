@@ -1109,20 +1109,20 @@ void do_refine(int *ifmortar, int *irefine) {
                         sje[ntemp][jface][0][0] = ne[k];
                      }
                      else if(k == 1) {
-                        ijel[ne[k]][i][0] = 0;
-                        ijel[ne[k]][i][1] = 1;
-                        sje[ntemp][jface][1][0] = ne[k];
-                     }
-                     else if(k == 2) {
-                        ijel[ne[k]][i][0] = 1;
-                        ijel[ne[k]][i][1] = 0;
-                        sje[ntemp][jface][0][1] = ne[k];
-                     }
-                     else if(k == 3) {
-                        ijel[ne[k]][i][0] = 1;
-                        ijel[ne[k]][i][1] = 1;
-                        sje[ntemp][jface][1][1] = ne[k];
-                     }
+                           ijel[ne[k]][i][0] = 0;
+                           ijel[ne[k]][i][1] = 1;
+                           sje[ntemp][jface][1][0] = ne[k];
+                        }
+                        else if(k == 2) {
+                              ijel[ne[k]][i][0] = 1;
+                              ijel[ne[k]][i][1] = 0;
+                              sje[ntemp][jface][0][1] = ne[k];
+                           }
+                           else if(k == 3) {
+                                 ijel[ne[k]][i][0] = 1;
+                                 ijel[ne[k]][i][1] = 1;
+                                 sje[ntemp][jface][1][1] = ne[k];
+                              }
                   }
                   // if the neighbor ntemp is also marked to be refined
                }
@@ -1142,41 +1142,41 @@ void do_refine(int *ifmortar, int *irefine) {
                // if the face type of the parent element is type 3
             }
             else if(cb == 3) {
-               /*************** Clava msgError **************
-               Loop Iteration number is too low
-               ****************************************/
-               for(k = 0; k < 4; k++) {
-                  cbc[ne[k]][i] = 2;
-                  if(k == 0) {
-                     ntemp = sjetemp[i][0][0];
+                  /*************** Clava msgError **************
+                  Loop Iteration number is too low
+                  ****************************************/
+                  for(k = 0; k < 4; k++) {
+                     cbc[ne[k]][i] = 2;
+                     if(k == 0) {
+                        ntemp = sjetemp[i][0][0];
+                     }
+                     else if(k == 1) {
+                           ntemp = sjetemp[i][1][0];
+                        }
+                        else if(k == 2) {
+                              ntemp = sjetemp[i][0][1];
+                           }
+                           else if(k == 3) {
+                                 ntemp = sjetemp[i][1][1];
+                              }
+                     ijel[ne[k]][i][0] = 0;
+                     ijel[ne[k]][i][1] = 0;
+                     sje[ne[k]][i][0][0] = ntemp;
+                     cbc[ntemp][jface] = 2;
+                     sje[ntemp][jface][0][0] = ne[k];
+                     ijel[ntemp][jface][0] = 0;
+                     ijel[ntemp][jface][1] = 0;
                   }
-                  else if(k == 1) {
-                     ntemp = sjetemp[i][1][0];
-                  }
-                  else if(k == 2) {
-                     ntemp = sjetemp[i][0][1];
-                  }
-                  else if(k == 3) {
-                     ntemp = sjetemp[i][1][1];
-                  }
-                  ijel[ne[k]][i][0] = 0;
-                  ijel[ne[k]][i][1] = 0;
-                  sje[ne[k]][i][0][0] = ntemp;
-                  cbc[ntemp][jface] = 2;
-                  sje[ntemp][jface][0][0] = ne[k];
-                  ijel[ntemp][jface][0] = 0;
-                  ijel[ntemp][jface][1] = 0;
+                  // if the face type of the parent element is type 0
                }
-               // if the face type of the parent element is type 0
-            }
-            else if(cb == 0) {
-               /*************** Clava msgError **************
-               Loop Iteration number is too low
-               ****************************************/
-               for(k = 0; k < 4; k++) {
-                  cbc[ne[k]][i] = cb;
-               }
-            }
+               else if(cb == 0) {
+                     /*************** Clava msgError **************
+                     Loop Iteration number is too low
+                     ****************************************/
+                     for(k = 0; k < 4; k++) {
+                        cbc[ne[k]][i] = cb;
+                     }
+                  }
          }
       }
       // map solution from parent element to children
@@ -1355,20 +1355,20 @@ void check_refine(int *ifrepeat) {
                //if face neighbor are of the same size of iel, check edge neighbors
             }
             else if(cbc[iel][i] == 2) {
-               /*************** Clava msgError **************
-               Loop Iteration number is too low
-               ****************************************/
-               for(iface = 0; iface < 6; iface++) {
-                  if(iface != i && iface != jface) {
-                     if(cbc[ntemp][iface] == 1) {
-                        nntemp = sje[ntemp][iface][0][0];
-                        ich[nntemp] = 4;
-                        ich[iel] = 0;
-                        *ifrepeat = 1;
+                  /*************** Clava msgError **************
+                  Loop Iteration number is too low
+                  ****************************************/
+                  for(iface = 0; iface < 6; iface++) {
+                     if(iface != i && iface != jface) {
+                        if(cbc[ntemp][iface] == 1) {
+                           nntemp = sje[ntemp][iface][0][0];
+                           ich[nntemp] = 4;
+                           ich[iel] = 0;
+                           *ifrepeat = 1;
+                        }
                      }
                   }
                }
-            }
          }
       }
    }
@@ -1384,29 +1384,29 @@ int iftouch(int iel) {
       dis1 = xc[iel][0] - x0;
    }
    else if(x0 > xc[iel][1]) {
-      dis1 = x0 - xc[iel][1];
-   }
-   else {
-      dis1 = 0.0;
-   }
+         dis1 = x0 - xc[iel][1];
+      }
+      else {
+         dis1 = 0.0;
+      }
    if(_y0 < yc[iel][0]) {
       dis2 = yc[iel][0] - _y0;
    }
    else if(_y0 > yc[iel][2]) {
-      dis2 = _y0 - yc[iel][2];
-   }
-   else {
-      dis2 = 0.0;
-   }
+         dis2 = _y0 - yc[iel][2];
+      }
+      else {
+         dis2 = 0.0;
+      }
    if(z0 < zc[iel][0]) {
       dis3 = zc[iel][0] - z0;
    }
    else if(z0 > zc[iel][4]) {
-      dis3 = z0 - zc[iel][4];
-   }
-   else {
-      dis3 = 0.0;
-   }
+         dis3 = z0 - zc[iel][4];
+      }
+      else {
+         dis3 = 0.0;
+      }
    dis = dis1 * dis1 + dis2 * dis2 + dis3 * dis3;
    if(dis < alpha2) {
       
@@ -1613,26 +1613,26 @@ void merging(int iela[8]) {
          }
       }
       else if(cb == 1) {
-         ntemp = sje[ielold][i][0][0];
-         cbc[ntemp][jface] = 2;
-         ijel[ntemp][jface][0] = 0;
-         ijel[ntemp][jface][1] = 0;
-         sje[ntemp][jface][0][0] = ielnew;
-         sje[ntemp][jface][1][0] = -1;
-         sje[ntemp][jface][0][1] = -1;
-         sje[ntemp][jface][1][1] = -1;
-         cbc[ielnew][i] = 2;
-         ijel[ielnew][i][0] = 0;
-         ijel[ielnew][i][1] = 0;
-         sje[ielnew][i][0][0] = ntemp;
-      }
-      else if(cb == 0) {
-         cbc[ielnew][i] = 0;
-         sje[ielnew][i][0][0] = -1;
-         sje[ielnew][i][1][0] = -1;
-         sje[ielnew][i][0][1] = -1;
-         sje[ielnew][i][1][1] = -1;
-      }
+            ntemp = sje[ielold][i][0][0];
+            cbc[ntemp][jface] = 2;
+            ijel[ntemp][jface][0] = 0;
+            ijel[ntemp][jface][1] = 0;
+            sje[ntemp][jface][0][0] = ielnew;
+            sje[ntemp][jface][1][0] = -1;
+            sje[ntemp][jface][0][1] = -1;
+            sje[ntemp][jface][1][1] = -1;
+            cbc[ielnew][i] = 2;
+            ijel[ielnew][i][0] = 0;
+            ijel[ielnew][i][1] = 0;
+            sje[ielnew][i][0][0] = ntemp;
+         }
+         else if(cb == 0) {
+               cbc[ielnew][i] = 0;
+               sje[ielnew][i][0][0] = -1;
+               sje[ielnew][i][1][0] = -1;
+               sje[ielnew][i][0][1] = -1;
+               sje[ielnew][i][1][1] = -1;
+            }
    }
    // map solution from children to the merged element
    remap2(iela, ielnew);
@@ -2385,29 +2385,29 @@ void mortar() {
          sumcb = sumcb + 1;
       }
       else if(cb == 0) {
-         sumcb = sumcb + 2;
-      }
-      else if(cb == 1) {
-         sumcb = sumcb + 5;
-      }
+            sumcb = sumcb + 2;
+         }
+         else if(cb == 1) {
+               sumcb = sumcb + 5;
+            }
       if(cb1 == 2 || cb1 == 3) {
          sumcb = sumcb + 1;
       }
       else if(cb1 == 0) {
-         sumcb = sumcb + 2;
-      }
-      else if(cb1 == 1) {
-         sumcb = sumcb + 5;
-      }
+            sumcb = sumcb + 2;
+         }
+         else if(cb1 == 1) {
+               sumcb = sumcb + 5;
+            }
       if(cb2 == 2 || cb2 == 3) {
          sumcb = sumcb + 1;
       }
       else if(cb2 == 0) {
-         sumcb = sumcb + 2;
-      }
-      else if(cb2 == 1) {
-         sumcb = sumcb + 5;
-      }
+            sumcb = sumcb + 2;
+         }
+         else if(cb2 == 1) {
+               sumcb = sumcb + 5;
+            }
       // compute newc[iel]
       // newc[iel] records how many new mortar indices will be generated
       //           for element iel
@@ -2421,668 +2421,668 @@ void mortar() {
          vassign[iel][0] = 7;
       }
       else if(sumcb == 4) {
-         // the three face types for face 1,3 and 5 are 2 2 0 (not
-         // necessarily in this order)
-         newc[iel] = 2;
-         if(cb == 0) {
-            vassign[iel][0] = 3;
-         }
-         else if(cb1 == 0) {
-            vassign[iel][0] = 5;
-         }
-         else if(cb2 == 0) {
-            vassign[iel][0] = 6;
-         }
-         vassign[iel][1] = 7;
-      }
-      else if(sumcb == 7) {
-         // the three face types for face 1,3 and 5 are 2 2 1 (not
-         // necessarily in this order)
-         if(cb == 1) {
-            ij1 = ijel[iel][5][0];
-            ij2 = ijel[iel][5][1];
-            if(ij1 == 0 && ij2 == 0) {
-               newc[iel] = 2;
+            // the three face types for face 1,3 and 5 are 2 2 0 (not
+            // necessarily in this order)
+            newc[iel] = 2;
+            if(cb == 0) {
                vassign[iel][0] = 3;
-               vassign[iel][1] = 7;
             }
-            else if(ij1 == 0 && ij2 == 1) {
-               ntemp = sje[iel][5][0][0];
-               if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] < iel) {
-                  newc[iel] = 1;
-                  vassign[iel][0] = 7;
-               }
-               else {
-                  newc[iel] = 2;
-                  vassign[iel][0] = 3;
-                  vassign[iel][1] = 7;
-               }
-            }
-            else if(ij1 == 1 && ij2 == 0) {
-               ntemp = sje[iel][5][0][0];
-               if(cbc[ntemp][2] == 3 && sje[ntemp][2][0][0] < iel) {
-                  newc[iel] = 1;
-                  vassign[iel][0] = 7;
-               }
-               else {
-                  newc[iel] = 2;
-                  vassign[iel][0] = 3;
-                  vassign[iel][1] = 7;
-               }
-            }
-            else {
-               newc[iel] = 1;
-               vassign[iel][0] = 7;
-            }
-         }
-         else if(cb1 == 1) {
-            ij1 = ijel[iel][3][0];
-            ij2 = ijel[iel][3][1];
-            if(ij1 == 0 && ij2 == 0) {
-               newc[iel] = 2;
-               vassign[iel][0] = 5;
-               vassign[iel][1] = 7;
-            }
-            else if(ij1 == 0 && ij2 == 1) {
-               ntemp = sje[iel][3][0][0];
-               if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] < iel) {
-                  newc[iel] = 1;
-                  vassign[iel][0] = 7;
-               }
-               else {
-                  newc[iel] = 2;
+            else if(cb1 == 0) {
                   vassign[iel][0] = 5;
-                  vassign[iel][1] = 7;
                }
-            }
-            else if(ij1 == 1 && ij2 == 0) {
-               ntemp = sje[iel][3][0][0];
-               if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] < iel) {
-                  newc[iel] = 1;
-                  vassign[iel][0] = 7;
-               }
-               else {
-                  newc[iel] = 2;
-                  vassign[iel][0] = 5;
-                  vassign[iel][1] = 7;
-               }
-            }
-            else {
-               newc[iel] = 1;
-               vassign[iel][0] = 7;
-            }
-         }
-         else if(cb2 == 1) {
-            ij1 = ijel[iel][1][0];
-            ij2 = ijel[iel][1][1];
-            if(ij1 == 0 && ij2 == 0) {
-               newc[iel] = 2;
-               vassign[iel][0] = 6;
-               vassign[iel][1] = 7;
-            }
-            else if(ij1 == 0 && ij2 == 1) {
-               ntemp = sje[iel][1][0][0];
-               if(cbc[ntemp][2] == 3 && sje[ntemp][2][0][0] < iel) {
-                  newc[iel] = 1;
-                  vassign[iel][0] = 7;
-               }
-               else {
-                  newc[iel] = 2;
-                  vassign[iel][0] = 6;
-                  vassign[iel][1] = 7;
-               }
-            }
-            else if(ij1 == 1 && ij2 == 0) {
-               ntemp = sje[iel][1][0][0];
-               if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] < iel) {
-                  newc[iel] = 1;
-                  vassign[iel][0] = 7;
-               }
-               else {
-                  newc[iel] = 2;
-                  vassign[iel][0] = 6;
-                  vassign[iel][1] = 7;
-               }
-            }
-            else {
-               newc[iel] = 1;
-               vassign[iel][0] = 7;
-            }
-         }
-      }
-      else if(sumcb == 5) {
-         // the three face types for face 1,3 and 5 are 2/3 0 0 (not
-         // necessarily in this order)
-         newc[iel] = 4;
-         if(cb == 2 || cb == 3) {
-            vassign[iel][0] = 4;
-            vassign[iel][1] = 5;
-            vassign[iel][2] = 6;
-            vassign[iel][3] = 7;
-         }
-         else if(cb1 == 2 || cb1 == 3) {
-            vassign[iel][0] = 2;
-            vassign[iel][1] = 3;
-            vassign[iel][2] = 6;
-            vassign[iel][3] = 7;
-         }
-         else if(cb2 == 2 || cb2 == 3) {
-            vassign[iel][0] = 1;
-            vassign[iel][1] = 3;
-            vassign[iel][2] = 5;
-            vassign[iel][3] = 7;
-         }
-      }
-      else if(sumcb == 8) {
-         // the three face types for face 1,3 and 5 are 2 0 1 (not
-         // necessarily in this order)
-         // if face 2 of type 1
-         if(cb == 1) {
-            if(cb1 == 2 || cb1 == 3) {
-               ij1 = ijel[iel][5][0];
-               if(ij1 == 0) {
-                  newc[iel] = 4;
-                  vassign[iel][0] = 2;
-                  vassign[iel][1] = 3;
-                  vassign[iel][2] = 6;
-                  vassign[iel][3] = 7;
-               }
-               else {
-                  ntemp = sje[iel][5][0][0];
-                  if(cbc[ntemp][2] == 3 && sje[ntemp][2][0][0] < iel) {
-                     newc[iel] = 2;
+               else if(cb2 == 0) {
                      vassign[iel][0] = 6;
-                     vassign[iel][1] = 7;
                   }
-                  else {
-                     newc[iel] = 3;
-                     vassign[iel][0] = 3;
-                     vassign[iel][1] = 6;
-                     vassign[iel][2] = 7;
-                  }
-               }
-            }
-            else if(cb2 == 2 || cb2 == 3) {
-               if(ijel[iel][5][1] == 0) {
-                  newc[iel] = 4;
-                  vassign[iel][0] = 1;
-                  vassign[iel][1] = 3;
-                  vassign[iel][2] = 5;
-                  vassign[iel][3] = 7;
-               }
-               else {
-                  ntemp = sje[iel][5][0][0];
-                  if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] < iel) {
-                     newc[iel] = 2;
-                     vassign[iel][0] = 5;
-                     vassign[iel][1] = 7;
-                  }
-                  else {
-                     newc[iel] = 3;
-                     vassign[iel][0] = 3;
-                     vassign[iel][1] = 5;
-                     vassign[iel][2] = 7;
-                  }
-               }
-            }
-            // if face 4 of type 1
+            vassign[iel][1] = 7;
          }
-         else if(cb1 == 1) {
-            if(cb == 2 || cb == 3) {
-               ij1 = ijel[iel][3][0];
-               ij2 = ijel[iel][3][1];
-               if(ij1 == 0 && ij2 == 0) {
-                  ntemp = sje[iel][3][0][0];
-                  if(cbc[ntemp][1] == 3 && sje[ntemp][1][0][0] < iel) {
-                     newc[iel] = 3;
-                     vassign[iel][0] = 5;
-                     vassign[iel][1] = 6;
-                     vassign[iel][2] = 7;
+         else if(sumcb == 7) {
+               // the three face types for face 1,3 and 5 are 2 2 1 (not
+               // necessarily in this order)
+               if(cb == 1) {
+                  ij1 = ijel[iel][5][0];
+                  ij2 = ijel[iel][5][1];
+                  if(ij1 == 0 && ij2 == 0) {
+                     newc[iel] = 2;
+                     vassign[iel][0] = 3;
+                     vassign[iel][1] = 7;
                   }
-                  else {
-                     newc[iel] = 4;
+                  else if(ij1 == 0 && ij2 == 1) {
+                        ntemp = sje[iel][5][0][0];
+                        if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] < iel) {
+                           newc[iel] = 1;
+                           vassign[iel][0] = 7;
+                        }
+                        else {
+                           newc[iel] = 2;
+                           vassign[iel][0] = 3;
+                           vassign[iel][1] = 7;
+                        }
+                     }
+                     else if(ij1 == 1 && ij2 == 0) {
+                           ntemp = sje[iel][5][0][0];
+                           if(cbc[ntemp][2] == 3 && sje[ntemp][2][0][0] < iel) {
+                              newc[iel] = 1;
+                              vassign[iel][0] = 7;
+                           }
+                           else {
+                              newc[iel] = 2;
+                              vassign[iel][0] = 3;
+                              vassign[iel][1] = 7;
+                           }
+                        }
+                        else {
+                           newc[iel] = 1;
+                           vassign[iel][0] = 7;
+                        }
+               }
+               else if(cb1 == 1) {
+                     ij1 = ijel[iel][3][0];
+                     ij2 = ijel[iel][3][1];
+                     if(ij1 == 0 && ij2 == 0) {
+                        newc[iel] = 2;
+                        vassign[iel][0] = 5;
+                        vassign[iel][1] = 7;
+                     }
+                     else if(ij1 == 0 && ij2 == 1) {
+                           ntemp = sje[iel][3][0][0];
+                           if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] < iel) {
+                              newc[iel] = 1;
+                              vassign[iel][0] = 7;
+                           }
+                           else {
+                              newc[iel] = 2;
+                              vassign[iel][0] = 5;
+                              vassign[iel][1] = 7;
+                           }
+                        }
+                        else if(ij1 == 1 && ij2 == 0) {
+                              ntemp = sje[iel][3][0][0];
+                              if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] < iel) {
+                                 newc[iel] = 1;
+                                 vassign[iel][0] = 7;
+                              }
+                              else {
+                                 newc[iel] = 2;
+                                 vassign[iel][0] = 5;
+                                 vassign[iel][1] = 7;
+                              }
+                           }
+                           else {
+                              newc[iel] = 1;
+                              vassign[iel][0] = 7;
+                           }
+                  }
+                  else if(cb2 == 1) {
+                        ij1 = ijel[iel][1][0];
+                        ij2 = ijel[iel][1][1];
+                        if(ij1 == 0 && ij2 == 0) {
+                           newc[iel] = 2;
+                           vassign[iel][0] = 6;
+                           vassign[iel][1] = 7;
+                        }
+                        else if(ij1 == 0 && ij2 == 1) {
+                              ntemp = sje[iel][1][0][0];
+                              if(cbc[ntemp][2] == 3 && sje[ntemp][2][0][0] < iel) {
+                                 newc[iel] = 1;
+                                 vassign[iel][0] = 7;
+                              }
+                              else {
+                                 newc[iel] = 2;
+                                 vassign[iel][0] = 6;
+                                 vassign[iel][1] = 7;
+                              }
+                           }
+                           else if(ij1 == 1 && ij2 == 0) {
+                                 ntemp = sje[iel][1][0][0];
+                                 if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] < iel) {
+                                    newc[iel] = 1;
+                                    vassign[iel][0] = 7;
+                                 }
+                                 else {
+                                    newc[iel] = 2;
+                                    vassign[iel][0] = 6;
+                                    vassign[iel][1] = 7;
+                                 }
+                              }
+                              else {
+                                 newc[iel] = 1;
+                                 vassign[iel][0] = 7;
+                              }
+                     }
+            }
+            else if(sumcb == 5) {
+                  // the three face types for face 1,3 and 5 are 2/3 0 0 (not
+                  // necessarily in this order)
+                  newc[iel] = 4;
+                  if(cb == 2 || cb == 3) {
                      vassign[iel][0] = 4;
                      vassign[iel][1] = 5;
                      vassign[iel][2] = 6;
                      vassign[iel][3] = 7;
                   }
+                  else if(cb1 == 2 || cb1 == 3) {
+                        vassign[iel][0] = 2;
+                        vassign[iel][1] = 3;
+                        vassign[iel][2] = 6;
+                        vassign[iel][3] = 7;
+                     }
+                     else if(cb2 == 2 || cb2 == 3) {
+                           vassign[iel][0] = 1;
+                           vassign[iel][1] = 3;
+                           vassign[iel][2] = 5;
+                           vassign[iel][3] = 7;
+                        }
                }
-               else if(ij1 == 0 && ij2 == 1) {
-                  ntemp = sje[iel][3][0][0];
-                  if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] < iel) {
-                     newc[iel] = 3;
-                     vassign[iel][0] = 4;
-                     vassign[iel][1] = 6;
-                     vassign[iel][2] = 7;
+               else if(sumcb == 8) {
+                     // the three face types for face 1,3 and 5 are 2 0 1 (not
+                     // necessarily in this order)
+                     // if face 2 of type 1
+                     if(cb == 1) {
+                        if(cb1 == 2 || cb1 == 3) {
+                           ij1 = ijel[iel][5][0];
+                           if(ij1 == 0) {
+                              newc[iel] = 4;
+                              vassign[iel][0] = 2;
+                              vassign[iel][1] = 3;
+                              vassign[iel][2] = 6;
+                              vassign[iel][3] = 7;
+                           }
+                           else {
+                              ntemp = sje[iel][5][0][0];
+                              if(cbc[ntemp][2] == 3 && sje[ntemp][2][0][0] < iel) {
+                                 newc[iel] = 2;
+                                 vassign[iel][0] = 6;
+                                 vassign[iel][1] = 7;
+                              }
+                              else {
+                                 newc[iel] = 3;
+                                 vassign[iel][0] = 3;
+                                 vassign[iel][1] = 6;
+                                 vassign[iel][2] = 7;
+                              }
+                           }
+                        }
+                        else if(cb2 == 2 || cb2 == 3) {
+                              if(ijel[iel][5][1] == 0) {
+                                 newc[iel] = 4;
+                                 vassign[iel][0] = 1;
+                                 vassign[iel][1] = 3;
+                                 vassign[iel][2] = 5;
+                                 vassign[iel][3] = 7;
+                              }
+                              else {
+                                 ntemp = sje[iel][5][0][0];
+                                 if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] < iel) {
+                                    newc[iel] = 2;
+                                    vassign[iel][0] = 5;
+                                    vassign[iel][1] = 7;
+                                 }
+                                 else {
+                                    newc[iel] = 3;
+                                    vassign[iel][0] = 3;
+                                    vassign[iel][1] = 5;
+                                    vassign[iel][2] = 7;
+                                 }
+                              }
+                           }
+                        // if face 4 of type 1
+                     }
+                     else if(cb1 == 1) {
+                           if(cb == 2 || cb == 3) {
+                              ij1 = ijel[iel][3][0];
+                              ij2 = ijel[iel][3][1];
+                              if(ij1 == 0 && ij2 == 0) {
+                                 ntemp = sje[iel][3][0][0];
+                                 if(cbc[ntemp][1] == 3 && sje[ntemp][1][0][0] < iel) {
+                                    newc[iel] = 3;
+                                    vassign[iel][0] = 5;
+                                    vassign[iel][1] = 6;
+                                    vassign[iel][2] = 7;
+                                 }
+                                 else {
+                                    newc[iel] = 4;
+                                    vassign[iel][0] = 4;
+                                    vassign[iel][1] = 5;
+                                    vassign[iel][2] = 6;
+                                    vassign[iel][3] = 7;
+                                 }
+                              }
+                              else if(ij1 == 0 && ij2 == 1) {
+                                    ntemp = sje[iel][3][0][0];
+                                    if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] < iel) {
+                                       newc[iel] = 3;
+                                       vassign[iel][0] = 4;
+                                       vassign[iel][1] = 6;
+                                       vassign[iel][2] = 7;
+                                    }
+                                    else {
+                                       newc[iel] = 4;
+                                       vassign[iel][0] = 4;
+                                       vassign[iel][1] = 5;
+                                       vassign[iel][2] = 6;
+                                       vassign[iel][3] = 7;
+                                    }
+                                 }
+                                 else if(ij1 == 1 && ij2 == 0) {
+                                       ntemp = sje[iel][3][0][0];
+                                       if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] < iel) {
+                                          newc[iel] = 2;
+                                          vassign[iel][0] = 6;
+                                          vassign[iel][1] = 7;
+                                       }
+                                       else {
+                                          newc[iel] = 3;
+                                          vassign[iel][0] = 5;
+                                          vassign[iel][1] = 6;
+                                          vassign[iel][2] = 7;
+                                       }
+                                    }
+                                    else if(ij1 == 1 && ij2 == 1) {
+                                          ntemp = sje[iel][3][0][0];
+                                          if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] < iel) {
+                                             newc[iel] = 2;
+                                             vassign[iel][0] = 6;
+                                             vassign[iel][1] = 7;
+                                          }
+                                          else {
+                                             newc[iel] = 3;
+                                             vassign[iel][0] = 4;
+                                             vassign[iel][1] = 6;
+                                             vassign[iel][2] = 7;
+                                          }
+                                       }
+                           }
+                           else {
+                              if(ijel[iel][3][1] == 0) {
+                                 newc[iel] = 4;
+                                 vassign[iel][0] = 1;
+                                 vassign[iel][1] = 3;
+                                 vassign[iel][2] = 5;
+                                 vassign[iel][3] = 7;
+                              }
+                              else {
+                                 ntemp = sje[iel][3][0][0];
+                                 if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] < iel) {
+                                    newc[iel] = 2;
+                                    vassign[iel][0] = 3;
+                                    vassign[iel][1] = 7;
+                                 }
+                                 else {
+                                    newc[iel] = 3;
+                                    vassign[iel][0] = 3;
+                                    vassign[iel][1] = 5;
+                                    vassign[iel][2] = 7;
+                                 }
+                              }
+                           }
+                           // if face 6 of type 1
+                        }
+                        else if(cb2 == 1) {
+                              if(cb == 2 || cb == 3) {
+                                 if(ijel[iel][1][0] == 0) {
+                                    newc[iel] = 4;
+                                    vassign[iel][0] = 4;
+                                    vassign[iel][1] = 5;
+                                    vassign[iel][2] = 6;
+                                    vassign[iel][3] = 7;
+                                 }
+                                 else {
+                                    ntemp = sje[iel][1][0][0];
+                                    if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] < iel) {
+                                       newc[iel] = 2;
+                                       vassign[iel][0] = 5;
+                                       vassign[iel][1] = 7;
+                                    }
+                                    else {
+                                       newc[iel] = 3;
+                                       vassign[iel][0] = 5;
+                                       vassign[iel][1] = 6;
+                                       vassign[iel][2] = 7;
+                                    }
+                                 }
+                              }
+                              else {
+                                 if(ijel[iel][1][1] == 0) {
+                                    newc[iel] = 4;
+                                    vassign[iel][0] = 2;
+                                    vassign[iel][1] = 3;
+                                    vassign[iel][2] = 6;
+                                    vassign[iel][3] = 7;
+                                 }
+                                 else {
+                                    ntemp = sje[iel][1][0][0];
+                                    if(cbc[ntemp][2] == 3 && sje[ntemp][2][0][0] < iel) {
+                                       newc[iel] = 2;
+                                       vassign[iel][0] = 3;
+                                       vassign[iel][1] = 7;
+                                    }
+                                    else {
+                                       newc[iel] = 3;
+                                       vassign[iel][0] = 3;
+                                       vassign[iel][1] = 6;
+                                       vassign[iel][2] = 7;
+                                    }
+                                 }
+                              }
+                           }
                   }
-                  else {
-                     newc[iel] = 4;
-                     vassign[iel][0] = 4;
-                     vassign[iel][1] = 5;
-                     vassign[iel][2] = 6;
-                     vassign[iel][3] = 7;
-                  }
-               }
-               else if(ij1 == 1 && ij2 == 0) {
-                  ntemp = sje[iel][3][0][0];
-                  if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] < iel) {
-                     newc[iel] = 2;
-                     vassign[iel][0] = 6;
-                     vassign[iel][1] = 7;
-                  }
-                  else {
-                     newc[iel] = 3;
-                     vassign[iel][0] = 5;
-                     vassign[iel][1] = 6;
-                     vassign[iel][2] = 7;
-                  }
-               }
-               else if(ij1 == 1 && ij2 == 1) {
-                  ntemp = sje[iel][3][0][0];
-                  if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] < iel) {
-                     newc[iel] = 2;
-                     vassign[iel][0] = 6;
-                     vassign[iel][1] = 7;
-                  }
-                  else {
-                     newc[iel] = 3;
-                     vassign[iel][0] = 4;
-                     vassign[iel][1] = 6;
-                     vassign[iel][2] = 7;
-                  }
-               }
-            }
-            else {
-               if(ijel[iel][3][1] == 0) {
-                  newc[iel] = 4;
-                  vassign[iel][0] = 1;
-                  vassign[iel][1] = 3;
-                  vassign[iel][2] = 5;
-                  vassign[iel][3] = 7;
-               }
-               else {
-                  ntemp = sje[iel][3][0][0];
-                  if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] < iel) {
-                     newc[iel] = 2;
-                     vassign[iel][0] = 3;
-                     vassign[iel][1] = 7;
-                  }
-                  else {
-                     newc[iel] = 3;
-                     vassign[iel][0] = 3;
-                     vassign[iel][1] = 5;
-                     vassign[iel][2] = 7;
-                  }
-               }
-            }
-            // if face 6 of type 1
-         }
-         else if(cb2 == 1) {
-            if(cb == 2 || cb == 3) {
-               if(ijel[iel][1][0] == 0) {
-                  newc[iel] = 4;
-                  vassign[iel][0] = 4;
-                  vassign[iel][1] = 5;
-                  vassign[iel][2] = 6;
-                  vassign[iel][3] = 7;
-               }
-               else {
-                  ntemp = sje[iel][1][0][0];
-                  if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] < iel) {
-                     newc[iel] = 2;
-                     vassign[iel][0] = 5;
-                     vassign[iel][1] = 7;
-                  }
-                  else {
-                     newc[iel] = 3;
-                     vassign[iel][0] = 5;
-                     vassign[iel][1] = 6;
-                     vassign[iel][2] = 7;
-                  }
-               }
-            }
-            else {
-               if(ijel[iel][1][1] == 0) {
-                  newc[iel] = 4;
-                  vassign[iel][0] = 2;
-                  vassign[iel][1] = 3;
-                  vassign[iel][2] = 6;
-                  vassign[iel][3] = 7;
-               }
-               else {
-                  ntemp = sje[iel][1][0][0];
-                  if(cbc[ntemp][2] == 3 && sje[ntemp][2][0][0] < iel) {
-                     newc[iel] = 2;
-                     vassign[iel][0] = 3;
-                     vassign[iel][1] = 7;
-                  }
-                  else {
-                     newc[iel] = 3;
-                     vassign[iel][0] = 3;
-                     vassign[iel][1] = 6;
-                     vassign[iel][2] = 7;
-                  }
-               }
-            }
-         }
-      }
-      else if(sumcb == 11) {
-         // the three face type for face 2,4 and 6 are 2 1 1(not
-         // necessarily in this order)
-         if(cb == 2 || cb == 3) {
-            if(ijel[iel][3][0] == 0) {
-               ntemp = sje[iel][3][0][0];
-               if(cbc[ntemp][1] == 3 && sje[ntemp][1][0][0] < iel) {
-                  newc[iel] = 3;
-                  vassign[iel][0] = 5;
-                  vassign[iel][1] = 6;
-                  vassign[iel][2] = 7;
-               }
-               else {
-                  newc[iel] = 4;
-                  vassign[iel][0] = 4;
-                  vassign[iel][1] = 5;
-                  vassign[iel][2] = 6;
-                  vassign[iel][3] = 7;
-               }
-               // if ijel[iel][3][0]=1
-            }
-            else {
-               ntemp = sje[iel][1][0][0];
-               if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] < iel) {
-                  ntemp1 = sje[iel][3][0][0];
-                  if(cbc[ntemp1][4] == 3 && sje[ntemp1][4][0][0] < iel) {
-                     newc[iel] = 1;
-                     vassign[iel][0] = 7;
-                  }
-                  else {
-                     newc[iel] = 2;
-                     vassign[iel][0] = 5;
-                     vassign[iel][1] = 7;
-                  }
-               }
-               else {
-                  ntemp1 = sje[iel][3][0][0];
-                  if(cbc[ntemp1][4] == 3 && sje[ntemp1][4][0][0] < iel) {
-                     newc[iel] = 2;
-                     vassign[iel][0] = 6;
-                     vassign[iel][1] = 7;
-                  }
-                  else {
-                     newc[iel] = 3;
-                     vassign[iel][0] = 5;
-                     vassign[iel][1] = 6;
-                     vassign[iel][2] = 7;
-                  }
-               }
-            }
-         }
-         else if(cb1 == 2 || cb1 == 3) {
-            if(ijel[iel][1][1] == 0) {
-               ntemp = sje[iel][1][0][0];
-               if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] < iel) {
-                  newc[iel] = 3;
-                  vassign[iel][0] = 3;
-                  vassign[iel][1] = 6;
-                  vassign[iel][2] = 7;
-               }
-               else {
-                  newc[iel] = 4;
-                  vassign[iel][0] = 2;
-                  vassign[iel][1] = 3;
-                  vassign[iel][2] = 6;
-                  vassign[iel][3] = 7;
-               }
-               // if ijel[iel][1][1]=1
-            }
-            else {
-               ntemp = sje[iel][1][0][0];
-               if(cbc[ntemp][2] == 3 && sje[ntemp][2][0][0] < iel) {
-                  ntemp1 = sje[iel][5][0][0];
-                  if(cbc[ntemp1][2] == 3 && sje[ntemp1][2][0][0] < iel) {
-                     newc[iel] = 1;
-                     vassign[iel][0] = 7;
-                  }
-                  else {
-                     newc[iel] = 2;
-                     vassign[iel][0] = 3;
-                     vassign[iel][1] = 7;
-                  }
-               }
-               else {
-                  ntemp1 = sje[iel][5][0][0];
-                  if(cbc[ntemp1][2] == 3 && sje[ntemp1][2][0][0] < iel) {
-                     newc[iel] = 2;
-                     vassign[iel][0] = 6;
-                     vassign[iel][1] = 7;
-                  }
-                  else {
-                     newc[iel] = 3;
-                     vassign[iel][0] = 3;
-                     vassign[iel][1] = 6;
-                     vassign[iel][2] = 7;
-                  }
-               }
-            }
-         }
-         else if(cb2 == 2 || cb2 == 3) {
-            if(ijel[iel][5][1] == 0) {
-               ntemp = sje[iel][3][0][0];
-               if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] < iel) {
-                  newc[iel] = 3;
-                  vassign[iel][0] = 3;
-                  vassign[iel][1] = 5;
-                  vassign[iel][2] = 7;
-               }
-               else {
-                  newc[iel] = 4;
-                  vassign[iel][0] = 1;
-                  vassign[iel][1] = 3;
-                  vassign[iel][2] = 5;
-                  vassign[iel][3] = 7;
-               }
-               // if ijel[iel][5][1]=1
-            }
-            else {
-               ntemp = sje[iel][3][0][0];
-               if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] < iel) {
-                  ntemp1 = sje[iel][5][0][0];
-                  if(cbc[ntemp1][0] == 3 && sje[ntemp1][0][0][0] < iel) {
-                     newc[iel] = 1;
-                     vassign[iel][0] = 7;
-                  }
-                  else {
-                     newc[iel] = 2;
-                     vassign[iel][0] = 3;
-                     vassign[iel][1] = 7;
-                  }
-               }
-               else {
-                  ntemp1 = sje[iel][5][0][0];
-                  if(cbc[ntemp1][0] == 3 && sje[ntemp1][0][0][0] < iel) {
-                     newc[iel] = 2;
-                     vassign[iel][0] = 5;
-                     vassign[iel][1] = 7;
-                  }
-                  else {
-                     newc[iel] = 3;
-                     vassign[iel][0] = 3;
-                     vassign[iel][1] = 5;
-                     vassign[iel][2] = 7;
-                  }
-               }
-            }
-         }
-      }
-      else if(sumcb == 6) {
-         // the three face type for face 1,3 and 5 are 0 0 0(not
-         // necessarily in this order)
-         newc[iel] = 8;
-         vassign[iel][0] = 0;
-         vassign[iel][1] = 1;
-         vassign[iel][2] = 2;
-         vassign[iel][3] = 3;
-         vassign[iel][4] = 4;
-         vassign[iel][5] = 5;
-         vassign[iel][6] = 6;
-         vassign[iel][7] = 7;
-      }
-      else if(sumcb == 9) {
-         // the three face type for face 1,3 and 5 are 0 0 1(not
-         // necessarily in this order)
-         newc[iel] = 7;
-         vassign[iel][0] = 1;
-         vassign[iel][1] = 2;
-         vassign[iel][2] = 3;
-         vassign[iel][3] = 4;
-         vassign[iel][4] = 5;
-         vassign[iel][5] = 6;
-         vassign[iel][6] = 7;
-      }
-      else if(sumcb == 12) {
-         // the three face type for face 1,3 and 5 are 0 1 1(not
-         // necessarily in this order)
-         if(cb == 0) {
-            ntemp = sje[iel][1][0][0];
-            if(cbc[ntemp][3] == 3 && sje[ntemp][3][0][0] < iel) {
-               newc[iel] = 6;
-               vassign[iel][0] = 1;
-               vassign[iel][1] = 2;
-               vassign[iel][2] = 3;
-               vassign[iel][3] = 5;
-               vassign[iel][4] = 6;
-               vassign[iel][5] = 7;
-            }
-            else {
-               newc[iel] = 7;
-               vassign[iel][0] = 1;
-               vassign[iel][1] = 2;
-               vassign[iel][2] = 3;
-               vassign[iel][3] = 4;
-               vassign[iel][4] = 5;
-               vassign[iel][5] = 6;
-               vassign[iel][6] = 7;
-            }
-         }
-         else if(cb1 == 0) {
-            newc[iel] = 7;
-            vassign[iel][0] = 1;
-            vassign[iel][1] = 2;
-            vassign[iel][2] = 3;
-            vassign[iel][3] = 4;
-            vassign[iel][4] = 5;
-            vassign[iel][5] = 6;
-            vassign[iel][6] = 7;
-         }
-         else if(cb2 == 0) {
-            ntemp = sje[iel][3][0][0];
-            if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] < iel) {
-               newc[iel] = 6;
-               vassign[iel][0] = 2;
-               vassign[iel][1] = 3;
-               vassign[iel][2] = 4;
-               vassign[iel][3] = 5;
-               vassign[iel][4] = 6;
-               vassign[iel][5] = 7;
-            }
-            else {
-               newc[iel] = 7;
-               vassign[iel][0] = 1;
-               vassign[iel][1] = 2;
-               vassign[iel][2] = 3;
-               vassign[iel][3] = 4;
-               vassign[iel][4] = 5;
-               vassign[iel][5] = 6;
-               vassign[iel][6] = 7;
-            }
-         }
-      }
-      else if(sumcb == 15) {
-         // the three face type for face 1,3 and 5 are 1 1 1(not
-         // necessarily in this order)
-         ntemp = sje[iel][3][0][0];
-         ntemp1 = sje[iel][1][0][0];
-         if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] < iel) {
-            if(cbc[ntemp][1] == 3 && sje[ntemp][1][0][0] < iel) {
-               if(cbc[ntemp1][5] == 3 && sje[ntemp1][5][0][0] < iel) {
-                  newc[iel] = 4;
-                  vassign[iel][0] = 3;
-                  vassign[iel][1] = 5;
-                  vassign[iel][2] = 6;
-                  vassign[iel][3] = 7;
-               }
-               else {
-                  newc[iel] = 5;
-                  vassign[iel][0] = 2;
-                  vassign[iel][1] = 3;
-                  vassign[iel][2] = 5;
-                  vassign[iel][3] = 6;
-                  vassign[iel][4] = 7;
-               }
-            }
-            else {
-               if(cbc[ntemp1][5] == 3 && sje[ntemp1][5][0][0] < iel) {
-                  newc[iel] = 5;
-                  vassign[iel][0] = 3;
-                  vassign[iel][1] = 4;
-                  vassign[iel][2] = 5;
-                  vassign[iel][3] = 6;
-                  vassign[iel][4] = 7;
-               }
-               else {
-                  newc[iel] = 6;
-                  vassign[iel][0] = 2;
-                  vassign[iel][1] = 3;
-                  vassign[iel][2] = 4;
-                  vassign[iel][3] = 5;
-                  vassign[iel][4] = 6;
-                  vassign[iel][5] = 7;
-               }
-            }
-         }
-         else {
-            if(cbc[ntemp][1] == 3 && sje[ntemp][1][0][0] < iel) {
-               if(cbc[ntemp1][5] == 3 && sje[ntemp1][5][0][0] < iel) {
-                  newc[iel] = 5;
-                  vassign[iel][0] = 1;
-                  vassign[iel][1] = 3;
-                  vassign[iel][2] = 5;
-                  vassign[iel][3] = 6;
-                  vassign[iel][4] = 7;
-               }
-               else {
-                  newc[iel] = 6;
-                  vassign[iel][0] = 1;
-                  vassign[iel][1] = 2;
-                  vassign[iel][2] = 3;
-                  vassign[iel][3] = 5;
-                  vassign[iel][4] = 6;
-                  vassign[iel][5] = 7;
-               }
-            }
-            else {
-               if(cbc[ntemp1][5] == 3 && sje[ntemp1][5][0][0] < iel) {
-                  newc[iel] = 6;
-                  vassign[iel][0] = 1;
-                  vassign[iel][1] = 3;
-                  vassign[iel][2] = 4;
-                  vassign[iel][3] = 5;
-                  vassign[iel][4] = 6;
-                  vassign[iel][5] = 7;
-               }
-               else {
-                  newc[iel] = 7;
-                  vassign[iel][0] = 1;
-                  vassign[iel][1] = 2;
-                  vassign[iel][2] = 3;
-                  vassign[iel][3] = 4;
-                  vassign[iel][4] = 5;
-                  vassign[iel][5] = 6;
-                  vassign[iel][6] = 7;
-               }
-            }
-         }
-      }
+                  else if(sumcb == 11) {
+                        // the three face type for face 2,4 and 6 are 2 1 1(not
+                        // necessarily in this order)
+                        if(cb == 2 || cb == 3) {
+                           if(ijel[iel][3][0] == 0) {
+                              ntemp = sje[iel][3][0][0];
+                              if(cbc[ntemp][1] == 3 && sje[ntemp][1][0][0] < iel) {
+                                 newc[iel] = 3;
+                                 vassign[iel][0] = 5;
+                                 vassign[iel][1] = 6;
+                                 vassign[iel][2] = 7;
+                              }
+                              else {
+                                 newc[iel] = 4;
+                                 vassign[iel][0] = 4;
+                                 vassign[iel][1] = 5;
+                                 vassign[iel][2] = 6;
+                                 vassign[iel][3] = 7;
+                              }
+                              // if ijel[iel][3][0]=1
+                           }
+                           else {
+                              ntemp = sje[iel][1][0][0];
+                              if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] < iel) {
+                                 ntemp1 = sje[iel][3][0][0];
+                                 if(cbc[ntemp1][4] == 3 && sje[ntemp1][4][0][0] < iel) {
+                                    newc[iel] = 1;
+                                    vassign[iel][0] = 7;
+                                 }
+                                 else {
+                                    newc[iel] = 2;
+                                    vassign[iel][0] = 5;
+                                    vassign[iel][1] = 7;
+                                 }
+                              }
+                              else {
+                                 ntemp1 = sje[iel][3][0][0];
+                                 if(cbc[ntemp1][4] == 3 && sje[ntemp1][4][0][0] < iel) {
+                                    newc[iel] = 2;
+                                    vassign[iel][0] = 6;
+                                    vassign[iel][1] = 7;
+                                 }
+                                 else {
+                                    newc[iel] = 3;
+                                    vassign[iel][0] = 5;
+                                    vassign[iel][1] = 6;
+                                    vassign[iel][2] = 7;
+                                 }
+                              }
+                           }
+                        }
+                        else if(cb1 == 2 || cb1 == 3) {
+                              if(ijel[iel][1][1] == 0) {
+                                 ntemp = sje[iel][1][0][0];
+                                 if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] < iel) {
+                                    newc[iel] = 3;
+                                    vassign[iel][0] = 3;
+                                    vassign[iel][1] = 6;
+                                    vassign[iel][2] = 7;
+                                 }
+                                 else {
+                                    newc[iel] = 4;
+                                    vassign[iel][0] = 2;
+                                    vassign[iel][1] = 3;
+                                    vassign[iel][2] = 6;
+                                    vassign[iel][3] = 7;
+                                 }
+                                 // if ijel[iel][1][1]=1
+                              }
+                              else {
+                                 ntemp = sje[iel][1][0][0];
+                                 if(cbc[ntemp][2] == 3 && sje[ntemp][2][0][0] < iel) {
+                                    ntemp1 = sje[iel][5][0][0];
+                                    if(cbc[ntemp1][2] == 3 && sje[ntemp1][2][0][0] < iel) {
+                                       newc[iel] = 1;
+                                       vassign[iel][0] = 7;
+                                    }
+                                    else {
+                                       newc[iel] = 2;
+                                       vassign[iel][0] = 3;
+                                       vassign[iel][1] = 7;
+                                    }
+                                 }
+                                 else {
+                                    ntemp1 = sje[iel][5][0][0];
+                                    if(cbc[ntemp1][2] == 3 && sje[ntemp1][2][0][0] < iel) {
+                                       newc[iel] = 2;
+                                       vassign[iel][0] = 6;
+                                       vassign[iel][1] = 7;
+                                    }
+                                    else {
+                                       newc[iel] = 3;
+                                       vassign[iel][0] = 3;
+                                       vassign[iel][1] = 6;
+                                       vassign[iel][2] = 7;
+                                    }
+                                 }
+                              }
+                           }
+                           else if(cb2 == 2 || cb2 == 3) {
+                                 if(ijel[iel][5][1] == 0) {
+                                    ntemp = sje[iel][3][0][0];
+                                    if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] < iel) {
+                                       newc[iel] = 3;
+                                       vassign[iel][0] = 3;
+                                       vassign[iel][1] = 5;
+                                       vassign[iel][2] = 7;
+                                    }
+                                    else {
+                                       newc[iel] = 4;
+                                       vassign[iel][0] = 1;
+                                       vassign[iel][1] = 3;
+                                       vassign[iel][2] = 5;
+                                       vassign[iel][3] = 7;
+                                    }
+                                    // if ijel[iel][5][1]=1
+                                 }
+                                 else {
+                                    ntemp = sje[iel][3][0][0];
+                                    if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] < iel) {
+                                       ntemp1 = sje[iel][5][0][0];
+                                       if(cbc[ntemp1][0] == 3 && sje[ntemp1][0][0][0] < iel) {
+                                          newc[iel] = 1;
+                                          vassign[iel][0] = 7;
+                                       }
+                                       else {
+                                          newc[iel] = 2;
+                                          vassign[iel][0] = 3;
+                                          vassign[iel][1] = 7;
+                                       }
+                                    }
+                                    else {
+                                       ntemp1 = sje[iel][5][0][0];
+                                       if(cbc[ntemp1][0] == 3 && sje[ntemp1][0][0][0] < iel) {
+                                          newc[iel] = 2;
+                                          vassign[iel][0] = 5;
+                                          vassign[iel][1] = 7;
+                                       }
+                                       else {
+                                          newc[iel] = 3;
+                                          vassign[iel][0] = 3;
+                                          vassign[iel][1] = 5;
+                                          vassign[iel][2] = 7;
+                                       }
+                                    }
+                                 }
+                              }
+                     }
+                     else if(sumcb == 6) {
+                           // the three face type for face 1,3 and 5 are 0 0 0(not
+                           // necessarily in this order)
+                           newc[iel] = 8;
+                           vassign[iel][0] = 0;
+                           vassign[iel][1] = 1;
+                           vassign[iel][2] = 2;
+                           vassign[iel][3] = 3;
+                           vassign[iel][4] = 4;
+                           vassign[iel][5] = 5;
+                           vassign[iel][6] = 6;
+                           vassign[iel][7] = 7;
+                        }
+                        else if(sumcb == 9) {
+                              // the three face type for face 1,3 and 5 are 0 0 1(not
+                              // necessarily in this order)
+                              newc[iel] = 7;
+                              vassign[iel][0] = 1;
+                              vassign[iel][1] = 2;
+                              vassign[iel][2] = 3;
+                              vassign[iel][3] = 4;
+                              vassign[iel][4] = 5;
+                              vassign[iel][5] = 6;
+                              vassign[iel][6] = 7;
+                           }
+                           else if(sumcb == 12) {
+                                 // the three face type for face 1,3 and 5 are 0 1 1(not
+                                 // necessarily in this order)
+                                 if(cb == 0) {
+                                    ntemp = sje[iel][1][0][0];
+                                    if(cbc[ntemp][3] == 3 && sje[ntemp][3][0][0] < iel) {
+                                       newc[iel] = 6;
+                                       vassign[iel][0] = 1;
+                                       vassign[iel][1] = 2;
+                                       vassign[iel][2] = 3;
+                                       vassign[iel][3] = 5;
+                                       vassign[iel][4] = 6;
+                                       vassign[iel][5] = 7;
+                                    }
+                                    else {
+                                       newc[iel] = 7;
+                                       vassign[iel][0] = 1;
+                                       vassign[iel][1] = 2;
+                                       vassign[iel][2] = 3;
+                                       vassign[iel][3] = 4;
+                                       vassign[iel][4] = 5;
+                                       vassign[iel][5] = 6;
+                                       vassign[iel][6] = 7;
+                                    }
+                                 }
+                                 else if(cb1 == 0) {
+                                       newc[iel] = 7;
+                                       vassign[iel][0] = 1;
+                                       vassign[iel][1] = 2;
+                                       vassign[iel][2] = 3;
+                                       vassign[iel][3] = 4;
+                                       vassign[iel][4] = 5;
+                                       vassign[iel][5] = 6;
+                                       vassign[iel][6] = 7;
+                                    }
+                                    else if(cb2 == 0) {
+                                          ntemp = sje[iel][3][0][0];
+                                          if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] < iel) {
+                                             newc[iel] = 6;
+                                             vassign[iel][0] = 2;
+                                             vassign[iel][1] = 3;
+                                             vassign[iel][2] = 4;
+                                             vassign[iel][3] = 5;
+                                             vassign[iel][4] = 6;
+                                             vassign[iel][5] = 7;
+                                          }
+                                          else {
+                                             newc[iel] = 7;
+                                             vassign[iel][0] = 1;
+                                             vassign[iel][1] = 2;
+                                             vassign[iel][2] = 3;
+                                             vassign[iel][3] = 4;
+                                             vassign[iel][4] = 5;
+                                             vassign[iel][5] = 6;
+                                             vassign[iel][6] = 7;
+                                          }
+                                       }
+                              }
+                              else if(sumcb == 15) {
+                                    // the three face type for face 1,3 and 5 are 1 1 1(not
+                                    // necessarily in this order)
+                                    ntemp = sje[iel][3][0][0];
+                                    ntemp1 = sje[iel][1][0][0];
+                                    if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] < iel) {
+                                       if(cbc[ntemp][1] == 3 && sje[ntemp][1][0][0] < iel) {
+                                          if(cbc[ntemp1][5] == 3 && sje[ntemp1][5][0][0] < iel) {
+                                             newc[iel] = 4;
+                                             vassign[iel][0] = 3;
+                                             vassign[iel][1] = 5;
+                                             vassign[iel][2] = 6;
+                                             vassign[iel][3] = 7;
+                                          }
+                                          else {
+                                             newc[iel] = 5;
+                                             vassign[iel][0] = 2;
+                                             vassign[iel][1] = 3;
+                                             vassign[iel][2] = 5;
+                                             vassign[iel][3] = 6;
+                                             vassign[iel][4] = 7;
+                                          }
+                                       }
+                                       else {
+                                          if(cbc[ntemp1][5] == 3 && sje[ntemp1][5][0][0] < iel) {
+                                             newc[iel] = 5;
+                                             vassign[iel][0] = 3;
+                                             vassign[iel][1] = 4;
+                                             vassign[iel][2] = 5;
+                                             vassign[iel][3] = 6;
+                                             vassign[iel][4] = 7;
+                                          }
+                                          else {
+                                             newc[iel] = 6;
+                                             vassign[iel][0] = 2;
+                                             vassign[iel][1] = 3;
+                                             vassign[iel][2] = 4;
+                                             vassign[iel][3] = 5;
+                                             vassign[iel][4] = 6;
+                                             vassign[iel][5] = 7;
+                                          }
+                                       }
+                                    }
+                                    else {
+                                       if(cbc[ntemp][1] == 3 && sje[ntemp][1][0][0] < iel) {
+                                          if(cbc[ntemp1][5] == 3 && sje[ntemp1][5][0][0] < iel) {
+                                             newc[iel] = 5;
+                                             vassign[iel][0] = 1;
+                                             vassign[iel][1] = 3;
+                                             vassign[iel][2] = 5;
+                                             vassign[iel][3] = 6;
+                                             vassign[iel][4] = 7;
+                                          }
+                                          else {
+                                             newc[iel] = 6;
+                                             vassign[iel][0] = 1;
+                                             vassign[iel][1] = 2;
+                                             vassign[iel][2] = 3;
+                                             vassign[iel][3] = 5;
+                                             vassign[iel][4] = 6;
+                                             vassign[iel][5] = 7;
+                                          }
+                                       }
+                                       else {
+                                          if(cbc[ntemp1][5] == 3 && sje[ntemp1][5][0][0] < iel) {
+                                             newc[iel] = 6;
+                                             vassign[iel][0] = 1;
+                                             vassign[iel][1] = 3;
+                                             vassign[iel][2] = 4;
+                                             vassign[iel][3] = 5;
+                                             vassign[iel][4] = 6;
+                                             vassign[iel][5] = 7;
+                                          }
+                                          else {
+                                             newc[iel] = 7;
+                                             vassign[iel][0] = 1;
+                                             vassign[iel][1] = 2;
+                                             vassign[iel][2] = 3;
+                                             vassign[iel][3] = 4;
+                                             vassign[iel][4] = 5;
+                                             vassign[iel][5] = 6;
+                                             vassign[iel][6] = 7;
+                                          }
+                                       }
+                                    }
+                                 }
    }
    // end computing how many new mortar vertex points will be generated
    // on each element.
@@ -3192,145 +3192,145 @@ void mortar() {
          }
       }
       else if(cb6 == 1) {
-         if(cb4 == 0) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][10] = 1;
-         }
-         else if(cb4 == 1) {
-            // If face 6 and face 4 both are of type 1, ntemp is the neighbor
-            // element on face 4.
-            ntemp = sje[iel][3][0][0];
-            // if ntemp's face 6 is not noncoforming or the neighbor element
-            // of ntemp on face 6 has an element index larger than iel, the
-            // edge shared by face 6 and 4 (edge 10) will generate new mortar
-            // point indices.
-            if(cbc[ntemp][5] != 3 || sje[ntemp][5][0][0] > iel) {
+            if(cb4 == 0) {
                newe[iel] = newe[iel] + 1;
                eassign[iel][10] = 1;
-               // if the face 6 of ntemp is of type 2
-               if(cbc[ntemp][5] == 2) {
-                  // The neighbor element of iel, neighbored by edge 10, is
-                  // sje[ntemp][5][0][0] (the neighbor element of ntemp on ntemp's
-                  // face 6).
-                  diagn[iel][10][0] = sje[ntemp][5][0][0];
-                  // The neighbor element of iel, neighbored by edge 10 shares
-                  // the ijel[iel][5][1] part of edge 10 of iel
-                  diagn[iel][10][1] = ijel[iel][5][1];
-                  // edge 9 of element sje[ntemp][5][0][0] (the neighbor element of
-                  // ntemp on ntemp's face 6) is a nonconforming edge
-                  ncon_edge[sje[ntemp][5][0][0]][9] = 1;
-                  // if_1_edge[iel][n]=1 indicates that iel is of a smaller
-                  //size than its neighbor element, neighbored by edge n of iel only.
-                  if_1_edge[iel][10] = 1;
-               }
-               if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] > iel) {
-                  diagn[iel][10][0] = sje[ntemp][5][ijel[iel][5][1]][1];
-               }
             }
-         }
-         if(cb1 == 0) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][0] = 1;
-         }
-         else if(cb1 == 1) {
-            ntemp = sje[iel][0][0][0];
-            if(cbc[ntemp][5] != 3 || sje[ntemp][5][0][0] > iel) {
+            else if(cb4 == 1) {
+                  // If face 6 and face 4 both are of type 1, ntemp is the neighbor
+                  // element on face 4.
+                  ntemp = sje[iel][3][0][0];
+                  // if ntemp's face 6 is not noncoforming or the neighbor element
+                  // of ntemp on face 6 has an element index larger than iel, the
+                  // edge shared by face 6 and 4 (edge 10) will generate new mortar
+                  // point indices.
+                  if(cbc[ntemp][5] != 3 || sje[ntemp][5][0][0] > iel) {
+                     newe[iel] = newe[iel] + 1;
+                     eassign[iel][10] = 1;
+                     // if the face 6 of ntemp is of type 2
+                     if(cbc[ntemp][5] == 2) {
+                        // The neighbor element of iel, neighbored by edge 10, is
+                        // sje[ntemp][5][0][0] (the neighbor element of ntemp on ntemp's
+                        // face 6).
+                        diagn[iel][10][0] = sje[ntemp][5][0][0];
+                        // The neighbor element of iel, neighbored by edge 10 shares
+                        // the ijel[iel][5][1] part of edge 10 of iel
+                        diagn[iel][10][1] = ijel[iel][5][1];
+                        // edge 9 of element sje[ntemp][5][0][0] (the neighbor element of
+                        // ntemp on ntemp's face 6) is a nonconforming edge
+                        ncon_edge[sje[ntemp][5][0][0]][9] = 1;
+                        // if_1_edge[iel][n]=1 indicates that iel is of a smaller
+                        //size than its neighbor element, neighbored by edge n of iel only.
+                        if_1_edge[iel][10] = 1;
+                     }
+                     if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] > iel) {
+                        diagn[iel][10][0] = sje[ntemp][5][ijel[iel][5][1]][1];
+                     }
+                  }
+               }
+            if(cb1 == 0) {
                newe[iel] = newe[iel] + 1;
                eassign[iel][0] = 1;
-               if(cbc[ntemp][5] == 2) {
-                  diagn[iel][0][0] = sje[ntemp][5][0][0];
-                  diagn[iel][0][1] = ijel[iel][5][0];
-                  ncon_edge[sje[ntemp][5][0][0]][6] = 1;
-                  if_1_edge[iel][0] = 1;
-               }
-               if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] > iel) {
-                  diagn[iel][0][0] = sje[ntemp][5][0][ijel[iel][5][0]];
-               }
             }
-         }
-         else if(cb1 == 2) {
-            if(ijel[iel][5][1] == 1) {
-               ntemp = sje[iel][0][0][0];
-               if(cbc[ntemp][5] == 1) {
-                  newe[iel] = newe[iel] + 1;
-                  eassign[iel][0] = 1;
-                  // if cbc[ntemp][5]=2
-               }
-               else {
-                  if(sje[ntemp][5][0][0] > iel) {
+            else if(cb1 == 1) {
+                  ntemp = sje[iel][0][0][0];
+                  if(cbc[ntemp][5] != 3 || sje[ntemp][5][0][0] > iel) {
                      newe[iel] = newe[iel] + 1;
                      eassign[iel][0] = 1;
-                     diagn[iel][0][0] = sje[ntemp][5][0][0];
+                     if(cbc[ntemp][5] == 2) {
+                        diagn[iel][0][0] = sje[ntemp][5][0][0];
+                        diagn[iel][0][1] = ijel[iel][5][0];
+                        ncon_edge[sje[ntemp][5][0][0]][6] = 1;
+                        if_1_edge[iel][0] = 1;
+                     }
+                     if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] > iel) {
+                        diagn[iel][0][0] = sje[ntemp][5][0][ijel[iel][5][0]];
+                     }
                   }
                }
-            }
-            else {
-               newe[iel] = newe[iel] + 1;
-               eassign[iel][0] = 1;
-            }
-         }
-         if(cb3 == 0) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][8] = 1;
-         }
-         else if(cb3 == 1) {
-            ntemp = sje[iel][2][0][0];
-            if(cbc[ntemp][5] != 3 || sje[ntemp][5][0][0] > iel) {
+               else if(cb1 == 2) {
+                     if(ijel[iel][5][1] == 1) {
+                        ntemp = sje[iel][0][0][0];
+                        if(cbc[ntemp][5] == 1) {
+                           newe[iel] = newe[iel] + 1;
+                           eassign[iel][0] = 1;
+                           // if cbc[ntemp][5]=2
+                        }
+                        else {
+                           if(sje[ntemp][5][0][0] > iel) {
+                              newe[iel] = newe[iel] + 1;
+                              eassign[iel][0] = 1;
+                              diagn[iel][0][0] = sje[ntemp][5][0][0];
+                           }
+                        }
+                     }
+                     else {
+                        newe[iel] = newe[iel] + 1;
+                        eassign[iel][0] = 1;
+                     }
+                  }
+            if(cb3 == 0) {
                newe[iel] = newe[iel] + 1;
                eassign[iel][8] = 1;
-               if(cbc[ntemp][5] == 2) {
-                  diagn[iel][8][0] = sje[ntemp][5][0][0];
-                  diagn[iel][8][1] = ijel[iel][5][1];
-                  ncon_edge[sje[ntemp][5][0][0]][11] = 1;
-                  if_1_edge[iel][8] = 1;
-               }
-               if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] > iel) {
-                  diagn[iel][8][0] = sje[ntemp][5][ijel[iel][5][1]][1];
-               }
             }
-         }
-         else if(cb3 == 2) {
-            if(ijel[iel][5][0] == 1) {
-               ntemp = sje[iel][2][0][0];
-               if(cbc[ntemp][5] == 1) {
-                  newe[iel] = newe[iel] + 1;
-                  eassign[iel][8] = 1;
-                  // if cbc[ntemp][5]=2
-               }
-               else {
-                  if(sje[ntemp][5][0][0] > iel) {
+            else if(cb3 == 1) {
+                  ntemp = sje[iel][2][0][0];
+                  if(cbc[ntemp][5] != 3 || sje[ntemp][5][0][0] > iel) {
                      newe[iel] = newe[iel] + 1;
                      eassign[iel][8] = 1;
-                     diagn[iel][8][0] = sje[ntemp][5][0][0];
+                     if(cbc[ntemp][5] == 2) {
+                        diagn[iel][8][0] = sje[ntemp][5][0][0];
+                        diagn[iel][8][1] = ijel[iel][5][1];
+                        ncon_edge[sje[ntemp][5][0][0]][11] = 1;
+                        if_1_edge[iel][8] = 1;
+                     }
+                     if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] > iel) {
+                        diagn[iel][8][0] = sje[ntemp][5][ijel[iel][5][1]][1];
+                     }
                   }
                }
-            }
-            else {
-               newe[iel] = newe[iel] + 1;
-               eassign[iel][8] = 1;
-            }
-         }
-         if(cb2 == 0) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][4] = 1;
-         }
-         else if(cb2 == 1) {
-            ntemp = sje[iel][1][0][0];
-            if(cbc[ntemp][5] != 3 || sje[ntemp][5][0][0] > iel) {
+               else if(cb3 == 2) {
+                     if(ijel[iel][5][0] == 1) {
+                        ntemp = sje[iel][2][0][0];
+                        if(cbc[ntemp][5] == 1) {
+                           newe[iel] = newe[iel] + 1;
+                           eassign[iel][8] = 1;
+                           // if cbc[ntemp][5]=2
+                        }
+                        else {
+                           if(sje[ntemp][5][0][0] > iel) {
+                              newe[iel] = newe[iel] + 1;
+                              eassign[iel][8] = 1;
+                              diagn[iel][8][0] = sje[ntemp][5][0][0];
+                           }
+                        }
+                     }
+                     else {
+                        newe[iel] = newe[iel] + 1;
+                        eassign[iel][8] = 1;
+                     }
+                  }
+            if(cb2 == 0) {
                newe[iel] = newe[iel] + 1;
                eassign[iel][4] = 1;
-               if(cbc[ntemp][5] == 2) {
-                  diagn[iel][4][0] = sje[ntemp][5][0][0];
-                  diagn[iel][4][1] = ijel[iel][5][0];
-                  ncon_edge[sje[ntemp][5][0][0]][2] = 1;
-                  if_1_edge[iel][4] = 1;
-               }
-               if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] > iel) {
-                  diagn[iel][8][0] = sje[ntemp][5][ijel[iel][5][1]][1];
-               }
             }
+            else if(cb2 == 1) {
+                  ntemp = sje[iel][1][0][0];
+                  if(cbc[ntemp][5] != 3 || sje[ntemp][5][0][0] > iel) {
+                     newe[iel] = newe[iel] + 1;
+                     eassign[iel][4] = 1;
+                     if(cbc[ntemp][5] == 2) {
+                        diagn[iel][4][0] = sje[ntemp][5][0][0];
+                        diagn[iel][4][1] = ijel[iel][5][0];
+                        ncon_edge[sje[ntemp][5][0][0]][2] = 1;
+                        if_1_edge[iel][4] = 1;
+                     }
+                     if(cbc[ntemp][5] == 3 && sje[ntemp][5][0][0] > iel) {
+                        diagn[iel][8][0] = sje[ntemp][5][ijel[iel][5][1]][1];
+                     }
+                  }
+               }
          }
-      }
       // one face 4
       if(cb4 == 0) {
          if(cb1 != 3) {
@@ -3347,99 +3347,99 @@ void mortar() {
          }
       }
       else if(cb4 == 1) {
-         if(cb1 == 2) {
-            if(ijel[iel][3][1] == 0) {
-               newe[iel] = newe[iel] + 1;
-               eassign[iel][3] = 1;
-            }
-            else {
-               ntemp = sje[iel][3][0][0];
-               if(cbc[ntemp][0] != 3 || sje[ntemp][0][0][0] > iel) {
+            if(cb1 == 2) {
+               if(ijel[iel][3][1] == 0) {
                   newe[iel] = newe[iel] + 1;
                   eassign[iel][3] = 1;
-                  if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] > iel) {
-                     diagn[iel][3][0] = sje[ntemp][0][1][ijel[iel][3][0]];
+               }
+               else {
+                  ntemp = sje[iel][3][0][0];
+                  if(cbc[ntemp][0] != 3 || sje[ntemp][0][0][0] > iel) {
+                     newe[iel] = newe[iel] + 1;
+                     eassign[iel][3] = 1;
+                     if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] > iel) {
+                        diagn[iel][3][0] = sje[ntemp][0][1][ijel[iel][3][0]];
+                     }
                   }
                }
             }
-         }
-         else if(cb1 == 0) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][3] = 1;
-         }
-         else if(cb1 == 1) {
-            ntemp = sje[iel][3][0][0];
-            if(cbc[ntemp][0] != 3 || sje[ntemp][0][0][0] > iel) {
-               newe[iel] = newe[iel] + 1;
-               eassign[iel][3] = 1;
-               if(cbc[ntemp][0] == 2) {
-                  diagn[iel][3][0] = sje[ntemp][0][0][0];
-                  diagn[iel][3][1] = ijel[iel][3][0];
-                  ncon_edge[sje[ntemp][0][0][0]][5] = 1;
-                  if_1_edge[iel][3] = 1;
+            else if(cb1 == 0) {
+                  newe[iel] = newe[iel] + 1;
+                  eassign[iel][3] = 1;
                }
-               if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] > iel) {
-                  diagn[iel][3][0] = sje[ntemp][0][1][ijel[iel][3][0]];
-               }
-            }
-         }
-         if(cb5 == 2) {
-            if(ijel[iel][3][0] == 0) {
-               newe[iel] = newe[iel] + 1;
-               eassign[iel][11] = 1;
-            }
-            else {
-               ntemp = sje[iel][3][0][0];
-               if(cbc[ntemp][4] != 3 || sje[ntemp][4][0][0] > iel) {
+               else if(cb1 == 1) {
+                     ntemp = sje[iel][3][0][0];
+                     if(cbc[ntemp][0] != 3 || sje[ntemp][0][0][0] > iel) {
+                        newe[iel] = newe[iel] + 1;
+                        eassign[iel][3] = 1;
+                        if(cbc[ntemp][0] == 2) {
+                           diagn[iel][3][0] = sje[ntemp][0][0][0];
+                           diagn[iel][3][1] = ijel[iel][3][0];
+                           ncon_edge[sje[ntemp][0][0][0]][5] = 1;
+                           if_1_edge[iel][3] = 1;
+                        }
+                        if(cbc[ntemp][0] == 3 && sje[ntemp][0][0][0] > iel) {
+                           diagn[iel][3][0] = sje[ntemp][0][1][ijel[iel][3][0]];
+                        }
+                     }
+                  }
+            if(cb5 == 2) {
+               if(ijel[iel][3][0] == 0) {
                   newe[iel] = newe[iel] + 1;
                   eassign[iel][11] = 1;
-                  if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] > iel) {
-                     diagn[iel][11][0] = sje[ntemp][4][ijel[iel][3][1]][1];
+               }
+               else {
+                  ntemp = sje[iel][3][0][0];
+                  if(cbc[ntemp][4] != 3 || sje[ntemp][4][0][0] > iel) {
+                     newe[iel] = newe[iel] + 1;
+                     eassign[iel][11] = 1;
+                     if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] > iel) {
+                        diagn[iel][11][0] = sje[ntemp][4][ijel[iel][3][1]][1];
+                     }
                   }
                }
             }
-         }
-         else if(cb5 == 0) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][11] = 1;
-         }
-         else if(cb5 == 1) {
-            ntemp = sje[iel][3][0][0];
-            if(cbc[ntemp][4] != 3 || sje[ntemp][4][0][0] > iel) {
-               newe[iel] = newe[iel] + 1;
-               eassign[iel][11] = 1;
-               if(cbc[ntemp][4] == 2) {
-                  diagn[iel][11][0] = sje[ntemp][4][0][0];
-                  diagn[iel][11][1] = ijel[iel][3][1];
-                  ncon_edge[sje[ntemp][4][0][0]][8] = 1;
-                  if_1_edge[iel][11] = 1;
+            else if(cb5 == 0) {
+                  newe[iel] = newe[iel] + 1;
+                  eassign[iel][11] = 1;
                }
-               if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] > iel) {
-                  diagn[iel][11][0] = sje[ntemp][4][ijel[iel][3][1]][1];
-               }
-            }
-         }
-         if(cb2 == 0) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][7] = 1;
-         }
-         else if(cb2 == 1) {
-            ntemp = sje[iel][3][0][0];
-            if(cbc[ntemp][1] != 3 || sje[ntemp][1][0][0] > iel) {
+               else if(cb5 == 1) {
+                     ntemp = sje[iel][3][0][0];
+                     if(cbc[ntemp][4] != 3 || sje[ntemp][4][0][0] > iel) {
+                        newe[iel] = newe[iel] + 1;
+                        eassign[iel][11] = 1;
+                        if(cbc[ntemp][4] == 2) {
+                           diagn[iel][11][0] = sje[ntemp][4][0][0];
+                           diagn[iel][11][1] = ijel[iel][3][1];
+                           ncon_edge[sje[ntemp][4][0][0]][8] = 1;
+                           if_1_edge[iel][11] = 1;
+                        }
+                        if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] > iel) {
+                           diagn[iel][11][0] = sje[ntemp][4][ijel[iel][3][1]][1];
+                        }
+                     }
+                  }
+            if(cb2 == 0) {
                newe[iel] = newe[iel] + 1;
                eassign[iel][7] = 1;
-               if(cbc[ntemp][1] == 2) {
-                  diagn[iel][7][0] = sje[ntemp][1][0][0];
-                  diagn[iel][7][1] = ijel[iel][3][0];
-                  ncon_edge[sje[ntemp][1][0][0]][1] = 1;
-                  if_1_edge[iel][7] = 1;
-               }
-               if(cbc[ntemp][1] == 3 && sje[ntemp][1][0][0] > iel) {
-                  diagn[iel][7][0] = sje[ntemp][2][1][ijel[iel][3][0]];
-               }
             }
+            else if(cb2 == 1) {
+                  ntemp = sje[iel][3][0][0];
+                  if(cbc[ntemp][1] != 3 || sje[ntemp][1][0][0] > iel) {
+                     newe[iel] = newe[iel] + 1;
+                     eassign[iel][7] = 1;
+                     if(cbc[ntemp][1] == 2) {
+                        diagn[iel][7][0] = sje[ntemp][1][0][0];
+                        diagn[iel][7][1] = ijel[iel][3][0];
+                        ncon_edge[sje[ntemp][1][0][0]][1] = 1;
+                        if_1_edge[iel][7] = 1;
+                     }
+                     if(cbc[ntemp][1] == 3 && sje[ntemp][1][0][0] > iel) {
+                        diagn[iel][7][0] = sje[ntemp][2][1][ijel[iel][3][0]];
+                     }
+                  }
+               }
          }
-      }
       // on face 2
       if(cb2 == 0) {
          if(cb3 != 3) {
@@ -3452,79 +3452,79 @@ void mortar() {
          }
       }
       else if(cb2 == 1) {
-         if(cb3 == 2) {
-            if(ijel[iel][1][1] == 0) {
-               newe[iel] = newe[iel] + 1;
-               eassign[iel][5] = 1;
-            }
-            else {
-               ntemp = sje[iel][1][0][0];
-               if(cbc[ntemp][2] != 3 || sje[ntemp][2][0][0] > iel) {
+            if(cb3 == 2) {
+               if(ijel[iel][1][1] == 0) {
                   newe[iel] = newe[iel] + 1;
                   eassign[iel][5] = 1;
-                  if(cbc[ntemp][2] == 3 && sje[ntemp][2][0][0] > iel) {
-                     diagn[iel][5][0] = sje[ntemp][2][1][ijel[iel][1][0]];
+               }
+               else {
+                  ntemp = sje[iel][1][0][0];
+                  if(cbc[ntemp][2] != 3 || sje[ntemp][2][0][0] > iel) {
+                     newe[iel] = newe[iel] + 1;
+                     eassign[iel][5] = 1;
+                     if(cbc[ntemp][2] == 3 && sje[ntemp][2][0][0] > iel) {
+                        diagn[iel][5][0] = sje[ntemp][2][1][ijel[iel][1][0]];
+                     }
                   }
                }
             }
-         }
-         else if(cb3 == 0) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][5] = 1;
-         }
-         else if(cb3 == 1) {
-            ntemp = sje[iel][1][0][0];
-            if(cbc[ntemp][2] != 3 || sje[ntemp][2][0][0] > iel) {
-               newe[iel] = newe[iel] + 1;
-               eassign[iel][5] = 1;
-               if(cbc[ntemp][2] == 2) {
-                  diagn[iel][5][0] = sje[ntemp][2][0][0];
-                  diagn[iel][5][1] = ijel[iel][1][0];
-                  ncon_edge[sje[ntemp][2][0][0]][3] = 1;
-                  if_1_edge[iel][5] = 1;
+            else if(cb3 == 0) {
+                  newe[iel] = newe[iel] + 1;
+                  eassign[iel][5] = 1;
                }
-               if(cbc[ntemp][2] == 3 && sje[ntemp][2][0][0] > iel) {
-                  diagn[iel][5][0] = sje[ntemp][2][1][ijel[iel][3][0]];
-               }
-            }
-         }
-         if(cb5 == 2) {
-            if(ijel[iel][1][0] == 0) {
-               newe[iel] = newe[iel] + 1;
-               eassign[iel][6] = 1;
-            }
-            else {
-               ntemp = sje[iel][1][0][0];
-               if(cbc[ntemp][4] != 3 || sje[ntemp][4][0][0] > iel) {
+               else if(cb3 == 1) {
+                     ntemp = sje[iel][1][0][0];
+                     if(cbc[ntemp][2] != 3 || sje[ntemp][2][0][0] > iel) {
+                        newe[iel] = newe[iel] + 1;
+                        eassign[iel][5] = 1;
+                        if(cbc[ntemp][2] == 2) {
+                           diagn[iel][5][0] = sje[ntemp][2][0][0];
+                           diagn[iel][5][1] = ijel[iel][1][0];
+                           ncon_edge[sje[ntemp][2][0][0]][3] = 1;
+                           if_1_edge[iel][5] = 1;
+                        }
+                        if(cbc[ntemp][2] == 3 && sje[ntemp][2][0][0] > iel) {
+                           diagn[iel][5][0] = sje[ntemp][2][1][ijel[iel][3][0]];
+                        }
+                     }
+                  }
+            if(cb5 == 2) {
+               if(ijel[iel][1][0] == 0) {
                   newe[iel] = newe[iel] + 1;
                   eassign[iel][6] = 1;
-                  if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] > iel) {
-                     diagn[iel][6][0] = sje[ntemp][4][1][ijel[iel][1][1]];
+               }
+               else {
+                  ntemp = sje[iel][1][0][0];
+                  if(cbc[ntemp][4] != 3 || sje[ntemp][4][0][0] > iel) {
+                     newe[iel] = newe[iel] + 1;
+                     eassign[iel][6] = 1;
+                     if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] > iel) {
+                        diagn[iel][6][0] = sje[ntemp][4][1][ijel[iel][1][1]];
+                     }
                   }
                }
             }
-         }
-         else if(cb5 == 0) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][6] = 1;
-         }
-         else if(cb5 == 1) {
-            ntemp = sje[iel][1][0][0];
-            if(cbc[ntemp][4] != 3 || sje[ntemp][4][0][0] > iel) {
-               newe[iel] = newe[iel] + 1;
-               eassign[iel][6] = 1;
-               if(cbc[ntemp][4] == 2) {
-                  diagn[iel][6][0] = sje[ntemp][4][0][0];
-                  diagn[iel][6][1] = ijel[iel][1][1];
-                  ncon_edge[sje[ntemp][4][0][0]][0] = 1;
-                  if_1_edge[iel][6] = 1;
+            else if(cb5 == 0) {
+                  newe[iel] = newe[iel] + 1;
+                  eassign[iel][6] = 1;
                }
-               if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] > iel) {
-                  diagn[iel][6][0] = sje[ntemp][4][ijel[iel][3][1]][1];
-               }
-            }
+               else if(cb5 == 1) {
+                     ntemp = sje[iel][1][0][0];
+                     if(cbc[ntemp][4] != 3 || sje[ntemp][4][0][0] > iel) {
+                        newe[iel] = newe[iel] + 1;
+                        eassign[iel][6] = 1;
+                        if(cbc[ntemp][4] == 2) {
+                           diagn[iel][6][0] = sje[ntemp][4][0][0];
+                           diagn[iel][6][1] = ijel[iel][1][1];
+                           ncon_edge[sje[ntemp][4][0][0]][0] = 1;
+                           if_1_edge[iel][6] = 1;
+                        }
+                        if(cbc[ntemp][4] == 3 && sje[ntemp][4][0][0] > iel) {
+                           diagn[iel][6][0] = sje[ntemp][4][ijel[iel][3][1]][1];
+                        }
+                     }
+                  }
          }
-      }
       // on face 1
       if(cb1 == 1) {
          newe[iel] = newe[iel] + 2;
@@ -3538,17 +3538,17 @@ void mortar() {
                if_1_edge[iel][1] = 1;
             }
             else if(cbc[ntemp][2] == 3) {
-               diagn[iel][1][0] = sje[ntemp][2][0][ijel[iel][0][0]];
-            }
+                  diagn[iel][1][0] = sje[ntemp][2][0][ijel[iel][0][0]];
+               }
          }
          else if(cb3 == 2) {
-            ntemp = sje[iel][2][0][0];
-            if(ijel[iel][0][1] == 1) {
-               if(cbc[ntemp][0] == 2) {
-                  diagn[iel][1][0] = sje[ntemp][0][0][0];
+               ntemp = sje[iel][2][0][0];
+               if(ijel[iel][0][1] == 1) {
+                  if(cbc[ntemp][0] == 2) {
+                     diagn[iel][1][0] = sje[ntemp][0][0][0];
+                  }
                }
             }
-         }
          eassign[iel][2] = 1;
          if(cb5 == 1) {
             ntemp = sje[iel][0][0][0];
@@ -3559,70 +3559,70 @@ void mortar() {
                if_1_edge[iel][2] = 1;
             }
             else if(cbc[ntemp][4] == 3) {
-               diagn[iel][2][0] = sje[ntemp][4][0][ijel[iel][0][1]];
-            }
+                  diagn[iel][2][0] = sje[ntemp][4][0][ijel[iel][0][1]];
+               }
          }
          else if(cb5 == 2) {
-            ntemp = sje[iel][4][0][0];
-            if(ijel[iel][0][0] == 1) {
-               if(cbc[ntemp][0] == 2) {
-                  diagn[iel][2][0] = sje[ntemp][0][0][0];
+               ntemp = sje[iel][4][0][0];
+               if(ijel[iel][0][0] == 1) {
+                  if(cbc[ntemp][0] == 2) {
+                     diagn[iel][2][0] = sje[ntemp][0][0][0];
+                  }
                }
             }
-         }
       }
       else if(cb1 == 2) {
-         if(cb3 == 2) {
-            ntemp = sje[iel][0][0][0];
-            if(cbc[ntemp][2] != 3) {
-               newe[iel] = newe[iel] + 1;
-               eassign[iel][1] = 1;
-               if(cbc[ntemp][2] == 2) {
-                  diagn[iel][1][0] = sje[ntemp][2][0][0];
-               }
-            }
-         }
-         else if(cb3 == 0 || cb3 == 1) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][1] = 1;
-            if(cb3 == 1) {
+            if(cb3 == 2) {
                ntemp = sje[iel][0][0][0];
-               if(cbc[ntemp][2] == 2) {
-                  diagn[iel][1][0] = sje[ntemp][2][0][0];
+               if(cbc[ntemp][2] != 3) {
+                  newe[iel] = newe[iel] + 1;
+                  eassign[iel][1] = 1;
+                  if(cbc[ntemp][2] == 2) {
+                     diagn[iel][1][0] = sje[ntemp][2][0][0];
+                  }
                }
             }
-         }
-         if(cb5 == 2) {
-            ntemp = sje[iel][0][0][0];
-            if(cbc[ntemp][4] != 3) {
-               newe[iel] = newe[iel] + 1;
-               eassign[iel][2] = 1;
-               if(cbc[ntemp][4] == 2) {
-                  diagn[iel][2][0] = sje[ntemp][4][0][0];
+            else if(cb3 == 0 || cb3 == 1) {
+                  newe[iel] = newe[iel] + 1;
+                  eassign[iel][1] = 1;
+                  if(cb3 == 1) {
+                     ntemp = sje[iel][0][0][0];
+                     if(cbc[ntemp][2] == 2) {
+                        diagn[iel][1][0] = sje[ntemp][2][0][0];
+                     }
+                  }
                }
-            }
-         }
-         else if(cb5 == 0 || cb5 == 1) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][2] = 1;
-            if(cb5 == 1) {
+            if(cb5 == 2) {
                ntemp = sje[iel][0][0][0];
-               if(cbc[ntemp][4] == 2) {
-                  diagn[iel][2][0] = sje[ntemp][4][0][0];
+               if(cbc[ntemp][4] != 3) {
+                  newe[iel] = newe[iel] + 1;
+                  eassign[iel][2] = 1;
+                  if(cbc[ntemp][4] == 2) {
+                     diagn[iel][2][0] = sje[ntemp][4][0][0];
+                  }
                }
             }
+            else if(cb5 == 0 || cb5 == 1) {
+                  newe[iel] = newe[iel] + 1;
+                  eassign[iel][2] = 1;
+                  if(cb5 == 1) {
+                     ntemp = sje[iel][0][0][0];
+                     if(cbc[ntemp][4] == 2) {
+                        diagn[iel][2][0] = sje[ntemp][4][0][0];
+                     }
+                  }
+               }
          }
-      }
-      else if(cb1 == 0) {
-         if(cb3 != 3) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][1] = 1;
-         }
-         if(cb5 != 3) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][2] = 1;
-         }
-      }
+         else if(cb1 == 0) {
+               if(cb3 != 3) {
+                  newe[iel] = newe[iel] + 1;
+                  eassign[iel][1] = 1;
+               }
+               if(cb5 != 3) {
+                  newe[iel] = newe[iel] + 1;
+                  eassign[iel][2] = 1;
+               }
+            }
       // on face 3
       if(cb3 == 1) {
          newe[iel] = newe[iel] + 1;
@@ -3644,33 +3644,33 @@ void mortar() {
          }
       }
       else if(cb3 == 2) {
-         if(cb5 == 2) {
-            ntemp = sje[iel][2][0][0];
-            if(cbc[ntemp][4] != 3) {
-               newe[iel] = newe[iel] + 1;
-               eassign[iel][9] = 1;
-               if(cbc[ntemp][4] == 2) {
-                  diagn[iel][9][0] = sje[ntemp][4][0][0];
-               }
-            }
-         }
-         else if(cb5 == 0 || cb5 == 1) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][9] = 1;
-            if(cb5 == 1) {
+            if(cb5 == 2) {
                ntemp = sje[iel][2][0][0];
-               if(cbc[ntemp][4] == 2) {
-                  diagn[iel][9][0] = sje[ntemp][4][0][0];
+               if(cbc[ntemp][4] != 3) {
+                  newe[iel] = newe[iel] + 1;
+                  eassign[iel][9] = 1;
+                  if(cbc[ntemp][4] == 2) {
+                     diagn[iel][9][0] = sje[ntemp][4][0][0];
+                  }
                }
             }
+            else if(cb5 == 0 || cb5 == 1) {
+                  newe[iel] = newe[iel] + 1;
+                  eassign[iel][9] = 1;
+                  if(cb5 == 1) {
+                     ntemp = sje[iel][2][0][0];
+                     if(cbc[ntemp][4] == 2) {
+                        diagn[iel][9][0] = sje[ntemp][4][0][0];
+                     }
+                  }
+               }
          }
-      }
-      else if(cb3 == 0) {
-         if(cb5 != 3) {
-            newe[iel] = newe[iel] + 1;
-            eassign[iel][9] = 1;
-         }
-      }
+         else if(cb3 == 0) {
+               if(cb5 != 3) {
+                  newe[iel] = newe[iel] + 1;
+                  eassign[iel][9] = 1;
+               }
+            }
       // CONFORMING FACE INTERIOR
       // find how many new mortar point indices will be assigned
       // to face interiors on all faces on each element
@@ -3738,21 +3738,21 @@ void mortar() {
             space = 1;
          }
          else if(i < 4) {
-            ne = 3;
-            space = 2;
-            // i loops over faces. Only 4 faces need to be examed for edge visit.
-            // On face 1, edge 0,1,2 and 3 will be visited. On face 2, edge 4,5,6
-            // and 7 will be visited. On face 3, edge 8 and 9 will be visited and
-            // on face 4, edge 10 and 11 will be visited. The 12 edges can be
-            // covered by four faces, there is no need to visit edges on face
-            // 5 and 6.  So ne is set to be 0.
-            // However, i still needs to loop over 4 and 5, since the interiors
-            // of face 5 and 6 still need to be visited.
-         }
-         else {
-            ne = 0;
-            space = 1;
-         }
+               ne = 3;
+               space = 2;
+               // i loops over faces. Only 4 faces need to be examed for edge visit.
+               // On face 1, edge 0,1,2 and 3 will be visited. On face 2, edge 4,5,6
+               // and 7 will be visited. On face 3, edge 8 and 9 will be visited and
+               // on face 4, edge 10 and 11 will be visited. The 12 edges can be
+               // covered by four faces, there is no need to visit edges on face
+               // 5 and 6.  So ne is set to be 0.
+               // However, i still needs to loop over 4 and 5, since the interiors
+               // of face 5 and 6 still need to be visited.
+            }
+            else {
+               ne = 0;
+               space = 1;
+            }
          /*************** Clava msgError **************
          loop-step expression is not in canonical form: detected step operation is add_assign, expected one of assign, post_inc, pre_inc, pre_dec, post_dec, add, sub
          ****************************************/
@@ -3826,24 +3826,24 @@ void mortar() {
                // to iel as well as to the neighboring element on face i
             }
             else if(cb == 2) {
-               if(idmo[iel][i][0][0][1][1] == -1) {
-                  ntemp = sje[iel][i][0][0];
-                  jface = jjface[i];
-                  /*************** Clava msgError **************
-                  Loop Iteration number is too low
-                  ****************************************/
-                  for(jj = 1; jj < 5 - 1; jj++) {
+                  if(idmo[iel][i][0][0][1][1] == -1) {
+                     ntemp = sje[iel][i][0][0];
+                     jface = jjface[i];
                      /*************** Clava msgError **************
                      Loop Iteration number is too low
                      ****************************************/
-                     for(ii = 1; ii < 5 - 1; ii++) {
-                        idmo[iel][i][0][0][jj][ii] = count;
-                        idmo[ntemp][jface][0][0][jj][ii] = count;
-                        count = count + 1;
+                     for(jj = 1; jj < 5 - 1; jj++) {
+                        /*************** Clava msgError **************
+                        Loop Iteration number is too low
+                        ****************************************/
+                        for(ii = 1; ii < 5 - 1; ii++) {
+                           idmo[iel][i][0][0][jj][ii] = count;
+                           idmo[ntemp][jface][0][0][jj][ii] = count;
+                           count = count + 1;
+                        }
                      }
                   }
                }
-            }
          }
       }
    }
@@ -3982,32 +3982,32 @@ void mor_edge(int ie, int face, int iel, int mor_v[3]) {
       }
    }
    else if(ie == 1) {
-      i = 5 - 1;
-      /*************** Clava msgError **************
-      Loop Iteration number is too low
-      ****************************************/
-      for(nn = 1; nn < 5 - 1; nn++) {
-         idmo[iel][face][0][0][nn][i] = mor_v[nn - 1];
+         i = 5 - 1;
+         /*************** Clava msgError **************
+         Loop Iteration number is too low
+         ****************************************/
+         for(nn = 1; nn < 5 - 1; nn++) {
+            idmo[iel][face][0][0][nn][i] = mor_v[nn - 1];
+         }
       }
-   }
-   else if(ie == 2) {
-      j = 5 - 1;
-      /*************** Clava msgError **************
-      Loop Iteration number is too low
-      ****************************************/
-      for(nn = 1; nn < 5 - 1; nn++) {
-         idmo[iel][face][0][0][j][nn] = mor_v[nn - 1];
-      }
-   }
-   else if(ie == 3) {
-      i = 0;
-      /*************** Clava msgError **************
-      Loop Iteration number is too low
-      ****************************************/
-      for(nn = 1; nn < 5 - 1; nn++) {
-         idmo[iel][face][0][0][nn][i] = mor_v[nn - 1];
-      }
-   }
+      else if(ie == 2) {
+            j = 5 - 1;
+            /*************** Clava msgError **************
+            Loop Iteration number is too low
+            ****************************************/
+            for(nn = 1; nn < 5 - 1; nn++) {
+               idmo[iel][face][0][0][j][nn] = mor_v[nn - 1];
+            }
+         }
+         else if(ie == 3) {
+               i = 0;
+               /*************** Clava msgError **************
+               Loop Iteration number is too low
+               ****************************************/
+               for(nn = 1; nn < 5 - 1; nn++) {
+                  idmo[iel][face][0][0][nn][i] = mor_v[nn - 1];
+               }
+            }
 }
 
 //------------------------------------------------------------
@@ -4132,47 +4132,47 @@ void mor_s_e(int n, int face, int iel, int mor_s_v[2][4]) {
       }
    }
    else if(n == 1) {
-      /*************** Clava msgError **************
-      Loop Iteration number is too low
-      ****************************************/
-      for(i = 1; i < 5; i++) {
-         idmo[iel][face][1][0][i][5 - 1] = mor_s_v[0][i - 1];
+         /*************** Clava msgError **************
+         Loop Iteration number is too low
+         ****************************************/
+         for(i = 1; i < 5; i++) {
+            idmo[iel][face][1][0][i][5 - 1] = mor_s_v[0][i - 1];
+         }
+         /*************** Clava msgError **************
+         Loop Iteration number is too low
+         ****************************************/
+         for(i = 0; i < 5 - 1; i++) {
+            idmo[iel][face][1][1][i][5 - 1] = mor_s_v[1][i];
+         }
       }
-      /*************** Clava msgError **************
-      Loop Iteration number is too low
-      ****************************************/
-      for(i = 0; i < 5 - 1; i++) {
-         idmo[iel][face][1][1][i][5 - 1] = mor_s_v[1][i];
-      }
-   }
-   else if(n == 2) {
-      /*************** Clava msgError **************
-      Loop Iteration number is too low
-      ****************************************/
-      for(i = 1; i < 5; i++) {
-         idmo[iel][face][0][1][5 - 1][i] = mor_s_v[0][i - 1];
-      }
-      /*************** Clava msgError **************
-      Loop Iteration number is too low
-      ****************************************/
-      for(i = 0; i < 5 - 1; i++) {
-         idmo[iel][face][1][1][5 - 1][i] = mor_s_v[1][i];
-      }
-   }
-   else if(n == 3) {
-      /*************** Clava msgError **************
-      Loop Iteration number is too low
-      ****************************************/
-      for(i = 1; i < 5; i++) {
-         idmo[iel][face][0][0][i][0] = mor_s_v[0][i - 1];
-      }
-      /*************** Clava msgError **************
-      Loop Iteration number is too low
-      ****************************************/
-      for(i = 0; i < 5 - 1; i++) {
-         idmo[iel][face][0][1][i][0] = mor_s_v[1][i];
-      }
-   }
+      else if(n == 2) {
+            /*************** Clava msgError **************
+            Loop Iteration number is too low
+            ****************************************/
+            for(i = 1; i < 5; i++) {
+               idmo[iel][face][0][1][5 - 1][i] = mor_s_v[0][i - 1];
+            }
+            /*************** Clava msgError **************
+            Loop Iteration number is too low
+            ****************************************/
+            for(i = 0; i < 5 - 1; i++) {
+               idmo[iel][face][1][1][5 - 1][i] = mor_s_v[1][i];
+            }
+         }
+         else if(n == 3) {
+               /*************** Clava msgError **************
+               Loop Iteration number is too low
+               ****************************************/
+               for(i = 1; i < 5; i++) {
+                  idmo[iel][face][0][0][i][0] = mor_s_v[0][i - 1];
+               }
+               /*************** Clava msgError **************
+               Loop Iteration number is too low
+               ****************************************/
+               for(i = 0; i < 5 - 1; i++) {
+                  idmo[iel][face][0][1][i][0] = mor_s_v[1][i];
+               }
+            }
 }
 
 //------------------------------------------------------------
@@ -4202,59 +4202,59 @@ void mor_s_e_nn(int n, int face, int iel, int mor_s_v[4], int nn) {
       }
    }
    else if(n == 1) {
-      if(nn == 0) {
-         /*************** Clava msgError **************
-         Loop Iteration number is too low
-         ****************************************/
-         for(i = 1; i < 5; i++) {
-            idmo[iel][face][1][0][i][5 - 1] = mor_s_v[i - 1];
+         if(nn == 0) {
+            /*************** Clava msgError **************
+            Loop Iteration number is too low
+            ****************************************/
+            for(i = 1; i < 5; i++) {
+               idmo[iel][face][1][0][i][5 - 1] = mor_s_v[i - 1];
+            }
+         }
+         else {
+            /*************** Clava msgError **************
+            Loop Iteration number is too low
+            ****************************************/
+            for(i = 0; i < 5 - 1; i++) {
+               idmo[iel][face][1][1][i][5 - 1] = mor_s_v[i];
+            }
          }
       }
-      else {
-         /*************** Clava msgError **************
-         Loop Iteration number is too low
-         ****************************************/
-         for(i = 0; i < 5 - 1; i++) {
-            idmo[iel][face][1][1][i][5 - 1] = mor_s_v[i];
+      else if(n == 2) {
+            if(nn == 0) {
+               /*************** Clava msgError **************
+               Loop Iteration number is too low
+               ****************************************/
+               for(i = 1; i < 5; i++) {
+                  idmo[iel][face][0][1][5 - 1][i] = mor_s_v[i - 1];
+               }
+            }
+            else {
+               /*************** Clava msgError **************
+               Loop Iteration number is too low
+               ****************************************/
+               for(i = 0; i < 5 - 1; i++) {
+                  idmo[iel][face][1][1][5 - 1][i] = mor_s_v[i];
+               }
+            }
          }
-      }
-   }
-   else if(n == 2) {
-      if(nn == 0) {
-         /*************** Clava msgError **************
-         Loop Iteration number is too low
-         ****************************************/
-         for(i = 1; i < 5; i++) {
-            idmo[iel][face][0][1][5 - 1][i] = mor_s_v[i - 1];
-         }
-      }
-      else {
-         /*************** Clava msgError **************
-         Loop Iteration number is too low
-         ****************************************/
-         for(i = 0; i < 5 - 1; i++) {
-            idmo[iel][face][1][1][5 - 1][i] = mor_s_v[i];
-         }
-      }
-   }
-   else if(n == 3) {
-      if(nn == 0) {
-         /*************** Clava msgError **************
-         Loop Iteration number is too low
-         ****************************************/
-         for(i = 1; i < 5; i++) {
-            idmo[iel][face][0][0][i][0] = mor_s_v[i - 1];
-         }
-      }
-      else {
-         /*************** Clava msgError **************
-         Loop Iteration number is too low
-         ****************************************/
-         for(i = 0; i < 5 - 1; i++) {
-            idmo[iel][face][0][1][i][0] = mor_s_v[i];
-         }
-      }
-   }
+         else if(n == 3) {
+               if(nn == 0) {
+                  /*************** Clava msgError **************
+                  Loop Iteration number is too low
+                  ****************************************/
+                  for(i = 1; i < 5; i++) {
+                     idmo[iel][face][0][0][i][0] = mor_s_v[i - 1];
+                  }
+               }
+               else {
+                  /*************** Clava msgError **************
+                  Loop Iteration number is too low
+                  ****************************************/
+                  for(i = 0; i < 5 - 1; i++) {
+                     idmo[iel][face][0][1][i][0] = mor_s_v[i];
+                  }
+               }
+            }
 }
 
 //---------------------------------------------------------------
@@ -4355,15 +4355,15 @@ void mortar_vertex(int i, int iel, int count) {
          if_temp = 1;
       }
       else if(l == 1) {
-         if(ifntempx[iintempx[l - 1]] == -1) {
-            if_temp = 1;
+            if(ifntempx[iintempx[l - 1]] == -1) {
+               if_temp = 1;
+            }
          }
-      }
-      else if(l == 2) {
-         if(ifntempx[iintempx[l - 1]] == -1 && ifntempx[iintempx[l - 2]] == -1) {
-            if_temp = 1;
-         }
-      }
+         else if(l == 2) {
+               if(ifntempx[iintempx[l - 1]] == -1 && ifntempx[iintempx[l - 2]] == -1) {
+                  if_temp = 1;
+               }
+            }
       if(if_temp) {
          if(ifntempx[iintempx[l]] != -1) {
             nbe = ifntempx[iintempx[l]];
@@ -4449,33 +4449,33 @@ void mortar_vertex(int i, int iel, int count) {
                // does not exist
             }
             else if(ifntempx[iintempx[face_l2[l]]] != -1) {
-               nbe = ifntempx[iintempx[face_l2[l]]];
-               itemp = face_l1[l];
-               lc = local_corner[face_a[itemp]][j[face_l2[l]]];
-               temp = cal_intempx[face_a[itemp]][lc];
-               ii = cal_iijj[lc][0];
-               jj = cal_iijj[lc][1];
-               ntemp = sje[nbe][face_a[itemp]][jj][ii];
-               if(ntemp == -1) {
-                  ntemp = sje[nbe][face_a[itemp]][0][0];
-                  if(ntemp != -1) {
-                     if(ifsame(ntemp, c_f[jjface[face_a[itemp]]][lc], nbe, j[face_l2[l]])) {
-                        ntempx[temp] = ntemp;
-                        ifntempx[temp] = ntemp;
-                        nnb[l] = ntemp;
+                  nbe = ifntempx[iintempx[face_l2[l]]];
+                  itemp = face_l1[l];
+                  lc = local_corner[face_a[itemp]][j[face_l2[l]]];
+                  temp = cal_intempx[face_a[itemp]][lc];
+                  ii = cal_iijj[lc][0];
+                  jj = cal_iijj[lc][1];
+                  ntemp = sje[nbe][face_a[itemp]][jj][ii];
+                  if(ntemp == -1) {
+                     ntemp = sje[nbe][face_a[itemp]][0][0];
+                     if(ntemp != -1) {
+                        if(ifsame(ntemp, c_f[jjface[face_a[itemp]]][lc], nbe, j[face_l2[l]])) {
+                           ntempx[temp] = ntemp;
+                           ifntempx[temp] = ntemp;
+                           nnb[l] = ntemp;
+                        }
+                     }
+                  }
+                  else {
+                     if(ntemp != -1) {
+                        if(ifsame(ntemp, c_f[jjface[face_a[itemp]]][lc], nbe, j[face_l2[l]])) {
+                           ntempx[temp] = ntemp;
+                           ifntempx[temp] = ntemp;
+                           nnb[l] = ntemp;
+                        }
                      }
                   }
                }
-               else {
-                  if(ntemp != -1) {
-                     if(ifsame(ntemp, c_f[jjface[face_a[itemp]]][lc], nbe, j[face_l2[l]])) {
-                        ntempx[temp] = ntemp;
-                        ifntempx[temp] = ntemp;
-                        nnb[l] = ntemp;
-                     }
-                  }
-               }
-            }
          }
       }
    }
@@ -4514,53 +4514,53 @@ void mortar_vertex(int i, int iel, int count) {
       }
    }
    else if(nnb[1] != -1) {
-      lc = oplc[local_corner[face_a[0]][i]];
-      ii = cal_iijj[lc][0];
-      jj = cal_iijj[lc][1];
-      ntemp = sje[nnb[1]][face_a[0]][jj][ii];
-      temp = cal_intempx[face_a[0]][lc];
-      if(ntemp == -1) {
-         ntemp = sje[nnb[1]][face_a[0]][0][0];
-         if(ntemp != -1) {
-            if(ifsame(ntemp, c_f[jjface[face_a[0]]][lc], iel, i)) {
-               ntempx[temp] = ntemp;
-               ifntempx[temp] = ntemp;
+         lc = oplc[local_corner[face_a[0]][i]];
+         ii = cal_iijj[lc][0];
+         jj = cal_iijj[lc][1];
+         ntemp = sje[nnb[1]][face_a[0]][jj][ii];
+         temp = cal_intempx[face_a[0]][lc];
+         if(ntemp == -1) {
+            ntemp = sje[nnb[1]][face_a[0]][0][0];
+            if(ntemp != -1) {
+               if(ifsame(ntemp, c_f[jjface[face_a[0]]][lc], iel, i)) {
+                  ntempx[temp] = ntemp;
+                  ifntempx[temp] = ntemp;
+               }
+            }
+         }
+         else {
+            if(ntemp != -1) {
+               if(ifsame(ntemp, c_f[jjface[face_a[0]]][lc], iel, i)) {
+                  ntempx[temp] = ntemp;
+                  ifntempx[temp] = ntemp;
+               }
             }
          }
       }
-      else {
-         if(ntemp != -1) {
-            if(ifsame(ntemp, c_f[jjface[face_a[0]]][lc], iel, i)) {
-               ntempx[temp] = ntemp;
-               ifntempx[temp] = ntemp;
+      else if(nnb[2] != -1) {
+            lc = oplc[local_corner[face_a[1]][i]];
+            ii = cal_iijj[lc][0];
+            jj = cal_iijj[lc][1];
+            ntemp = sje[nnb[2]][face_a[1]][jj][ii];
+            temp = cal_intempx[face_a[1]][lc];
+            if(ntemp == -1) {
+               ntemp = sje[nnb[2]][face_a[1]][0][0];
+               if(ntemp != -1) {
+                  if(ifsame(ntemp, c_f[jjface[face_a[1]]][lc], iel, i)) {
+                     ifntempx[temp] = ntemp;
+                     ntempx[temp] = ntemp;
+                  }
+               }
+            }
+            else {
+               if(ntemp != -1) {
+                  if(ifsame(ntemp, c_f[jjface[face_a[1]]][lc], iel, i)) {
+                     ifntempx[temp] = ntemp;
+                     ntempx[temp] = ntemp;
+                  }
+               }
             }
          }
-      }
-   }
-   else if(nnb[2] != -1) {
-      lc = oplc[local_corner[face_a[1]][i]];
-      ii = cal_iijj[lc][0];
-      jj = cal_iijj[lc][1];
-      ntemp = sje[nnb[2]][face_a[1]][jj][ii];
-      temp = cal_intempx[face_a[1]][lc];
-      if(ntemp == -1) {
-         ntemp = sje[nnb[2]][face_a[1]][0][0];
-         if(ntemp != -1) {
-            if(ifsame(ntemp, c_f[jjface[face_a[1]]][lc], iel, i)) {
-               ifntempx[temp] = ntemp;
-               ntempx[temp] = ntemp;
-            }
-         }
-      }
-      else {
-         if(ntemp != -1) {
-            if(ifsame(ntemp, c_f[jjface[face_a[1]]][lc], iel, i)) {
-               ifntempx[temp] = ntemp;
-               ntempx[temp] = ntemp;
-            }
-         }
-      }
-   }
    // ifntempx records all elements sharing this vertex, assign count
    // to all these elements.
    if(ifntempx[0] != -1) {
@@ -4650,65 +4650,65 @@ void mor_ne(int mor_v[3], int nn, int edge, int face, int edge2, int face2, int 
       }
    }
    else if(edge == 3) {
-      if(nn == 0) {
-         /*************** Clava msgError **************
-         Loop Iteration number is too low
-         ****************************************/
-         for(i = 1; i < 5 - 1; i++) {
-            mor_s_v[i - 1] = mor_v[i - 1];
+         if(nn == 0) {
+            /*************** Clava msgError **************
+            Loop Iteration number is too low
+            ****************************************/
+            for(i = 1; i < 5 - 1; i++) {
+               mor_s_v[i - 1] = mor_v[i - 1];
+            }
+            mor_s_v[3] = idmo[ntemp][face][0][1][5 - 1][0];
          }
-         mor_s_v[3] = idmo[ntemp][face][0][1][5 - 1][0];
-      }
-      else {
-         mor_s_v[0] = idmo[ntemp][face][0][0][0][0];
-         /*************** Clava msgError **************
-         Loop Iteration number is too low
-         ****************************************/
-         for(i = 1; i < 5 - 1; i++) {
-            mor_s_v[i] = mor_v[i - 1];
-         }
-      }
-   }
-   else if(edge == 0) {
-      if(nn == 0) {
-         /*************** Clava msgError **************
-         Loop Iteration number is too low
-         ****************************************/
-         for(i = 1; i < 5 - 1; i++) {
-            mor_s_v[i - 1] = mor_v[i - 1];
-         }
-         mor_s_v[3] = idmo[ntemp][face][1][0][0][5 - 1];
-      }
-      else {
-         mor_s_v[0] = idmo[ntemp][face][0][0][0][0];
-         /*************** Clava msgError **************
-         Loop Iteration number is too low
-         ****************************************/
-         for(i = 1; i < 5 - 1; i++) {
-            mor_s_v[i] = mor_v[i - 1];
+         else {
+            mor_s_v[0] = idmo[ntemp][face][0][0][0][0];
+            /*************** Clava msgError **************
+            Loop Iteration number is too low
+            ****************************************/
+            for(i = 1; i < 5 - 1; i++) {
+               mor_s_v[i] = mor_v[i - 1];
+            }
          }
       }
-   }
-   else if(edge == 1) {
-      if(nn == 0) {
-         /*************** Clava msgError **************
-         Loop Iteration number is too low
-         ****************************************/
-         for(i = 1; i < 5 - 1; i++) {
-            mor_s_v[i - 1] = mor_v[i - 1];
+      else if(edge == 0) {
+            if(nn == 0) {
+               /*************** Clava msgError **************
+               Loop Iteration number is too low
+               ****************************************/
+               for(i = 1; i < 5 - 1; i++) {
+                  mor_s_v[i - 1] = mor_v[i - 1];
+               }
+               mor_s_v[3] = idmo[ntemp][face][1][0][0][5 - 1];
+            }
+            else {
+               mor_s_v[0] = idmo[ntemp][face][0][0][0][0];
+               /*************** Clava msgError **************
+               Loop Iteration number is too low
+               ****************************************/
+               for(i = 1; i < 5 - 1; i++) {
+                  mor_s_v[i] = mor_v[i - 1];
+               }
+            }
          }
-         mor_s_v[3] = idmo[ntemp][face][1][1][5 - 1][5 - 1];
-      }
-      else {
-         mor_s_v[0] = idmo[ntemp][face][1][0][0][5 - 1];
-         /*************** Clava msgError **************
-         Loop Iteration number is too low
-         ****************************************/
-         for(i = 1; i < 5 - 1; i++) {
-            mor_s_v[i] = mor_v[i - 1];
-         }
-      }
-   }
+         else if(edge == 1) {
+               if(nn == 0) {
+                  /*************** Clava msgError **************
+                  Loop Iteration number is too low
+                  ****************************************/
+                  for(i = 1; i < 5 - 1; i++) {
+                     mor_s_v[i - 1] = mor_v[i - 1];
+                  }
+                  mor_s_v[3] = idmo[ntemp][face][1][1][5 - 1][5 - 1];
+               }
+               else {
+                  mor_s_v[0] = idmo[ntemp][face][1][0][0][5 - 1];
+                  /*************** Clava msgError **************
+                  Loop Iteration number is too low
+                  ****************************************/
+                  for(i = 1; i < 5 - 1; i++) {
+                     mor_s_v[i] = mor_v[i - 1];
+                  }
+               }
+            }
    // copy mor_s_v to iel's local edge(op[edge]), on face jjface[face]
    mor_s_e_nn(op[edge], jjface[face], iel, mor_s_v, nn);
    // copy mor_s_v to iel's local edge(op[edge2]),  on face jjface[face2]
@@ -4749,33 +4749,33 @@ void move() {
             sje_new[iel][iside][0][0] = id_to_mt[ntemp];
          }
          else if(cb == 1) {
-            ntemp = sje[i][iside][0][0];
-            ijel_new[iel][iside][0] = ijel[i][iside][0];
-            ijel_new[iel][iside][1] = ijel[i][iside][1];
-            sje_new[iel][iside][0][0] = id_to_mt[ntemp];
-         }
-         else if(cb == 3) {
-            /*************** Clava msgError **************
-            Loop Iteration number is too low
-            ****************************************/
-            for(ii2 = 0; ii2 < 2; ii2++) {
-               /*************** Clava msgError **************
-               Loop Iteration number is too low
-               ****************************************/
-               for(ii1 = 0; ii1 < 2; ii1++) {
-                  ntemp = sje[i][iside][ii2][ii1];
-                  ijel_new[iel][iside][0] = 0;
-                  ijel_new[iel][iside][1] = 0;
-                  sje_new[iel][iside][ii2][ii1] = id_to_mt[ntemp];
-               }
+               ntemp = sje[i][iside][0][0];
+               ijel_new[iel][iside][0] = ijel[i][iside][0];
+               ijel_new[iel][iside][1] = ijel[i][iside][1];
+               sje_new[iel][iside][0][0] = id_to_mt[ntemp];
             }
-         }
-         else if(cb == 0) {
-            sje_new[iel][iside][0][0] = -1;
-            sje_new[iel][iside][1][0] = -1;
-            sje_new[iel][iside][0][1] = -1;
-            sje_new[iel][iside][1][1] = -1;
-         }
+            else if(cb == 3) {
+                  /*************** Clava msgError **************
+                  Loop Iteration number is too low
+                  ****************************************/
+                  for(ii2 = 0; ii2 < 2; ii2++) {
+                     /*************** Clava msgError **************
+                     Loop Iteration number is too low
+                     ****************************************/
+                     for(ii1 = 0; ii1 < 2; ii1++) {
+                        ntemp = sje[i][iside][ii2][ii1];
+                        ijel_new[iel][iside][0] = 0;
+                        ijel_new[iel][iside][1] = 0;
+                        sje_new[iel][iside][ii2][ii1] = id_to_mt[ntemp];
+                     }
+                  }
+               }
+               else if(cb == 0) {
+                     sje_new[iel][iside][0][0] = -1;
+                     sje_new[iel][iside][1][0] = -1;
+                     sje_new[iel][iside][0][1] = -1;
+                     sje_new[iel][iside][1][1] = -1;
+                  }
       }
       copy(ta2[iel][0][0], ta1[i][0][0], (5 * 5 * 5));
    }
@@ -5300,26 +5300,26 @@ void setpcmo() {
                         edgevis[nb2][jjface[face2]][op[e_face2[iside][_enum]]] = 1;
                      }
                      else if(cbc[nb1][iside] == 3) {
-                        com_dpc(iside, iel, _enum, 2, sizei);
-                        edgevis[nb1][iside][op[_enum]] = 1;
-                     }
+                           com_dpc(iside, iel, _enum, 2, sizei);
+                           edgevis[nb1][iside][op[_enum]] = 1;
+                        }
                   }
                   else if(cbc[iel][face2] == 3) {
-                     edgevis[iel][face2][e_face2[iside][_enum]] = 1;
-                     nb1 = sje[iel][face2][1][0];
-                     if(cbc[nb1][iside] == 1) {
-                        com_dpc(iside, iel, _enum, 3, sizei);
-                        nb2 = sje[nb1][iside][0][0];
-                        edgevis[nb2][jjface[iside]][op[_enum]] = 1;
-                        edgevis[nb2][jjface[face2]][op[e_face2[iside][_enum]]] = 1;
+                        edgevis[iel][face2][e_face2[iside][_enum]] = 1;
+                        nb1 = sje[iel][face2][1][0];
+                        if(cbc[nb1][iside] == 1) {
+                           com_dpc(iside, iel, _enum, 3, sizei);
+                           nb2 = sje[nb1][iside][0][0];
+                           edgevis[nb2][jjface[iside]][op[_enum]] = 1;
+                           edgevis[nb2][jjface[face2]][op[e_face2[iside][_enum]]] = 1;
+                        }
+                        else if(cbc[nb1][iside] == 2) {
+                              com_dpc(iside, iel, _enum, 4, sizei);
+                           }
                      }
-                     else if(cbc[nb1][iside] == 2) {
-                        com_dpc(iside, iel, _enum, 4, sizei);
-                     }
-                  }
-                  else if(cbc[iel][face2] == 0) {
-                     com_dpc(iside, iel, _enum, 0, sizei);
-                  }
+                     else if(cbc[iel][face2] == 0) {
+                           com_dpc(iside, iel, _enum, 0, sizei);
+                        }
                }
             }
             // mortar element interior (not edge of mortar)
@@ -5417,29 +5417,29 @@ void pc_corner(int imor) {
             n = 7;
          }
          else if(sedge == 1) {
-            n = 0;
-         }
-         else if(sedge == 2) {
-            n = 1;
-         }
-         else if(sedge == 3) {
-            n = 2;
-         }
+               n = 0;
+            }
+            else if(sedge == 2) {
+                  n = 1;
+               }
+               else if(sedge == 3) {
+                     n = 2;
+                  }
       }
       else if(sface == 1) {
-         if(sedge == 1) {
-            n = 4;
+            if(sedge == 1) {
+               n = 4;
+            }
+            else {
+               n = 3;
+            }
          }
-         else {
-            n = 3;
-         }
-      }
-      else if(sface == 2) {
-         n = 5;
-      }
-      else if(sface == 3) {
-         n = 6;
-      }
+         else if(sface == 2) {
+               n = 5;
+            }
+            else if(sface == 3) {
+                  n = 6;
+               }
       // sum the intermediate pre-computed preconditioner values for
       // all elements
       tmortemp = tmortemp + pcmor_cor[sizei][n];
@@ -5475,48 +5475,48 @@ void com_dpc(int iside, int iel, int enumber, int n, int isize) {
       iend = 5 - 1;
    }
    else if(enumber == 1) {
-      nn1start = 1;
-      nn1end = 2;
-      nn2start = 2;
-      nn2end = 2;
-      jstart = 2;
-      jend = 5 - 1;
-      istart = 5;
-      iend = 5;
-   }
-   else if(enumber == 2) {
-      nn1start = 2;
-      nn1end = 2;
-      nn2start = 1;
-      nn2end = 2;
-      jstart = 5;
-      jend = 5;
-      istart = 2;
-      iend = 5 - 1;
-   }
-   else if(enumber == 3) {
-      nn1start = 1;
-      nn1end = 2;
-      nn2start = 1;
-      nn2end = 1;
-      jstart = 2;
-      jend = 5 - 1;
-      istart = 1;
-      iend = 1;
-   }
-   else {
-      // MUST NOT reachable!!
-      // Commenting assert to make tests portable, macro hard-codes file location
-      //assert(0);
-      nn1start = 0;
-      nn1end = 0;
-      nn2start = 0;
-      nn2end = 0;
-      jstart = 0;
-      jend = 5 - 1;
-      istart = 0;
-      iend = 0;
-   }
+         nn1start = 1;
+         nn1end = 2;
+         nn2start = 2;
+         nn2end = 2;
+         jstart = 2;
+         jend = 5 - 1;
+         istart = 5;
+         iend = 5;
+      }
+      else if(enumber == 2) {
+            nn1start = 2;
+            nn1end = 2;
+            nn2start = 1;
+            nn2end = 2;
+            jstart = 5;
+            jend = 5;
+            istart = 2;
+            iend = 5 - 1;
+         }
+         else if(enumber == 3) {
+               nn1start = 1;
+               nn1end = 2;
+               nn2start = 1;
+               nn2end = 1;
+               jstart = 2;
+               jend = 5 - 1;
+               istart = 1;
+               iend = 1;
+            }
+            else {
+               // MUST NOT reachable!!
+               // Commenting assert to make tests portable, macro hard-codes file location
+               //assert(0);
+               nn1start = 0;
+               nn1end = 0;
+               nn2start = 0;
+               nn2end = 0;
+               jstart = 0;
+               jend = 5 - 1;
+               istart = 0;
+               iend = 0;
+            }
    // among the four elements sharing this edge
    // one has a smaller size
    if(n == 1) {
@@ -5527,41 +5527,41 @@ void com_dpc(int iside, int iel, int enumber, int n, int isize) {
       // two (neighbored by a face) are of  smaller size
    }
    else if(n == 2) {
-      anc1 = 2.0;
-      ac = 2.0;
-      anc0 = 0.0;
-      anc2 = 0.0;
-      // two (neighbored by an edge) are of smaller size
-   }
-   else if(n == 3) {
-      anc2 = 2.0;
-      ac = 2.0;
-      anc1 = 0.0;
-      anc0 = 0.0;
-      // three are of smaller size
-   }
-   else if(n == 4) {
-      anc1 = 0.0;
-      ac = 3.0;
-      anc2 = 1.0;
-      anc0 = 0.0;
-      // on the boundary
-   }
-   else if(n == 0) {
-      anc1 = 1.0;
-      ac = 1.0;
-      anc2 = 0.0;
-      anc0 = 0.0;
-   }
-   else {
-      // MUST NOT reachable!!
-      // Commenting assert to make tests portable, macro hard-codes file location		
-      //assert(0);
-      anc1 = 0.0;
-      ac = 0.0;
-      anc2 = 0.0;
-      anc0 = 0.0;
-   }
+         anc1 = 2.0;
+         ac = 2.0;
+         anc0 = 0.0;
+         anc2 = 0.0;
+         // two (neighbored by an edge) are of smaller size
+      }
+      else if(n == 3) {
+            anc2 = 2.0;
+            ac = 2.0;
+            anc1 = 0.0;
+            anc0 = 0.0;
+            // three are of smaller size
+         }
+         else if(n == 4) {
+               anc1 = 0.0;
+               ac = 3.0;
+               anc2 = 1.0;
+               anc0 = 0.0;
+               // on the boundary
+            }
+            else if(n == 0) {
+                  anc1 = 1.0;
+                  ac = 1.0;
+                  anc2 = 0.0;
+                  anc0 = 0.0;
+               }
+               else {
+                  // MUST NOT reachable!!
+                  // Commenting assert to make tests portable, macro hard-codes file location		
+                  //assert(0);
+                  anc1 = 0.0;
+                  ac = 0.0;
+                  anc2 = 0.0;
+                  anc0 = 0.0;
+               }
    // edge interior
    /*************** Clava msgError **************
    unsolved dependency for arrayAccess dpcmor	 use : W
@@ -5593,19 +5593,19 @@ void com_dpc(int iside, int iel, int enumber, int n, int isize) {
       // local edge 1
    }
    else if(enumber == 1) {
-      imor = idmo[iel][iside][1][0][5 - 1][5 - 1];
-      temp = anc1 * pcmor_nc1[isize][1][0][5 - 1][5 - 1] + ac * pcmor_c[isize + 1][5 - 1][5 - 1] * 2.0 + anc0 * pcmor_nc0[isize][1][0][5 - 1][5 - 1] + anc2 * pcmor_nc2[isize][1][0][5 - 1][5 - 1];
-      // local edge 2
-   }
-   else if(enumber == 2) {
-      imor = idmo[iel][iside][0][1][5 - 1][5 - 1];
-      temp = anc1 * pcmor_nc1[isize][0][1][5 - 1][5 - 1] + ac * pcmor_c[isize + 1][5 - 1][5 - 1] * 2.0 + anc0 * pcmor_nc0[isize][0][1][5 - 1][5 - 1] + anc2 * pcmor_nc2[isize][0][1][5 - 1][5 - 1];
-      // local edge 3
-   }
-   else if(enumber == 3) {
-      imor = idmo[iel][iside][0][0][5 - 1][0];
-      temp = anc1 * pcmor_nc1[isize][0][0][5 - 1][0] + ac * pcmor_c[isize + 1][5 - 1][0] * 2.0 + anc0 * pcmor_nc0[isize][0][0][5 - 1][0] + anc2 * pcmor_nc2[isize][0][0][5 - 1][0];
-   }
+         imor = idmo[iel][iside][1][0][5 - 1][5 - 1];
+         temp = anc1 * pcmor_nc1[isize][1][0][5 - 1][5 - 1] + ac * pcmor_c[isize + 1][5 - 1][5 - 1] * 2.0 + anc0 * pcmor_nc0[isize][1][0][5 - 1][5 - 1] + anc2 * pcmor_nc2[isize][1][0][5 - 1][5 - 1];
+         // local edge 2
+      }
+      else if(enumber == 2) {
+            imor = idmo[iel][iside][0][1][5 - 1][5 - 1];
+            temp = anc1 * pcmor_nc1[isize][0][1][5 - 1][5 - 1] + ac * pcmor_c[isize + 1][5 - 1][5 - 1] * 2.0 + anc0 * pcmor_nc0[isize][0][1][5 - 1][5 - 1] + anc2 * pcmor_nc2[isize][0][1][5 - 1][5 - 1];
+            // local edge 3
+         }
+         else if(enumber == 3) {
+               imor = idmo[iel][iside][0][0][5 - 1][0];
+               temp = anc1 * pcmor_nc1[isize][0][0][5 - 1][0] + ac * pcmor_c[isize + 1][5 - 1][0] * 2.0 + anc0 * pcmor_nc0[isize][0][0][5 - 1][0] + anc2 * pcmor_nc2[isize][0][0][5 - 1][0];
+            }
    dpcmor[imor] = 1.0 / temp;
 }
 
@@ -8082,25 +8082,25 @@ void verify(char *Class, int *verified) {
       norm_ref = 0.1890013110962E-02;
    }
    else if(*Class == 'W') {
-      norm_ref = 0.2569794837076E-04;
-   }
-   else if(*Class == 'A') {
-      norm_ref = 0.8939996281443E-04;
-   }
-   else if(*Class == 'B') {
-      norm_ref = 0.4507561922901E-04;
-   }
-   else if(*Class == 'C') {
-      norm_ref = 0.1544736587100E-04;
-   }
-   else if(*Class == 'D') {
-      norm_ref = 0.1577586272355E-05;
-   }
-   else {
-      *Class = 'U';
-      norm_ref = 1.0;
-      *verified = 0;
-   }
+         norm_ref = 0.2569794837076E-04;
+      }
+      else if(*Class == 'A') {
+            norm_ref = 0.8939996281443E-04;
+         }
+         else if(*Class == 'B') {
+               norm_ref = 0.4507561922901E-04;
+            }
+            else if(*Class == 'C') {
+                  norm_ref = 0.1544736587100E-04;
+               }
+               else if(*Class == 'D') {
+                     norm_ref = 0.1577586272355E-05;
+                  }
+                  else {
+                     *Class = 'U';
+                     norm_ref = 1.0;
+                     *verified = 0;
+                  }
    norm_dif = fabs((norm - norm_ref) / norm_ref);
    //---------------------------------------------------------------------
    // Output the comparison of computed results to known cases.
@@ -8123,22 +8123,22 @@ void verify(char *Class, int *verified) {
       printf("          %20.13E\n", norm);
    }
    else if(norm_dif <= epsilon) {
-      printf("          %20.13E%20.13E%20.13E\n", norm, norm_ref, norm_dif);
-   }
-   else {
-      *verified = 0;
-      printf(" FAILURE: %20.13E%20.13E%20.13E\n", norm, norm_ref, norm_dif);
-   }
+         printf("          %20.13E%20.13E%20.13E\n", norm, norm_ref, norm_dif);
+      }
+      else {
+         *verified = 0;
+         printf(" FAILURE: %20.13E%20.13E%20.13E\n", norm, norm_ref, norm_dif);
+      }
    if(*Class == 'U') {
       printf(" No reference values provided\n");
       printf(" No verification performed\n");
    }
    else if(*verified) {
-      printf(" Verification Successful\n");
-   }
-   else {
-      printf(" Verification failed\n");
-   }
+         printf(" Verification Successful\n");
+      }
+      else {
+         printf(" Verification failed\n");
+      }
 }
 
 void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified) {
