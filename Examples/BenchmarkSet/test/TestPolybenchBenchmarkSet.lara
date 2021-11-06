@@ -15,11 +15,11 @@ aspectdef TestPolybench
 
 		var execResult = polybenchBench.execute();
 		
-		println("Result:\n" + execResult.getConsoleOutput());
+		//println("Result:\n" + execResult.getReturnValue());
 		
 		//var verificationResult = Strings.extractValue("Verification    =", execResult.getConsoleOutput(), true);
 		//println("Ver: " + verificationResult.trim());
-		//Check.isTrue(verificationResult.trim().endsWith("SUCCESSFUL"), "Expected string to end with SUCCESSFUL: '" + verificationResult.trim() + "'");
+		Check.isTrue(execResult.getReturnValue() === 0, "Expected return value to be 0: '" + execResult.getReturnValue() + "'");
 	}
 
 end
