@@ -10,6 +10,10 @@ aspectdef TestPolybench
 	polybenchSet.setInputSizes("MINI");
 
 	for(var polybenchBench of polybenchSet) {
+		// Force parsing
+		polybenchBench.purgeCache();
+		polybenchBench.setCache(false);
+
 		//polybenchBench.getCMaker().setGenerator("MinGW Makefiles");
 		//polybenchBench.getCMaker().setMakeCommand("mingw32-make");
 

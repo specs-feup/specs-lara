@@ -15,7 +15,9 @@ aspectdef TestNAS
 	
 
 	for(var nasBench of nasSet) {
-		// Jenkins server seems to run out of memory when enabled
+		// Force parsing
+		// Also, Jenkins server seems to run out of memory when enabled
+		nasBench.purgeCache();
 		nasBench.setCache(false);
 		//nasBench.getCMaker().setGenerator("MinGW Makefiles");
 		//nasBench.getCMaker().setMakeCommand("mingw32-make");
