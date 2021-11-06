@@ -1,4 +1,5 @@
 import lara.benchmark.NasBenchmarkSet;
+import lara.benchmark.ClavaBenchmarkInstance;
 import lara.Strings;
 import lara.Check;
 
@@ -12,13 +13,14 @@ aspectdef TestNAS
 	// Set smallest size
 	nasSet.setInputSizes("S");
 	// By default includes all available benchmarks
-	
+
+	// Force parsing
+	// Also, Jenkins server seems to run out of memory when enabled	
+	ClavaBenchmarkInstance.purgeCache();
+	ClavaBenchmarkInstance.setCache(false);
+
 
 	for(var nasBench of nasSet) {
-		// Force parsing
-		// Also, Jenkins server seems to run out of memory when enabled
-		nasBench.purgeCache();
-		nasBench.setCache(false);
 		//nasBench.getCMaker().setGenerator("MinGW Makefiles");
 		//nasBench.getCMaker().setMakeCommand("mingw32-make");
 		//println("Execution NAS " + nasBench.getName());

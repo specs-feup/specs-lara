@@ -1,4 +1,5 @@
 import lara.benchmark.PolybenchBenchmarkSet;
+import lara.benchmark.ClavaBenchmarkInstance;
 
 /**
  * @test
@@ -9,10 +10,11 @@ aspectdef TestPolybench
 	
 	polybenchSet.setInputSizes("MINI");
 
+	// Force parsing
+	ClavaBenchmarkInstance.purgeCache();
+	ClavaBenchmarkInstance.setCache(false);
+
 	for(var polybenchBench of polybenchSet) {
-		// Force parsing
-		polybenchBench.purgeCache();
-		polybenchBench.setCache(false);
 
 		//polybenchBench.getCMaker().setGenerator("MinGW Makefiles");
 		//polybenchBench.getCMaker().setMakeCommand("mingw32-make");
