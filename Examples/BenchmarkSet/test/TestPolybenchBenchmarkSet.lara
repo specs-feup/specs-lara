@@ -1,0 +1,27 @@
+import lara.benchmark.PolybenchBenchmarkSet;
+
+/**
+ * @test
+ */
+aspectdef TestPolybench
+
+	var polybenchSet = new PolybenchBenchmarkSet();
+	
+	polybenchSet.setInputSizes("MINI");
+
+	for(var polybenchBench of polybenchSet) {
+		//polybenchBench.getCMaker().setGenerator("MinGW Makefiles");
+		//polybenchBench.getCMaker().setMakeCommand("mingw32-make");
+
+		var execResult = polybenchBench.execute();
+		
+		println("Result:\n" + execResult.getConsoleOutput());
+		
+		//var verificationResult = Strings.extractValue("Verification    =", execResult.getConsoleOutput(), true);
+		//println("Ver: " + verificationResult.trim());
+		//Check.isTrue(verificationResult.trim().endsWith("SUCCESSFUL"), "Expected string to end with SUCCESSFUL: '" + verificationResult.trim() + "'");
+	}
+
+end
+
+

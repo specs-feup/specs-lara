@@ -1,0 +1,31 @@
+import lara.benchmark.NasBenchmarkSet;
+import lara.Strings;
+import lara.Check;
+
+/**
+ * @test
+ */
+aspectdef TestNAS
+
+	var nasSet = new NasBenchmarkSet();
+	//setDebug(true);
+	// Set smallest size
+	nasSet.setInputSizes("S");
+	// By default includes all available benchmarks
+	
+
+	for(var nasBench of nasSet) {
+		//nasBench.getCMaker().setGenerator("MinGW Makefiles");
+		//nasBench.getCMaker().setMakeCommand("mingw32-make");
+		//println("Execution NAS " + nasBench.getName());
+		var execResult = nasBench.execute();
+		//println("Results:" + execResult);
+		
+		var verificationResult = Strings.extractValue("Verification    =", execResult.getConsoleOutput(), true);
+		//println("Ver: " + verificationResult.trim());
+		Check.isTrue(verificationResult.trim().endsWith("SUCCESSFUL"), "Expected string to end with SUCCESSFUL: '" + verificationResult.trim() + "'");
+	}
+	
+end
+
+

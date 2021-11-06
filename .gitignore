@@ -12,6 +12,7 @@
 **/woven_code/*
 **/generated/*
 **/output/*
+**/laraBenchmarks/*
 
 # Ignore automatically created results
 *.csv
