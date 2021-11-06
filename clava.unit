@@ -4,5 +4,7 @@ ANTAREX/ClavaUnitTest
 # Generic LARA examples for Clava
 Examples/CallGraph
 
+Examples/BenchmarkSet
+
 # Autopar tests - Currently disabled, they are very time-consuming
 #ANTAREX/AutoPar/NAS
