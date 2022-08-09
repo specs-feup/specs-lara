@@ -47,7 +47,6 @@ struct {
    double imag;
 } dcomplex;
 
-typedef struct anon_NAS_LU_c_109 dcomplex;
 //---------------------------------------------------------------------
 
 // parameters which can be overridden in runtime config file
