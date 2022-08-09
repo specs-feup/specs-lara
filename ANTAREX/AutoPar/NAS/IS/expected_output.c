@@ -57,12 +57,11 @@
 
 typedef int INT_TYPE;
 
-struct anon_NAS_IS_c_97 {
+struct {
    double real;
    double imag;
-};
+} dcomplex;
 
-typedef struct anon_NAS_IS_c_97 dcomplex;
 /********************/
 
 /*Some global info*/

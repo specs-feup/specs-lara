@@ -22,12 +22,11 @@
 //  Class C:
 //----------
 
-struct anon_NAS_CG_c_75 {
+struct {
    double real;
    double imag;
-};
+} dcomplex;
 
-typedef struct anon_NAS_CG_c_75 dcomplex;
 //---------------------------------------------------------------------
 
 /*common / main_int_mem /*/

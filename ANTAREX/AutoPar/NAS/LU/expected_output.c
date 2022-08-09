@@ -42,10 +42,10 @@
 /*full problem size*/
 /*number of iterations and how often to print the norm*/
 
-struct anon_NAS_LU_c_109 {
+struct {
    double real;
    double imag;
-};
+} dcomplex;
 
 typedef struct anon_NAS_LU_c_109 dcomplex;
 //---------------------------------------------------------------------

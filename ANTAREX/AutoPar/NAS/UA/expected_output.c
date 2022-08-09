@@ -25,12 +25,11 @@
 //  Class D:
 //----------
 
-struct anon_NAS_UA_c_96 {
+struct {
    double real;
    double imag;
-};
+} dcomplex;
 
-typedef struct anon_NAS_UA_c_96 dcomplex;
 // Array dimensions
 
 /*common /usrdati/*/

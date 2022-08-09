@@ -28,12 +28,11 @@
 //  Class E:
 //----------
 
-struct anon_NAS_EP_c_69 {
+struct {
    double real;
    double imag;
-};
+} dcomplex;
 
-typedef struct anon_NAS_EP_c_69 dcomplex;
 double randlc(double *x, double a);
 void vranlc(int n, double *x, double a, double y[]);
 void print_results(char *name, char class, int n1, int n2, int n3, int niter, double t, double mops, char *optype, int verified);

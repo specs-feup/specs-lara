@@ -28,12 +28,11 @@
 //  Class E:
 //----------
 
-struct anon_NAS_FT_c_116 {
+struct {
    double real;
    double imag;
-};
+} dcomplex;
 
-typedef struct anon_NAS_FT_c_116 dcomplex;
 /*common /timerscomm/*/
 dcomplex dcmplx_div(dcomplex z1, dcomplex z2) {
    double a = z1.real;

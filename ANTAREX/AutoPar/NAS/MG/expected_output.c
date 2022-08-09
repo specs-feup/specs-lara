@@ -28,12 +28,11 @@
 //  Class E:
 //----------
 
-struct anon_NAS_MG_c_132 {
+struct {
    double real;
    double imag;
-};
+} dcomplex;
 
-typedef struct anon_NAS_MG_c_132 dcomplex;
 // actual dimension including ghost cells for communications
 
 // size of rhs array

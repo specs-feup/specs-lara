@@ -28,12 +28,12 @@
 //  Class E:
 //----------
 
-struct anon_NAS_BT_c_87 {
+struct {
    double real;
    double imag;
-};
+} dcomplex;
 
-typedef struct anon_NAS_BT_c_87 dcomplex;
+
 /*common /global/*/
 
 int grid_points[3];
