@@ -28,7 +28,7 @@
 //  Class E:
 //----------
 
-struct {
+typedef struct {
    double real;
    double imag;
 } dcomplex;
@@ -253,9 +253,9 @@ int main() {
    oldu = rnmu;
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   printf#283{printf("  iter %3d\n", it)}
-   mg3P#285{mg3P(u, v, r, a, c, n1, n2, n3)}
-   resid#286{resid(u, v, r, n1, n2, n3, a, k)}
+   printf#282{printf("  iter %3d\n", it)}
+   mg3P#284{mg3P(u, v, r, a, c, n1, n2, n3)}
+   resid#285{resid(u, v, r, n1, n2, n3, a, k)}
    ****************************************/
    for(it = 1; it <= nit; it++) {
       if((it == 1) || (it == nit) || ((it % 5) == 0)) {
@@ -399,7 +399,7 @@ void mg3P(double u[], double v[], double r[], double a[4], double c[4], int n1, 
    //---------------------------------------------------------------------
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   rprj3#435{rprj3(&r[ir[k]], m1[k], m2[k], m3[k], &r[ir[k - 1]], m1[k - 1], m2[k - 1], m3[k - 1], k)}
+   rprj3#434{rprj3(&r[ir[k]], m1[k], m2[k], m3[k], &r[ir[k - 1]], m1[k - 1], m2[k - 1], m3[k - 1], k)}
    ****************************************/
    for(k = lt; k >= lb + 1; k--) {
       j = k - 1;
@@ -413,9 +413,9 @@ void mg3P(double u[], double v[], double r[], double a[4], double c[4], int n1, 
    psinv(&r[ir[k]], &u[ir[k]], m1[k], m2[k], m3[k], c, k);
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   interp#451{interp(&u[ir[k - 1]], m1[k - 1], m2[k - 1], m3[k - 1], &u[ir[k]], m1[k], m2[k], m3[k], k)}
-   resid#455{resid(&u[ir[k]], &r[ir[k]], &r[ir[k]], m1[k], m2[k], m3[k], a, k)}
-   psinv#459{psinv(&r[ir[k]], &u[ir[k]], m1[k], m2[k], m3[k], c, k)}
+   interp#450{interp(&u[ir[k - 1]], m1[k - 1], m2[k - 1], m3[k - 1], &u[ir[k]], m1[k], m2[k], m3[k], k)}
+   resid#454{resid(&u[ir[k]], &r[ir[k]], &r[ir[k]], m1[k], m2[k], m3[k], a, k)}
+   psinv#458{psinv(&r[ir[k]], &u[ir[k]], m1[k], m2[k], m3[k], c, k)}
    ****************************************/
    for(k = lb + 1; k <= lt - 1; k++) {
       j = k - 1;
@@ -859,13 +859,13 @@ void zran3(void *oz, int n1, int n2, int n3, int nx, int ny, int k) {
    rdummy = randlc(&x0, ai);
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   vranlc#931{vranlc(d1, &xx, a, &(z[i3][i2][1]))}
+   vranlc#930{vranlc(d1, &xx, a, &(z[i3][i2][1]))}
    ****************************************/
    for(i3 = 1; i3 < e3; i3++) {
       x1 = x0;
       /*************** Clava msgError **************
       Variables Access as passed arguments Can not be traced inside of function calls :
-      vranlc#931{vranlc(d1, &xx, a, &(z[i3][i2][1]))}
+      vranlc#930{vranlc(d1, &xx, a, &(z[i3][i2][1]))}
       ****************************************/
       for(i2 = 1; i2 < e2; i2++) {
          xx = x1;
@@ -894,20 +894,20 @@ void zran3(void *oz, int n1, int n2, int n3, int nx, int ny, int k) {
    }
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   bubble#1011{bubble(ten, j1, j2, j3, mm, 1)}
-   bubble#1018{bubble(ten, j1, j2, j3, mm, 0)}
+   bubble#1010{bubble(ten, j1, j2, j3, mm, 1)}
+   bubble#1017{bubble(ten, j1, j2, j3, mm, 0)}
    ****************************************/
    for(i3 = 1; i3 < n3 - 1; i3++) {
       /*************** Clava msgError **************
       Variables Access as passed arguments Can not be traced inside of function calls :
-      bubble#1011{bubble(ten, j1, j2, j3, mm, 1)}
-      bubble#1018{bubble(ten, j1, j2, j3, mm, 0)}
+      bubble#1010{bubble(ten, j1, j2, j3, mm, 1)}
+      bubble#1017{bubble(ten, j1, j2, j3, mm, 0)}
       ****************************************/
       for(i2 = 1; i2 < n2 - 1; i2++) {
          /*************** Clava msgError **************
          Variables Access as passed arguments Can not be traced inside of function calls :
-         bubble#1011{bubble(ten, j1, j2, j3, mm, 1)}
-         bubble#1018{bubble(ten, j1, j2, j3, mm, 0)}
+         bubble#1010{bubble(ten, j1, j2, j3, mm, 1)}
+         bubble#1017{bubble(ten, j1, j2, j3, mm, 0)}
          ****************************************/
          for(i1 = 1; i1 < n1 - 1; i1++) {
             if(z[i3][i2][i1] > ten[0][1]) {
@@ -1052,20 +1052,20 @@ void showall(void *oz, int n1, int n2, int n3) {
    printf("   \n");
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   printf#1154{printf("%6.3f", z[i3][i2][i1])}
-   printf#1156{printf("\n")}
-   printf#1158{printf("  - - - - - - - \n")}
+   printf#1153{printf("%6.3f", z[i3][i2][i1])}
+   printf#1155{printf("\n")}
+   printf#1157{printf("  - - - - - - - \n")}
    ****************************************/
    for(i3 = 0; i3 < m3; i3++) {
       /*************** Clava msgError **************
       Variables Access as passed arguments Can not be traced inside of function calls :
-      printf#1154{printf("%6.3f", z[i3][i2][i1])}
-      printf#1156{printf("\n")}
+      printf#1153{printf("%6.3f", z[i3][i2][i1])}
+      printf#1155{printf("\n")}
       ****************************************/
       for(i1 = 0; i1 < m1; i1++) {
          /*************** Clava msgError **************
          Variables Access as passed arguments Can not be traced inside of function calls :
-         printf#1154{printf("%6.3f", z[i3][i2][i1])}
+         printf#1153{printf("%6.3f", z[i3][i2][i1])}
          ****************************************/
          for(i2 = 0; i2 < m2; i2++) {
             printf("%6.3f", z[i3][i2][i1]);
@@ -1106,7 +1106,7 @@ void bubble(double ten[][2], int j1[][2], int j2[][2], int j3[][2], int m, int i
    int i, j_temp;
    if(ind == 1) {
       /*************** Clava msgError **************
-      Loop contains Invalid Statement -> ReturnStmt#1212
+      Loop contains Invalid Statement -> ReturnStmt#1211
       ****************************************/
       for(i = 0; i < m - 1; i++) {
          if(ten[i][ind] > ten[i + 1][ind]) {
@@ -1131,7 +1131,7 @@ void bubble(double ten[][2], int j1[][2], int j2[][2], int j3[][2], int m, int i
    }
    else {
       /*************** Clava msgError **************
-      Loop contains Invalid Statement -> ReturnStmt#1236
+      Loop contains Invalid Statement -> ReturnStmt#1235
       ****************************************/
       for(i = 0; i < m - 1; i++) {
          if(ten[i][ind] < ten[i + 1][ind]) {

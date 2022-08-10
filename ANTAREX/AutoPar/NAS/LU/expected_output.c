@@ -42,7 +42,7 @@
 /*full problem size*/
 /*number of iterations and how often to print the norm*/
 
-struct {
+typedef struct {
    double real;
    double imag;
 } dcomplex;
@@ -1993,7 +1993,7 @@ void ssor(int niter) {
    // the timestep loop
    //---------------------------------------------------------------------
    /*************** Clava msgError **************
-   Loop contains Invalid Statement -> BreakStmt#3142
+   Loop contains Invalid Statement -> BreakStmt#3141
    ****************************************/
    for(istep = 1; istep <= niter; istep++) {
       //if ( ( (istep % inorm) == 0 ) && ipr == 1 ) {

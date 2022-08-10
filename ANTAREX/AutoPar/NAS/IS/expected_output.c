@@ -57,7 +57,7 @@
 
 typedef int INT_TYPE;
 
-struct {
+typedef struct {
    double real;
    double imag;
 } dcomplex;
@@ -273,7 +273,7 @@ void rank(int iteration) {
    /*Observe that test_rank_array vals are*/
    /*shifted differently for different cases*/
    /*************** Clava msgError **************
-   Loop contains Invalid Statement -> BreakStmt#486
+   Loop contains Invalid Statement -> BreakStmt#485
    ****************************************/
    for(i = 0; i < 5; i++) {
       k = partial_verify_vals[i];
@@ -363,7 +363,7 @@ int main(int argc, char **argv) {
    timer_clear(0);
    /*Initialize the verification arrays if a valid class*/
    /*************** Clava msgError **************
-   Loop contains Invalid Statement -> BreakStmt#608
+   Loop contains Invalid Statement -> BreakStmt#607
    ****************************************/
    for(i = 0; i < 5; i++)
       switch ('W') {

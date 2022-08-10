@@ -22,7 +22,7 @@
 //  Class C:
 //----------
 
-struct {
+typedef struct {
    double real;
    double imag;
 } dcomplex;
@@ -599,17 +599,17 @@ void sparse(double a[], int colidx[], int rowstr[], int n, int nz, int nozer, in
    size = 1.0;
    ratio = pow(rcond, (1.0 / (double) (n)));
    /*************** Clava msgError **************
-   Loop contains Invalid Statement -> exit#874
+   Loop contains Invalid Statement -> exit#873
    ****************************************/
    for(i = 0; i < n; i++) {
       /*************** Clava msgError **************
-      Loop contains Invalid Statement -> exit#874
+      Loop contains Invalid Statement -> exit#873
       ****************************************/
       for(nza = 0; nza < arow[i]; nza++) {
          j = acol[i][nza];
          scale = size * aelt[i][nza];
          /*************** Clava msgError **************
-         Loop contains Invalid Statement -> exit#874
+         Loop contains Invalid Statement -> exit#873
          ****************************************/
          for(nzrow = 0; nzrow < arow[i]; nzrow++) {
             jcol = acol[i][nzrow];
@@ -623,7 +623,7 @@ void sparse(double a[], int colidx[], int rowstr[], int n, int nz, int nozer, in
             }
             cont40 = 0;
             /*************** Clava msgError **************
-            Loop contains Invalid Statement -> BreakStmt#852
+            Loop contains Invalid Statement -> BreakStmt#851
             ****************************************/
             for(k = rowstr[j]; k < rowstr[j + 1]; k++) {
                if(colidx[k] > jcol) {
@@ -732,7 +732,7 @@ void sprnvc(int n, int nz, int nn1, double v[], int iv[]) {
       //---------------------------------------------------------------------
       int was_gen = 0;
       /*************** Clava msgError **************
-      Loop contains Invalid Statement -> BreakStmt#948
+      Loop contains Invalid Statement -> BreakStmt#947
       ****************************************/
       for(ii = 0; ii < nzv; ii++) {
          if(iv[ii] == i) {

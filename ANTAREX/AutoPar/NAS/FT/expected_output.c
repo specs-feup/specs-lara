@@ -28,7 +28,7 @@
 //  Class E:
 //----------
 
-struct {
+typedef struct {
    double real;
    double imag;
 } dcomplex;
@@ -184,8 +184,8 @@ void appft(int niter, double *total_time, int *verified) {
    fftXYZ(1, 128, 128, 32, xnt, (dcomplex *) y, exp1, exp2, exp3);
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   fftXYZ#223{fftXYZ(-1, 128, 128, 32, xnt, (dcomplex *) xnt, exp1, exp2, exp3)}
-   CalculateChecksum#224{CalculateChecksum(&sums[kt], kt, 128, 128, 32, xnt)}
+   fftXYZ#222{fftXYZ(-1, 128, 128, 32, xnt, (dcomplex *) xnt, exp1, exp2, exp3)}
+   CalculateChecksum#223{CalculateChecksum(&sums[kt], kt, 128, 128, 32, xnt)}
    ****************************************/
    for(kt = 1; kt <= niter; kt++) {
       evolve(128, 128, 32, xnt, y, twiddle);
@@ -317,13 +317,13 @@ void compute_initial_conditions(int d1, int d2, int d3, dcomplex u0[d3][d2][d1 +
    }
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   vranlc#380{vranlc(2 * d1, &x0, a, (double *) tmp)}
+   vranlc#379{vranlc(2 * d1, &x0, a, (double *) tmp)}
    ****************************************/
    for(k = 0; k < d3; k++) {
       x0 = RanStarts[k];
       /*************** Clava msgError **************
       Variables Access as passed arguments Can not be traced inside of function calls :
-      vranlc#380{vranlc(2 * d1, &x0, a, (double *) tmp)}
+      vranlc#379{vranlc(2 * d1, &x0, a, (double *) tmp)}
       ****************************************/
       for(j = 0; j < d2; j++) {
          vranlc(2 * d1, &x0, a, (double *) tmp);
@@ -465,7 +465,7 @@ void fftXYZ(int sign, int n1, int n2, int n3, dcomplex x[n3][n2][n1 + 1], dcompl
    log = ilog2(n1);
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   Swarztrauber#536{Swarztrauber(sign, log, len, n1, blkp, plane, exp1)}
+   Swarztrauber#535{Swarztrauber(sign, log, len, n1, blkp, plane, exp1)}
    ****************************************/
    for(k = 0; k < n3; k++) {
       /*************** Clava msgError **************
@@ -498,7 +498,7 @@ void fftXYZ(int sign, int n1, int n2, int n3, dcomplex x[n3][n2][n1 + 1], dcompl
    log = ilog2(n2);
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   Swarztrauber#565{Swarztrauber(sign, log, len, n2, n1 + 1, &x[k][0][bls], exp2)}
+   Swarztrauber#564{Swarztrauber(sign, log, len, n2, n1 + 1, &x[k][0][bls], exp2)}
    ****************************************/
    for(k = 0; k < n3; k++) {
       /*************** Clava msgError **************
@@ -517,7 +517,7 @@ void fftXYZ(int sign, int n1, int n2, int n3, dcomplex x[n3][n2][n1 + 1], dcompl
    log = ilog2(n3);
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   Swarztrauber#594{Swarztrauber(sign, log, len, n3, blkp, plane, exp3)}
+   Swarztrauber#593{Swarztrauber(sign, log, len, n3, blkp, plane, exp3)}
    ****************************************/
    for(k = 0; k < n2; k++) {
       /*************** Clava msgError **************
@@ -691,7 +691,7 @@ void verify(int n1, int n2, int n3, int nt, dcomplex cksum[nt + 1], int *verifie
    // Verification test for results.
    if(*verified) {
       /*************** Clava msgError **************
-      Loop contains Invalid Statement -> BreakStmt#770
+      Loop contains Invalid Statement -> BreakStmt#769
       ****************************************/
       for(kt = 1; kt <= nt; kt++) {
          err = sqrt(((dcmplx_div((dcomplex){(cksum[kt]).real - (cexpd[kt]).real, (cksum[kt]).imag - (cexpd[kt]).imag}, cexpd[kt])).real * (dcmplx_div((dcomplex){(cksum[kt]).real - (cexpd[kt]).real, (cksum[kt]).imag - (cexpd[kt]).imag}, cexpd[kt])).real) + ((dcmplx_div((dcomplex){(cksum[kt]).real - (cexpd[kt]).real, (cksum[kt]).imag - (cexpd[kt]).imag}, cexpd[kt])).imag * (dcmplx_div((dcomplex){(cksum[kt]).real - (cexpd[kt]).real, (cksum[kt]).imag - (cexpd[kt]).imag}, cexpd[kt])).imag));

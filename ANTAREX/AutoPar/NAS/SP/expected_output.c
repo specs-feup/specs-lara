@@ -28,7 +28,7 @@
 //  Class E:
 //----------
 
-struct {
+typedef struct {
    double real;
    double imag;
 } dcomplex;
@@ -239,13 +239,13 @@ int main(int argc, char *argv[]) {
    timer_start(1);
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   printf#267{printf(" Time step %4d\n", step)}
-   compute_rhs#270{compute_rhs()}
-   txinvr#271{txinvr()}
-   x_solve#272{x_solve()}
-   y_solve#273{y_solve()}
-   z_solve#274{z_solve()}
-   add#275{add()}
+   printf#266{printf(" Time step %4d\n", step)}
+   compute_rhs#269{compute_rhs()}
+   txinvr#270{txinvr()}
+   x_solve#271{x_solve()}
+   y_solve#272{y_solve()}
+   z_solve#273{z_solve()}
+   add#274{add()}
    ****************************************/
    for(step = 1; step <= niter; step++) {
       if((step % 20) == 0 || step == 1) {
@@ -711,25 +711,25 @@ void initialize() {
    //---------------------------------------------------------------------
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   exact_solution#787{exact_solution(Pxi, eta, zeta, &Pface[ix][0][0])}
-   exact_solution#793{exact_solution(xi, Peta, zeta, &Pface[iy][1][0])}
-   exact_solution#799{exact_solution(xi, eta, Pzeta, &Pface[iz][2][0])}
+   exact_solution#786{exact_solution(Pxi, eta, zeta, &Pface[ix][0][0])}
+   exact_solution#792{exact_solution(xi, Peta, zeta, &Pface[iy][1][0])}
+   exact_solution#798{exact_solution(xi, eta, Pzeta, &Pface[iz][2][0])}
    ****************************************/
    for(k = 0; k <= grid_points[2] - 1; k++) {
       zeta = (double) k * dnzm1;
       /*************** Clava msgError **************
       Variables Access as passed arguments Can not be traced inside of function calls :
-      exact_solution#787{exact_solution(Pxi, eta, zeta, &Pface[ix][0][0])}
-      exact_solution#793{exact_solution(xi, Peta, zeta, &Pface[iy][1][0])}
-      exact_solution#799{exact_solution(xi, eta, Pzeta, &Pface[iz][2][0])}
+      exact_solution#786{exact_solution(Pxi, eta, zeta, &Pface[ix][0][0])}
+      exact_solution#792{exact_solution(xi, Peta, zeta, &Pface[iy][1][0])}
+      exact_solution#798{exact_solution(xi, eta, Pzeta, &Pface[iz][2][0])}
       ****************************************/
       for(j = 0; j <= grid_points[1] - 1; j++) {
          eta = (double) j * dnym1;
          /*************** Clava msgError **************
          Variables Access as passed arguments Can not be traced inside of function calls :
-         exact_solution#787{exact_solution(Pxi, eta, zeta, &Pface[ix][0][0])}
-         exact_solution#793{exact_solution(xi, Peta, zeta, &Pface[iy][1][0])}
-         exact_solution#799{exact_solution(xi, eta, Pzeta, &Pface[iz][2][0])}
+         exact_solution#786{exact_solution(Pxi, eta, zeta, &Pface[ix][0][0])}
+         exact_solution#792{exact_solution(xi, Peta, zeta, &Pface[iy][1][0])}
+         exact_solution#798{exact_solution(xi, eta, Pzeta, &Pface[iz][2][0])}
          ****************************************/
          for(i = 0; i <= grid_points[0] - 1; i++) {
             xi = (double) i * dnxm1;

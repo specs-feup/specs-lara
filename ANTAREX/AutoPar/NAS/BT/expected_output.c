@@ -28,11 +28,10 @@
 //  Class E:
 //----------
 
-struct {
+typedef struct {
    double real;
    double imag;
 } dcomplex;
-
 
 /*common /global/*/
 
@@ -226,9 +225,9 @@ int main(int argc, char *argv[]) {
    timer_start(1);
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   printf#277{printf(" Time step %4d\n", step)}
-   compute_rhs#280{compute_rhs()}
-   add#2666{add()}
+   printf#276{printf(" Time step %4d\n", step)}
+   compute_rhs#279{compute_rhs()}
+   add#2665{add()}
    ****************************************/
    for(step = 1; step <= niter; step++) {
       if((step % 20) == 0 || step == 1) {

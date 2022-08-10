@@ -28,7 +28,7 @@
 //  Class E:
 //----------
 
-struct {
+typedef struct {
    double real;
    double imag;
 } dcomplex;
@@ -131,7 +131,7 @@ int main() {
       t2 = an;
       // Find starting seed t1 for this kk.
       /*************** Clava msgError **************
-      Loop contains Invalid Statement -> BreakStmt#189
+      Loop contains Invalid Statement -> BreakStmt#188
       ****************************************/
       for(i = 1; i <= 100; i++) {
          ik = kk / 2;

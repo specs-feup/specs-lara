@@ -25,7 +25,7 @@
 //  Class D:
 //----------
 
-struct {
+typedef struct {
    double real;
    double imag;
 } dcomplex;
@@ -414,29 +414,29 @@ int main(int argc, char *argv[]) {
    time = 0.0;
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   r_init#534{r_init((double *) ta1, ntot, 0.0)}
-   timer_start#546{timer_start(1)}
-   convect#549{convect(ifmortar)}
-   transf#551{transf(tmort, (double *) ta1)}
-   r_init#564{r_init((double *) tm1_85, (5 * 5 * 5), 0.0)}
-   r_init#578{r_init((double *) tm2_85, (5 * 5 * 5), 0.0)}
-   r_init#592{r_init((double *) ta2[ie], (5 * 5 * 5), 0.0)}
-   transfb#636{transfb(rmor, (double *) trhs)}
-   setuppc#701{setuppc()}
-   setpcmo#702{setpcmo()}
-   r_init#704{r_init((double *) t, ntot, 0.0)}
-   r_init#705{r_init((double *) umor, nmor, 0.0)}
-   adds1m1#752{adds1m1((double *) pdiff, (double *) pdiffp, beta_107, ntot)}
-   transf#761{transf(pmorx, (double *) pdiff)}
-   r_init#770{r_init((double *) tm1_86_107, (5 * 5 * 5), 0.0)}
-   r_init#784{r_init((double *) tm2_86_107, (5 * 5 * 5), 0.0)}
-   r_init#798{r_init((double *) pdiffp[ie_107], (5 * 5 * 5), 0.0)}
-   transfb#823{transfb(ppmor, (double *) pdiffp)}
-   adds2m1#889{adds2m1((double *) t, (double *) pdiff, cona_107, ntot)}
-   adds2m1#897{adds2m1((double *) trhs, (double *) pdiffp, -cona_107, ntot)}
-   transf#906{transf(umor, (double *) t)}
-   add2#908{add2((double *) ta1, (double *) t, ntot)}
-   adaptation#913{adaptation(&ifmortar, step)}
+   r_init#533{r_init((double *) ta1, ntot, 0.0)}
+   timer_start#545{timer_start(1)}
+   convect#548{convect(ifmortar)}
+   transf#550{transf(tmort, (double *) ta1)}
+   r_init#563{r_init((double *) tm1_85, (5 * 5 * 5), 0.0)}
+   r_init#577{r_init((double *) tm2_85, (5 * 5 * 5), 0.0)}
+   r_init#591{r_init((double *) ta2[ie], (5 * 5 * 5), 0.0)}
+   transfb#635{transfb(rmor, (double *) trhs)}
+   setuppc#700{setuppc()}
+   setpcmo#701{setpcmo()}
+   r_init#703{r_init((double *) t, ntot, 0.0)}
+   r_init#704{r_init((double *) umor, nmor, 0.0)}
+   adds1m1#751{adds1m1((double *) pdiff, (double *) pdiffp, beta_107, ntot)}
+   transf#760{transf(pmorx, (double *) pdiff)}
+   r_init#769{r_init((double *) tm1_86_107, (5 * 5 * 5), 0.0)}
+   r_init#783{r_init((double *) tm2_86_107, (5 * 5 * 5), 0.0)}
+   r_init#797{r_init((double *) pdiffp[ie_107], (5 * 5 * 5), 0.0)}
+   transfb#822{transfb(ppmor, (double *) pdiffp)}
+   adds2m1#888{adds2m1((double *) t, (double *) pdiff, cona_107, ntot)}
+   adds2m1#896{adds2m1((double *) trhs, (double *) pdiffp, -cona_107, ntot)}
+   transf#905{transf(umor, (double *) t)}
+   add2#907{add2((double *) ta1, (double *) t, ntot)}
+   adaptation#912{adaptation(&ifmortar, step)}
    ****************************************/
    for(step = 0; step <= niter; step++) {
       if(step == 1) {
@@ -460,9 +460,9 @@ int main(int argc, char *argv[]) {
       // compute the left hand side of equation, lapacian t
       /*************** Clava msgError **************
       Variables Access as passed arguments Can not be traced inside of function calls :
-      r_init#564{r_init((double *) tm1_85, (5 * 5 * 5), 0.0)}
-      r_init#578{r_init((double *) tm2_85, (5 * 5 * 5), 0.0)}
-      r_init#592{r_init((double *) ta2[ie], (5 * 5 * 5), 0.0)}
+      r_init#563{r_init((double *) tm1_85, (5 * 5 * 5), 0.0)}
+      r_init#577{r_init((double *) tm2_85, (5 * 5 * 5), 0.0)}
+      r_init#591{r_init((double *) ta2[ie], (5 * 5 * 5), 0.0)}
       ****************************************/
       for(ie = 0; ie < nelt; ie++) {
          laplacian(ta2[ie], ta1[ie], size_e[ie]);
@@ -752,13 +752,13 @@ void do_coarsen(int *if_coarsen, int *icoarsen, int neltold) {
    // perform the coarsening procedure (potentially in parallel)
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   remapx#1282{remapx(ta1[ntp[0]], ta1[ntp[1]], temp1_105)}
-   remapx#1283{remapx(ta1[ntp[2]], ta1[ntp[3]], temp2_105)}
-   remapx#1284{remapx(ta1[ntp[4]], ta1[ntp[5]], temp3_105)}
-   remapx#1285{remapx(ta1[ntp[6]], ta1[ntp[7]], temp4_105)}
-   remapy#1286{remapy(temp1_105, temp2_105, temp5_105)}
-   remapy#1287{remapy(temp3_105, temp4_105, temp6_105)}
-   remapz#1288{remapz(temp5_105, temp6_105, ta1[ielnew_105])}
+   remapx#1281{remapx(ta1[ntp[0]], ta1[ntp[1]], temp1_105)}
+   remapx#1282{remapx(ta1[ntp[2]], ta1[ntp[3]], temp2_105)}
+   remapx#1283{remapx(ta1[ntp[4]], ta1[ntp[5]], temp3_105)}
+   remapx#1284{remapx(ta1[ntp[6]], ta1[ntp[7]], temp4_105)}
+   remapy#1285{remapy(temp1_105, temp2_105, temp5_105)}
+   remapy#1286{remapy(temp3_105, temp4_105, temp6_105)}
+   remapz#1287{remapz(temp5_105, temp6_105, ta1[ielnew_105])}
    ****************************************/
    for(index = 0; index < num_coarsen; index++) {
       miel = action[index];
@@ -868,10 +868,10 @@ void do_refine(int *ifmortar, int *irefine) {
    }
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   ncopy#1417{ncopy((int *) ijeltemp, ijel[iel][0], 12)}
-   ncopy#1418{ncopy((int *) sjetemp, sje[iel][0][0], 24)}
-   copy#1419{copy((double *) ta1temp, ta1[iel][0][0], (5 * 5 * 5))}
-   remap#1758{remap(ta1[iel], &ta1[ref_front_id[iel]], ta1temp)}
+   ncopy#1416{ncopy((int *) ijeltemp, ijel[iel][0], 12)}
+   ncopy#1417{ncopy((int *) sjetemp, sje[iel][0][0], 24)}
+   copy#1418{copy((double *) ta1temp, ta1[iel][0][0], (5 * 5 * 5))}
+   remap#1757{remap(ta1[iel], &ta1[ref_front_id[iel]], ta1temp)}
    ****************************************/
    for(index = 0; index < num_refine; index++) {
       // miel is old morton index and mielnew is new morton index after refinement.
@@ -1313,7 +1313,7 @@ void check_refine(int *ifrepeat) {
    *ifrepeat = 0;
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   ifcor#1921{ifcor(iel, nntemp, i, iface)}
+   ifcor#1920{ifcor(iel, nntemp, i, iface)}
    ****************************************/
    for(iel = 0; iel < nelt; iel++) {
       // if iel is marked to be refined
@@ -2120,14 +2120,14 @@ void diffusion(int ifmortar) {
    //.................................................................
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   adds1m1#2715{adds1m1((double *) pdiff, (double *) pdiffp, beta, ntot)}
-   transf#2726{transf(pmorx, (double *) pdiff)}
-   r_init#2738{r_init((double *) tm1_86, (5 * 5 * 5), 0.0)}
-   r_init#2752{r_init((double *) tm2_86, (5 * 5 * 5), 0.0)}
-   r_init#2766{r_init((double *) pdiffp[ie], (5 * 5 * 5), 0.0)}
-   transfb#2793{transfb(ppmor, (double *) pdiffp)}
-   adds2m1#2871{adds2m1((double *) t, (double *) pdiff, cona, ntot)}
-   adds2m1#2881{adds2m1((double *) trhs, (double *) pdiffp, -cona, ntot)}
+   adds1m1#2714{adds1m1((double *) pdiff, (double *) pdiffp, beta, ntot)}
+   transf#2725{transf(pmorx, (double *) pdiff)}
+   r_init#2737{r_init((double *) tm1_86, (5 * 5 * 5), 0.0)}
+   r_init#2751{r_init((double *) tm2_86, (5 * 5 * 5), 0.0)}
+   r_init#2765{r_init((double *) pdiffp[ie], (5 * 5 * 5), 0.0)}
+   transfb#2792{transfb(ppmor, (double *) pdiffp)}
+   adds2m1#2870{adds2m1((double *) t, (double *) pdiff, cona, ntot)}
+   adds2m1#2880{adds2m1((double *) trhs, (double *) pdiffp, -cona, ntot)}
    ****************************************/
    for(iter = 1; iter <= nmxh; iter++) {
       if(iter > 1) {
@@ -2172,9 +2172,9 @@ void diffusion(int ifmortar) {
       // compute pdiffp which is (A theta pm) in the specification
       /*************** Clava msgError **************
       Variables Access as passed arguments Can not be traced inside of function calls :
-      r_init#2738{r_init((double *) tm1_86, (5 * 5 * 5), 0.0)}
-      r_init#2752{r_init((double *) tm2_86, (5 * 5 * 5), 0.0)}
-      r_init#2766{r_init((double *) pdiffp[ie], (5 * 5 * 5), 0.0)}
+      r_init#2737{r_init((double *) tm1_86, (5 * 5 * 5), 0.0)}
+      r_init#2751{r_init((double *) tm2_86, (5 * 5 * 5), 0.0)}
+      r_init#2765{r_init((double *) pdiffp[ie], (5 * 5 * 5), 0.0)}
       ****************************************/
       for(ie = 0; ie < nelt; ie++) {
          laplacian(pdiffp[ie], pdiff[ie], size_e[ie]);
@@ -3096,28 +3096,28 @@ void mortar() {
    // be generated on the element with the lowest element index.
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   get_emo#4082{get_emo(ntempx_108[0], count_108, 7)}
-   get_emo#4088{get_emo(ntempx_108[1], count_108, 6)}
-   get_emo#4094{get_emo(ntempx_108[2], count_108, 5)}
-   get_emo#4100{get_emo(ntempx_108[3], count_108, 4)}
-   get_emo#4106{get_emo(ntempx_108[4], count_108, 3)}
-   get_emo#4112{get_emo(ntempx_108[5], count_108, 2)}
-   get_emo#4118{get_emo(ntempx_108[6], count_108, 1)}
-   get_emo#4124{get_emo(ntempx_108[7], count_108, 0)}
+   get_emo#4081{get_emo(ntempx_108[0], count_108, 7)}
+   get_emo#4087{get_emo(ntempx_108[1], count_108, 6)}
+   get_emo#4093{get_emo(ntempx_108[2], count_108, 5)}
+   get_emo#4099{get_emo(ntempx_108[3], count_108, 4)}
+   get_emo#4105{get_emo(ntempx_108[4], count_108, 3)}
+   get_emo#4111{get_emo(ntempx_108[5], count_108, 2)}
+   get_emo#4117{get_emo(ntempx_108[6], count_108, 1)}
+   get_emo#4123{get_emo(ntempx_108[7], count_108, 0)}
    ****************************************/
    for(iel = 0; iel < nelt; iel++) {
       // compute the starting vertex mortar point index in element iel
       front[iel] = front[iel] - newc[iel];
       /*************** Clava msgError **************
       Variables Access as passed arguments Can not be traced inside of function calls :
-      get_emo#4082{get_emo(ntempx_108[0], count_108, 7)}
-      get_emo#4088{get_emo(ntempx_108[1], count_108, 6)}
-      get_emo#4094{get_emo(ntempx_108[2], count_108, 5)}
-      get_emo#4100{get_emo(ntempx_108[3], count_108, 4)}
-      get_emo#4106{get_emo(ntempx_108[4], count_108, 3)}
-      get_emo#4112{get_emo(ntempx_108[5], count_108, 2)}
-      get_emo#4118{get_emo(ntempx_108[6], count_108, 1)}
-      get_emo#4124{get_emo(ntempx_108[7], count_108, 0)}
+      get_emo#4081{get_emo(ntempx_108[0], count_108, 7)}
+      get_emo#4087{get_emo(ntempx_108[1], count_108, 6)}
+      get_emo#4093{get_emo(ntempx_108[2], count_108, 5)}
+      get_emo#4099{get_emo(ntempx_108[3], count_108, 4)}
+      get_emo#4105{get_emo(ntempx_108[4], count_108, 3)}
+      get_emo#4111{get_emo(ntempx_108[5], count_108, 2)}
+      get_emo#4117{get_emo(ntempx_108[6], count_108, 1)}
+      get_emo#4123{get_emo(ntempx_108[7], count_108, 0)}
       ****************************************/
       for(i = 0; i < newc[iel]; i++) {
          // count is the new mortar index number, which will be assigned
@@ -3721,8 +3721,8 @@ void mortar() {
    // conforming edges, and then the face interior.
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   mor_s_e_nn#5242{mor_s_e_nn(op[edge_84], jjface[face_84], iel_84, mor_s_v_84, nn_84)}
-   mor_s_e_nn#5243{mor_s_e_nn(op[edge2_84], jjface[face2_84], iel_84, mor_s_v_84, nn_84)}
+   mor_s_e_nn#5241{mor_s_e_nn(op[edge_84], jjface[face_84], iel_84, mor_s_v_84, nn_84)}
+   mor_s_e_nn#5242{mor_s_e_nn(op[edge2_84], jjface[face2_84], iel_84, mor_s_v_84, nn_84)}
    ****************************************/
    for(iel = 0; iel < nelt; iel++) {
       front[iel] = front[iel] - newc[iel];
@@ -3850,15 +3850,15 @@ void mortar() {
    // from neighbors.
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   nr_init#5314{nr_init((int *) mor_s_v_106, 4 * 2, -1)}
-   mor_s_e#5324{mor_s_e(0, face_106, iel_106, mor_s_v_106)}
-   mor_s_e#5328{mor_s_e(edge_l_106, face2_106, iel_106, mor_s_v_106)}
-   mor_s_e#5339{mor_s_e(1, face_106, iel_106, mor_s_v_106)}
-   mor_s_e#5343{mor_s_e(edge_l_106, face2_106, iel_106, mor_s_v_106)}
-   mor_s_e#5354{mor_s_e(2, face_106, iel_106, mor_s_v_106)}
-   mor_s_e#5358{mor_s_e(edge_l_106, face2_106, iel_106, mor_s_v_106)}
-   mor_s_e#5368{mor_s_e(3, face_106, iel_106, mor_s_v_106)}
-   mor_s_e#5372{mor_s_e(edge_l_106, face2_106, iel_106, mor_s_v_106)}
+   nr_init#5313{nr_init((int *) mor_s_v_106, 4 * 2, -1)}
+   mor_s_e#5323{mor_s_e(0, face_106, iel_106, mor_s_v_106)}
+   mor_s_e#5327{mor_s_e(edge_l_106, face2_106, iel_106, mor_s_v_106)}
+   mor_s_e#5338{mor_s_e(1, face_106, iel_106, mor_s_v_106)}
+   mor_s_e#5342{mor_s_e(edge_l_106, face2_106, iel_106, mor_s_v_106)}
+   mor_s_e#5353{mor_s_e(2, face_106, iel_106, mor_s_v_106)}
+   mor_s_e#5357{mor_s_e(edge_l_106, face2_106, iel_106, mor_s_v_106)}
+   mor_s_e#5367{mor_s_e(3, face_106, iel_106, mor_s_v_106)}
+   mor_s_e#5371{mor_s_e(edge_l_106, face2_106, iel_106, mor_s_v_106)}
    ****************************************/
    for(iel = 0; iel < nelt; iel++) {
       /*************** Clava msgError **************
@@ -4919,10 +4919,10 @@ void setpcmo_pre() {
       for(j = 0; j < 5 / 2 + 1; j++) {
          /*************** Clava msgError **************
          Variables Access as passed arguments Can not be traced inside of function calls :
-         r_init#6442{r_init((double *) p, (5 * 5 * 5), 0.0)}
-         r_init#6451{r_init((double *) tm1_87, (5 * 5 * 5), 0.0)}
-         r_init#6465{r_init((double *) tm2_87, (5 * 5 * 5), 0.0)}
-         r_init#6479{r_init((double *) temp, (5 * 5 * 5), 0.0)}
+         r_init#6441{r_init((double *) p, (5 * 5 * 5), 0.0)}
+         r_init#6450{r_init((double *) tm1_87, (5 * 5 * 5), 0.0)}
+         r_init#6464{r_init((double *) tm2_87, (5 * 5 * 5), 0.0)}
+         r_init#6478{r_init((double *) temp, (5 * 5 * 5), 0.0)}
          ****************************************/
          for(i = j; i < 5 / 2 + 1; i++) {
             r_init((double *) p, (5 * 5 * 5), 0.0);
@@ -4950,13 +4950,13 @@ void setpcmo_pre() {
       for(j = 1; j < 5; j++) {
          /*************** Clava msgError **************
          Variables Access as passed arguments Can not be traced inside of function calls :
-         r_init#6525{r_init((double *) mtemp, 5 * 5, 0.0)}
-         r_init#6526{r_init((double *) p, (5 * 5 * 5), 0.0)}
-         transf_nc#6536{transf_nc(mtemp, (double (*)[5]) p)}
-         r_init#6544{r_init((double *) tm1_88, (5 * 5 * 5), 0.0)}
-         r_init#6558{r_init((double *) tm2_88, (5 * 5 * 5), 0.0)}
-         r_init#6572{r_init((double *) temp, (5 * 5 * 5), 0.0)}
-         transfb_nc1#6596{transfb_nc1(temp1, (double (*)[5]) temp)}
+         r_init#6524{r_init((double *) mtemp, 5 * 5, 0.0)}
+         r_init#6525{r_init((double *) p, (5 * 5 * 5), 0.0)}
+         transf_nc#6535{transf_nc(mtemp, (double (*)[5]) p)}
+         r_init#6543{r_init((double *) tm1_88, (5 * 5 * 5), 0.0)}
+         r_init#6557{r_init((double *) tm2_88, (5 * 5 * 5), 0.0)}
+         r_init#6571{r_init((double *) temp, (5 * 5 * 5), 0.0)}
+         transfb_nc1#6595{transfb_nc1(temp1, (double (*)[5]) temp)}
          ****************************************/
          for(i = j; i < 5; i++) {
             r_init((double *) mtemp, 5 * 5, 0.0);
@@ -6709,7 +6709,7 @@ void transf(double tmor[], double tx[]) {
    col2(tx, (double *) tmult, ntot);
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   r_init#10308{r_init((double *) tmp, 5 * 5 * 2, 0.0)}
+   r_init#10307{r_init((double *) tmp, 5 * 5 * 2, 0.0)}
    ****************************************/
    for(ie = 0; ie < nelt; ie++) {
       /*************** Clava msgError **************
@@ -7006,7 +7006,7 @@ void transfb(double tmor[], double tx[]) {
    r_init(tmor, nmor, 0.0);
    /*************** Clava msgError **************
    Variables Access as passed arguments Can not be traced inside of function calls :
-   r_init#10574{r_init((double *) temp, 5 * 5 * 2, 0.0)}
+   r_init#10573{r_init((double *) temp, 5 * 5 * 2, 0.0)}
    ****************************************/
    for(ie = 0; ie < nelt; ie++) {
       /*************** Clava msgError **************
