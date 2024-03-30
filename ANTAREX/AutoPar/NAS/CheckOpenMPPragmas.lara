@@ -33,6 +33,11 @@ aspectdef CheckOpenMPPragmas
 		return;
 	}
 
+	if(expectedCodeFile === undefined) {
+		println("No expected code file, returning");
+		return;
+	}
+
 	var expectedCode = Io.readFile(expectedCodeFile);
 	if(expectedCode === null) {
 		expectedCode = "Could not find file '" + expectedCodeFile + "'";
