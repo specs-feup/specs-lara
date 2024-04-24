@@ -1,69 +1,76 @@
-import lara.Io;
-import lara.Check;
+laraImport("lara.Io");
+laraImport("lara.Check");
+laraImport("weaver.Query");
 
-aspectdef CheckOpenMPPragmas
-	input expectedCodeFile, generateOutputs = false end
+function CheckOpenMPPragmas(expectedCodeFile, generateOutputs = false) {
+  println("Checking OpenMP pragmas...");
+  //	select pragma{"omp"}.target end
+  //	apply
+  for (const $pragma of Query.search("pragma", "omp")) {
+    const $target = $pragma.target;
 
-	
-	select pragma{"omp"}.target end
-	apply
-		// Comment OpenMP pragmas that are inside a loop that already has an OpenMP pragma
-		if($target.instanceOf("loop")) {
-		    
-		    if(!hasForAncestorWithOmp($target)) {
-		        continue;
-		    }
-		    
-	    	$pragma.insert replace "// " + $pragma.code;
-		}
-	end
+    // Comment OpenMP pragmas that are inside a loop that already has an OpenMP pragma
+    if ($target.instanceOf("loop")) {
+      if (!hasForAncestorWithOmp($target)) {
+        continue;
+      }
 
-	
-	var currentCode = "<not initialized>";
-	select file end
-	apply
-		currentCode = $file.code;
-		break;
-	end
+      $pragma.insertReplace("// " + $pragma.code);
+    }
+  }
+  //	end
 
+  //select file end
+  //apply
+  let currentCode = "<not initialized>";
+  for (const $file of Query.search("file")) {
+    currentCode = $file.code;
+    break;
+  }
+  //	end
 
-	// Generate outputs and return
-	if(generateOutputs) {
-		Io.writeFile(expectedCodeFile, currentCode);
-		return;
-	}
+  // Generate outputs and return
+  if (generateOutputs) {
+    println("Generating outputs and returning");
+    Io.writeFile(expectedCodeFile, currentCode);
+    return;
+  }
 
-	if(expectedCodeFile === undefined) {
-		println("No expected code file, returning");
-		return;
-	}
+  if (expectedCodeFile === undefined) {
+    println("No expected code file, returning");
+    return;
+  }
 
-	var expectedCode = Io.readFile(expectedCodeFile);
-	if(expectedCode === null) {
-		expectedCode = "Could not find file '" + expectedCodeFile + "'";
-	}
-	
-	Check.strings(currentCode, expectedCode);
-end
+  var expectedCode = Io.readFile(expectedCodeFile);
+  if (expectedCode === null) {
+    expectedCode = "Could not find file '" + expectedCodeFile + "'";
+  }
+
+  Check.strings(currentCode, expectedCode);
+  println("Code is as expected");
+}
 
 function hasForAncestorWithOmp($target) {
-    
-    // Find ancestor that is a loop
-    $loopParent = $target.ancestor('loop');
-		    
-	// No loop parent found, return
-	if($loopParent === undefined) {
-	    return false;
-    }
-		    
-    // Check if parent has an OpenMP pragma
-    for(var $parentPragma of $loopParent.pragmas) {
-        // Found OpenMP pragma, return
-        if($parentPragma.name === "omp") {
-            return true;
-        }		        
-    }
+  // Find ancestor that is a loop
+  $loopParent = $target.ancestor("loop");
 
-    // No OpenMP pragma found, check parent for
-    return hasForAncestorWithOmp($loopParent);
+  // No loop parent found, return
+  if ($loopParent === undefined) {
+    return false;
+  }
+
+  // Check if parent has an OpenMP pragma
+  for (var $parentPragma of $loopParent.pragmas) {
+    // Found OpenMP pragma, return
+    if ($parentPragma.name === "omp") {
+      return true;
+    }
+  }
+
+  // No OpenMP pragma found, check parent for
+  return hasForAncestorWithOmp($loopParent);
 }
+
+const expectedCodeFile = laraArgs["expectedCodeFile"];
+const generateOutputs = laraArgs["generateOutputs"];
+CheckOpenMPPragmas(expectedCodeFile, generateOutputs);
