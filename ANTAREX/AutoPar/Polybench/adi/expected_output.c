@@ -19,10 +19,10 @@
 /*Array initialization.*/
 static void init_array(int n, double u[1000][1000]) {
    int i, j;
-   for(i = 0; i < n; i++) 
-   	for(j = 0; j < n; j++) {
-      		u[i][j] = (double) (i + n - j) / n;
-   }
+   for(i = 0; i < n; i++)
+      for(j = 0; j < n; j++) {
+         u[i][j] = (double) (i + n - j) / n;
+      }
 }
 
 /*DCE code. Must scan the entire live-out data.
@@ -31,11 +31,11 @@ static void print_array(int n, double u[1000][1000]) {
    int i, j;
    fprintf(stderr, "==BEGIN DUMP_ARRAYS==\n");
    fprintf(stderr, "begin dump: %s", "u");
-   for(i = 0; i < n; i++) 
-   	for(j = 0; j < n; j++) {
-      		if((i * n + j) % 20 == 0) fprintf(stderr, "\n");
-      		fprintf(stderr, "%0.2lf ", u[i][j]);
-   }
+   for(i = 0; i < n; i++)
+      for(j = 0; j < n; j++) {
+         if((i * n + j) % 20 == 0) fprintf(stderr, "\n");
+         fprintf(stderr, "%0.2lf ", u[i][j]);
+      }
    fprintf(stderr, "\nend   dump: %s\n", "u");
    fprintf(stderr, "==END   DUMP_ARRAYS==\n");
 }

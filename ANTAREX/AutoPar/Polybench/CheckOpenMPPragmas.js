@@ -4,11 +4,9 @@ laraImport("weaver.Query");
 
 function CheckOpenMPPragmas(expectedCodeFile, generateOutputs = false) {
   println("Checking OpenMP pragmas...");
-  //	select pragma{"omp"}.target end
-  //	apply
+
   for (const $pragma of Query.search("pragma", "omp")) {
     const $target = $pragma.target;
-
     // Comment OpenMP pragmas that are inside a loop that already has an OpenMP pragma
     if ($target.instanceOf("loop")) {
       if (!hasForAncestorWithOmp($target)) {
@@ -18,20 +16,25 @@ function CheckOpenMPPragmas(expectedCodeFile, generateOutputs = false) {
       $pragma.replaceWith("// " + $pragma.code);
     }
   }
-  //	end
 
-  //select file end
-  //apply
-  let currentCode = "<not initialized>";
+  var currentCode = "<not initialized>";
   for (const $file of Query.search("file")) {
+    var filename = $file.name;
+
+    if (!filename.endsWith(".c")) {
+      continue;
+    }
+
+    if (filename === "polybench.c") {
+      continue;
+    }
+
     currentCode = $file.code;
     break;
   }
-  //	end
 
   // Generate outputs and return
   if (generateOutputs) {
-    println("Generating outputs and returning");
     Io.writeFile(expectedCodeFile, currentCode);
     return;
   }
@@ -41,13 +44,13 @@ function CheckOpenMPPragmas(expectedCodeFile, generateOutputs = false) {
     return;
   }
 
+  // Verify outputs
   var expectedCode = Io.readFile(expectedCodeFile);
   if (expectedCode === null) {
     expectedCode = "Could not find file '" + expectedCodeFile + "'";
   }
 
   Check.strings(currentCode, expectedCode);
-  println("Code is as expected");
 }
 
 function hasForAncestorWithOmp($target) {

@@ -26,7 +26,7 @@ clava_enable_openmp()
 clava_weave(2mm ../PolybenchAutopar.lara)
 
 
-clava_weave(2mm ../CheckOpenMPPragmas.lara ARGS "expectedCodeFile:'${CMAKE_CURRENT_SOURCE_DIR}/expected_output.c'")
+clava_weave(2mm ../CheckOpenMPPragmas.js ARGS "expectedCodeFile:'${CMAKE_CURRENT_SOURCE_DIR}/expected_output.c'")
 
 # Test
 
