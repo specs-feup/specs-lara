@@ -24,7 +24,7 @@ find_package(Clava REQUIRED)
 
 # Call AutoPar
 clava_enable_openmp()
-clava_weave(syr2k ../PolybenchAutopar.lara)
+clava_weave(syr2k ../PolybenchAutopar.mjs)
 
 clava_weave(syr2k ../CheckOpenMPPragmas.js ARGS "expectedCodeFile:'${CMAKE_CURRENT_SOURCE_DIR}/expected_output.c'")
 
