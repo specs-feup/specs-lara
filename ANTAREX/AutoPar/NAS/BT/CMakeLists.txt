@@ -25,7 +25,7 @@ find_package(Clava REQUIRED)
 
 # Call AutoPar
 clava_enable_openmp()
-clava_weave(bt_w ../NasAutopar.lara JAVA_FLAGS -Xmx2048m)
+clava_weave(bt_w ../NasAutopar.mjs JAVA_FLAGS -Xmx2048m)
 
 clava_weave(bt_w ../CheckOpenMPPragmas.js ARGS "expectedCodeFile:'${CMAKE_CURRENT_SOURCE_DIR}/expected_output.c'")
 
