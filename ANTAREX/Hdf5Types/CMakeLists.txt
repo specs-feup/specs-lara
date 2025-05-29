@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.10)
 project(graphlib)
 
 find_package(HDF5 COMPONENTS "CXX" REQUIRED)

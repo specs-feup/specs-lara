@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10)
 project(utilities)
 
 # If Clava CMake plugin is not installed (e.g., sudo clava-update), the path to the plugin
